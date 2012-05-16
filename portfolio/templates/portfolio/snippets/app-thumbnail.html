@@ -1,0 +1,13 @@
+{% load i18n %}
+<ul class="thumbnails">
+{% for active_app in portfolio %}
+ <li class="span1">
+   <div class="thumbnail thumbnail-app" style="background-color: #F1ECE5;">
+	<a href="{{ active_app.url }}">
+    <img src="{{ STATIC_URL }}img/{{ active_app.icon }}" alt="">
+    <h5>{{ active_app.name }}</h5>
+    </a>
+    {% if active_app.description %}<p>{{ active_app.description }}</p>{% endif %}
+ </li>
+{% endfor %}
+</ul>

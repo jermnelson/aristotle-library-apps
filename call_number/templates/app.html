@@ -1,0 +1,47 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block head-title %}
+{% if library %}{{ library.name }}{% else %}FRBR-Redis Datastore {% endif %}
+ Call Number App
+{% endblock %}
+
+{% block more-css %}
+<link href="{{ STATIC_URL }}call_number/css/call_number.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}call_number/css/app.less" />
+{% endblock %}
+
+
+{% block body %}
+{% comment %}START content DIV{% endcomment %}
+<div class="container-fluid">
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START search DIV{% endcomment %}
+  <div class="row12">
+  {% include 'search.html' %}
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START widget DIV{% endcomment %}
+  <div class="row12">
+  {% include 'widget.html' %}
+  {% comment %}END widget DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{% comment %}END content DIV{% endcomment %}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+<script src="{{ STATIC_URL }}call_number/js/call_number.js"></script>
+<script>
+ var autocomplete = $('#call-num-typeahead').typeahead();
+ autocomplete.on('keyup',CNtypeahead);
+</script>
+{% endblock %}

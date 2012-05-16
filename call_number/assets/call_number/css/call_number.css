@@ -1,0 +1,67 @@
+#browse-controls {
+ background-color: #F1ECE8;
+ height: 3em;
+ text-align: center;
+}
+
+#browse-controls div.full_view {
+  float: left;
+  padding-left: 25px;
+}
+
+#browse-controls div.next {
+  float: right;
+}
+
+#browse-controls div.previous {
+  float: left;
+}
+
+#call-number-browser {
+ background-color: #F1ECE8;
+ font-family: "Lucida Grande","Lucida Sans Unicode","Arial Unicode MS",Helvetica,sans-serif;
+}
+
+#call-number-browser h2 {
+ background: url('/static/call_number/img/browse-by-call-icon.png') left center no-repeat;
+ font-size: 1em;
+ font-weight: normal;
+ display: block;
+ margin-left: 5px;
+ margin-bottom: -10px;
+ padding-left: 20px;
+}
+
+body.app {
+ padding-top: 0px;
+}
+
+div.call-number-entity{
+ margin-bottom: -5px;
+ overflow: hidden;
+ white-space: nowrap;
+}
+
+#current-callnumber {
+ padding: 0 0 0 15px;
+ font-size: .8em;
+}
+
+#nearby-entities {
+  background-color: #FFFFFF;
+  box-shadow: 1px 1px 1px #666666;
+  font-size: .8em;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+#nearby-entities ol {
+  list-style: none outside none;
+}
+
+#nearby-entities li {
+  border-bottom: 1px dotted #666666;
+  margin-left: -2em;
+  margin-right: 5px;
+}
+

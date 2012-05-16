@@ -1,0 +1,21 @@
+@iconBackground: #FDDB55; 
+
+.rounded-corners (@radius: 5px) {
+ border-radius: @radius;
+ -webkit-border-radius: @radius;
+ -moz-border-radius: @radius;
+}
+
+div.app-icon {
+ background-color: @iconBackground;
+ .rounded-corners;
+ font-color: #FFFFFF;
+ font-size: .8em;
+ height: 32px;
+ text-align: center;
+ width: 32px;
+}
+
+div.app-icon img {
+  padding-top: 3px;
+}
