@@ -1,0 +1,14 @@
+{% load i18n %}
+<div class="modal hide fade" id="about_app_dlg">
+ <div class="modal-header">
+   <a class="close" data-dismiss="modal">×</a>
+   <h2>About {{ app.current_view.title }}</h2>
+ </div>
+ <div class="modal-body">
+  <img src="{{ STATIC_URL }}img/{{ app.icon_url }}" style="float:left">
+  <p>{{ app.description }}</p>
+ </div>
+ <div class="modal-footer">
+  <a href="#" onclick="$('#about_app_dlg').modal('hide')" class="btn btn-primary">{% trans 'Close' %}</a>
+ </div>
+</div>

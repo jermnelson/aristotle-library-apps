@@ -1,0 +1,68 @@
+@ActionBarColor: #4B6282;
+@ActionBarFont: 2em, NeoDraw, Verdana, sans-serif;
+@ActionBarShadowColor: #888;
+@FooterColor: #3F5164;
+@InstitutionLogo: '/static/img/cc-logo-gold.png';
+@PaneColor: #F1ECE5; 
+
+.rounded-corners (@radius: 5px) {
+  border-radius: @radius;
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  box-shadow: 5px 5px 2px @ActionBarShadowColor;
+}
+
+a.app-ico-float {
+  float: left;
+}
+
+.action-bar {
+  background-color: @ActionBarColor;
+  border-left: 1px solid white;
+  color: white; 
+  margin: .5em;
+  .rounded-corners;
+}
+
+div.action-bar h2 {
+  color: white !important;
+}  
+
+div.main-pane {
+ margin-top: .5em;
+}
+
+div.nav-action-bar {
+  .action-bar;
+}
+
+div.top-action-bar {
+
+}
+
+
+div.thumbnail-app {
+ background-color: @PaneColor;
+}
+
+
+
+div.footer-action-bar {
+ background-color: @FooterColor;
+ color: white;
+ .rounded-corners;
+ margin: .5em;
+ padding: .5em;
+}
+
+
+div.main-pane {
+  background-image: url('/static/img/cc-logo-gold.png');
+  background-repeat: no-repeat;
+  background-position: center bottom;
+}
+
+img.institution_logo {
+ float: right;
+ padding-top: .5em;
+}

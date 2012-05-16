@@ -1,0 +1,16 @@
+ <div class="row-fluid footer-action-bar">
+ {% block portfolio-btn %}
+ <div class="span2">
+ <a href="/apps/portfolio" class="btn"><i class="icon-th"></i>Apps</a>
+ </div>
+ {% endblock %}
+ {% block about-btn %}
+ <div class="span6">
+  <div class="btn-group">
+   <a href="#" class="btn" onclick="$('#about_app_dlg').modal('show')"><i class="icon-info-sign"></i> About</a>
+   <a href="/" class="btn"><i class="icon-home"></i> Home</a>
+   <a href="#" onclick="$('#help_app_dlg').modal('show')" class="btn"><i class="icon-question-sign"></i> Help</a>
+  </div>
+ </div>
+ {% endblock %}
+ </div>

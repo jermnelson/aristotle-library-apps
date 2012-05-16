@@ -1,0 +1,49 @@
+@ArticleColor: green;
+@DiscoveryLayerBackground: #1B3153;
+@DiscoveryLayerSearchBackground: #EEE9DA;
+
+body {
+//  background-color: @DiscoveryLayerBackground;
+  background-color: transparent;
+}
+
+div.article {
+}
+
+div.article a {
+  color: @ArticleColor;
+  font-weight: bold;
+}
+
+div.article ul {
+  color: @ArticleColor;
+  list-style-type: none;
+}
+
+div.article li {
+  display: inline;
+  margin-right: 1em;
+}
+
+div.search_base {
+  background:@DiscoveryLayerSearchBackground; 
+  border:4px solid white;
+}
+
+div.search_base form {
+  margin: 8px;
+}
+
+label.article {
+   font-size: 18px;
+}
+
+span.article {
+ color: @ArticleColor;
+ font-weight: bold;
+}
+
+ul.article {
+  display: inline;
+  font-weight: bold;
+}

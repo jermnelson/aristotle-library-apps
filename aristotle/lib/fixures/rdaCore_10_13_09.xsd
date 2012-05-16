@@ -1,0 +1,3263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:mml="http://www.w3.org/1998/Math/MathML"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+	elementFormDefault="qualified">
+
+<!-- NOTE: Schema shown here is a partial schema for best testing of content upload and download functionality only.
+	Schema is not meant for actual use and is incomplete. Live schemas for beta testing will be uploaded week of 
+	10/19/09 and dated accordingly. -->
+	
+	<!-- ======================================================================= -->
+	<!--  RDA Core Schema
+		CREATED FOR:
+		American Library Assocation (ALA)
+		50 E. Huron 
+		Chicago, IL 60611 
+		
+		CREATED BY:
+		Information Management Team (IMT), Inc.
+		
+		FOR ASSISTANCE:
+		Information Management Team (IMT), Inc.
+		West 4 Short Street
+		PO Box 217
+		Saint John, WA 99171
+		Phone: 509-648-4264
+		Fax: 509-271-2504
+		Contact: Nannette Naught (nnaught@imteaminc.com)
+		
+		Copyright  2009 American Library Association All rights reserved.  -->
+	<!-- ======================================================================= -->
+
+	<!-- ======================================================================= -->
+
+	<!-- ======================================================================= -->
+	<!--	Schema OUTLINE
+		The contents of the schema are organized as follows:
+			SCHEMA REVISION HISTORY
+			IMPORT OF OTHER NEEDED SCHEMA (call for special characters, etc.)
+			RDA RECORD & ITS CHILDREN, with annotations
+				frbrWork
+				frbrExpression
+				frbrManifestation
+				frbrItem
+				frbrPerson
+				frbrFamily
+				frbrCorporateBody
+				frbrConcept
+				frbrObject
+				frbrEvent
+				frbrPlace
+				fradName
+				frbrRelationships
+			RDA ELEMENTS & THIER CHILDREN (i.e., element types referenced in RDA Record)
+				rdaWork
+				rdaExpression
+				rdaManifestation
+				rdaItem
+				rdaPerson
+				rdaFamily
+				rdaCorporateBody
+				rdaConcept
+				rdaObject
+				rdaEvent
+				rdaPlace
+				rdaName
+				rdaRelationships
+		See RDA ERD available at www.rdaonline.org for a full visual detail of RDA entities and 
+		their relationships to FRBR entities.-->
+
+	<!-- ======================================================================= -->
+	<!-- SCHEMA REVISION HISTORY
+		7-11-2009  Initial Release v1.0 -->
+	<!-- ======================================================================= -->
+
+	<!-- ======================================================================= -->
+	<!--  IMPORT OF OTHER NEEDED SCHEMA, including special characters, xlinks, & 
+		namespaces -->
+	<!-- ======================================================================= -->
+	<xs:import namespace="http://www.w3.org/1998/Math/MathML"
+		schemaLocation="ncbi-mathml2/mathml2.xsd"/>
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+
+
+	<!-- ======================================================================= -->
+	<!--  RDA RECORD -->
+	<!-- ======================================================================= -->
+	<xs:element name="RDARecord">
+		<xs:complexType>
+			<xs:annotation id="rdar-1">
+				<xs:documentation>Root element of an RDA record.</xs:documentation>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="frbrWork" minOccurs="0" maxOccurs="1" type="rdaWork">
+					<xs:annotation id="rdar-2">
+						<xs:documentation>FRBR Group 1: Work Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrExpression" minOccurs="0" maxOccurs="1" type="rdaExpression">
+					<xs:annotation id="rdar-3">
+						<xs:documentation>FRBR Group 1: Expression Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrManifestation" minOccurs="0" maxOccurs="1" type="rdaManifestation">
+					<xs:annotation id="rdar-4">
+						<xs:documentation>FRBR Group 1: Manifestation Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrItem" minOccurs="0" maxOccurs="unbounded" type="rdaItem">
+					<xs:annotation id="rdar-5">
+						<xs:documentation>FRBR Group 1: Item Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrPerson" minOccurs="0" maxOccurs="unbounded" type="rdaPerson">
+					<xs:annotation id="rdar-6">
+						<xs:documentation>FRBR Group 2: Person Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrFamily" minOccurs="0" maxOccurs="unbounded" type="rdaFamily">
+					<xs:annotation id="rdar-7">
+						<xs:documentation>FRBR Group 2: Family Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrCorporateBody" minOccurs="0" maxOccurs="unbounded"
+					type="rdaCorporateBody">
+					<xs:annotation id="rdar-8">
+						<xs:documentation>FRBR Group 2: Corporate Body Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrConcept" minOccurs="0" maxOccurs="unbounded" type="rdaConcept">
+					<xs:annotation id="rdar-9">
+						<xs:documentation>FRBR Group 3: Concept Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrObject" minOccurs="0" maxOccurs="unbounded" type="rdaObject">
+					<xs:annotation id="rdar-10">
+						<xs:documentation>FRBR Group 3: Object Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrEvent" minOccurs="0" maxOccurs="unbounded" type="rdaEvent">
+					<xs:annotation id="rdar-11">
+						<xs:documentation>FRBR Group 3: Event Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrPlace" minOccurs="0" maxOccurs="unbounded" type="rdaPlace">
+					<xs:annotation id="rdar-12">
+						<xs:documentation>FRBR Group 3: Place Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="fradName" minOccurs="0" maxOccurs="1" type="rdaName">
+					<xs:annotation id="rdar-13">
+						<xs:documentation>FRAD Name Entity</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="frbrRelationships" minOccurs="0" maxOccurs="unbounded"
+					type="rdaRelationships">
+					<xs:annotation id="rdar-14">
+						<xs:documentation>FRBR Relationships</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<!-- ======================================================================= -->
+	<!--  RDA WORK -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaWork">
+		<xs:sequence>
+			<xs:annotation id="rdar-15">
+				<xs:documentation>RDA conceptualization of FRBR Group 1 Work Entity with accompanying RDA
+					elements, subelements, and vocabularies. Where RDA defines Work as: "A distinct
+					intellectual or artistic creation (i.e., the intellectual or artistic
+				content)"</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaCataloguersNote">
+				<xs:annotation id="rdar-16">
+					<xs:documentation>An annotation that might be helpful to those using or revising the
+						authorized access point representing an entity or relationship data, or creating an
+						authorized access point representing a related entity.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaCoordinatesOfCartographicContent">
+				<xs:annotation id="rdar-17">
+					<xs:documentation>A mathematical system for identifying the area covered by the
+						cartographic content of a resource. Coordinates may be expressed by means of longitude
+						and latitude on the surface of planets or by the angles of right ascension and
+						declination for celestial charts.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaLongitudeAndLatitude">
+							<xs:annotation id="rdar-18">
+								<xs:documentation>A system for identifying the area covered by the cartographic
+									content of a resource using longitude of the westernmost and easternmost
+									boundaries and latitude of the northernmost and southernmost
+								boundaries.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaStringsOfCoordinatePairs">
+							<xs:annotation id="rdar-19">
+								<xs:documentation>A system for identifying the precise area covered by the
+									cartographic content of a resource using coordinates for each vertex of a
+								polygon.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaRightAscensionAndDeclination">
+							<xs:annotation id="rdar-20">
+								<xs:documentation>A system for identifying the location of a celestial object in the
+									sky covered by the cartographic content of a resource using the angles of right
+									ascension and declination.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaCoverageOfTheContent">
+				<xs:annotation id="rdar-21">
+					<xs:documentation>The chronological or geographic coverage of the content of a
+					resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaDateOfWork">
+				<xs:annotation id="rdar-22">
+					<xs:documentation>The earliest date associated with a work.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaDissertationorThesisInformation">
+				<xs:annotation id="rdar-23">
+					<xs:documentation>Information relating to a work presented as part of the formal
+						requirements for an academic degree.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaYearDegreeGranted">
+							<xs:annotation id="rdar-24">
+								<xs:documentation>The calendar year in which a granting institution or faculty
+									conferred an academic degree on a candidate.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaGrantingInstitutionorFaculty">
+							<xs:annotation id="rdar-25">
+								<xs:documentation>An institution or faculty conferring an academic degree on a
+									candidate.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaAcademicDegree">
+							<xs:annotation id="rdar-26">
+								<xs:documentation>A rank conferred as a guarantee of academic
+								proficiency.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaEpoch">
+				<xs:annotation id="rdar-27">
+					<xs:documentation>An arbitrary moment in time to which measurements of position for a body
+						or orientation for an orbit are referred.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaEquinox">
+				<xs:annotation id="rdar-28">
+					<xs:documentation>One of two points of intersection of the ecliptic and the celestial
+						equator, occupied by the sun when its declination is 0°.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaFormOfWork">
+				<xs:annotation id="rdar-29">
+					<xs:documentation>A class or genre to which a work belongs.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaHistoryOfTheWork">
+				<xs:annotation id="rdar-30">
+					<xs:documentation>Information pertaining to the history of a work.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaIdentifierForTheWork">
+				<xs:annotation id="rdar-31">
+					<xs:documentation>A character string uniquely associated with a work, or with a surrogate
+						for a work (e.g., an authority record), that serves to differentiate that work from
+						other works.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaIntendedAudience">
+				<xs:annotation id="rdar-32">
+					<xs:documentation>The class of user for which the content of a resource is intended, or
+						for whom the content is considered suitable, as defined by age group (e.g., children,
+						young adults, adults, etc.), educational level (e.g., primary, secondary, etc.), type of
+						disability, or other categorization.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaKey">
+				<xs:annotation id="rdar-33">
+					<xs:documentation>The set of pitch relationships that establishes the tonal centre, or
+						principal tonal centre, for a musical work. Key is designated by its pitch name and its
+						mode, when it is major or minor.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaMediumOfPerformance">
+				<xs:annotation id="rdar-34">
+					<xs:documentation>The instrument, instruments, voice, voices, etc., for which a musical
+						work was originally conceived.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAMediumOfPerformance">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="AccompanimentForSongsLiederetc_Accompanied"/>
+										<xs:enumeration value="AccompanimentForSongsLiederetc_Accompanied"/>
+										<xs:enumeration value="AccompanimentForSongsLiederetc_Unaccompanied"/>
+										<xs:enumeration value="Choruses_MensVoices"/>
+										<xs:enumeration value="Choruses_MixedVoices"/>
+										<xs:enumeration value="Choruses_UnisonVoices"/>
+										<xs:enumeration value="Choruses_WomensVoices"/>
+										<xs:enumeration value="GroupsOfInstruments_Brasses"/>
+										<xs:enumeration value="GroupsOfInstruments_Instrumental[stringwindetc.]Ensemble"/>
+										<xs:enumeration value="GroupsOfInstruments_KeyboardInstrument"/>
+										<xs:enumeration value="GroupsOfInstruments_Percussion"/>
+										<xs:enumeration value="GroupsOfInstruments_PluckedInstrument"/>
+										<xs:enumeration value="GroupsOfInstruments_Strings"/>
+										<xs:enumeration value="GroupsOfInstruments_Winds"/>
+										<xs:enumeration value="GroupsOfInstruments_Woodwinds"/>
+										<xs:enumeration value="IndividualInstruments_Continuo"/>
+										<xs:enumeration value="IndividualInstruments_KeyboardInstruments"/>
+										<xs:enumeration value="IndividualInstruments_Organs(2)"/>
+										<xs:enumeration value="IndividualInstruments_Piano"/>
+										<xs:enumeration value="IndividualInstruments_Piano4Hands"/>
+										<xs:enumeration value="IndividualInstruments_Pianos(2)"/>
+										<xs:enumeration value="IndividualInstruments_Pianos(2)8Hands"/>
+										<xs:enumeration value="Orchestraetc._Band"/>
+										<xs:enumeration value="Orchestraetc._Orchestra"/>
+										<xs:enumeration value="Orchestraetc._StringOrchestra"/>
+										<xs:enumeration value="SoloVoices_Alto"/>
+										<xs:enumeration value="SoloVoices_Baritone"/>
+										<xs:enumeration value="SoloVoices_Bass"/>
+										<xs:enumeration value="SoloVoices_Mezzo-Soprano"/>
+										<xs:enumeration value="SoloVoices_Soprano"/>
+										<xs:enumeration value="SoloVoices_Tenor"/>
+										<xs:enumeration value="StandardCombination_PianoStrings">
+											<xs:annotation id="rdar-50">
+												<xs:documentation>Standard combination: piano trio; instrumentation: piano,
+													violin, violoncello. Standard combination: piano quartet; instrumentation:
+													piano, violin, viola, violoncello. Standard combination: piano quintet;
+													instrumentation: piano, 2 violins, viola, violoncello.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="StandardCombination_Strings">
+											<xs:annotation id="rdar-51">
+												<xs:documentation>Standard combination: string trio; instrumentation:
+													violin, viola, violoncello. Standard combination: string quartet;
+													instrumentation: 2 violins, viola, violoncello.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="StandardCombination_Winds">
+											<xs:annotation id="rdar-52">
+												<xs:documentation>Standard combination: woodwind quartet; instrumentation:
+													flute, oboe, clarinet, horn, bassoon.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="StandardCombination_Woodwinds">
+											<xs:annotation id="rdar-53">
+												<xs:documentation>Standard combination: flute, oboe, clarinet,
+												bassoon.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="TwoorMoreSoloVoices_MensSoloVoices"/>
+										<xs:enumeration value="TwoorMoreSoloVoices_MixedSoloVoices"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaNatureOfTheContent">
+				<xs:annotation id="rdar-35">
+					<xs:documentation>The specific character of the primary content of a resource (e.g., legal
+						articles, interim report).</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaNumericDesignationOfAMusicalWork">
+				<xs:annotation id="rdar-36">
+					<xs:documentation>A serial number, opus number, or thematic index number assigned to a
+						musical work by a composer, publisher, or a musicologist.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaOtherDistinguishingCharacteristicOfTheWork">
+				<xs:annotation id="rdar-37">
+					<xs:documentation>A characteristic other than form of work, date of work, or place of
+						origin of the work that serves to differentiate a work from another work with the same
+						title or from the name of a person, family, or corporate body.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaPlaceOfOriginOfTheWork">
+				<xs:annotation id="rdar-38">
+					<xs:documentation>The country or other territorial jurisdiction from which a work
+						originated.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSignatorytoATreatyetc.">
+				<xs:annotation id="rdar-39">
+					<xs:documentation>A government or other party that has formally signed a treaty, etc., as
+						an adherent to its terms and conditions.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSourceConsulted">
+				<xs:annotation id="rdar-40">
+					<xs:documentation>A resource used in determining the name, title, or other identifying
+						attributes of an entity, or in determining the relationship between
+					entities.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaStatusOfIdentification">
+				<xs:annotation id="rdar-41">
+					<xs:documentation>An indication of the level of authentication of the data identifying an
+						entity.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAStatusOfIdentification">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="FullyEstablished"/>
+										<xs:enumeration value="Preliminary"/>
+										<xs:enumeration value="Provisional"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSystemOfOrganization">
+				<xs:annotation id="rdar-42">
+					<xs:documentation>A system of arranging materials in an archival resource or a
+					collection.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaTitleOfWork">
+				<xs:annotation id="rdar-43">
+					<xs:documentation>A word, character, or group of words and/or characters by which a work
+						is known.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaPreferredTitleForTheWork">
+							<xs:annotation id="rdar-44">
+								<xs:documentation>The title or form of title chosen as the basis for the authorized
+									access point representing that work.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaVariantTitleForTheWork">
+							<xs:annotation id="rdar-45">
+								<xs:documentation>A title or form of title by which a work is known that differs
+									from the title or form of title chosen as the preferred title for the
+								work.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:ID"/>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA EXPRESSION -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaExpression">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 1 Expression Entity with accompanying
+					RDA elements, subelements, and vocabularies. Where RDA defines Expression as: "The
+					intellectual or artistic realization of a work in the form of alpha-numeric, musical or
+					choreographic notation, sound, image, object, movement, etc., or any combination of such
+					forms."</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaAccessibilityContent">
+				<xs:annotation id="rdar-54">
+					<xs:documentation>Content that assists those with a sensory impairment in the greater
+						understanding of content which their impairment prevents them fully seeing or
+					hearing.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaArtisticAndorTechnicalCredit">
+				<xs:annotation id="rdar-55">
+					<xs:documentation>A listing of persons, families, or corporate bodies making contributions
+						to the artistic and/or technical production of a motion picture or video recording other
+						than as performers, narrators, or presenters.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaAspectRatio">
+				<xs:annotation id="rdar-56">
+					<xs:documentation>The ratio of the width to the height of a moving
+					image.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAAspectRatio">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="RDAFullScreen"/>
+										<xs:enumeration value="RDAMixed"/>
+										<xs:enumeration value="RDAWideScreen"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaCataloguersNote">
+				<xs:annotation id="rdar-57">
+					<xs:documentation>An annotation that might be helpful to those using or revising the
+						authorized access point representing an entity or relationship data, or creating an
+						authorized access point representing a related entity.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaColourContent">
+				<xs:complexType>
+					<xs:annotation id="rdar-58">
+						<xs:documentation>The presence of colour, tone, etc., in the content of a resource.
+							Colour content is also the specific colours, tones, etc., (including black and white)
+							present in the content of a resource.</xs:documentation>
+					</xs:annotation>
+					<xs:sequence>
+						<xs:element name="rdaColorOfThree-DimensionalForm">
+							<xs:annotation id="rdar-59">
+								<xs:documentation>The presence of colour, tone, etc., in a three-dimensional form or
+									forms contained in a resource. Colour of three-dimensional form is also the
+									specific colours, tones, etc., (including black and white) present in a
+									three-dimensional form or forms contained in a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAColorOfThree-DimensionalForm">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="BlackAndWhite"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaColourOfContentOfResourceDesignedForPersonsWIthVisualImpairments">
+							<xs:annotation id="rdar-60">
+								<xs:documentation>The presence of colour, tone, etc., in a resource designed for
+									persons with visual impairments. Colour content of a resource designed for persons
+									with visual impairments is also the specific colours, tones, etc., (excluding
+									black and white) present in a resource designed for persons with visual
+									impairments.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="rdaColourOfMovingImage">
+							<xs:annotation id="rdar-61">
+								<xs:documentation>The presence of colour, tone, etc., in a moving image or images
+									contained in a resource. Colour of moving image is also the specific colours,
+									tones, etc., (including black and white) present in a moving image or images
+									contained in a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAColourOfMovingImage">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="BlackAndWhite"/>
+													<xs:enumeration value="Sepia"/>
+													<xs:enumeration value="Tinted"/>
+													<xs:enumeration value="TintedAndToned"/>
+													<xs:enumeration value="Toned"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaColourOfStillImage">
+							<xs:annotation id="rdar-62">
+								<xs:documentation>The presence of colour, tone, etc., in a still image or images
+									contained in a resource. Colour of still image is also the specific colours,
+									tones, etc., (including black and white) present in a still image or images
+									contained in a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAColourOfStillImage">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="BlackAndWhite"/>
+													<xs:enumeration value="GrayScale"/>
+													<xs:enumeration value="Sepia"/>
+													<xs:enumeration value="Tinted"/>
+													<xs:enumeration value="TintedAndToned"/>
+													<xs:enumeration value="Toned"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaContentType">
+				<xs:annotation id="rdar-63">
+					<xs:documentation>A categorization reflecting the fundamental form of communication in
+						which the content is expressed and the human sense through which it is intended to be
+						perceived. For content expressed in the form of an image or images, content type also
+						reflects the number of spatial dimensions in which the content is intended to be
+						perceived and the perceived presence or absence of movement.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAContentType">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="CartographicDataset">
+											<xs:annotation id="rdar-64">
+												<xs:documentation>Cartographic content expressed through a digitally encoded
+													dataset intended to be processed by a computer. For cartographic data
+													intended to be perceived in the form of an image or three-dimensional
+													form, see Cartographic Image, Cartographic Moving Image, Cartographic
+													Tactile Image, Cartographic Tactile Three-Dimensional Form, and
+													Cartographic Three-Dimensional Form.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="CartographicImage">
+											<xs:annotation id="rdar-65">
+												<xs:documentation>Cartographic content expressed through line, shape,
+													shading, etc., intended to be perceived visually as a still image or
+													images in two dimensions. Includes maps, views, atlases, remote-sensing
+													images, etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="CartographicMovingImage">
+											<xs:annotation id="rdar-66">
+												<xs:documentation>Cartographic content expressed through images intended to
+													be perceived as moving, in two dimensions. Includes satellite images of
+													the Earth or other celestial bodies in motion.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="CartographicTactileImage">
+											<xs:annotation id="rdar-67">
+												<xs:documentation>Cartographic content expressed through line, shape, and/or
+													other forms, intended to be perceived through touch as a still image in
+													two dimensions.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="CartographicTactileThree-DimensionalForm">
+											<xs:annotation id="rdar-68">
+												<xs:documentation>Cartographic content expressed through a form or forms
+													intended to be perceived through touch as a three-dimensional form or
+													forms.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="CartographicThree-DimensionalForm">
+											<xs:annotation id="rdar-69">
+												<xs:documentation>Cartographic content expressed through a form or forms
+													intended to be perceived visually in three-dimensions. Includes globes,
+													relief models, etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="ComputerDataset">
+											<xs:annotation id="rdar-70">
+												<xs:documentation>Content expressed through a digitally encoded dataset
+													intended to be processed by a computer. Includes numeric data,
+													environmental data, etc., used by applications software to calculate
+													averages, correlations, etc., or to produce models, etc., but not normally
+													displayed in its raw form.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="ComputerProgram">
+											<xs:annotation id="rdar-71">
+												<xs:documentation>Content expressed through digitally encoded instructions
+													intended to be processed and performed by a computer. Includes operating
+													systems, applications software, etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="NotatedMovement">
+											<xs:annotation id="rdar-72">
+												<xs:documentation>Content expressed through a form of notation for movement
+													intended to be perceived visually. Includes all forms of movement
+													notation, notation other than those intended to be perceived through
+													touch.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="NotatedMusic">
+											<xs:annotation id="rdar-73">
+												<xs:documentation>Content expressed through a form of musical notation
+													intended to be perceived visually. Includes all forms of musical notation,
+													other than those intended to be perceived through
+												touch.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Other">
+											<xs:annotation id="rdar-74">
+												<xs:documentation/>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="PerformedMusic">
+											<xs:annotation id="rdar-75">
+												<xs:documentation>Content expressed through music in an audible form.
+													Includes recorded performances of music, computer-generated music,
+												etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Sounds">
+											<xs:annotation id="rdar-76">
+												<xs:documentation>Content other than language or music, expressed in an
+													audible form. Includes natural sounds, artificially produced sounds,
+												etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="SpokenWord">
+											<xs:annotation id="rdar-77">
+												<xs:documentation>Content expressed through language in an audible form.
+													Includes recorded readings, recitations, speeches, interviews, oral
+													histories, etc., computergenerated speech, etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="StillImage">
+											<xs:annotation id="rdar-78">
+												<xs:documentation>Content expressed through line, shape, shading, etc.,
+													intended to be perceived visually in two dimensions. Includes drawings,
+													paintings, diagrams, photographic images (stills), etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="TactileImage">
+											<xs:annotation id="rdar-79">
+												<xs:documentation>Content expressed through line, shape, and/or other forms,
+													intended to be perceived through touch as a still image in two
+												dimensions.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="TactileNotatedMovement">
+											<xs:annotation id="rdar-80">
+												<xs:documentation>Content expressed through a form of notation for movement
+													intended to be perceived through touch.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="TactileNotatedMusic">
+											<xs:annotation id="rdar-81">
+												<xs:documentation>Content expressed through a form of musical notation
+													intended to be perceived through touch. Includes braille music and other
+													tactile forms of musical notation.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="TactileText">
+											<xs:annotation id="rdar-82">
+												<xs:documentation>Content expressed through a form of notation for language
+													intended to be perceived through touch. Includes braille text and other
+													tactile forms of language notation.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="TactileThree-DimensionalForm">
+											<xs:annotation id="rdar-83">
+												<xs:documentation>Content expressed though a form or forms intended to be
+													perceived through touch as a three- dimensional form or
+												forms.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Text">
+											<xs:annotation id="rdar-84">
+												<xs:documentation>Content expressed through a form of notation for language
+													intended to be perceived visually. Includes all forms of language notation
+													other than those intended to be perceived though touch.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Three-DimensionalForm">
+											<xs:annotation id="rdar-85">
+												<xs:documentation>Content expressed through a form or forms intended to be
+													perceived visually in three-dimensions. Includes sculptures, models,
+													naturally occurring objects and specimens, holograms,
+												etc.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Three-DimensionalMovingImage">
+											<xs:annotation id="rdar-86">
+												<xs:documentation>Content expressed through images intended to be perceived
+													as moving, in three-dimensions. Includes 3-D motion pictures (using live
+													action and/or animation), 3-D video games, etc. Three-dimensional moving
+													images may or may not be accompanied by sound.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Two-DimensionalMovingImage">
+											<xs:annotation id="rdar-87">
+												<xs:documentation>Content expressed through images intended to be perceived
+													as moving, in two dimensions. Includes motion pictures (using live action
+													and/or animation), film and video recordings of performances, events,
+													etc., other than those intended to be perceived in three dimensions.
+													Moving images may or may not be accompanied by sound.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Unspecified">
+											<xs:annotation id="rdar-88">
+												<xs:documentation/>
+											</xs:annotation>
+										</xs:enumeration>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaDateOfExpression">
+				<xs:annotation id="rdar-89">
+					<xs:documentation>The earliest date associated with an expression.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaDuration">
+				<xs:annotation id="rdar-90">
+					<xs:documentation>The playing time, running time, etc., of the content of a resource.
+						Duration also includes performance time for a resource containing notated music or
+						notated movement.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaFormOfNotation">
+				<xs:annotation id="rdar-91">
+					<xs:documentation>A set of characters and/or symbols used to express the content of a
+						resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaFormOfNotatedMovement">
+							<xs:annotation id="rdar-92">
+								<xs:documentation>A set of characters and/or symbols used to express the movement
+									content of a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAFormOfNotatedMovement">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="ActionStrokeDanceNotation"/>
+													<xs:enumeration value="Beauchamp-FeuilletNotation"/>
+													<xs:enumeration value="BeneshMovementNotation"/>
+													<xs:enumeration value="DanceWriting"/>
+													<xs:enumeration value="Eshkol-WochmanMovementNotation"/>
+													<xs:enumeration value="GamePlayNotation"/>
+													<xs:enumeration value="KinetographyLaban"/>
+													<xs:enumeration value="Labanotation"/>
+													<xs:enumeration value="StepanoyDanceNotation"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaaFormOfMusicalNotation">
+							<xs:annotation id="rdar-93">
+								<xs:documentation>A set of characters and/or symbols used to express the musical
+									content of a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAFormOfMusicalNotation">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="GraphicNotation">
+														<xs:annotation id="rdar-135">
+															<xs:documentation>A form of musical notation that uses various
+																suggestive lines, symbols, colour, etc., to prompt or guide the
+																performers. It is used for music that is indeterminate in pitch,
+																duration, temperament, etc., and also to depict electronic music in
+																which no performer is involved.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LetterNotation">
+														<xs:annotation id="rdar-136">
+															<xs:documentation>Musical notation that uses the letters of the
+																alphabet to designate pitches.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="MensuralNotation">
+														<xs:annotation id="rdar-137">
+															<xs:documentation>A system of notating duration, beginning around 1260
+																and continuing through about 1600, employing four principal
+																note-values and associated rests: long, breve, semibreve, and
+															minim.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="NeumatieNotation">
+														<xs:annotation id="rdar-138">
+															<xs:documentation>A system of musical notation using neumes, i.e.,
+																graphic signs that represent essentially the movement in pitch of a
+																melody.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="NumberNotation">
+														<xs:annotation id="rdar-139">
+															<xs:documentation>A system of musical notation conveying pitch by use
+																of numbers, assigned to the notes of a scale, the keys of a
+																keyboard, the finger positions or frets of a string instrument, or
+																to the holes or valves of a wind instrument.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Solmization">
+														<xs:annotation id="rdar-140">
+															<xs:documentation>The designation of pitches by means of conventional
+																syllables rather than letter names.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="StaffNotation">
+														<xs:annotation id="rdar-141">
+															<xs:documentation>A system of musical notation in wide use for Western
+																art music, conveying pitch and duration using a staff of multiple
+																parallel lines (in 15th- to 21st-century music, usually five lines)
+																often in combination with other staves.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Tablature">
+														<xs:annotation id="rdar-142">
+															<xs:documentation>Any notational system from 1300 or later that uses
+																letters, numbers or other signs as an alternative to conventional
+																staff notation.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TonicSol-fa">
+														<xs:annotation id="rdar-143">
+															<xs:documentation>A system of musical notation that replaces staff
+																notation with sol-fa syllables or their initials.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaFormOfTactileNotation">
+							<xs:annotation id="rdar-94">
+								<xs:documentation>A set of characters and/or symbols used to express the content of
+									a resource in a form that can be perceived through touch.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAFormOfTactileNotation">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="BrailleCode">
+														<xs:annotation id="rdar-146">
+															<xs:documentation>A form of tactile notation for text using embossed
+																characters formed by raised dots in six-dot
+															cells.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="ComputingBrailleCode"/>
+													<xs:enumeration value="MathematicalBrailleCode"/>
+													<xs:enumeration value="ModeCode">
+														<xs:annotation id="rdar-147">
+															<xs:documentation>A tactile alphabet based on simplified letter forms,
+																for use by the visually impaired.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="MusicBrailleCode"/>
+													<xs:enumeration value="TactileGraphic"/>
+													<xs:enumeration value="TactileMusicalNotation"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="Script">
+							<xs:annotation id="rdar-95">
+								<xs:documentation>A set of characters and/or symbols used to express the written
+									language content of a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaFormatOfNotatedMusic">
+				<xs:annotation id="rdar-96">
+					<xs:documentation>The musical or physical layout of the content of a resource that is
+						presented in the form of musical notation.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAFormatOfNotatedMusic">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="ChoirBook">
+											<xs:annotation id="rdar-97">
+												<xs:documentation>A large music book made to be placed on a stand in front
+													of a choir. Each part is notated separately, usually in the configuration
+													that presents, when the book is open, the soprano and tenor parts on the
+													verso of a leaf, and the alto and bass parts on the recto of the next
+													leaf.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="ChorusScore">
+											<xs:annotation id="rdar-98">
+												<xs:documentation>A score of a work for solo voices and chorus showing only
+													the parts for chorus, at least in those portions of the work in which the
+													chorus sings, with the instrumental accompaniment either arranged for one
+													or two keyboard instruments or omitted.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="CondensedScore">
+											<xs:annotation id="rdar-99">
+												<xs:documentation>A score in which the number of staves is reduced to two or
+													a few, generally organized by instrumental sections, and often with cues
+													for individual parts. Used for: Reduced score, Short
+												score.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Part">
+											<xs:annotation id="rdar-100">
+												<xs:documentation>One of the units into which a resource has been divided by
+													the publisher, manufacturer, etc. It is distinguished from a fascicle by
+													being a formal component unit rather than a temporary division of a
+													resource. 2. In the context of notated music, a component consisting of
+													the music for the use of one or more, but not all,
+												performers.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="PianoConductorPart">
+											<xs:annotation id="rdar-101">
+												<xs:documentation>A performance part for a piano performer in an ensemble,
+													with cues for the other instruments that enable the performer of that part
+													also to conduct.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="PianoScore">
+											<xs:annotation id="rdar-102">
+												<xs:documentation>A reduction of an instrumental work or a vocal work with
+													instruments to a version for piano. May include the words of a vocal
+												work.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Score">
+											<xs:annotation id="rdar-103">
+												<xs:documentation>Graphical, symbolic, or word-based musical notation
+													representing the sounds of all the parts of an ensemble or a work for solo
+													performer or electronic media. Do not confuse with
+												Part.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="StudyScore">
+											<xs:annotation id="rdar-104">
+												<xs:documentation>A score issued in a musical image of reduced size, not
+													primarily intended for use in performance. A descriptive phrase such as
+													"Study score", "Miniature score", "Taschenpartitur", "Partition de poche",
+													etc., usually appears on the resource.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="TableBook">
+											<xs:annotation id="rdar-105">
+												<xs:documentation>A music book made to be placed on a table and displayed in
+													such a way that the performers can read their parts while seated or
+													standing across or around the table. Each part is notated separately,
+													usually in a configuration that presents, when the book is open, different
+													parts in inverted and/or perpendicular positions.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="ViolinConductorPart">
+											<xs:annotation id="rdar-106">
+												<xs:documentation>A performance part for a violin performer in an ensemble,
+													with cues for the other instruments that enable the performer of that part
+													also to conduct.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="VocalScore">
+											<xs:annotation id="rdar-107">
+												<xs:documentation>A score showing all vocal parts, with accompaniment
+													arranged for one or two keyboard instruments.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaIdentifierForTheExpression">
+				<xs:annotation id="rdar-108">
+					<xs:documentation>A character string uniquely associated with an expression, or with a
+						surrogate for an expression (e.g., an authority record), that serves to differentiate
+						that expression from other expressions.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaIllustrativeContent">
+				<xs:annotation id="rdar-109">
+					<xs:documentation>Content designed to illustrate the primary content of a
+					resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAIllustrativeContent">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Charts">
+											<xs:annotation id="rdar-110">
+												<xs:documentation>1. Two-dimensional representations of data in graphic or
+													tabular form (e.g., a wall chart). 2. Maps designed primarily for
+													navigation through water, air, or space.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="CoatsOfArms"/>
+										<xs:enumeration value="Facsimilies">
+											<xs:annotation id="rdar-148">
+												<xs:documentation>Reproductions simulating the physical appearance of the
+													original in addition to reproducing its content
+												exactly.</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Forms"/>
+										<xs:enumeration value="GenealogicalTables"/>
+										<xs:enumeration value="Graphs"/>
+										<xs:enumeration value="Illuminations"/>
+										<xs:enumeration value="Illustration"/>
+										<xs:enumeration value="Illustrations"/>
+										<xs:enumeration value="Maps">
+											<xs:annotation id="rdar-111">
+												<xs:documentation>Representations, normally to scale and on a
+													two-dimensional medium, of a selection of material or abstract features
+													on, or in relation to, the surface of Earth, another celestial body, or an
+													imaginary place. See also Cartographic image, Chart .</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="Music"/>
+										<xs:enumeration value="Photographs"/>
+										<xs:enumeration value="Plans"/>
+										<xs:enumeration value="Portraits"/>
+										<xs:enumeration value="Samples"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaLanguageOfExpression">
+				<xs:annotation id="rdar-112">
+					<xs:documentation>A language in which a work is expressed.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaLanguageOfTheContent">
+				<xs:annotation id="rdar-113">
+					<xs:documentation>A language used to express the content of a resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaMediumOfPerformanceOfMusicalContent">
+				<xs:annotation id="rdar-114">
+					<xs:documentation>The instrument, instruments, voice, voices, etc., used (or intended to
+						be used) for performance of musical content.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaOtherDetailsOfCartographicContent">
+				<xs:annotation id="rdar-115">
+					<xs:documentation>Mathematical data and other features of the cartographic content of a
+						resource not recorded in statements of scale, projection, and
+					coordinates.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaOtherDistinguishingCharacteristicOfTheExpression">
+				<xs:annotation id="rdar-116">
+					<xs:documentation>A characteristic other than content type, language of expression, or
+						date of expression that serves to differentiate an expression from another expression of
+						the same work.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAOtherDistinguishingCharacteristicOfTheExpression">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Selections"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="RDAOtherDistinguishingCharacteristicOfTheExpressionOfALegalWork">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Protocolsetc."/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="RDAOtherDistinguishingCharacteristicOfTheExpressionOfAMusicalWork">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Arranged"/>
+										<xs:enumeration value="ChorusScores"/>
+										<xs:enumeration value="Librettos"/>
+										<xs:enumeration value="Sketches"/>
+										<xs:enumeration value="Text"/>
+										<xs:enumeration value="Texts"/>
+										<xs:enumeration value="VocalScores"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute
+								name="RDAOtherDistinguishingCharacteristicOfTheExpressionOfAReligiousWork">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Confraternity"/>
+										<xs:enumeration value="Douai"/>
+										<xs:enumeration value="Selections"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaPerformerNarratorAndorPresenter">
+				<xs:annotation id="rdar-117">
+					<xs:documentation>A person, family, or corporate body responsible for performing,
+						narrating, and/or presenting a work.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaPlaceAndDateOfCapture">
+				<xs:annotation id="rdar-118">
+					<xs:documentation>The place and date associated with the capture (i.e., recording,
+						filming, etc.) of the content of a resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaDateOfCapture">
+							<xs:annotation id="rdar-119">
+								<xs:documentation>A date or range of dates associated with the capture (i.e.,
+									recording, filming, etc.) of the content of a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaPlaceOfCapture">
+							<xs:annotation id="rdar-120">
+								<xs:documentation>The place associated with the capture (i.e., recording, filming,
+									etc.) of the content of a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaProjectionOfCartographicContent">
+				<xs:annotation id="rdar-121">
+					<xs:documentation>The method or system used to represent the surface of the Earth or of a
+						celestial sphere on a plane.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaScale">
+				<xs:annotation id="rdar-122">
+					<xs:documentation>The ratio of the dimensions of an image or three-dimensional form
+						contained or embodied in a resource to the dimensions of the entity it
+					represents.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaAdditionalScaleInformation">
+							<xs:annotation id="rdar-123">
+								<xs:documentation>Supplemental information pertaining to scale such as a statement
+									of comparative measures or limitation of the scale to particular parts of the
+									content of a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaHorizontalScaleOfCartographicContent">
+							<xs:annotation id="rdar-124">
+								<xs:documentation>The ratio of horizontal distances in the cartographic content of a
+									resource to the actual distances they represent.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaScaleOfStillImageorThree-DimensionalForm">
+							<xs:annotation id="rdar-125">
+								<xs:documentation>The ratio of the dimensions of a still image or three-dimensional
+									form contained or embodied in a resource to the dimensions of the entity it
+									represents.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaVerticalScaleOfCartographicContent">
+							<xs:annotation id="rdar-126">
+								<xs:documentation>The scale of elevation or vertical dimension of the cartographic
+									content of a resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSoundContent">
+				<xs:annotation id="rdar-127">
+					<xs:documentation>The presence of sound in a resource other than one that consists
+						primarily of recorded sound.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDASoundContent">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Silent"/>
+										<xs:enumeration value="Sound"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSourceConsulted">
+				<xs:annotation id="rdar-128">
+					<xs:documentation>A resource used in determining the name, title, or other identifying
+						attributes of an entity, or in determining the relationship between
+					entities.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaStatusOfIdentification">
+				<xs:annotation id="rdar-129">
+					<xs:documentation>An indication of the level of authentication of the data identifying an
+						entity.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAStatusOfIdentification">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="FullyEstablished"/>
+										<xs:enumeration value="Preliminary"/>
+										<xs:enumeration value="Provisional"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSummarizationOfTheContent">
+				<xs:annotation id="rdar-130">
+					<xs:documentation>An abstract, summary, synopsis, etc., of the content of a
+					resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSupplementaryContent">
+				<xs:annotation id="rdar-131">
+					<xs:documentation>Content (e.g., an index, a bibliography, an appendix) designed to
+						supplement the primary content of a resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA MANIFESTATION -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaManifestation">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 1 Manifestation Entity with
+					accompanying RDA elements, subelements, and vocabularies. Where RDA defines Manifestation
+					as: "The physical embodiment of an expression of a work."</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaAppliedMaterial"/>
+			<xs:element name="rdaCarrierType"/>
+			<xs:element name="rdaCopyrightDate"/>
+			<xs:element name="rdaDistributionStatement"/>
+			<xs:element name="rdaExtent"/>
+		    <xs:element name="rdaEditionStatement"/>
+		    <xs:element name="rdaEditionStatement"/>
+		    <xs:element name="rdaIdentifierForTheManifestation"/>
+		    <xs:element name="rdaManufactureStatement"/>
+		    <xs:element name="rdaNumberOfSerials"/>
+		    <xs:element name="rdaPublicationStatement"/>
+		    <xs:element name="rdaSeriesStatement"/>
+		    <xs:element name="rdaStatementOfResponsibility"/>
+		    <xs:element name="rdaTitle"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA ITEM -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaItem">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 1 Item Entity with accompanying RDA
+					elements, subelements, and vocabularies. Where RDA defines Item as: "A single exemplar or
+					instance of a manifestation."</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaContactInformation">
+				<xs:annotation id="rdar-150">
+					<xs:documentation>Information relating to an organization, etc., from which a resource may
+						be obtained.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaCustodialHistoryOfItem">
+				<xs:annotation id="rdar-151">
+					<xs:documentation>A record of previous ownership or custodianship of an
+					item.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaDimensions">
+				<xs:annotation id="rdar-152">
+					<xs:documentation>The measurements of the carrier or carriers and/or the container of a
+						resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaDimensionsOfAMapetc.">
+							<xs:annotation id="rdar-153">
+								<xs:documentation>The measurements of the face of a map, etc.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaDimensionsOfStillImage">
+							<xs:annotation id="rdar-154">
+								<xs:documentation>The measurements of the pictorial area of a still
+								image.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaExtent">
+				<xs:annotation id="rdar-155">
+					<xs:documentation>The number and type of units and/or subunits making up a
+					resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaExtentOfCartographicResource">
+							<xs:annotation id="rdar-156">
+								<xs:documentation>The number and type of units and/or subunits making up a
+									cartographic resource.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAExtentOfCartographicResource">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="Atlas">
+														<xs:annotation id="rdar-180">
+															<xs:documentation>A volume of maps or other cartographic content, with
+																or without descriptive text.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Atlases">
+														<xs:annotation id="rdar-181">
+															<xs:documentation>Volumes of maps or other cartographic content, with
+																or without descriptive text.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Diagram"/>
+													<xs:enumeration value="Diagrams"/>
+													<xs:enumeration value="Globe">
+														<xs:annotation id="rdar-182">
+															<xs:documentation>A depiction of the Earth or other celestial body
+																(real or imaginary) on the surface of a sphere.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Globes">
+														<xs:annotation id="rdar-183">
+															<xs:documentation>Depictions of the Earth or other celestial body
+																(real or imaginary) on the surface of a sphere.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Map">
+														<xs:annotation id="rdar-184">
+															<xs:documentation>A representation, normally to scale and on a
+																two-dimensional medium, of a selection of material or abstract
+																features on, or in relation to, the surface of Earth, another
+																celestial body, or an imaginary place.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Maps">
+														<xs:annotation id="rdar-185">
+															<xs:documentation>Representations, normally to scale and on a
+																two-dimensional medium, of a selection of material or abstract
+																features on, or in relation to, the surface of Earth, another
+																celestial body, or an imaginary place.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Model">
+														<xs:annotation id="rdar-186">
+															<xs:documentation>1. A three-dimensional representation of a real or
+																imagined object. 2. A three-dimensional representation of the whole
+																or part of the Earth or any celestial body (real or imaginary) at
+																any scale.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Models">
+														<xs:annotation id="rdar-187">
+															<xs:documentation>1. Three-dimensional representations of a real or
+																imagined object. 2. Three-dimensional representations of the whole
+																or part of the Earth or any celestial body (real or imaginary) at
+																any scale.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Profile">
+														<xs:annotation id="rdar-188">
+															<xs:documentation>In cartography, a scale representation of the
+																intersection of a vertical surface (which may or may not be a plane)
+																with the surface of the ground, or of the intersection of such a
+																vertical surface with that of a conceptual three-dimensional model
+																representing phenomena having a continuous distribution (e.g.,
+																rainfall).</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Profiles">
+														<xs:annotation id="rdar-189">
+															<xs:documentation>In cartography, scale representations of the
+																intersection of a vertical surface (which may or may not be a plane)
+																with the surface of the ground, or of the intersection of such a
+																vertical surface with that of a conceptual three-dimensional model
+																representing phenomena having a continuous distribution (e.g.,
+																rainfall).</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="RemoteSensingImage"/>
+													<xs:enumeration value="RemoteSensingImages"/>
+													<xs:enumeration value="Section">
+														<xs:annotation id="rdar-190">
+															<xs:documentation>1. A separately issued part of a resource, usually
+																representing a particular subject category within the larger
+																resource and identified by a designation that may be a topic, or an
+																alphabetic or numeric designation, or a combination of these. 2. In
+																the context of extent of a cartographic resource, a scale
+																representation of a vertical surface (commonly a plane) displaying
+																both the profile where it intersects the surface of a celestial
+																body, or some conceptual model, and the underlying structures along
+																the plane of intersection (e.g., a geological
+															section.)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Sections">
+														<xs:annotation id="rdar-191">
+															<xs:documentation>1. Separately issued parts of a resource, usually
+																representing a particular subject category within the larger
+																resource and identified by a designation that may be a topic, or an
+																alphabetic or numeric designation, or a combination of these. 2. In
+																the context of extent of a cartographic resource, scale
+																representations of a vertical surface (commonly a plane) displaying
+																both the profile where it intersects the surface of a celestial
+																body, or some conceptual model, and the underlying structures along
+																the plane of intersection (e.g., a geological
+															section.)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="View">
+														<xs:annotation id="rdar-192">
+															<xs:documentation>In cartography, a perspective representation of the
+																landscape in which detail is shown as if projected on an oblique
+																plane (e.g., a bird’s-eye view, panorama, panoramic drawing,
+																worm’s-eye view).</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Views">
+														<xs:annotation id="rdar-193">
+															<xs:documentation>In cartography, perspective representations of the
+																landscape in which detail is shown as if projected on an oblique
+																plane (e.g., a bird’s-eye view, panorama, panoramic drawing,
+																worm’s-eye view).</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="NNAttribute"/>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaExtentOfNotatedMusic">
+							<xs:annotation id="rdar-157">
+								<xs:documentation>The number and type of units and/or subunits making up a resource
+									consisting of notated music, with or without accompanying text and/or
+									illustrations.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAExtentOfNotatedMusic">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="ChoirBook">
+														<xs:annotation id="rdar-194">
+															<xs:documentation>A large music book made to be placed on a stand in
+																front of a choir. Each part is notated separately, usually in the
+																configuration that presents, when the book is open, the soprano and
+																tenor parts on the verso of a leaf, and the alto and bass parts on
+																the recto of the next leaf.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="ChoirBooks">
+														<xs:annotation id="rdar-195">
+															<xs:documentation>Large music books made to be placed on a stand in
+																front of a choir. Each part is notated separately, usually in the
+																configuration that presents, when the book is open, the soprano and
+																tenor parts on the verso of a leaf, and the alto and bass parts on
+																the recto of the next leaf.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="ChorusScore">
+														<xs:annotation id="rdar-196">
+															<xs:documentation>A score of a work for solo voices and chorus showing
+																only the parts for chorus, at least in those portions of the work in
+																which the chorus sings, with the instrumental accompaniment either
+																arranged for one or two keyboard instruments or
+															omitted.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="ChorusScores">
+														<xs:annotation id="rdar-197">
+															<xs:documentation>Scores of a work for solo voices and chorus showing
+																only the parts for chorus, at least in those portions of the work in
+																which the chorus sings, with the instrumental accompaniment either
+																arranged for one or two keyboard instruments or
+															omitted.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="CondensedScore">
+														<xs:annotation id="rdar-198">
+															<xs:documentation>A score in which the number of staves is reduced to
+																two or a few, generally organized by instrumental sections, and
+																often with cues for individual parts. Used for: Reduced score, Short
+																score.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="CondensedScores">
+														<xs:annotation id="rdar-199">
+															<xs:documentation>Scores in which the number of staves is reduced to
+																two or a few, generally organized by instrumental sections, and
+																often with cues for individual parts. Used for: Reduced score, Short
+																score.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Part">
+														<xs:annotation id="rdar-200">
+															<xs:documentation>One of the units into which a resource has been
+																divided by the publisher, manufacturer, etc. It is distinguished
+																from a fascicle by being a formal component unit rather than a
+																temporary division of a resource. 2. In the context of notated
+																music, a component consisting of the music for the use of one or
+																more, but not all, performers.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Parts">
+														<xs:annotation id="rdar-201">
+															<xs:documentation>Units into which a resource has been divided by the
+																publisher, manufacturer, etc. It is distinguished from a fascicle by
+																being a formal component unit rather than a temporary division of a
+																resource. 2. In the context of notated music, components consisting
+																of the music for the use of one or more, but not all,
+															performers.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PianoConductorPart">
+														<xs:annotation id="rdar-202">
+															<xs:documentation>A performance part for a piano performer in an
+																ensemble, with cues for the other instruments that enable the
+																performer of that part also to conduct.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PianoConductorParts">
+														<xs:annotation id="rdar-203">
+															<xs:documentation>Performance parts for a piano performer in an
+																ensemble, with cues for the other instruments that enable the
+																performer of that part also to conduct.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PianoScore">
+														<xs:annotation id="rdar-204">
+															<xs:documentation>A reduction of an instrumental work or a vocal work
+																with instruments to a version for piano. May include the words of a
+																vocal work.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PianoScores">
+														<xs:annotation id="rdar-205">
+															<xs:documentation>Reductions of an instrumental work or a vocal work
+																with instruments to a version for piano. May include the words of a
+																vocal work.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Score">
+														<xs:annotation id="rdar-206">
+															<xs:documentation>Graphical, symbolic, or word-based musical notation
+																representing the sounds of all the parts of an ensemble or a work
+																for solo performer or electronic media. Do not confuse with
+															Part.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Scores">
+														<xs:annotation id="rdar-207">
+															<xs:documentation>Graphical, symbolic, or word-based musical notations
+																representing the sounds of all the parts of an ensemble or a work
+																for solo performer or electronic media. Do not confuse with
+															Part.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="StudyScore">
+														<xs:annotation id="rdar-208">
+															<xs:documentation>A score issued in a musical image of reduced size,
+																not primarily intended for use in performance. A descriptive phrase
+																such as "Study score", "Miniature score", "Taschenpartitur",
+																"Partition de poche", etc., usually appears on the
+															resource.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="StudyScores">
+														<xs:annotation id="rdar-209">
+															<xs:documentation>Scores issued in a musical image of reduced size,
+																not primarily intended for use in performance. A descriptive phrase
+																such as "Study score", "Miniature score", "Taschenpartitur",
+																"Partition de poche", etc., usually appears on the
+															resource.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TableBook">
+														<xs:annotation id="rdar-210">
+															<xs:documentation>A music book made to be placed on a table and
+																displayed in such a way that the performers can read their parts
+																while seated or standing across or around the table. Each part is
+																notated separately, usually in a configuration that presents, when
+																the book is open, different parts in inverted and/or perpendicular
+																positions.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TableBooks">
+														<xs:annotation id="rdar-211">
+															<xs:documentation>Music books made to be placed on a table and
+																displayed in such a way that the performers can read their parts
+																while seated or standing across or around the table. Each part is
+																notated separately, usually in a configuration that presents, when
+																the book is open, different parts in inverted and/or perpendicular
+																positions.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="ViolinConductorPart">
+														<xs:annotation id="rdar-212">
+															<xs:documentation>A performance part for a violin performer in an
+																ensemble, with cues for the other instruments that enable the
+																performer of that part also to conduct.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="ViolinConductorParts">
+														<xs:annotation id="rdar-213">
+															<xs:documentation>Performance parts for a violin performer in an
+																ensemble, with cues for the other instruments that enable the
+																performer of that part also to conduct.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VocalScore">
+														<xs:annotation id="rdar-214">
+															<xs:documentation>A score showing all vocal parts, with accompaniment
+																arranged for one or two keyboard instruments.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VocalScores">
+														<xs:annotation id="rdar-215">
+															<xs:documentation>Scores showing all vocal parts, with accompaniment
+																arranged for one or two keyboard instruments.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaExtentOfStillImage">
+							<xs:annotation id="rdar-158">
+								<xs:documentation>The number and type of units and/or subunits making up a resource
+									consisting of one or more still images.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAExtentOfStillImage">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="ActivityCard">
+														<xs:annotation id="rdar-216">
+															<xs:documentation>A card printed with words, numerals, and/or pictures
+																to be used by an individual or a group as a basis for performing a
+																specific activity. Usually issued in sets.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="ActivityCards">
+														<xs:annotation id="rdar-217">
+															<xs:documentation>Cards printed with words, numerals, and/or pictures
+																to be used by an individual or a group as a basis for performing a
+																specific activity. Usually issued in sets.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Chart">
+														<xs:annotation id="rdar-218">
+															<xs:documentation>1. A two-dimensional representation of data in
+																graphic or tabular form (e.g., a wall chart). 2. A map designed
+																primarily for navigation through water, air, or
+															space.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Charts">
+														<xs:annotation id="rdar-219">
+															<xs:documentation>1. Two-dimensional representations of data in
+																graphic or tabular form (e.g., wall charts). 2. Maps designed
+																primarily for navigation through water, air, or
+															space.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Collage"/>
+													<xs:enumeration value="Collages"/>
+													<xs:enumeration value="Drawing"/>
+													<xs:enumeration value="Drawings"/>
+													<xs:enumeration value="FlashCard">
+														<xs:annotation id="rdar-220">
+															<xs:documentation>A card or other opaque material printed with words,
+																numerals, or pictures and designed for rapid
+															display.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FlashCards">
+														<xs:annotation id="rdar-221">
+															<xs:documentation>Cards or other opaque materials printed with words,
+																numerals, or pictures and designed for rapid
+															display.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Icon"/>
+													<xs:enumeration value="Icons"/>
+													<xs:enumeration value="Painting"/>
+													<xs:enumeration value="Paintings"/>
+													<xs:enumeration value="Photograph"/>
+													<xs:enumeration value="Photographs"/>
+													<xs:enumeration value="Picture"/>
+													<xs:enumeration value="Pictures"/>
+													<xs:enumeration value="Postcard"/>
+													<xs:enumeration value="Postcards"/>
+													<xs:enumeration value="Poster"/>
+													<xs:enumeration value="Posters"/>
+													<xs:enumeration value="Print"/>
+													<xs:enumeration value="Prints"/>
+													<xs:enumeration value="Radiograph">
+														<xs:annotation id="rdar-222">
+															<xs:documentation>A photograph produced by the passage of radiation,
+																such as X rays, gamma rays, or neutrons, through an opaque
+															object.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Radiographs">
+														<xs:annotation id="rdar-223">
+															<xs:documentation>Photographs produced by the passage of radiation,
+																such as X rays, gamma rays, or neutrons, through an opaque
+															object.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="StudyPrint"/>
+													<xs:enumeration value="StudyPrints"/>
+													<xs:enumeration value="TechnicalDrawing">
+														<xs:annotation id="rdar-224">
+															<xs:documentation>A cross section, detail, diagram, elevation,
+																perspective, plan, working plan, etc., made for use in an
+																engineering or other technical context.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TechnicalDrawings">
+														<xs:annotation id="rdar-225">
+															<xs:documentation>Cross sections, details, diagrams, elevations,
+																perspectives, plans, working plans, etc., made for use in an
+																engineering or other technical context.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WallChart"/>
+													<xs:enumeration value="WallCharts"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaExtentOfText">
+							<xs:annotation id="rdar-159">
+								<xs:documentation>The number and type of units and/or subunits making up a resource
+									consisting of text, with or without accompanying illustrations.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAExtentOfText">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="Approximately"/>
+													<xs:enumeration value="Case">
+														<xs:annotation id="rdar-226">
+															<xs:documentation>A box containing bound or unbound
+															resources.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Column"/>
+													<xs:enumeration value="Folded"/>
+													<xs:enumeration value="InVariousFoliations"/>
+													<xs:enumeration value="InVariousNumberings"/>
+													<xs:enumeration value="InVariousPagings"/>
+													<xs:enumeration value="Incomplete"/>
+													<xs:enumeration value="Leaf"/>
+													<xs:enumeration value="Page"/>
+													<xs:enumeration value="Portfolio">
+														<xs:annotation id="rdar-227">
+															<xs:documentation>A container for holding loose materials (e.g.,
+																paintings, drawings, papers, unbound sections of a book, and similar
+																materials) usually consisting of two covers joined together at the
+																back.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Sheet">
+														<xs:annotation id="rdar-228">
+															<xs:documentation>A flat piece of thin material (paper, plastic,
+																etc.).</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UnnumberedPages"/>
+													<xs:enumeration value="UnnumberedSequenceOfPages"/>
+													<xs:enumeration value="Volume">
+														<xs:annotation id="rdar-229">
+															<xs:documentation>One or more sheets bound or fastened together to
+																form a single unit.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Volume(Loose-Leaf)"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaExtentOfThree-DimensionalForm">
+							<xs:annotation id="rdar-160">
+								<xs:documentation>The number and type of units and/or subunits making up a resource
+									consisting of one or more three-dimensional forms.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="RDAExtentOfThree-DimensionalForm">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+													<xs:enumeration value="Coin"/>
+													<xs:enumeration value="Diorama">
+														<xs:annotation id="rdar-230">
+															<xs:documentation>A three-dimensional representation of a scene
+																created by placing objects, figures, etc., in front of a
+																two-dimensional painted background.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Exhibit"/>
+													<xs:enumeration value="Game">
+														<xs:annotation id="rdar-231">
+															<xs:documentation>A resource designed for play according to prescribed
+																or implicit rules and intended for recreation or
+															instruction.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="JigsawPuzzle"/>
+													<xs:enumeration value="Medal"/>
+													<xs:enumeration value="Mock-up">
+														<xs:annotation id="rdar-232">
+															<xs:documentation>A representation of a device or process that may be
+																modified for training or analysis to emphasize a particular part or
+																function; it usually has movable parts that can be
+															manipulated.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Model">
+														<xs:annotation id="rdar-233">
+															<xs:documentation>1. A three-dimensional representation of a real or
+																imagined object. 2. A three-dimensional representation of the whole
+																or part of the Earth or any celestial body (real or imaginary) at
+																any scale.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="Sculpture"/>
+													<xs:enumeration value="Specimen"/>
+													<xs:enumeration value="Toy">
+														<xs:annotation id="rdar-234">
+															<xs:documentation>An object designed for imaginative play or one from
+																which to derive amusement.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:attribute>
+										<xs:attribute name="id" type="xs:ID"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="RDAExtent">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="ApertureCard">
+									<xs:annotation id="rdar-235">
+										<xs:documentation>A card with one or more rectangular openings or apertures
+											holding frames of microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ApertureCards">
+									<xs:annotation id="rdar-236">
+										<xs:documentation>Cards with one or more rectangular openings or apertures
+											holding frames of microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioCartridge">
+									<xs:annotation id="rdar-237">
+										<xs:documentation>A cartridge containing an audio tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioCartridges">
+									<xs:annotation id="rdar-238">
+										<xs:documentation>Cartridges containing audio tapes.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioCylinder">
+									<xs:annotation id="rdar-239">
+										<xs:documentation>A roller-shaped object on which sound waves are incised or
+											indented in a continuous circular groove. Includes wax cylinders,
+										etc.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioCylinders">
+									<xs:annotation id="rdar-240">
+										<xs:documentation>Roller-shaped objects on which sound waves are incised or
+											indented in a continuous circular groove. Includes wax cylinders,
+										etc.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioDisc">
+									<xs:annotation id="rdar-241">
+										<xs:documentation>A disc on which sound waves, recorded as modulations, pulses,
+											etc., are incised or indented in a continuous spiral
+										groove.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioDiscs">
+									<xs:annotation id="rdar-242">
+										<xs:documentation>Discs on which sound waves, recorded as modulations, pulses,
+											etc., are incised or indented in a continuous spiral
+										groove.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioRoll">
+									<xs:annotation id="rdar-243">
+										<xs:documentation>A roll of paper on which musical notes are represented by
+											perforations, designed to mechanically reproduce the music when used in a
+											player piano, player organ, etc. Includes piano rolls, etc.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudioRolls">
+									<xs:annotation id="rdar-244">
+										<xs:documentation>Rolls of paper on which musical notes are represented by
+											perforations, designed to mechanically reproduce the music when used in a
+											player piano, player organ, etc. Includes piano rolls, etc.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Audiocassette">
+									<xs:annotation id="rdar-245">
+										<xs:documentation>A cassette containing an audio tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Audiocassettes">
+									<xs:annotation id="rdar-246">
+										<xs:documentation>Cassettes containing audio tapes.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudiotapeReel">
+									<xs:annotation id="rdar-247">
+										<xs:documentation>An open reel holding a length of audio tape to be used with
+											reel- to-reel audio equipment.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="AudiotapeReels">
+									<xs:annotation id="rdar-248">
+										<xs:documentation>Open reels holding a length of audio tape to be used with
+											reel-to- reel audio equipment.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Card">
+									<xs:annotation id="rdar-249">
+										<xs:documentation>A small sheet of opaque material.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Cards">
+									<xs:annotation id="rdar-250">
+										<xs:documentation>Small sheets of opaque material.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerCard">
+									<xs:annotation id="rdar-251">
+										<xs:documentation>A card containing digitally encoded data designed for use with
+											a computer.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerCards">
+									<xs:annotation id="rdar-252">
+										<xs:documentation>Cards containing digitally encoded data designed for use with
+											a computer.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerChipCartridge">
+									<xs:annotation id="rdar-253">
+										<xs:documentation>A cartridge containing a miniaturized electronic circuit on a
+											small wafer of semiconductor silicon.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerChipCartridges">
+									<xs:annotation id="rdar-254">
+										<xs:documentation>Cartridges containing a miniaturized electronic circuit on a
+											small wafer of semiconductor silicon.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerDisc">
+									<xs:annotation id="rdar-255">
+										<xs:documentation>A disc containing digitally encoded data, magnetically or
+											optically recorded.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerDiscs">
+									<xs:annotation id="rdar-258">
+										<xs:documentation>Discs containing digitally encoded data, magnetically or
+											optically recorded.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerDiscCartridge">
+									<xs:annotation id="rdar-256">
+										<xs:documentation>A cartridge containing one or more computer
+										discs.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerDiscCartridges">
+									<xs:annotation id="rdar-257">
+										<xs:documentation>Cartridges containing one or more computer
+										discs.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerTapeCartridge">
+									<xs:annotation id="rdar-259">
+										<xs:documentation>A cartridge containing a computer tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerTapeCartridges">
+									<xs:annotation id="rdar-260">
+										<xs:documentation>Cartridges containing a computer tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerTapeCassette">
+									<xs:annotation id="rdar-261">
+										<xs:documentation>A cassette containing a computer tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerTapeCassettes">
+									<xs:annotation id="rdar-262">
+										<xs:documentation>Cassettes containing a computer tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerTapeReel">
+									<xs:annotation id="rdar-263">
+										<xs:documentation>An open reel holding a length of computer tape to be used with
+											a computer tape drive.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="ComputerTapeReels">
+									<xs:annotation id="rdar-264">
+										<xs:documentation>Open reels holding a length of computer tape to be used with a
+											computer tape drive.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmCartridge">
+									<xs:annotation id="rdar-265">
+										<xs:documentation>A cartridge containing a motion picture
+										film.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmCartridges">
+									<xs:annotation id="rdar-266">
+										<xs:documentation>Cartridges containing a motion picture
+										film.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmCassette">
+									<xs:annotation id="rdar-267">
+										<xs:documentation>A cassette containing a motion picture
+										film.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmCassettes">
+									<xs:annotation id="rdar-268">
+										<xs:documentation>Cassettes containing a motion picture film.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmReel">
+									<xs:annotation id="rdar-269">
+										<xs:documentation>An open reel holding a motion picture film to be used with a
+											motion picture film projector.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmReels">
+									<xs:annotation id="rdar-270">
+										<xs:documentation>Open reels holding a motion picture film to be used with a
+											motion picture film projector.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmRoll">
+									<xs:annotation id="rdar-271">
+										<xs:documentation>A wound length of film.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmRolls">
+									<xs:annotation id="rdar-272">
+										<xs:documentation>Wound lengths of film.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Filmslip">
+									<xs:annotation id="rdar-273">
+										<xs:documentation>A short strip of film, usually in rigid format rather than
+											rolled.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Filmslips">
+									<xs:annotation id="rdar-274">
+										<xs:documentation>Short strips of film, usually in rigid format rather than
+											rolled.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Filmstrip">
+									<xs:annotation id="rdar-275">
+										<xs:documentation>A roll of film, with or without recorded sound, containing a
+											succession of images intended for projection one at a time.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Filmstrips">
+									<xs:annotation id="rdar-278">
+										<xs:documentation>Rolls of film, with or without recorded sound, containing a
+											succession of images intended for projection one at a time.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmstripCartridge">
+									<xs:annotation id="rdar-276">
+										<xs:documentation>A cartridge containing a filmstrip.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="FilmstripCartridges">
+									<xs:annotation id="rdar-277">
+										<xs:documentation>Cartridges containing a filmstrip.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Flipchart">
+									<xs:annotation id="rdar-279">
+										<xs:documentation>A hinging device holding two or more sheets designed for use
+											on an easel.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Flipcharts">
+									<xs:annotation id="rdar-280">
+										<xs:documentation>Hinging devices holding two or more sheets designed for use on
+											an easel.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Microfiche">
+									<xs:annotation id="rdar-281">
+										<xs:documentation>A sheet of film bearing a number of microimages in a
+											two-dimensional array.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Microfiches">
+									<xs:annotation id="rdar-284">
+										<xs:documentation>Sheets of film bearing a number of microimages in a
+											two-dimensional array.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicroficheCassette">
+									<xs:annotation id="rdar-282">
+										<xs:documentation>A cassette containing uncut microfiches.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicroficheCassettes">
+									<xs:annotation id="rdar-283">
+										<xs:documentation>Cassettes containing uncut microfiches.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Microfilm">
+									<xs:annotation id="rdar-285">
+										<xs:documentation>A film bearing a number of microimages in linear
+										array.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Microfilms">
+									<xs:annotation id="rdar-296">
+										<xs:documentation>Films bearing a number of microimages in linear
+										array.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmCartridge">
+									<xs:annotation id="rdar-286">
+										<xs:documentation>A cartridge containing a microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmCartridges">
+									<xs:annotation id="rdar-287">
+										<xs:documentation>Cartridges containing a microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmCassette">
+									<xs:annotation id="rdar-288">
+										<xs:documentation>A cassette containing a microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmCassettes">
+									<xs:annotation id="rdar-289">
+										<xs:documentation>Cassettes containing a microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmReel">
+									<xs:annotation id="rdar-290">
+										<xs:documentation>An open reel holding a microfilm, to be threaded into a
+											microfilm reader.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmReels">
+									<xs:annotation id="rdar-291">
+										<xs:documentation>Open reels holding a microfilm, to be threaded into a
+											microfilm reader.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmRoll">
+									<xs:annotation id="rdar-292">
+										<xs:documentation>A wound length of microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmRolls">
+									<xs:annotation id="rdar-293">
+										<xs:documentation>Wound lengths of microfilm.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmSlip">
+									<xs:annotation id="rdar-294">
+										<xs:documentation>A short strip of microfilm cut from a roll.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicrofilmSlips">
+									<xs:annotation id="rdar-295">
+										<xs:documentation>Short strips of microfilm cut from a roll.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+
+								<xs:enumeration value="Microopaque">
+									<xs:annotation id="rdar-297">
+										<xs:documentation>A card or sheet of opaque material bearing a number of
+											microimages in a two-dimensional array.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Microopaques">
+									<xs:annotation id="rdar-298">
+										<xs:documentation>Cards or sheets of opaque material bearing a number of
+											microimages in a two-dimensional array.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicroscopeSlide">
+									<xs:annotation id="rdar-299">
+										<xs:documentation>A small sheet of transparent material (with or without a
+											protective mount) bearing a minute object designed for use with a device such
+											as a microscope.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="MicroscopeSlides">
+									<xs:annotation id="rdar-300">
+										<xs:documentation>Small sheets of transparent material (with or without a
+											protective mount) bearing a minute object designed for use with a device such
+											as a microscope.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Object">
+									<xs:annotation id="rdar-301">
+										<xs:documentation>A three-dimensional artifact (or a replica of an artifact) or
+											a naturally-occurring object.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Objects">
+									<xs:annotation id="rdar-302">
+										<xs:documentation>Three-dimensional artifacts (or replicas of artifacts) or
+											naturally-occurring objects.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="OnlineResource">
+									<xs:annotation id="rdar-303">
+										<xs:documentation>A digital resource accessed by means of hardware and software
+											connections to a communications network.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="OnlineResources">
+									<xs:annotation id="rdar-304">
+										<xs:documentation>Digital resources accessed by means of hardware and software
+											connections to a communications network.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Other">
+									<xs:annotation id="rdar-305">
+										<xs:documentation/>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="OverheadTransparency">
+									<xs:annotation id="rdar-307">
+										<xs:documentation>A sheet of transparent material (with or without a protective
+											mount) bearing an image designed for use with an overhead
+										projector.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="OverheadTransparencies">
+									<xs:annotation id="rdar-306">
+										<xs:documentation>Sheets of transparent material (with or without a protective
+											mount) bearing an image designed for use with an overhead
+										projector.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Roll">
+									<xs:annotation id="rdar-308">
+										<xs:documentation>A wound length of material (paper, film, tape,
+										etc.).</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Rolls">
+									<xs:annotation id="rdar-309">
+										<xs:documentation>Wound lengths of material (paper, film, tape,
+										etc.).</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Sheet">
+									<xs:annotation id="rdar-310">
+										<xs:documentation>A flat piece of thin material (paper, plastic,
+										etc.).</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Sheets">
+									<xs:annotation id="rdar-311">
+										<xs:documentation>Flat pieces of thin material (paper, plastic,
+										etc.).</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Slide">
+									<xs:annotation id="rdar-312">
+										<xs:documentation>A small sheet of transparent material (usually in a protective
+											mount) bearing an image designed for use with a slide projector or
+										viewer.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Slides">
+									<xs:annotation id="rdar-313">
+										<xs:documentation>Small sheets of transparent material (usually in a protective
+											mount) bearing an image designed for use with a slide projector or
+										viewer.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Sound-TrackReel">
+									<xs:annotation id="rdar-314">
+										<xs:documentation>An open reel holding a length of film on which sound is
+											recorded.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Sound-TrackReels">
+									<xs:annotation id="rdar-315">
+										<xs:documentation>Open reels holding a length of film on which sound is
+											recorded.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="StereographCard">
+									<xs:annotation id="rdar-316">
+										<xs:documentation>A card bearing stereographic images.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="StereographCards">
+									<xs:annotation id="rdar-317">
+										<xs:documentation>Cards bearing stereographic images.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="StereographDisc"/>
+								<xs:enumeration value="StereographDiscs"/>
+								<xs:enumeration value="StereographReel">
+									<xs:annotation id="rdar-318">
+										<xs:documentation>A disc with openings around the perimeter holding pairs of
+											still images designed for use with a stereograph viewer.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="StereographReels">
+									<xs:annotation id="rdar-319">
+										<xs:documentation>Discs with openings around the perimeter holding pairs of
+											still images designed for use with a stereograph viewer.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Unspecified"/>
+								<xs:enumeration value="VideoCartridge">
+									<xs:annotation id="rdar-320">
+										<xs:documentation>A cartridge containing a video tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="VideoCartridges">
+									<xs:annotation id="rdar-321">
+										<xs:documentation>Cartridges containing a video tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="VideoCassette">
+									<xs:annotation id="rdar-322">
+										<xs:documentation>A cassette containing a video tape.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="VideoCassettes">
+									<xs:annotation id="rdar-323">
+										<xs:documentation>Cassettes containing video tapes.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="VideoDisc">
+									<xs:annotation id="rdar-324">
+										<xs:documentation>A disc on which video signals, with or without sound, are
+											recorded.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="VideoDiscs">
+									<xs:annotation id="rdar-325">
+										<xs:documentation>Discs on which video signals, with or without sound, are
+											recorded.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="VideotapeReel">
+									<xs:annotation id="rdar-326">
+										<xs:documentation>An open reel holding a video tape for use with reel-to-reel
+											video equipment.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="VideotapeReels">
+									<xs:annotation id="rdar-327">
+										<xs:documentation>Open reels holding video tapes for use with reel-to-reel video
+											equipment.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Volume">
+									<xs:annotation id="rdar-328">
+										<xs:documentation>One or more sheets bound or fastened together to form a single
+											unit.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+								<xs:enumeration value="Volumes">
+									<xs:annotation id="rdar-329">
+										<xs:documentation>One or more sheets bound or fastened together to form single
+											units.</xs:documentation>
+									</xs:annotation>
+								</xs:enumeration>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaIdentifierForTheItem">
+				<xs:annotation id="rdar-161">
+					<xs:documentation>A character string associated with an item that serves to differentiate
+						that item from other items.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaImmediateSourceOfAcquisitionOfItem">
+				<xs:annotation id="rdar-162">
+					<xs:documentation>The source from which the agency directly acquired an item and the
+						circumstances under which it was received.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaItemSpecificCarrierCharacteristic">
+				<xs:annotation id="rdar-163">
+					<xs:documentation>A characteristic that applies to the carrier or carriers of the specific
+						item being described and is assumed not to apply to other items emplifying the same
+						manifestation.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaItemSpecificCarrierCharacteristicForEarlyPrintedResource">
+							<xs:annotation id="rdar-164">
+								<xs:documentation>A characteristic that applies to the carrier or carriers of the
+									specific early printed item being described and is assumed not to apply to other
+									items exemplifying the same manifestation. Includes rubrication, illumination, and
+									other hand colouring, manuscript additions, and binding.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaNote">
+				<xs:annotation id="rdar-165">
+					<xs:documentation>An annotation providing additional information relating to data recorded
+						in another element.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaNoteonDimensionsOfItem">
+							<xs:annotation id="rdar-166">
+								<xs:documentation>A note providing information about the dimensions of the specific
+									item being described that is not recorded formally as part of the dimensions
+									element.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaNoteonExtentOfItem">
+							<xs:annotation id="rdar-167">
+								<xs:documentation>A note providing information on the extent of the specific item
+									being described that is not recorded formally as part of the extent
+								element.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaPreferredCitation">
+				<xs:annotation id="rdar-168">
+					<xs:documentation>A citation for a resource in the form preferred by a creator, publisher,
+						custodian, indexing or abstracting service, etc.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaRestrictionsOnAccess">
+				<xs:annotation id="rdar-169">
+					<xs:documentation>Limitations placed on access to a resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaRestrictionsOnUse">
+				<xs:annotation id="rdar-170">
+					<xs:documentation>Limitations placed on uses such as reproduction, publication,
+						exhibition, etc.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaUniformResourceLocator">
+				<xs:annotation id="rdar-171">
+					<xs:documentation>The address of a remote access resource.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA PERSON -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaPerson">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 2 Person Entity with accompanying RDA
+					elements, subelements, and vocabularies. Where RDA defines Person as: "An individual or an
+					identity established by an individual (either alone or in collaboration with one or more
+					other individuals)." </xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaAddressOfThePerson">
+				<xs:annotation id="rdar-330">
+					<xs:documentation>The address of a person’s place of residence, business, or employer,
+						and/or an e-mail or Internet address.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaAffiliation">
+				<xs:annotation id="rdar-331">
+					<xs:documentation>A group with which a person is affiliated or has been affiliated through
+						employment, membership, cultural identity, etc.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaBiographicalInformation">
+				<xs:annotation id="rdar-332">
+					<xs:documentation>Information pertaining to the life or history of a
+					person.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaCataloguersNote">
+				<xs:annotation id="rdar-333">
+					<xs:documentation>An annotation that might be helpful to those using or revising the
+						authorized access point representing an entity or relationship data, or creating an
+						authorized access point representing a related entity.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaCountryAssociatedWIthThePerson">
+				<xs:annotation id="rdar-334">
+					<xs:documentation>A country with which a person is identified.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaDateAssociatedWIthThePerson">
+				<xs:annotation id="rdar-335">
+					<xs:documentation>A significant date associated with a person (e.g., date of birth, date
+						of death).</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaDateOfBirth">
+							<xs:annotation id="rdar-336">
+								<xs:documentation>The year a person was born. Date of birth may also include the
+									month and day of the person’s birth.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaDateOfDeath">
+							<xs:annotation id="rdar-337">
+								<xs:documentation>The year a person died. Date of death may also include the month
+									and day of the person’s death.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaPeriodOfActivityOfThePerson">
+							<xs:annotation id="rdar-338">
+								<xs:documentation/>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaFieldOfActivityOfThePerson">
+				<xs:annotation id="rdar-339">
+					<xs:documentation>A date or range of dates indicative of the period in which a person was
+						active in his or her primary field of endeavour.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaFullerFormOfName">
+				<xs:annotation id="rdar-340">
+					<xs:documentation>The full form of a part of a name represented only by an initial or
+						abbreviation in the form chosen as the preferred name, or a part of the name not
+						included in the form chosen as the preferred name.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaGender">
+				<xs:annotation id="rdar-341">
+					<xs:documentation>The gender with which a person identifies.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAGender">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Female"/>
+										<xs:enumeration value="Male"/>
+										<xs:enumeration value="NotKnown"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="id" type="xs:ID"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaIdentifierForThePerson">
+				<xs:annotation id="rdar-342">
+					<xs:documentation>A character string uniquely associated with a person, or with a
+						surrogate for a person (e.g., an authority record), that serves to differentiate that
+						person from other persons.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaLanguageOfThePerson">
+				<xs:annotation id="rdar-343">
+					<xs:documentation>A language a person uses when writing for publication, broadcasting,
+						etc.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaNameOfThePerson">
+				<xs:annotation id="rdar-344">
+					<xs:documentation>A word, character, or group of words and/or characters by which a person
+						is known.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="rdaPreferredNameForThePerson">
+							<xs:annotation id="rdar-345">
+								<xs:documentation>The name or form of name chosen as the basis for the authorized
+									access point representing that person.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="rdaVariantNameForThePerson">
+							<xs:annotation id="rdar-346">
+								<xs:documentation>A name or form of name by which a person is known that differs
+									from the name or form of name chosen as the preferred name.</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:attribute name="id" type="xs:ID"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaNote">
+				<xs:annotation id="rdar-347">
+					<xs:documentation>An annotation providing additional information relating to data recorded
+						in another element.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaOtherDesignationAssociatedWIthThePerson">
+				<xs:annotation id="rdar-348">
+					<xs:documentation>A term other than a title that is associated with a person’s
+					name.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaPlaceOfBirth">
+				<xs:annotation id="rdar-349">
+					<xs:documentation>The town, city, province, state, and/or country in which a person was
+						born.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaPlaceOfDeath">
+				<xs:annotation id="rdar-350">
+					<xs:documentation>The town, city, province, state, and/or country in which a person
+					died.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaPlaceOfResidence">
+				<xs:annotation id="rdar-351">
+					<xs:documentation>A town, city, province, state, and/or country in which a person resides
+						or has resided.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaProfessionorOccupation">
+				<xs:annotation id="rdar-352">
+					<xs:documentation>A profession or occupation in which a person works or has
+					worked.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaSourceConsulted">
+				<xs:annotation id="rdar-353">
+					<xs:documentation>A resource used in determining the name, title, or other identifying
+						attributes of an entity, or in determining the relationship between
+					entities.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaStatusOfIdentification">
+				<xs:annotation id="rdar-355">
+					<xs:documentation>An indication of the level of authentication of the data identifying an
+						entity.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="RDAStatusofIdentification">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="RDAFullyEstablished"/>
+										<xs:enumeration value="RDAPreliminary"/>
+										<xs:enumeration value="RDAProvisional"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaTitleOfThePerson">
+				<xs:annotation id="rdar-356">
+					<xs:documentation>A word or phrase indicative of royalty, nobility, or ecclesiastical rank
+						or office, or a term of address for a person of religious vocation.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="rdaUndifferentiatedNameIndicator">
+				<xs:annotation id="rdar-357">
+					<xs:documentation>A categorization indicating that the core elements recorded are
+						insufficient to differentiate between two or more persons with the same
+					name.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:ID"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA FAMILY -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaFamily">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 2 Family Entity with accompanying RDA
+					elements, subelements, and vocabularies. Where RDA defines Family as: "Two or more persons
+					related by birth, marriage, adoption, civil union, or similar legal status, or who
+					otherwise present themselves as a family."</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaCataloguersNote"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA CORPORATE BODY -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaCorporateBody">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 2 Corporate Body Entity with
+					accompanying RDA elements, subelements, and vocabularies. Where RDA defines Corporate Body
+					as: "An organization or group of persons and/or organizations that is identified by a
+					particular name and that acts, or may act, as a unit."</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaAddressOfTheCorporateBody"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA CONCEPT -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaConcept">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 3 Concept Entity with accompanying RDA
+					elements, subelements, and vocabularies. </xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaCataloguersNote"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA OBJECT -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaObject">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 3 Object Entity with accompanying RDA
+					elements, subelements, and vocabularies. </xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaCataloguersNote"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA EVENT -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaEvent">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 3 Event Entity with accompanying RDA
+					elements, subelements, and vocabularies. </xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaCataloguersNote"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA PLACE -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaPlace">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR Group 3 Place Entity with accompanying RDA
+					elements, subelements, and vocabularies. Where RDA defines Place as: "A location
+					identified by a name."</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaCataloguersNote"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA NAME -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaName">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRAD Name Entity with accompanying RDA elements,
+					subelements, and vocabularies. Where RDA defines Place as: "A word, character, or group of
+					words and/or characters by which an entity is known."</xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaCataloguersNote"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<!-- ======================================================================= -->
+	<!--  RDA RELATIONSHIPS -->
+	<!-- ======================================================================= -->
+	<xs:complexType name="rdaRelationships">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>RDA conceptualization of FRBR and FRAD Relationships with accompanying RDA
+					elements, subelements, and vocabularies. </xs:documentation>
+			</xs:annotation>
+			<xs:element name="rdaRelationshipDesignator"/>
+		</xs:sequence>
+	</xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,37 @@
+{% comment %}START navbar DIV{% endcomment %}
+<div class="navbar app-action-bar">
+  {% comment %}START navbar-inner DIV{% endcomment %}
+  <div class="navbar-inner app-action-bar">
+	{% comment %}START container DIV{% endcomment %}
+    <div class="container">
+     
+    {% comment %}.btn-navbar is used as the toggle for collapsed navbar content{% endcomment %}
+    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    </a>
+     
+    {% block app-icon %}
+    <a class="brand app-ico-float" href="{% if app.url %}{{ app.url }}{% else %}/app{% endif %}">
+     {% comment %}<img height="20" src="{{ STATIC_URL }}img/{% if app.icon_url %}{{ app.icon_url }}{% else %}portfolio.png{% endif %}" />{% endcomment %}
+     {% if app.current_view %}{{ app.current_view.title }}{% else %}App Title{% endif %}
+    </a>
+    {% endblock %}
+    
+     
+    {% comment %}Everything you want hidden at 940px or less, place within here{% endcomment %}
+    <div class="nav-collapse">
+     {% comment %}START apps nav UL{% endcomment %}
+	 <ul class="nav">
+	   {% if app.controls %}
+	    <li><a href="{{ control.url }}">{% if control.glyph %}<i class="{{ control.glyph }}"></i>{% endif %}{{ control.label }}</a></li>
+	   {% endif %}
+     {% comment %}END apps nav UL{% endcomment %}
+    </div>
+    {% comment %}END container DIV{% endcomment %} 
+    </div>
+  {% comment %}END navbar-inner DIV{% endcomment %}
+  </div>
+{% comment %}END navbar DIV{% endcomment %}    
+ </div>

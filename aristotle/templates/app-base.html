@@ -1,0 +1,75 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>
+	{% block head-title %}{% trans "FRBR-Redis Datastore Aristotle Interface" %}{% endblock %}
+    </title>
+    <meta name="description" content="FRBR-Redis Datastore Aristotle Interface" >
+    <meta name="author" content="Jeremy Nelson">
+    {% block more-meta %}{% endblock %}
+    
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/app.less" rel="stylesheet/less" type="text/css" />
+    {% block more-css %}{% endblock %}
+    
+
+    <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="http://twitter.github.com/bootstrap/examples/images/favicon.ico">
+    <link rel="apple-touch-icon" href="http://twitter.github.com/bootstrap/examples/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="http://twitter.github.com/bootstrap/examples/images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="http://twitter.github.com/bootstrap/examples/images/apple-touch-icon-114x114.png">
+
+  </head>
+
+<body>  
+{% comment %}START container DIV{% endcomment %}
+ <div class="container-fluid">
+  {% block navbar %}
+  <div class="row-fluid">
+    {% include 'snippets/navigation-action-bar.html' %}
+  </div>	
+  {% endblock %} 
+   
+  {% block body %}{% endblock %}
+
+
+  {% block footer %}
+  <div class="row-fluid">
+     {% include 'snippets/footer-action-bar.html' %}
+  </div>
+  {% endblock %}
+
+
+ {% comment %}END container DIV{% endcomment %}
+ </div> <!-- /container -->
+    
+    <script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/prettify.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-alerts.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-modal.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-tab.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-twipsy.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-tooltip.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-popover.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+    <script src="{{ STATIC_URL }}js/utilities.js"></script>
+    {% block more-js %}{% endblock %}
+ 
+    {% block dialogs %}
+      {% include 'snippets/about.html' %}
+      {% include 'snippets/help.html' %}
+    {% endblock %} 
+</body></html>

@@ -1,0 +1,106 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>
+	{% block head-title %}{% trans "FRBR-Redis Datastore Aristotle Interface" %}{% endblock %}
+    </title>
+    <meta name="description" content="FRBR-Redis Datastore Aristotle Interface" >
+    <meta name="author" content="Jeremy Nelson">
+    {% block more-meta %}{% endblock %}
+    
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/prettify.css" rel="stylesheet" type="text/css" />
+    {% block more-css %}{% endblock %}
+    
+
+    <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="http://twitter.github.com/bootstrap/examples/images/favicon.ico">
+    <link rel="apple-touch-icon" href="http://twitter.github.com/bootstrap/examples/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="http://twitter.github.com/bootstrap/examples/images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="http://twitter.github.com/bootstrap/examples/images/apple-touch-icon-114x114.png">
+
+  </head>
+
+  <body onload="prettyPrint()">
+    {% block navbar %}
+    {% comment %}START navbar DIV{% endcomment %}
+    <div class="navbar navbar-fixed-top">
+	 {% comment %}START navbar-inner DIV{% endcomment %}
+     <div class="navbar-inner">
+	  {% comment %}START container DIV{% endcomment %}
+      <div class="container">
+	   <a class="brand" href="/">CoALA 2012 Summit</a>
+	   {% comment %}START secondary-nav UL{% endcomment %}
+	   <ul class="nav secondary-nav">
+		 <li data-dropdown="dropdown" class="dropdown">
+		   <a href="#" class="dropdown-toggle">Access &amp; Discovery App Portfolio</a>
+		   <ul class="dropdown-menu">
+                     <li><a href="/article">Article App</a></li>
+		     <li><a href="/call_number">Call Number App</a></li>
+		     <li><a href="/hours">Hours App</a></li>
+		   </ul>
+		 </li>
+	   {% comment %}END secondary-nav UL{% endcomment %}   
+	   </ul>
+	   {% comment %}START productivity apps nav UL{% endcomment %}
+	   <ul class="nav secondary-nav">
+		 <li data-dropdown="dropdown" class="dropdown">
+		   <a href="#" class="dropdown-toggle">Productivity App Portfolio</a>
+		   <ul class="dropdown-menu">
+			 <li><a href="/budget">Budget App</a></li>
+			 <li><a href="/cataloging">Cataloging Apps</a></li>
+			 <li><a href="/circulation">Circulation Apps</a></li>
+			 <li><a href="/system">Systems Status App</a></li>
+		     
+		   </ul>
+		 </li>
+	  {% comment %}END container DIV{% endcomment %}
+	  </div>
+     {% comment %}START navbar-inner DIV{% endcomment %}
+     </div>
+    {% comment %}END navbar DIV{% endcomment %}
+    </div>
+   {% endblock %}    
+
+    {% comment %}START container DIV{% endcomment %}
+    <div class="container">
+     {% block body %}{% endblock %}
+     
+
+     {% block footer %}
+      <footer>
+       <p style="text-align:center">
+        <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" rel="dct:type"></span><br/><a xmlns:cc="http://creativecommons.org/ns#" href="http://discovery.coloradocollege.edu/code4lib/" property="cc:attributionName" rel="cc:attributionURL"> Jeremy Nelson, Colorado College</a>
+       </p>
+      </footer>
+      {% endblock %}
+
+    {% comment %}END container DIV{% endcomment %}
+    </div> <!-- /container -->
+
+    <script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+    <script src="{{ STATIC_URL }}js/prettify.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-alerts.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-modal.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-tab.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-twipsy.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-tooltip.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-popover.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+    <script src="{{ STATIC_URL }}js/utilities.js"></script>
+    {% block more-js %}{% endblock %}
+  
+</body></html>

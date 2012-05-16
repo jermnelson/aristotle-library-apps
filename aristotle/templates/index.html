@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block head-title %}{% trans "CoALA Academic Library Summit -- Library App Demo" %}{% endblock %}
+
+{% block more-css %}
+<style>
+ body {
+  background-color: #1B3153;
+  padding-top: 60px;
+}
+ .navbar-inner {
+   background-color: #1B3153 !important;
+ }
+</style>
+{% endblock %}
+
+{% block body %}
+ {% comment %}START content DIV{% endcomment %}
+ <div class="content">
+  {% comment %}START page-header DIV{% endcomment %}
+  <div class="page-header hero-unit">
+    <h1>{% trans "Library Apps for Users and Staff" %} 
+    <p><small>{% trans "CoALA 2012 Academic Library Summit" %}</small></p>
+    </h1>
+    <p>Jeremy Nelson &amp; Jon Driscoll<br/>Colorado College</p>
+    <p style="float:right">
+	<button class="btn btn-large btn-success">Background</button>
+    <button class="btn btn-large btn-primary">Getting Started</button>
+    </p>
+  {% comment %}END page-header DIV{% endcomment %}
+  </div>
+  
+  <div class="row">
+   <div class="span4 well">
+     <h2>{% trans "Vision" %}</h2>
+     <p>
+       The
+       <a href="https://github.com/jermnelson/FRBR-Redis-Datastore">FRBR-Redis Datastore App</a> 
+       portfolios are mobile, tablet, and PC single purpose apps that allow the 
+       user to discovery and access bibliographic and library information. 
+       Productivity apps are available to authenticated users for managing the 
+       bibliographic and library information stored in a <a href="http://redis.io/">Redis</a>
+       datastore.
+     </p>
+     <p>
+       These apps can be used in isolation, be developed independently
+       from each other, and are released in an incremental fashion. Eventually,
+       this collection of apps will supercede the need to have a traditional
+       intregrated library system.
+     </p>
+   </div>
+   <div class="span6">
+    <h2>{% trans "Activity" %}</h2>
+    <p>Current app activity</p>
+   </div>
+  </div>
+ {% comment %}END content DIV{% endcomment %}
+ </div>
+{% endblock %}
+{% block more-js %}{% endblock %}

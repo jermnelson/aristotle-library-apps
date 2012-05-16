@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+ <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" />
+ <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet" />
+ <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet" />
+ <link href="{{ STATIC_URL }}book_search/css/app.css" rel="stylesheet" type="text/css" />
+ <link href="{{ STATIC_URL }}article_search/css/app.css" rel="stylesheet" type="text/css" />
+ <script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+ <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
+ <script src="{{ STATIC_URL }}book_search/js/book_search.js"></script>
+ <script src="{{ STATIC_URL }}article_search/js/article_search.js"></script>
+</head>
+<body>
+
+{% block body %}
+{% include 'book_search/snippets/widget.html' %}
+{% include 'article_search/snippets/widget.html' %}
+</body>
+</html>
+{% endblock %}
+

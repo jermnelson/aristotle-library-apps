@@ -1,0 +1,33 @@
+{% load i18n %}
+{% comment %}START Navigation Action View ROW DIV{% endcomment %}
+<div class="row-fluid nav-action-bar">
+<div class="span5">
+{% block up-affordance %}
+{% endblock %}
+{% block app-icon %}
+ <a class="app-ico-float" href="{% if app.url %}{{ app.url }}{% else %}/app{% endif %}">
+  <img src="{{ STATIC_URL }}/img/{% if app.icon_url %}{{ app.icon_url }}{% else %}portfolio.png{% endif %}" />
+ </a>
+ {% endblock %}
+{% block action-view-title %}
+ <h2>{% if app.current_view %}{{ app.current_view.title }}{% else %}App Title{% endif %}</h2>
+</div>
+<div class="span2">
+ <a href="{{ institution.url }}"><img src="{{ STATIC_URL }}img/{{ institution.logo }}" class="institution_logo" /></a>
+</div>
+{% endblock %}
+
+{% block action-btns %}
+{% for btn in app.action_btns %}
+{% if forloop.counter > 2 %}
+
+{% else %}
+<div class="span1">
+ <button class="btn {{ btn.class }}" onclick="{{ btn.action_url }}">{{ btn.icon }}</button>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+{% comment %}END Navigation Action View ROW DIV{% endcomment %}
+</div>
