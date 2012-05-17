@@ -1,0 +1,22 @@
+{% extends 'app-base.html' %}
+
+{% block more-css %}
+ <link href="{{ STATIC_URL }}css/datepicker.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/bootstrap.less" rel="stylesheet/less" type="text/css" />
+    <link href="{{ STATIC_URL }}css/dropdowns.less" rel="stylesheet/less" type="text/css" />
+    <link href="{{ STATIC_URL }}css/sprites.less" rel="stylesheet/less" type="text/css" />
+    <link href="{{ STATIC_URL }}css/datepicker.less" rel="stylesheet/less" type="text/css" />
+
+{% endblock %}
+
+{% block body %}
+
+<h2>Datepicker</h2>
+
+
+
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
+{% endblock %}

@@ -1,5 +1,5 @@
 beautifulsoup4==4.0.5
 Django==1.4
 redis==2.4.12
-pymarc==2.71
+pymarc
 lxml==2.3.3
