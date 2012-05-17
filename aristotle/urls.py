@@ -7,12 +7,12 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'aristotle.views.default', name='home'),
-    url(r'^apps/','portfolio.views.default', name='portfolio.home'),
     url(r'^apps/call_number/', include('call_number.urls')),
     url(r'^apps/hours/', include('hours.urls')),
     url(r'^apps/marc_batch/', include('marc_batch.urls')),
     url(r'^apps/orders/', include('orders.urls')),
     url(r'^apps/portfolio/', include('portfolio.urls')),
+    url(r'^apps/','portfolio.views.default', name='portfolio.home'),
     
                        
                        

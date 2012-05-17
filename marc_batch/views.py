@@ -5,8 +5,9 @@ __author__ = "Jeremy Nelson"
 
 from django.views.generic.simple import direct_to_template
 from django.http import HttpResponse
+from aristotle.settings import INSTITUTION
 from app_settings import APP
-from settings import INSTITUTION
+
 
 def default(request):
     """

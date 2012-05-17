@@ -6,7 +6,7 @@ __author__ = "Jeremy Nelson"
 from datetime import datetime
 from django.views.generic.simple import direct_to_template
 from app_settings import APP
-from settings import INSTITUTION
+from aristotle.settings import INSTITUTION
 
 
 def browse_month(request,year,month):

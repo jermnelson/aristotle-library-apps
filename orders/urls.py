@@ -2,7 +2,7 @@
  :mod:`url` Order App URL routing
 """
 __author__ = 'Jeremy Nelson'
-import budget.views
+import orders.views
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('orders.views',

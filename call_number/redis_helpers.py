@@ -4,7 +4,7 @@
 import pymarc,redis,re
 import logging,sys
 try:
-    import settings 
+    import aristotle.settings as settings
     REDIS_HOST = settings.REDIS_ACCESS_HOST
     REDIS_PORT = settings.REDIS_ACCESS_PORT
     CALL_NUMBER_DB = settings.CALL_NUMBER_DB
@@ -15,7 +15,7 @@ try:
 except ImportError:
     # Setup for local development
 #    REDIS_HOST = '172.25.1.108'
-    REDIS_HOST = '0.0.0.0'
+    REDIS_HOST = '127.0.0.1'
     REDIS_PORT = 6379
     CALL_NUMBER_DB = 4
     volatile_redis = None

@@ -6,7 +6,7 @@ from calendar import HTMLCalendar
 from django.template import Context,Library,loader
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
-from BeautifulSoup import BeautifulSoup,Tag
+from bs4 import BeautifulSoup
 
 register = Library()
 
@@ -19,11 +19,11 @@ def create_nav_btn(soup,date,text):
     :param date: Date to create nav button
     :param text: Text for button
     """
-    nav_th = Tag(soup,'th',attrs=[('colspan','2')])
+    nav_th = soup.new_tag('th',attrs=[('colspan','2')])
     nav_th['class'] = 'month'
-    nav_a = Tag(soup,'a',attrs=[('href','/apps/orders/%s/%s' % (date.year,
-                                                                date.month))])
-    nav_a.setString(text)
+    nav_a = soup.new_tag('a',href='/apps/orders/%s/%s' % (date.year,
+                                                          date.month))
+    nav_a.string = text
     if date > datetime.today():
         nav_a['class'] = "btn btn-mini btn-info disabled"
         nav_a['href'] = '#'
@@ -43,6 +43,7 @@ def month_calendar(date=datetime.today()):
     """
     raw_month_html = HTMLCalendar().formatmonth(date.year,date.month)
     month_soup = BeautifulSoup(raw_month_html)
+    
     time_delta = timedelta(days=31)
     # Creates Previous and Next month (if date isn't current)
     first_row = month_soup.find('tr')
@@ -50,11 +51,11 @@ def month_calendar(date=datetime.today()):
     exist_th['colspan'] = 3    
     previous_month = date - time_delta
     next_month = date + time_delta
-    previous_th = create_nav_btn(month_soup,previous_month,"&laquo;")
-    next_th = create_nav_btn(month_soup,next_month,"&raquo;")
-    first_row.insert(0,previous_th)
-    first_row.insert(2,next_th)
-    return mark_safe(str(month_soup))
+    create_nav_btn(month_soup,previous_month,"&laquo;")
+    create_nav_btn(month_soup,next_month,"&raquo;")
+    pretty_html = month_soup.prettify()
+    print(type(pretty_html))
+    return mark_safe(pretty_html)
     
 
 register.filter('month_calendar',month_calendar)

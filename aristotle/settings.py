@@ -116,7 +116,13 @@ WSGI_APPLICATION = 'aristotle.wsgi.application'
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT,'templates'),
     os.path.join(PROJECT_ROOT,'templates/snippets/'),
-    os.path.join(PROJECT_HOME,'portfolio/templates/')
+    os.path.join(PROJECT_HOME,'call_number/templates/'),
+    os.path.join(PROJECT_HOME,'call_number/templates/snippets/'),
+    os.path.join(PROJECT_HOME,'hours/templates/'),
+    os.path.join(PROJECT_HOME,'marc_batch/templates/'),
+    os.path.join(PROJECT_HOME,'orders/templates/'),
+    os.path.join(PROJECT_HOME,'portfolio/templates/'),
+    
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

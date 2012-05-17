@@ -3,14 +3,15 @@
 """
 __author__ = 'Jeremy Nelson'
 
-import lib.rda_core as rda_core,redis
+import aristotle.lib.rda_core as rda_core,redis
 from django.views.generic.simple import direct_to_template
 from django.http import HttpResponse
 from django.template import Context,Template,loader
 import django.utils.simplejson as json
 from django.utils.translation import ugettext
-import commands,sys,settings,logging
-from commands import search
+import aristotle.settings as settings
+import redis_helpers,sys,logging
+import redis_helpers 
 from app_settings import APP
 
 redis_server = redis.StrictRedis(host=settings.REDIS_ACCESS_HOST,
@@ -25,24 +26,24 @@ def app(request):
     """
     try:
         if request.POST.has_key('call_number'):
-            current = commands.get_record(request.POST['call_number'])
+            current = redis_helpers.get_record(request.POST['call_number'])
         elif request.GET.has_key('call_number'):
-            current = commands.get_record(request.GET['call_number'])
+            current = redis_helpers.get_record(request.GET['call_number'])
         if len(current) < 1:
             current = redis_server.hgetall(SEED_RECORD_ID)
     except:
         current = redis_server.hgetall(SEED_RECORD_ID)
     logging.error("Current call number is %s" % current)
-    typeahead_data = commands.get_all(current['call_number'])
+    typeahead_data = redis_helpers.get_all(current['call_number'])
     return direct_to_template(request,
                               'call_number/app.html',
                              {'app':APP,
                               'aristotle_url':settings.DISCOVERY_RECORD_URL,
                               'current':current,
                               'institution':settings.INSTITUTION, 
-                              'next':commands.get_next(current['call_number']),
-                              'previous':commands.get_previous(current['call_number']),
-                              'redis':commands.get_redis_info(),
+                              'next':redis_helpers.get_next(current['call_number']),
+                              'previous':redis_helpers.get_previous(current['call_number']),
+                              'redis':redis_helpers.get_redis_info(),
                               'typeahead_data':typeahead_data})
 
 def default(request):
@@ -55,9 +56,9 @@ def default(request):
                               'call_number/default.html',
                               {'aristotle_url':settings.DISCOVERY_RECORD_URL,
                                'current':current,
-                               'next':commands.get_next(current['call_number']),
-                               'previous':commands.get_previous(current['call_number']),
-                               'redis':commands.get_redis_info()})
+                               'next':redis_helpers.get_next(current['call_number']),
+                               'previous':redis_helpers.get_previous(current['call_number']),
+                               'redis':redis_helpers.get_redis_info()})
 
 def json_view(func):
     """
@@ -96,11 +97,11 @@ def browse(request):
     :param request: HTTP Request
     """
     call_number = request.GET['call_number']
-    current = commands.get_record(call_number)
+    current = redis_helpers.get_record(call_number)
     context = Context({'aristotle_url':settings.DISCOVERY_RECORD_URL,
                        'current':current,
-                       'next':commands.get_next(current['call_number']),
-                       'previous':commands.get_previous(current['call_number'])})
+                       'next':redis_helpers.get_next(current['call_number']),
+                       'previous':redis_helpers.get_previous(current['call_number'])})
     widget_template = loader.get_template('call_number/snippets/widget.html')
     return {'html':widget_template.render(context)}
 
@@ -112,7 +113,7 @@ def typeahead_search(request):
     :param request: Request
     """
     query = request.GET['q']
-    return commands.search(query)
+    return redis_helpers.search(query)
 
 
 def widget(request):
@@ -131,13 +132,13 @@ def widget(request):
             standalone = request.GET['standalone']
          if request.GET.has_key('call_number'):
             call_number = request.GET['call_number']
-    current = commands.get_record(call_number)
+    current = redis_helpers.get_record(call_number)
     
     return direct_to_template(request,
                               'call_number/snippets/widget.html',
                               {'aristotle_url':settings.DISCOVERY_RECORD_URL,
                                'current':current,
-                               'next':commands.get_next(current['call_number']),
-                               'previous':commands.get_previous(current['call_number']),
+                               'next':redis_helpers.get_next(current['call_number']),
+                               'previous':redis_helpers.get_previous(current['call_number']),
 
                                'standalone':standalone})

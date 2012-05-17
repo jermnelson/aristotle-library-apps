@@ -39,7 +39,7 @@ def setup_rda_core(rda_core_schema_file):
         
 current_module = sys.modules[__name__]
 current_dir = os.path.abspath(os.path.dirname(__file__))
-fixures_root = os.path.join(os.path.split(current_dir)[0],
+fixures_root = os.path.join(current_dir,
                             'fixures')
 schema_filepath = os.path.join(fixures_root,
                                'rdaCore_10_13_09.xsd')

@@ -2,7 +2,8 @@
  :mod:`call_number_extras` Call Number Application specific tags
 """
 __author__ = 'Jeremy Nelson'
-import settings,redis
+import aristotle.settings as settings
+import redis
 from django.template import Context,Library,loader
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe

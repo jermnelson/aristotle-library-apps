@@ -1,0 +1,95 @@
+{% load i18n %}
+{% load call_number_extras %}
+{% if standalone %}
+<html>
+<head>
+ <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+ <link href="{{ STATIC_URL }}call_number/css/call_number.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+{% endif %}
+{% comment %}START call-number-browser DIV{% endcomment %}
+<div id="call-number-browser">
+ <h2>Browse by call number:</h2>
+ <span id="current-callnumber">{{ current.call_number }}</span>
+ {% comment %}START nearby-entities DIV{% endcomment %}
+ <div id="nearby-entities">
+  {% comment %}START nearby-entities OL{% endcomment %}
+  <ol>
+  {% for entity in previous %}
+   <li>
+     {% if entity.isbn %}
+     {{ entity.isbn|google_book_display }}
+     {% endif %}
+     <div class="call-number-entity"><a href="{{ aristotle_url }}{{ entity.bib_number }}" target="_top">{{ entity.title|truncatewords:7 }}</a></div>
+     {% if entity.author %}
+     <div class="call-number-entity">{% trans entity.author %}
+     {% comment %}
+     {% for author in entity.author %}
+     {% trans author %}
+     {% if not forloop.last %},{% endif %}
+     {% endcomment %}
+     </div>
+     {% endif %}
+     <div class="call-number-entity">{{ entity.location }} &raquo;
+     {{ entity.call_number }}
+     </div>
+   </li>
+  {% endfor %}
+   <li class="current">
+     {% if current.isbn %}
+     {{ current.isbn|google_book_display }}
+     {% endif %}
+     <div class="call-number-entity">{{ current.title }}</div>
+     {% if current.author %}
+      <div class="call-number-entity">{{ current.author }}</div>
+     {% endif %}
+     <div class="call-number-entity">{{ current.location }} &raquo;
+     {{ current.call_number }} 
+     </div>
+   </li>
+   {% for entity in next %}
+   <li>
+     {% if entity.isbn %}
+     {{ entity.isbn|google_book_display }}
+     {% endif %}
+     <div class="call-number-entity"><a href="{{ aristotle_url }}{{ entity.bib_number }}" target="_top">{{ entity.title }}</a></div>
+     <div class="call-number-entity">{% trans entity.author %}
+     {% comment %}
+     {% for author in entity.author %}
+     {% trans author %}
+     {% if not forloop.last %},{% endif %}
+     {% endcomment %}
+     </div>
+     <div class="call-number-entity">{{ entity.location }} &raquo;
+     {{ entity.call_number }}
+     </div>
+   </li>
+   
+   {% endfor %}
+  {% comment %}END nearby-entities OL{% endcomment %}
+  </ol>
+  {% comment %}START browse-controls DIV{% endcomment %}
+  <div id="browse-controls">
+   {% comment %}START btn-group DIV{% endcomment %}
+   <div class="btn-group">
+     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ previous.0.call_number }}')">&laquo; Previous</a>
+     {% comment %}<a class="btn btn-mini btn-info" href="#">Expand</a>{% endcomment %}
+     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ next.1.call_number }}')">Next &raquo;</a>
+   {% comment %}END btn-group DIV{% endcomment %}
+   </div>
+  {% comment %}END browse-controls DIV{% endcomment %}
+  </div>
+ {% comment %}END nearby-entities DIV{% endcomment %}
+ </div>
+ <br/>
+{% comment %}END call-number-browser DIV{% endcomment %}
+</div>
+{% if standalone %}
+<script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+<script src="{{ STATIC_URL }}call_number/js/call_number.js"></script>
+</body></html>
+{% endif %}
+
