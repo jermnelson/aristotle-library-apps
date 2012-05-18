@@ -14,5 +14,6 @@ def default(request):
     :param request: web request
     """
     return direct_to_template(request,
-                               'hours/app.html',
-                               {'app':APP})
+                               'hours/test-app.html',
+                               {'app':APP,
+                                'library_status':{'status':True}})
