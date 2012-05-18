@@ -1,0 +1,23 @@
+[
+  {"dropdown":
+    {"label":"Access & Discovery App Portfolio",
+     "dropdown_menu": [{"href":"/apps/call_number/",
+                        "label":"Call Number App"},
+                       {"href":"/apps/hours",
+                        "label":"Hours App"}]}
+   },
+   {"dropdown":
+    {"label":"Productivity App Portfolio",
+     "dropdown_menu": [{"href":"/apps/marc_batch/",
+                        "label":"MARC Batch Operations App"},
+                       {"href":"/apps/orders/",
+                        "label":"Library Orders App"}]}
+   },
+   {"dropdown":
+    {"label":"Help",
+     "dropdown_menu": [{"href":"/help/",
+                        "label":"General Help"},
+                       {"href":"/about/",
+                        "label":"About Aristotle Library Apps"}]}
+   }
+]

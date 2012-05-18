@@ -1,5 +1,6 @@
 beautifulsoup4==4.0.5
 Django==1.4
+docutils==0.9
 redis==2.4.12
 pymarc
 lxml==2.3.3

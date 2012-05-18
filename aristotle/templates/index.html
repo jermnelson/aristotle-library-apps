@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load markup %}
 
 {% block head-title %}{% trans "CoALA Academic Library Summit -- Library App Demo" %}{% endblock %}
 
@@ -17,13 +18,13 @@
 
 {% block body %}
  {% comment %}START content DIV{% endcomment %}
- <div class="content">
+ <div class="content" >
   {% comment %}START page-header DIV{% endcomment %}
-  <div class="page-header hero-unit">
+  <div class="page-header hero-unit" >
     <h1>{% trans "Library Apps for Users and Staff" %} 
     <p><small>{% trans "CoALA 2012 Academic Library Summit" %}</small></p>
     </h1>
-    <p>Jeremy Nelson &amp; Jon Driscoll<br/>Colorado College</p>
+    <p>{% trans "Jeremy Nelson &amp; Jon Driscoll" %}<br/>{% trans "Colorado College" %}</p>
     <p style="float:right">
 	<button class="btn btn-large btn-success">Background</button>
     <button class="btn btn-large btn-primary">Getting Started</button>
@@ -33,26 +34,45 @@
   
   <div class="row">
    <div class="span4 well">
-     <h2>{% trans "Vision" %}</h2>
-     <p>
-       The
-       <a href="https://github.com/jermnelson/FRBR-Redis-Datastore">FRBR-Redis Datastore App</a> 
-       portfolios are mobile, tablet, and PC single purpose apps that allow the 
-       user to discovery and access bibliographic and library information. 
-       Productivity apps are available to authenticated users for managing the 
-       bibliographic and library information stored in a <a href="http://redis.io/">Redis</a>
-       datastore.
-     </p>
-     <p>
-       These apps can be used in isolation, be developed independently
-       from each other, and are released in an incremental fashion. Eventually,
-       this collection of apps will supercede the need to have a traditional
-       intregrated library system.
-     </p>
+	 <h2>{% trans "About" %}</h2>
+     {{ vision|restructuredtext }}
    </div>
-   <div class="span6">
-    <h2>{% trans "Activity" %}</h2>
-    <p>Current app activity</p>
+   <div class="span6 well">
+    {% if not institution %}
+    <div class="alert alert-error">
+     <h4 class="alert-heading">Alert!</h4> Your organization's 
+     information is not set in the aristotle/settings.py <em>INSTITUTION</em>
+     variable.
+    </div>
+    {% else %}
+    <h2>{% trans "Your Institution's Information" %}</h2>
+    <table class="table table-bordered table-striped table-condensed">
+     <thead>
+      <tr>
+       <th>Variable</th>
+       <th>Value</th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+        <td>Name:</td>
+        <td>{{ institution.name }}</td>
+      </tr>
+      <tr>
+        <td>URL:</td>
+        <td>{{ institution.url }}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Logo:</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+         <img src="{{ STATIC_URL }}img/{{ institution.logo }}" />
+        </td>
+      </tr>
+     </tbody>
+    </table>
+    {% endif %}
    </div>
   </div>
  {% comment %}END content DIV{% endcomment %}

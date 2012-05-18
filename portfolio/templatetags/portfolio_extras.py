@@ -24,6 +24,22 @@ def app_display(app):
                 'name':app['name'],
                 'url':app['url']}
     return mark_safe(app_template.render(Context(app_dict)))
-    
+
+def get_navbar_menu(menu):
+    """
+    Calls and generates HTML for a Twitter Bootstrap navbar menu
+
+    :param isbn: Numeric ISBN of Book 
+    :rtype: Generated HTML or None
+    """
+    try:
+        navbar_template = loader.get_template('navbar-default-menu.html')
+        params = {"menu":menu}
+        return mark_safe(navbar_template.render(Context(params)))
+    except:
+        return ''
 
 register.filter('app_display',app_display)
+register.filter('get_navbar_menu',get_navbar_menu)
+
+
