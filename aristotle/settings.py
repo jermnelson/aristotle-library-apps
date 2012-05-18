@@ -119,6 +119,7 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME,'call_number/templates/'),
     os.path.join(PROJECT_HOME,'call_number/templates/snippets/'),
     os.path.join(PROJECT_HOME,'hours/templates/'),
+    os.path.join(PROJECT_HOME,'hours/templates/snippets/'),
     os.path.join(PROJECT_HOME,'marc_batch/templates/'),
     os.path.join(PROJECT_HOME,'orders/templates/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/'),
