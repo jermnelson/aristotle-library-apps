@@ -25,10 +25,15 @@
     <p><small>{% trans "CoALA 2012 Academic Library Summit" %}</small></p>
     </h1>
     <p>{% trans "Jeremy Nelson &amp; Jon Driscoll" %}<br/>{% trans "Colorado College" %}</p>
-    <p style="float:right">
-	<button class="btn btn-large btn-success">Background</button>
-    <button class="btn btn-large btn-primary">Getting Started</button>
-    </p>
+	<div class="btn-toolbar" style="float:right">
+     <div class="btn-group">
+	  <a href="/background.html" class="btn btn-large btn-success">Background &raquo;</a>
+      <a href="/getting-started.html" class="btn btn-large btn-primary">Getting Started &raquo;</a>
+     </div>
+     <div class="btn-group">
+	  <a href="/apps/portfolio" class="btn btn-large"><i class="icon-th"></i> Your Apps</a>
+     </div>
+    </div>
   {% comment %}END page-header DIV{% endcomment %}
   </div>
   
@@ -41,8 +46,9 @@
     {% if not institution %}
     <div class="alert alert-error">
      <h4 class="alert-heading">Alert!</h4> Your organization's 
-     information is not set in the aristotle/settings.py <em>INSTITUTION</em>
-     variable.
+     information is not set in your
+     <code>aristotle/fixures/institution.json</code>
+     file.
     </div>
     {% else %}
     <h2>{% trans "Your Institution's Information" %}</h2>
@@ -58,9 +64,15 @@
         <td>Name:</td>
         <td>{{ institution.name }}</td>
       </tr>
+      {% if institution.parent_institution %}
+      <tr>
+        <td>Parent Institution:</td>
+        <td>{{ institution.parent_institution }}</td>
+      </tr>
+      {% endif %}
       <tr>
         <td>URL:</td>
-        <td>{{ institution.url }}</td>
+        <td><a href="{{ institution.url }}">{{ institution.url }}</a></td>
       </tr>
       <tr>
         <td colspan="2">Logo:</td>

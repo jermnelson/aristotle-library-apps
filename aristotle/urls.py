@@ -7,6 +7,8 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'aristotle.views.default', name='home'),
+    url(r'^background.html$','aristotle.views.background',name='background'),
+    url(r'^getting-started.html$','aristotle.views.starting',name='getting-started'),
     url(r'^apps/call_number/', include('call_number.urls')),
     url(r'^apps/hours/', include('hours.urls')),
     url(r'^apps/marc_batch/', include('marc_batch.urls')),

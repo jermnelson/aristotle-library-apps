@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load markup %}
+
+{% block head-title %}{% trans "CoALA Academic Library Summit -- Library App Demo" %}{% endblock %}
+
+{% block more-css %}
+<style>
+ body {
+  background-color: #1B3153;
+  padding-top: 60px;
+}
+ .navbar-inner {
+   background-color: #1B3153 !important;
+ }
+ 
+ h1.bkgrd {
+   font-size: 4em;
+   padding-bottom: .5em; 
+ }
+</style>
+{% endblock %}
+
+{% block body %}
+ {% comment %}START content DIV{% endcomment %}
+ <div class="content" > 
+ {% comment %}START first row DIV{% endcomment %}
+  <div class="row">
+   {% comment %}START main-col DIV{% endcomment%}
+   <div class="span7">
+	{% comment %}START main-col-row-1 DIV{% endcomment%}
+	<div class="row">
+     {% comment %}START main-hero-unit DIV{% endcomment%}
+     <div class="span7 well">
+	  <h1 class="bkgrd">{% trans "Background" %}</h1>
+      <p><small style="font-size:1.2em">{% trans "Aristotle Library Apps Project" %}<br/>
+         {% trans "CoALA 2012 Academic Library Summit" %}</small></p>
+     {% comment %}END main-hero-unit DIV{% endcomment%}
+     </div>
+    {% comment %}END main-col-row-1 DIV{% endcomment%}
+    </div>
+    {% comment %}START main-col-row-2 DIV{% endcomment%}
+    <div class="row">
+     <div class="span7 well">
+	   <h2>{% trans "Related Resources" %}</h2>
+	    {{ related_resources|restructuredtext }}
+     </div> 
+     </div>
+    {% comment %}END main-col-row-2 DIV{% endcomment%}
+    </div>
+    <div class="span3 offset1">
+	 <div class="row">
+	  <div class="span4 well">
+      <h2>{% trans "History" %}</h2>
+	  {{ history|restructuredtext }}
+	  </div>
+     </div>
+   {% comment %}END main-col DIV{% endcomment%}
+   </div>
+   
+  {% comment %}END first row DIV{% endcomment %}
+  </div>
+  {% comment %}START second row DIV{% endcomment %}
+  <div class="row">
+   <div class="btn-toolbar span7 offset1 well">
+      <div class="btn-group">
+	   <a href="/background.html" class="btn btn-large btn-success disabled">Background &raquo;</a>
+       <a href="/getting-started.html" class="btn btn-large btn-primary">Getting Started &raquo;</a>
+      </div>
+      <div class="btn-group">
+	   <a href="/apps/portfolio" class="btn btn-large"><i class="icon-th"></i> Your Apps</a>
+      </div>
+      </div>	 
+	 </div>
+  {% comment %}END second row DIV{% endcomment %}
+  </div>
+  
+ {% comment %}END content DIV{% endcomment %}
+ </div>
+{% endblock %}
+{% block more-js %}{% endblock %}
