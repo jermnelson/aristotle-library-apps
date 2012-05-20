@@ -15,10 +15,9 @@ to run correctly.
 #. Create a Python virtual enviroment using `virtualenv`_. 
 
 #. From the command-line, change to the `Aristotle Library Apps`_ root director
-   and run the following:
-  
-   ::
-      pip install requirements.txt
+   and run the following::
+   
+      pip install -r requirements.txt
 
   
 .. _`Aristotle Library Apps`: https://github.com/jermnelson/aristotle-library-apps

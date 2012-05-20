@@ -1,13 +1,22 @@
 {% load i18n %}
-<ul class="thumbnails">
-{% for active_app in portfolio %}
- <li class="span1">
-   <div class="thumbnail thumbnail-app" style="background-color: #F1ECE5;">
-	<a href="{{ active_app.url }}">
-    <img src="{{ STATIC_URL }}img/{{ active_app.icon }}" alt="">
-    <h5>{{ active_app.name }}</h5>
-    </a>
-    {% if active_app.description %}<p>{{ active_app.description }}</p>{% endif %}
- </li>
+<div class="row">
+{% for active_app in portfolio|slice:":4" %}
+ <div class="span1">
+  <div class="app_icon">
+  <a href="{{ active_app.url }}">
+  <img src="{{ STATIC_URL }}img/{{ active_app.icon_url }}" alt="{{ active_app.current_view. }}"/>
+  <p>{{ active_app.current_view.title }}</p>
+  </a>
+  </div>
+ </div>
 {% endfor %}
-</ul>
+</div>
+<div class="row">
+{% for active_app in portfolio|slice:"4:" %}
+ <div class="span1">
+  <div class="app_icon">
+  {{ active_app.url }}
+  </div>
+ </div>
+{% endfor %}
+</div>

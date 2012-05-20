@@ -1,6 +1,7 @@
 @ActionBarColor: #4B6282;
 @ActionBarFont: 2em, NeoDraw, Verdana, sans-serif;
 @ActionBarShadowColor: #888;
+@AppIconBackground: #F1ECE5;
 @FooterColor: #3F5164;
 @InstitutionLogo: '/static/img/cc-logo-gold.png';
 @PaneColor: #F1ECE5; 
@@ -28,6 +29,31 @@ div.action-bar h2 {
   color: white !important;
 }  
 
+div.app_icon {
+ background-color: @AppIconBackground;
+ height: 60px;
+ padding: 0 0 0 0;
+ text-align: center;
+ width: 60px;
+ .rounded-corners;
+}
+
+div.app_icon a {
+  color: @FooterColor;  
+}
+
+div.app_icon img {
+ height:35px;
+ margin-top: 5px;
+ maring-botton: 5px;
+ width:35px;
+}
+
+div.app_icon p {
+  line-height: 70%;
+  font-size: .80em;
+}
+ 
 div.main-pane {
  margin-top: .5em;
 }
