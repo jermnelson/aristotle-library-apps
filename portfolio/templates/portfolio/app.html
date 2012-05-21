@@ -10,9 +10,8 @@
 
 {% block body %}
 {% comment %}
-{% if user != None %}
  <div class="row-fluid">
-  {% include 'portfolio/snippets/top-action-bar.html' %}
+
  </div>
 {% endif %}
 {% endcomment %}
@@ -20,11 +19,34 @@
 {% comment %}START row-fluid DIV{% endcomment %}
  
  <div class="row-fluid main-pane" id="main-pane" >
- {% include 'portfolio/snippets/app-thumbnail.html' %}
+ <div class="row-fluid">
+  <div id="portfolio-carousel" class="carousel" >
+   <div class="carousel-inner">
+	 <div class="active item carousel-item">
+	  <h2 style="text-align:center">All Apps</h2>
+	  
+	  {% include 'portfolio/snippets/app-thumbnail.html' %}
+     </div>
+     <div class="item" style="height:300px">
+      <h2 style="text-align:center">Access &amp; Discovery Apps</h2>
+      {% include 'portfolio/snippets/app-thumbnail.html' %}
+     </div>
+     <div class="item" style="height:300px">
+      <h2 style="text-align:center">Productivity Apps</h2>
+      {% include 'portfolio/snippets/app-thumbnail.html' %}
+     </div>
+    </div>
+     <a class="carousel-control left" href="#portfolio-carousel" data-slide="prev">&lsaquo;</a>
+     <a class="carousel-control right" href="#portfolio-carousel" data-slide="next">&rsaquo;</a>
+   </div>
+  </div>
  {% comment %}END row-fluid DIV{% endcomment %}
  </div>
 {% endblock %}
 
 {% block more-js %}
 <script src="{{ STATIC_URL }}portfolio/js/portfolio.js"></script>
+<script>
+$('.carousel').carousel({interval:false});
+</script>
 {% endblock %}
