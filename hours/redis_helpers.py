@@ -31,13 +31,13 @@ def add_library_hours(open_on,
         raise ValueError("open_on.day=%s and close_on.day=%s must be equal" %\
                          (open_on.day,close_on.day))
     library_key = '%s:open:%s' % (open_on.strftime(library_key_format),
-                                  redis_ds.incr("global:%s" % library_key))
+                                  redis_ds.incr("global:%s" % library_key_format))
     redis_ds.zadd(library_key,
                   0,
                   open_on.strftime(time_format))
     redis_ds.zadd(library_key,
                   0,
-                  closed_on.strftime(time_format))
+                  close_on.strftime(time_format))
     
       
 

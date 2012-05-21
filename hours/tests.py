@@ -28,7 +28,19 @@ class AddLibraryHoursTest(TestCase):
                              'close_on':next_day})
 
     def test_add_hour_range(self):
-        pass
+        add_library_hours(self.midnight,
+                          self.standard_close)
+        
+        # Tests open at 1:30 am
+        self.assert_(is_library_open(datetime.datetime(2012,5,14,1,30)))
+        # Test close at 2:30 am
+        self.assertFalse(is_library_open(datetime.datetime(2012,5,14,2,30)))
+        add_library_hours(self.standard_open,
+                          self.last_minute)
+        # Test open at 10 am
+        self.assert_(is_library_open(datetime.datetime(2012,5,14,10,00)))
+        # Test open at 11:45 pm
+        self.assert_(is_library_open(datetime.datetime(2012,5,14,23,45)))
 
     def tearDown(self):
         test_ds.flushdb()

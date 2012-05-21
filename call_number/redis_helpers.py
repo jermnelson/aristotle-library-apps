@@ -217,7 +217,11 @@ def ingest_records(marc_file_location):
     if volatile_redis is None:
         return None
     marc_reader = pymarc.MARCReader(open(marc_file_location,"rb"))
-    for record in marc_reader:
+    for i,record in enumerate(marc_reader):
+        if not i%1000:
+            sys.stderr.write(".")
+        if not i%10000:
+            sys.stderr.write(str(i))
         ingest_record(record)
     
 
