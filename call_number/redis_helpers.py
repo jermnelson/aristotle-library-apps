@@ -32,7 +32,8 @@ english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                     'Y', 'Z']
 
 lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
-lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\w{0,1}\d*)\s*(?P<decimal>[.|\w]*\d*)\s*(?P<cutter1alpha>\w*)\s*(?P<last>\d*)")
+#lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\w{0,1}\d*)\s*(?P<decimal>[.|\w]*\d*)\s*(?P<cutter1alpha>\w*)\s*(?P<last>\d*)")
+lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\s*(?P<cutter1>[.|\w]*\d*)\s*(?P<cutter2>\w*)\s*(?P<last>\d*)")
 
 def generate_search_set(call_number):
     if volatile_redis is None:
@@ -188,7 +189,7 @@ def ingest_record(marc_record):
     if call_number is None:
         return None
     redis_id = redis_server.incr("global:frbr_rda")
-    redis_key = ":%s" % redis_id
+    redis_key = "frbr_rda:%s" % redis_id
     redis_server.hset(redis_key,"rdaTitleOfWork",marc_record.title())
     redis_server.hset(redis_key,
                       "rdaRelationships:author",
@@ -243,10 +244,22 @@ def search(query):
 
 
 def lccn_normalize(raw_callnumber):
+    """
+    Function based on Bill Dueber algorithm at
+    <http://code.google.com/p/library-callnumber-lc/wiki/Home>
+    """
     callnumber_regex = lc_regex.search(raw_callnumber)
     output = None
     if callnumber_regex is not None:
         callnumber_result = callnumber_regex.groupdict()
-        leading = callnumber_result.get('leading')
+        output = '%s ' % callnumber_result.get('leading')
+        number = callnumber_result.get('number')
+        number_lst = number.split(".")
+        output += '{:>04}'.format(number_lst[0])
+        if len(number_lst) == 2:
+            output += '{:<02}'.format(number_lst[1])
+        cutter1 = callnumber_result.get('cutter1')
+        if len(cutter1) > 0:
+            output += '{:<02}'.format(cutter1)
     return output
         

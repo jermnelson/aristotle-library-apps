@@ -4,6 +4,7 @@
 __author__ = "Jeremy Nelson"
 from django.test import TestCase
 from django.test.client import Client
+from redis_helpers import lccn_normalize
 
 web_client = Client()
 
@@ -20,4 +21,14 @@ class WidgetTest(TestCase):
         widget_response = web_client.get('/call_number/widget')
         self.assertEquals(widget_response.status_code,
                           200)
+
+class LCCNNormalizeTest(TestCase):
+
+    def test_normalization(self):
+        self.assertEquals('A 0001',
+                          lccn_normalize('A1'))
+        self.assertEquals('B 002230',
+                          lccn_normalize('B22.3'))
+        
+    
         

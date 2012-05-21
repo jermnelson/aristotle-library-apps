@@ -18,7 +18,7 @@ redis_server = redis.StrictRedis(host=settings.REDIS_ACCESS_HOST,
                                  port=settings.REDIS_ACCESS_PORT,
                                  db=settings.CALL_NUMBER_DB)
 
-SEED_RECORD_ID = 'record:278'
+SEED_RECORD_ID = 'frbr_rda:278'
 
 def app(request):
     """
@@ -34,7 +34,9 @@ def app(request):
     except:
         current = redis_server.hgetall(SEED_RECORD_ID)
     logging.error("Current call number is %s" % current)
-    typeahead_data = redis_helpers.get_all(current['call_number'])
+    call_number = redis_server.hget(current["rdaIdentifierForTheExpression"],
+                                    "lccn")
+    typeahead_data = redis_helpers.get_all(call_number)
     return direct_to_template(request,
                               'call_number/app.html',
                              {'app':APP,

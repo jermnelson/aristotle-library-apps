@@ -1,0 +1,36 @@
+body
+{
+background-color:transparent;
+}
+
+div.search
+{
+background:#EEE9DA;
+border:4px solid white;
+}
+
+.dropdown-menu
+{
+margin-right: 10px;
+}
+
+.articleHorizontalList ul
+{
+margin: 12px;
+padding-left: 0px;
+padding-top: 24px;
+text-align: justify;
+}
+
+.articleHorizontalList ul li
+{
+display: inline;
+padding-right: 10px;
+color: green;
+}
+
+.articleHorizontalList ul li a
+{
+font-weight: bold;
+color: green;
+}
