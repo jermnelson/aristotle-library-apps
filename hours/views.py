@@ -2,7 +2,7 @@
 
  :mod: views Hours App Views
 """
-__author__ = "Jon Driscoll"
+__author__ = "Jon Driscoll and Jeremy Nelson"
 
 from django.views.generic.simple import direct_to_template
 from app_settings import APP

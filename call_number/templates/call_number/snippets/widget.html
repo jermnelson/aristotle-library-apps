@@ -19,24 +19,7 @@
   {% comment %}START nearby-entities OL{% endcomment %}
   <ol>
   {% for entity in previous %}
-   <li>
-     {% if entity.isbn %}
-     {{ entity.isbn|google_book_display }}
-     {% endif %}
-     <div class="call-number-entity"><a href="{{ aristotle_url }}{{ entity.bib_number }}" target="_top">{{ entity.title|truncatewords:7 }}</a></div>
-     {% if entity.author %}
-     <div class="call-number-entity">{% trans entity.author %}
-     {% comment %}
-     {% for author in entity.author %}
-     {% trans author %}
-     {% if not forloop.last %},{% endif %}
-     {% endcomment %}
-     </div>
-     {% endif %}
-     <div class="call-number-entity">{{ entity.location }} &raquo;
-     {{ entity.call_number }}
-     </div>
-   </li>
+   {% include 'snippets/browse-li.html' %}
   {% endfor %}
    <li class="current">
      {% if current.isbn %}

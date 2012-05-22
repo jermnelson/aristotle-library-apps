@@ -1,0 +1,50 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block more-css %}{% endblock %}
+
+
+{% block body %}
+ {% comment %}START main-pane DIV{% endcomment %}
+ <div class="row-fluid main-pane">
+  {% comment %}START left-jobs-col DIV{% endcomment %}
+  <div class="span2 well">
+   <h2>Jobs</h2>
+   <ul id="job-accordion" class="nav nav-list">
+   <li class="nav-header">
+	<a class="btn" 
+	   data-parent="#job-accordion" 
+	   data-target="#legacy-ils"
+	   data-toggle="collapse">Legacy ILS</a>   
+   </li>
+   <div id="legacy-ils" class="collapse in">
+	{% for job in ils_jobs %}
+	  <li><a href="/marc_batch/jobs/{{ job.pk }}">{{ job.name }}</a></li>
+	{% endfor %} 
+   </div>
+   <li class="nav-header">
+	<a class="btn" 
+	   data-toggle="collapse" 
+	   data-parent="#job-accordion" 
+	   data-target="#solr-index">Solr Search Index</a>
+   </li>
+   <div id="solr-index" class="collapse">
+	Solr Indexing Jobs
+   </div>
+   <li class="nav-header">
+    <a class="btn" 
+	   data-toggle="collapse" 
+	   data-parent="#job-accordion" 
+	   data-target="#redis-datastore">Redis Datastore</a>
+   </li>
+   <div id="redis-datastore" class="collapse">
+	Redis Datastore
+   </div>
+  {% comment %}END left-jobs-col DIV{% endcomment %}
+  </div>
+  <div class="span7">
+   <p>{{ app.description }}</p>
+  </div>
+{% comment %}END main-pane DIV{% endcomment %}
+ </div>
+{% endblock %}

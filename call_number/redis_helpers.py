@@ -32,7 +32,8 @@ english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                     'Y', 'Z']
 
 lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
-lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\w{0,1}\d*)\s*(?P<decimal>[.|\w]*\d*)\s*(?P<cutter1alpha>\w*)\s*(?P<last>\d*)")
+#lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\w{0,1}\d*)\s*(?P<decimal>[.|\w]*\d*)\s*(?P<cutter1alpha>\w*)\s*(?P<last>\d*)")
+lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\s*(?P<cutter1>[.|\w]*\d*)\s*(?P<cutter2>\w*)\s*(?P<last>\d*)")
 
 def generate_search_set(call_number):
     if volatile_redis is None:
@@ -73,6 +74,7 @@ def get_all(call_number,slice_size=10):
     :rtype list: List of call numbers
     """
     current_rank = redis_server.zrank('call-number-sort-set',call_number)
+    print("Current rank is %s, call number %s" % (current_rank,call_number))
     return redis_server.zrange('call-number-sort-set',
                                current_rank-slice_size,
                                current_rank+slice_size)
@@ -124,7 +126,18 @@ def get_slice(start,stop):
 
 def get_record(call_number):
     record_key = redis_server.hget('call-number-hash',call_number)
-    return redis_server.hgetall(record_key)
+    record_info = redis_server.hgetall(record_key)
+    if record_info.has_key('rdaRelationships:author'):
+        author = record_info.pop('rdaRelationships:author')
+        if author.count("None") < 1:
+            record_info['author'] = author
+    ident_key = record_info.pop('rdaIdentifierForTheExpression')
+    rec_detail = redis_server.hgetall(ident_key)
+    bib_number = rec_detail.pop('bibliographic-number')
+    record_info['bib_number'] = bib_number
+    record_info.update(rec_detail)
+    return record_info
+    
 
 def quick_set_callnumber(identifiers_key,
                          call_number_type,
@@ -154,19 +167,27 @@ def get_set_callnumbers(redis_key,
                              redis_key)
     lccn_field = marc_record['050']
     if lccn_field is not None:
-        call_number = lccn_field.value()
-        redis_server.hset(identifiers_key,
-                          'lccn',
-                          call_number)
-        redis_server.hset('lccn-hash',call_number,redis_key)
-        redis_server.zadd('lccn-sort-set',0,call_number)
+        raw_number = lccn_field.value()
+        call_number = lccn_normalize(raw_number)
+        quick_set_callnumber(identifiers_key,
+                             "lccn",
+                             call_number,
+                             redis_key)
     local_090 = marc_record['090']
     if local_090 is not None:
         call_number = local_090.value()
-        quick_set_callnumber(identifiers_key,
-                             "local",
-                             call_number,
-                             redis_key)
+        if lccn_field is None:
+            raw_number = call_number
+            call_number = lccn_normalize(raw_number)
+            quick_set_callnumber(identifiers_key,
+                                 "lccn",
+                                 call_number,
+                                 redis_key)
+        else:
+            quick_set_callnumber(identifiers_key,
+                                 "local",
+                                 call_number,
+                                 redis_key)
     local_099 = marc_record['099']
     if local_099 is not None:
         call_number = local_099.value()
@@ -188,7 +209,7 @@ def ingest_record(marc_record):
     if call_number is None:
         return None
     redis_id = redis_server.incr("global:frbr_rda")
-    redis_key = ":%s" % redis_id
+    redis_key = "frbr_rda:%s" % redis_id
     redis_server.hset(redis_key,"rdaTitleOfWork",marc_record.title())
     redis_server.hset(redis_key,
                       "rdaRelationships:author",
@@ -243,10 +264,27 @@ def search(query):
 
 
 def lccn_normalize(raw_callnumber):
+    """
+    Function based on Bill Dueber algorithm at
+    <http://code.google.com/p/library-callnumber-lc/wiki/Home>
+    """
     callnumber_regex = lc_regex.search(raw_callnumber)
     output = None
     if callnumber_regex is not None:
         callnumber_result = callnumber_regex.groupdict()
-        leading = callnumber_result.get('leading')
+        output = '%s ' % callnumber_result.get('leading')
+        number = callnumber_result.get('number')
+        number_lst = number.split(".")
+        output += '{:>04}'.format(number_lst[0])
+        if len(number_lst) == 2:
+            output += '{:<02}'.format(number_lst[1])
+        cutter1 = callnumber_result.get('cutter1')
+        if len(cutter1) > 0:
+            cutter1 = cutter1.replace('.','')
+            output += '{:<04}'.format(cutter1)
+        cutter2 = callnumber_result.get('cutter2')
+        if len(cutter2) > 0:
+            cutter2 = cutter2.replace('.','')
+            output +=  '{:<04}'.format(cutter2)
     return output
         

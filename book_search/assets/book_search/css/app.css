@@ -1,0 +1,35 @@
+body
+{
+background-color:transparent;
+}
+
+div.search
+{
+background:#EEE9DA;
+border:4px solid white;
+}
+
+.dropdown-menu
+{
+margin-right: 10px;
+}
+
+.bookHorizontalList ul
+{
+margin: 12px;
+padding-left: 0px;
+padding-top: 24px;
+}
+
+.bookHorizontalList ul li
+{
+display: inline;
+padding-right: 20px;
+color: purple;
+}
+
+.bookHorizontalList ul li a
+{
+font-weight: bold;
+color: purple;
+}
