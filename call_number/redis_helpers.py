@@ -74,6 +74,7 @@ def get_all(call_number,slice_size=10):
     :rtype list: List of call numbers
     """
     current_rank = redis_server.zrank('call-number-sort-set',call_number)
+    print("Current rank is %s, call number %s" % (current_rank,call_number))
     return redis_server.zrange('call-number-sort-set',
                                current_rank-slice_size,
                                current_rank+slice_size)
@@ -125,7 +126,18 @@ def get_slice(start,stop):
 
 def get_record(call_number):
     record_key = redis_server.hget('call-number-hash',call_number)
-    return redis_server.hgetall(record_key)
+    record_info = redis_server.hgetall(record_key)
+    if record_info.has_key('rdaRelationships:author'):
+        author = record_info.pop('rdaRelationships:author')
+        if author.count("None") < 1:
+            record_info['author'] = author
+    ident_key = record_info.pop('rdaIdentifierForTheExpression')
+    rec_detail = redis_server.hgetall(ident_key)
+    bib_number = rec_detail.pop('bibliographic-number')
+    record_info['bib_number'] = bib_number
+    record_info.update(rec_detail)
+    return record_info
+    
 
 def quick_set_callnumber(identifiers_key,
                          call_number_type,
@@ -155,19 +167,27 @@ def get_set_callnumbers(redis_key,
                              redis_key)
     lccn_field = marc_record['050']
     if lccn_field is not None:
-        call_number = lccn_field.value()
-        redis_server.hset(identifiers_key,
-                          'lccn',
-                          call_number)
-        redis_server.hset('lccn-hash',call_number,redis_key)
-        redis_server.zadd('lccn-sort-set',0,call_number)
+        raw_number = lccn_field.value()
+        call_number = lccn_normalize(raw_number)
+        quick_set_callnumber(identifiers_key,
+                             "lccn",
+                             call_number,
+                             redis_key)
     local_090 = marc_record['090']
     if local_090 is not None:
         call_number = local_090.value()
-        quick_set_callnumber(identifiers_key,
-                             "local",
-                             call_number,
-                             redis_key)
+        if lccn_field is None:
+            raw_number = call_number
+            call_number = lccn_normalize(raw_number)
+            quick_set_callnumber(identifiers_key,
+                                 "lccn",
+                                 call_number,
+                                 redis_key)
+        else:
+            quick_set_callnumber(identifiers_key,
+                                 "local",
+                                 call_number,
+                                 redis_key)
     local_099 = marc_record['099']
     if local_099 is not None:
         call_number = local_099.value()
@@ -260,6 +280,11 @@ def lccn_normalize(raw_callnumber):
             output += '{:<02}'.format(number_lst[1])
         cutter1 = callnumber_result.get('cutter1')
         if len(cutter1) > 0:
-            output += '{:<02}'.format(cutter1)
+            cutter1 = cutter1.replace('.','')
+            output += '{:<04}'.format(cutter1)
+        cutter2 = callnumber_result.get('cutter2')
+        if len(cutter2) > 0:
+            cutter2 = cutter2.replace('.','')
+            output +=  '{:<04}'.format(cutter2)
     return output
         

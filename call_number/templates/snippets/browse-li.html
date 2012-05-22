@@ -1,0 +1,15 @@
+{% load i18n %}
+{% load call_number_extras %}
+<li>
+
+ <div class="call-number-entity"><a href="{{ aristotle_url }}{{ entity.bib_number }}" target="_top">{{ entity.rdaTitleOfWork|truncatewords:7 }}</a></div>
+ {% if entity.author %}
+ <div class="call-number-entity">{% trans entity.author %}
+ </div>
+ {% endif %}
+ <div class="call-number-entity">{{ entity.location }} &raquo;
+ {% if entity.lccn %}
+ {{ entity.lccn }}
+ {% endif %}
+ </div>
+</li>

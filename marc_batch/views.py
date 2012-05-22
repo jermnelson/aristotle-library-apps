@@ -7,6 +7,7 @@ from django.views.generic.simple import direct_to_template
 from django.http import HttpResponse
 from aristotle.settings import INSTITUTION
 from app_settings import APP
+from models import Job
 
 
 def default(request):
@@ -14,10 +15,22 @@ def default(request):
     Displays default view for the MARC Batch App
     """
     APP['view'] = 'default'
+    ils_jobs,redis_jobs,solr_jobs = [],[],[]
+    all_jobs = Job.objects.all()
+    for job in all_jobs:
+        if job.job_type == 0:
+            redis_jobs.append(job)
+        elif job.job_type == 1:
+            solr_jobs.append(job)
+        elif job.job_type == 2:
+            ils_jobs.append(job)
     return direct_to_template(request,
-                              'marc_batch/marc-batch-app.html',
+                              'marc-batch-app.html',
                               {'app':APP,
-                               'institution':INSTITUTION})
+                               'ils_jobs':ils_jobs,
+                               'institution':INSTITUTION,
+                               'redis_jobs':redis_jobs,
+                               'solr_jobs':solr_jobs})
 
 def ils(request):
     """

@@ -64,8 +64,8 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-#STATIC_ROOT = os.path.join(PROJECT_ROOT,'static')
-STATIC_ROOT = '/home/dotcloud/volatile/static/'
+STATIC_ROOT = os.path.join(PROJECT_ROOT,'static')
+#STATIC_ROOT = '/home/dotcloud/volatile/static/'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -74,6 +74,13 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT,'assets'),
+    os.path.join(PROJECT_HOME,'article_search/assets'),
+    os.path.join(PROJECT_HOME,'book_search/assets'),
+    os.path.join(PROJECT_HOME,'call_number/assets'),
+    os.path.join(PROJECT_HOME,'hours/assets'),
+    os.path.join(PROJECT_HOME,'marc_batch/assets'),
+    os.path.join(PROJECT_HOME,'orders/assets'),
+    os.path.join(PROJECT_HOME,'portfolio/assets')
 ##    os.path.join(PROJECT_ROOT,'article_search'),
 ##    os.path.join(PROJECT_ROOT,'book_search'),
 ##    os.path.join(PROJECT_ROOT,'portfolio'),
@@ -122,7 +129,8 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME,'call_number/templates/snippets/'),
     os.path.join(PROJECT_HOME,'hours/templates/'),
     os.path.join(PROJECT_HOME,'hours/templates/snippets/'),
-    os.path.join(PROJECT_HOME,'marc_batch/templates/'),
+    os.path.join(PROJECT_HOME,'marc_batch/templates/marc_batch/'),
+    #os.path.join(PROJECT_HOME,'marc_batch/templates/snippets/'),
     os.path.join(PROJECT_HOME,'orders/templates/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/portfolio/snippets/'),

@@ -1,0 +1,27 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block more-css %}{% endblock %}
+
+
+{% block body %}
+ <div class="row-fluid">
+  {% include 'marc_batch/snippets/top-action-bar.html' %}
+ </div>
+ <div class="row-fluid main-pane">
+  <div class="span2">
+   <div class="well">
+    <h2>Job Listing</h2>
+    <ul>
+    {% for job in redis_jobs %}
+      <li><a href="{{ job.url }}">{{ job.name }}</a></li>
+    {% endfor %}
+    </ul>
+   </div>
+   <a class="btn btn-primary">Job History</a>
+  </div>
+  <div class="span8 hero-unit" id="job-details">
+   <h1>MARC Batch Redis Jobs</h1>
+  </div>
+ </div>
+{% endblock %}

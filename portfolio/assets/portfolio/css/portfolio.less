@@ -1,22 +1,38 @@
-@portfolioBackground: #4B6282;
+@import "/static/css/app.less";
 
-span.icon-label {
- color: white;
- font-size: .8em;
- font-weight: bold;
- line-height: 80%;
+div.app_icon {
+ background-color: @AppIconBackground;
+ height: 60px;
+ text-align: center;
+ width: 60px;
+ .rounded-corners;
 }
 
-div.icon-wrapper {
-  float: left;
-  text-align: center;
+div.app_icon a {
+  color: @FooterColor;  
 }
 
-
-div.portfolio-base {
-  background-color: @portfolioBackground;
-  float: left;
-  height: 6em; 
-  padding: .5em;
+div.app_icon img {
+ height:35px;
+ margin-top: 5px;
+ margin-botton: 5px;
+ width:35px;
 }
 
+div.app_icon p {
+  line-height: 70%;
+  font-size: .80em;
+}
+
+div.carousel-item {
+  height: 300px;
+}
+
+table.portfolio {
+ margin-left: auto;
+ margin-right:auto;
+}
+
+table.portfolio td {
+ padding-bottom: 5px;
+}

@@ -1,0 +1,8 @@
+{% load i18n %}
+<div class="btn-group">
+ <a class="btn" href="/apps/marc_batch/redis"{% if app.view == 'redis' %} disabled="disabled"{% endif %}><i class="icon-star-empty"></i> {% trans "Ingest into Redis" %}</a>
+ <a class="btn" href="/apps/marc_batch/solr"{% if app.view == 'solr' %} disabled="disabled"{% endif %}>
+	 <i class="icon-file"></i> {% trans "Ingest into Solr" %}</a>
+ <a class="btn" href="/apps/marc_batch/ils"{% if app.view == 'ils' %} disabled="disabled"{% endif %}>
+	 <i class="icon-print"></i> {% trans "Ingest into ILS" %}</a>
+</div>
