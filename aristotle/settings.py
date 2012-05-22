@@ -125,6 +125,7 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME,'marc_batch/templates/'),
     os.path.join(PROJECT_HOME,'orders/templates/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/'),
+    os.path.join(PROJECT_HOME,'portfolio/templates/portfolio/snippets/'),
     
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -140,6 +141,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.markup',
     'article_search',
+    'book_search',
     'call_number',
     'hours',
     'marc_batch',

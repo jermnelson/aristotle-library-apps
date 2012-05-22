@@ -1,16 +1,10 @@
 {% load i18n %}
-<table style="margin-left: auto;margin-right:auto;">
- <tr>
-{% for active_app in portfolio|slice:":4" %}
+{% load portfolio_extras %}
  <td style="padding-left:20px">
   <div class="app_icon">
-  <a href="{{ active_app.url }}">
-  <img src="{{ STATIC_URL }}img/{{ active_app.icon_url }}" alt="{{ active_app.current_view. }}"/>
-  <p>{{ active_app.current_view.title }}</p>
+  <a href="/apps/{{ app.url }}">
+  <img src="/static/img/{{ app.icon_url }}" alt="{{ app.current_view. }}"/>
+  <p>{{ app.current_view.title }}</p>
   </a>
   </div>
- </td>
-{% endfor %}
-</tr>
-</table>
-
+</td>

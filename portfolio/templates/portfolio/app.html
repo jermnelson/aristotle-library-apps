@@ -24,16 +24,50 @@
    <div class="carousel-inner">
 	 <div class="active item carousel-item">
 	  <h2 style="text-align:center">All Apps</h2>
-	  
-	  {% include 'portfolio/snippets/app-thumbnail.html' %}
+          <table class="portfolio">
+          <tr>
+          {% for app in portfolio %}
+          {% if forloop.counter0|test_row %}
+          </tr>
+          <tr>
+          {% endif %}
+          {{ app|create_app_td }}
+          {% endfor %}
+          </tr>
+	  </table>
      </div>
      <div class="item" style="height:300px">
       <h2 style="text-align:center">Access &amp; Discovery Apps</h2>
-      {% include 'portfolio/snippets/app-thumbnail.html' %}
+          <table class="portfolio">
+          <tr>
+          {% for app in portfolio %}
+          {% if forloop.counter0|test_row %}
+          </tr>
+          <tr>
+          {% endif %}
+          {% if not app.productivity %}
+          {{ app|create_app_td }}
+          {% endif %}
+          {% endfor %}
+          </tr>
+	  </table>
+
      </div>
      <div class="item" style="height:300px">
       <h2 style="text-align:center">Productivity Apps</h2>
-      {% include 'portfolio/snippets/app-thumbnail.html' %}
+          <table class="portfolio">
+          <tr>
+          {% for app in portfolio %}
+          {% if forloop.counter0|test_row %}
+          </tr>
+          <tr>
+          {% endif %}
+          {% if app.productivity %}
+          {{ app|create_app_td }}
+          {% endif %}
+          {% endfor %}
+          </tr>
+	  </table>
      </div>
     </div>
      <a class="carousel-control left" href="#portfolio-carousel" data-slide="prev">&lsaquo;</a>
