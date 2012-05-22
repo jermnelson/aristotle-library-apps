@@ -116,8 +116,6 @@ WSGI_APPLICATION = 'aristotle.wsgi.application'
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT,'templates'),
     os.path.join(PROJECT_ROOT,'templates/snippets/'),
-    os.path.join(PROJECT_HOME,'article_search/templates/'),
-    os.path.join(PROJECT_HOME,'article_search/templates/snippets/'),
     os.path.join(PROJECT_HOME,'call_number/templates/'),
     os.path.join(PROJECT_HOME,'call_number/templates/snippets/'),
     os.path.join(PROJECT_HOME,'hours/templates/'),
@@ -139,7 +137,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.markup',
-    'article_search',
     'call_number',
     'hours',
     'marc_batch',

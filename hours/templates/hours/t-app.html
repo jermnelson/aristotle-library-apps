@@ -1,0 +1,18 @@
+{% extends 'app-base.html' %}
+
+{% block more-css %}
+
+{% endblock %}
+
+{% block body %}
+
+{% if library_status.status %}
+{% include 'open.html' %}
+{% else %}
+{% include 'closed.html' %}
+{% endif %}
+
+{% endblock %}
+
+{% block more-js %}
+{% endblock %}

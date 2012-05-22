@@ -6,6 +6,7 @@ __author__ = 'Jon Driscoll, Jeremy Nelson'
 
 
 import datetime,redis,copy
+import aristotle.settings
 
 redis_ds = redis.StrictRedis()
 library_key_format = 'library-hours:%Y-%m-%d'

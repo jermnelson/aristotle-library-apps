@@ -6,13 +6,142 @@
 
 {% block body %}
 
-{% if library_status.status %}
-{% include 'open.html' %}
-{% else %}
-{% include 'closed.html' %}
-{% endif %}
+{%comment %}BEGIN nav tabs{% endcomment %}
+   <ul class="nav nav-tabs">
+      <li class="active"><a href="#block" data-toggle="tab">Whole Block</a></li>
+      <li><a href="#date" data-toggle="tab">Date Range</a></li>
+   </ul>
+{% comment %}END nav tabe{% endcomment %}
+   
+{% comment %}BEGIN content DIV{% endcomment %}
+<div class="tab-content">
 
-{% endblock %}
+   {% comment %}BEGIN block tab content DIV{% endcomment %}
+   <div class="tab-pane active" id="block">
+      
+      <form action="/apps/hours/save" method="post" class="form-horizontal">{% csrf_token %}
 
-{% block more-js %}
+         <fieldset>
+
+            <div class="control-group">
+               <label class="control-label" for="Block">Block:</label>
+               <div class="controls">
+                  <select class="input-small" id=block" name="block">
+                     <option>1</option>
+                     <option>2</option>
+                     <option>3</option>
+                     <option>4</option>
+                     <option>half-block</option>
+                     <option>5</option>
+                     <option>6</option>
+                     <option>7</option>
+                     <option>8</option>
+                     <option>A</option>
+                     <option>B</option>
+                     <option>C</option>
+                  </select>
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="begin">Block Begins:</label>
+               <div class="controls">
+                  <input type="text" class="input-small" id="begin" name="begin" value="MM-DD-YYYY">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="end">Block Ends:</label>
+               <div class="controls">
+                  <input type="text" class="input-small" id="end" name="end" value="MM-DD-YYYY">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="monday">Mondays:</label>
+               <div class="controls">
+                  <input type="text" class="input-mini" id="monopen" name="monopen" value="7:45am"> to 
+                  <input type="text" class="input-mini" id="monclose" name="monclose" value="2:00am">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="tuesday">Tuesdays:</label>
+               <div class="controls">
+                  <input type="text" class="input-mini" id="tueopen" name="tueopen" value="7:45am"> to
+                  <input type="text" class="input-mini" id="tueclose" name="tueclose" value="2:00am">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="wednesday">Wednesdays:</label>
+               <div class="controls">
+                  <input type="text" class="input-mini" id="wedopen" name="wedopen" value="7:45am"> to
+                  <input type="text" class="input-mini" id="wedclose" name="wedclose" value="2:00am">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="thursday">Thursdays:</label>
+               <div class="controls">
+                  <input type="text" class="input-mini" id="thuopen" name="thuopen" value="7:45am"> to
+                  <input type="text" class="input-mini" id="thuclose" name="thuclose" value="2:00am">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="friday">Fridays:</label>
+               <div class="controls">
+                  <input type="text" class="input-mini" id="friopen" name="friopen" value="7:45am"> to
+                  <input type="text" class="input-mini" id="friclose" name="friclose" value="10:00pm">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="saturday">Saturdays:</label>
+               <div class="controls">
+                  <input type="text" class="input-mini" id="satopen" name="satopen" value="10:00am"> to
+                  <input type="text" class="input-mini" id="satclose" name="satclose" value="10:00pm">
+               </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="sunday">Sundays:</label>
+               <div class="controls">
+                  <input type="text" class="input-mini" id="sunopen" name="sunopen" value="10:00am"> to
+                  <input type="text" class="input-mini" id="sunclose" name="sunclose" value="2:00am">
+               </div>
+            </div>
+
+            <div class="row">
+               <div class="span3 offset2">
+                  <input class="btn btn-primary" type="submit" value="Submit Hours">
+               </div>
+            </div>
+
+         </fieldset>
+
+      </form>
+
+<h3>Exceptions will need to be edited manually on the Date Range tab</h3>
+
+   {% comment %}END block tab content DIV{%endcomment %}
+   </div>
+
+   {% comment %}BEGIN date tab content DIV{% endcomment %}
+   <div class="tab-pane" id="date">
+      <h1>DATE RANGE</h1>
+
+   {% comment %}END date tab content DIV{%endcomment %}
+   </div>
+
+{% comment %}END content DIV{% endcomment %}
+</div>
+ 
+    <script>
+    $(function () {
+    $('#myTab a:last').tab('show');
+    })
+    </script>
+
 {% endblock %}
