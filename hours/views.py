@@ -6,8 +6,10 @@ __author__ = "Jon Driscoll and Jeremy Nelson"
 
 from django.views.generic.simple import direct_to_template
 from app_settings import APP
-import datetime,copy
-from django.http import HttpResponse
+import datetime,copy,urllib
+from django.http import HttpResponse,HttpResponseRedirect
+from redis_helpers import add_library_hours
+from django.shortcuts import redirect
 
 def default(request):
     """
@@ -20,20 +22,42 @@ def default(request):
                                {'app':APP,
                                 'library_status':{'status':True}})
 
+def manage(request,message):
+    """
+    default is the standard view for the Hours app
+
+    :param request: web request
+    """
+    message=None
+    if request.GET.has_key("message"):
+        message=request.GET["message"]
+    return direct_to_template(request,
+                               'hours/test-app.html',
+                               {'app':APP,
+                                'library_status':{'status':True},
+                                'message':message})
+
 def save(request):
     raw_begins=request.POST["begin"]
     raw_ends=request.POST["end"]
     begins=datetime.datetime.strptime(raw_begins,"%m-%d-%Y")
+    starts=copy.deepcopy(begins)
     ends=datetime.datetime.strptime(raw_ends,"%m-%d-%Y")
     delta = datetime.timedelta(days=1)
     while begins <= ends:
-       opentime="%sopen" % begins.strftime("%a").lower()
-       closetime="%sclose" % begins.strftime("%a").lower()
-       print(opentime,closetime)
+       cgiopen="%sopen" % begins.strftime("%a").lower()
+       cgiclose="%sclose" % begins.strftime("%a").lower()
+       opentime=datetime.datetime.strptime("%s %s" % (begins.strftime("%m-%d-%Y"),request.POST[cgiopen]),
+                                           "%m-%d-%Y %H:%M%p")
+       closetime=datetime.datetime.strptime("%s %s" % (begins.strftime("%m-%d-%Y"),request.POST[cgiclose]),
+                                           "%m-%d-%Y %H:%M%p")
        if opentime>closetime:
-          midnight=copy.deepcopy(begins)
-          midnight.hour=0
-          midnight.minute=1
+          midnight=datetime.datetime(begins.year,begins.month,begins.day,0,0)
+          add_library_hours(midnight,closetime)
+          lastminute=datetime.datetime(begins.year,begins.month,begins.day,23,59)
+          add_library_hours(begins,lastminute)
+       else: 
+          add_library_hours(opentime,closetime)
        begins += delta
-    return HttpResponse("save %s" % request.POST["monclose"])
-
+    message="Hours for %s to %s have been set in Redis!" % (starts.strftime("%m-%d-%Y"),ends.strftime("%m-%d-%Y"))
+    return HttpResponseRedirect("/apps/hours/manage?message=%s" % urllib.quote(message))

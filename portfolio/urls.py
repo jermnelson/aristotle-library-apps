@@ -7,6 +7,5 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('portfolio.views',
     url(r"^$","default",name='portfolio-default'),
-    url(r"json/(?P<func>\w+)",'json_view'),
 )
                        

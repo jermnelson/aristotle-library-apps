@@ -6,6 +6,10 @@
 
 {% block body %}
 
+{% if message %}
+<h1>{{ message }}</h1>
+{% endif %}
+
 {%comment %}BEGIN nav tabs{% endcomment %}
    <ul class="nav nav-tabs">
       <li class="active"><a href="#block" data-toggle="tab">Whole Block</a></li>
