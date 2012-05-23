@@ -35,34 +35,34 @@ lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
 #lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\w{0,1}\d*)\s*(?P<decimal>[.|\w]*\d*)\s*(?P<cutter1alpha>\w*)\s*(?P<last>\d*)")
 lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\s*(?P<cutter1>[.|\w]*\d*)\s*(?P<cutter2>\w*)\s*(?P<last>\d*)")
 
-def generate_search_set(call_number):
-    if volatile_redis is None:
-        return None
-    redis_server = volatile_redis
-    sections = call_number.split(".")
-    first_cutter = sections[0].strip()
-    for i in range(0,len(first_cutter)):
-        redis_server.zadd('call-number-sorted-search-set',0,first_cutter[0:i])
-    redis_server.zadd('call-number-sorted-search-set',0,first_cutter)
-    redis_server.zadd('call-number-sorted-search-set',0,'%s*' % call_number)   
+##def generate_search_set(call_number):
+##    if volatile_redis is None:
+##        return None
+##    redis_server = volatile_redis
+##    sections = call_number.split(".")
+##    first_cutter = sections[0].strip()
+##    for i in range(0,len(first_cutter)):
+##        redis_server.zadd('call-number-sorted-search-set',0,first_cutter[0:i])
+##    redis_server.zadd('call-number-sorted-search-set',0,first_cutter)
+##    redis_server.zadd('call-number-sorted-search-set',0,'%s*' % call_number)   
 
-def get_callnumber(record,
-                   marc_fields=['086',
-                                '090',
-                                '099',
-                                '050']):
-    """
-    Function iterates through the marc_fields list and returns 
-    the first field that has a value. List order matters in 
-    this function!
-
-    :param record: MARC Record
-    :param marc_fields: List of MARC Fields that contain call numbers
-    :rtype str: First matched string
-    """
-    for field_tag in marc_fields:
-        if record[field_tag] is not None:
-            return record[field_tag].value()
+##def get_callnumber(record,
+##                   marc_fields=['086',
+##                                '090',
+##                                '099',
+##                                '050']):
+##    """
+##    Function iterates through the marc_fields list and returns 
+##    the first field that has a value. List order matters in 
+##    this function!
+##
+##    :param record: MARC Record
+##    :param marc_fields: List of MARC Fields that contain call numbers
+##    :rtype str: First matched string
+##    """
+##    for field_tag in marc_fields:
+##        if record[field_tag] is not None:
+##            return record[field_tag].value()
 
 def get_all(call_number,slice_size=10):
     """
