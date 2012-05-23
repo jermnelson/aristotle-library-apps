@@ -7,8 +7,8 @@ from django.views.generic.simple import direct_to_template
 from django.http import HttpResponse
 from aristotle.settings import INSTITUTION
 from app_settings import APP
-from models import Job
-
+from models import Job,job_types
+from forms import *
 
 def default(request):
     """
@@ -39,8 +39,18 @@ def job_display(request,job_pk):
     :param request: HTTP Request
     :param job_pk: Job's Django primary key
     """
+    template_filename = 'marc-batch-app.html'
     job = Job.objects.get(pk=job_pk)
-    return HttpResponse("JOB is %s " % job.name)
+    for row in job_types:
+        if row[0] == job.job_type:
+            template_filename = '%s.html' % row[1]
+    marc_form = MARCRecordUploadForm()
+    return direct_to_template(request,
+                              template_filename,
+                              {'app':APP,
+                               'current_job':job,
+                               'institution':INSTITUTION,
+                               'marc_upload_form':marc_form})
 
 def ils(request):
     """

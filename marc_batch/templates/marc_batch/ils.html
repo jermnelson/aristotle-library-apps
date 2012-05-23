@@ -5,23 +5,25 @@
 
 
 {% block body %}
- <div class="row-fluid">
-  {% include 'marc_batch/snippets/top-action-bar.html' %}
- </div>
  <div class="row-fluid main-pane">
   <div class="span2">
    <div class="well">
-    <h2>Job Listing</h2>
-    <ul>
-    {% for job in ils_jobs %}
-      <li><a href="{{ job.url }}">{{ job.name }}</a></li>
-    {% endfor %}
-    </ul>
+    <p>
+     <a class="btn btn-primary">{{ current_job.name }} History</a>
+    </p>
+    <p>
+    <a class="btn" href="/apps/marc_batch/">{{ app.current_view.title }} Home</a>
+    </p>
    </div>
-   <a class="btn btn-primary">Job History</a>
   </div>
-  <div class="span8 hero-unit" id="job-details">
-   <h1>MARC Batch ILS Jobs</h1>
+  <div class="span8 well" id="job-details">
+   <h1>{{ current_job.name }} Job</h1>
+   <form>
+	<input type="hidden" value="{{ current_job.pk }}" name="job" />
+   {{ marc_upload_form }}
+   <br/>
+   <input class="btn btn-large btn-warning" type="submit" value="Upload" />
+   </form>
   </div>
  </div>
 {% endblock %}
