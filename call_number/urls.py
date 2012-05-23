@@ -8,6 +8,7 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('call_number.views',
     url(r"^$","app",name='call-number-default'),
     url(r"info$","default"),
+    url(r"search$","search"),
     url(r"json/browse$",'browse'),
     url(r"json/search$","typeahead_search"),
     url(r'widget$','widget'),

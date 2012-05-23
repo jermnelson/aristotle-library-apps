@@ -1,0 +1,34 @@
+<h2>Jobs</h2>
+<ul id="job-accordion" class="nav nav-list">
+<li class="nav-header">
+<a class="btn" 
+   data-parent="#job-accordion" 
+   data-target="#legacy-ils"
+   data-toggle="collapse">Legacy ILS</a>   
+</li>
+<div id="legacy-ils" class="collapse in">
+{% for job in ils_jobs %}
+  <li {% if job.pk == current_job.pk %}class="active"{% endif %}>
+   <a href="/apps/marc_batch/jobs/{{ job.pk }}/">{{ job.name }}</a>
+  </li>
+{% endfor %} 
+</div>
+<li class="nav-header">
+<a class="btn" 
+   data-toggle="collapse" 
+   data-parent="#job-accordion" 
+   data-target="#solr-index">Solr Search Index</a>
+</li>
+<div id="solr-index" class="collapse">
+Solr Indexing Jobs
+</div>
+<li class="nav-header">
+<a class="btn" 
+   data-toggle="collapse" 
+   data-parent="#job-accordion" 
+   data-target="#redis-datastore">Redis Datastore</a>
+</li>
+<div id="redis-datastore" class="collapse">
+Redis Datastore
+</div>
+</ul>

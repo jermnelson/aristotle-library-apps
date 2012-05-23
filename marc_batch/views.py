@@ -32,6 +32,16 @@ def default(request):
                                'redis_jobs':redis_jobs,
                                'solr_jobs':solr_jobs})
 
+def job_display(request,job_pk):
+    """
+    Displays a Job form for MARC batch operation
+
+    :param request: HTTP Request
+    :param job_pk: Job's Django primary key
+    """
+    job = Job.objects.get(pk=job_pk)
+    return HttpResponse("JOB is %s " % job.name)
+
 def ils(request):
     """
     Displays ils view for the MARC Batch App

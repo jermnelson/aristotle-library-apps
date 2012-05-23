@@ -3,6 +3,7 @@
 """
 import pymarc,redis,re
 import logging,sys
+from app_settings import APP,SEED_RECORD_ID
 try:
     import aristotle.settings as settings
     REDIS_HOST = settings.REDIS_ACCESS_HOST
@@ -46,23 +47,23 @@ lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\
 ##    redis_server.zadd('call-number-sorted-search-set',0,first_cutter)
 ##    redis_server.zadd('call-number-sorted-search-set',0,'%s*' % call_number)   
 
-##def get_callnumber(record,
-##                   marc_fields=['086',
-##                                '090',
-##                                '099',
-##                                '050']):
-##    """
-##    Function iterates through the marc_fields list and returns 
-##    the first field that has a value. List order matters in 
-##    this function!
-##
-##    :param record: MARC Record
-##    :param marc_fields: List of MARC Fields that contain call numbers
-##    :rtype str: First matched string
-##    """
-##    for field_tag in marc_fields:
-##        if record[field_tag] is not None:
-##            return record[field_tag].value()
+def get_callnumber(record,
+                   marc_fields=['086',
+                                '090',
+                                '099',
+                                '050']):
+    """
+    Function iterates through the marc_fields list and returns 
+    the first field that has a value. List order matters in 
+    this function!
+
+    :param record: MARC Record
+    :param marc_fields: List of MARC Fields that contain call numbers
+    :rtype str: First matched string
+    """
+    for field_tag in marc_fields:
+        if record[field_tag] is not None:
+            return record[field_tag].value()
 
 def get_all(call_number,slice_size=10):
     """
@@ -125,7 +126,7 @@ def get_slice(start,stop):
     return entities
 
 def get_record(call_number):
-    record_key = redis_server.hget('call-number-hash',call_number)
+    record_key = redis_server.hget('call-numbers-hash',call_number)
     record_info = redis_server.hgetall(record_key)
     if record_info.has_key('rdaRelationships:author'):
         author = record_info.pop('rdaRelationships:author')
@@ -149,6 +150,7 @@ def quick_set_callnumber(identifiers_key,
     redis_server.hset('%s-hash' % call_number_type,call_number,redis_key)
     redis_server.zadd('%s-sort-set' % call_number_type,0,call_number)
 
+
 def get_set_callnumbers(redis_key,
                         marc_record):
     """
@@ -167,22 +169,18 @@ def get_set_callnumbers(redis_key,
                              redis_key)
     lccn_field = marc_record['050']
     if lccn_field is not None:
-        raw_number = lccn_field.value()
-        call_number = lccn_normalize(raw_number)
-        quick_set_callnumber(identifiers_key,
-                             "lccn",
-                             call_number,
-                             redis_key)
+        call_number = lccn_field.value()
+        lccn_set(identifiers_key,
+                 call_number,
+                 redis_key)
+        
     local_090 = marc_record['090']
     if local_090 is not None:
         call_number = local_090.value()
         if lccn_field is None:
-            raw_number = call_number
-            call_number = lccn_normalize(raw_number)
-            quick_set_callnumber(identifiers_key,
-                                 "lccn",
-                                 call_number,
-                                 redis_key)
+            lccn_set(identifiers_key,
+                     call_number,
+                     redis_key)
         else:
             quick_set_callnumber(identifiers_key,
                                  "local",
@@ -228,9 +226,9 @@ def ingest_record(marc_record):
                           "isbn",
                           isbn)
     # Create search set
-    generate_search_set(call_number)
+#    generate_search_set(call_number)
     redis_server.hset('bib-number-hash',bib_number,redis_key)
-    redis_server.hset('call-number-hash',call_number,redis_key)
+    redis_server.hset('call-numbers-hash',call_number,redis_key)
     redis_server.zadd('call-number-sort-set',0,call_number) 
 
 
@@ -288,3 +286,28 @@ def lccn_normalize(raw_callnumber):
             output +=  '{:<04}'.format(cutter2)
     return output
         
+def lccn_set(identifiers_key,
+             call_number,
+             redis_key):
+    """
+    Sets hash and sorted set for normalized and raw call numbers for
+    LCCN call numbers
+    
+    :param identifiers_key: Key to the RDA Records rdaIdentifiersForTheExpression
+    :param call_number: LCCN Call number
+    :param redis_key: Redis key
+    """
+    redis_server.hset(identifiers_key,
+                      'lccn',
+                      call_number)
+    normalized_call_number = lccn_normalize(call_number)
+    redis_server.hset(identifiers_key,
+                      'lccn-normalized',
+                      normalized_call_number)
+    redis_server.hset('lccn-hash',normalized_call_number,redis_key)
+    redis_server.zadd('lccn-sort-set',
+                      0,
+                      normalized_call_number)
+    
+    
+    

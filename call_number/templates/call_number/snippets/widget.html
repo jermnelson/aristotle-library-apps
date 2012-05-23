@@ -19,38 +19,25 @@
   {% comment %}START nearby-entities OL{% endcomment %}
   <ol>
   {% for entity in previous %}
-   {% include 'snippets/browse-li.html' %}
+    {% include 'snippets/browse-li.html' %}
   {% endfor %}
    <li class="current">
+
      {% if current.isbn %}
      {{ current.isbn|google_book_display }}
      {% endif %}
-     <div class="call-number-entity">{{ current.title }}</div>
+     <div class="call-number-entity">{{ current.rdaTitleOfWork }}</div>
      {% if current.author %}
       <div class="call-number-entity">{{ current.author }}</div>
      {% endif %}
      <div class="call-number-entity">{{ current.location }} &raquo;
-     {{ current.call_number }} 
+      {% if current.lccn %}
+       {{ current.lccn }}
+      {% endif %}
      </div>
    </li>
    {% for entity in next %}
-   <li>
-     {% if entity.isbn %}
-     {{ entity.isbn|google_book_display }}
-     {% endif %}
-     <div class="call-number-entity"><a href="{{ aristotle_url }}{{ entity.bib_number }}" target="_top">{{ entity.title }}</a></div>
-     <div class="call-number-entity">{% trans entity.author %}
-     {% comment %}
-     {% for author in entity.author %}
-     {% trans author %}
-     {% if not forloop.last %},{% endif %}
-     {% endcomment %}
-     </div>
-     <div class="call-number-entity">{{ entity.location }} &raquo;
-     {{ entity.call_number }}
-     </div>
-   </li>
-   
+     {% include 'snippets/browse-li.html' %}
    {% endfor %}
   {% comment %}END nearby-entities OL{% endcomment %}
   </ol>

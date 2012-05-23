@@ -12,13 +12,13 @@ from django.utils.translation import ugettext
 import aristotle.settings as settings
 import redis_helpers,sys,logging
 import redis_helpers 
-from app_settings import APP
+from app_settings import APP,SEED_RECORD_ID
 
 redis_server = redis.StrictRedis(host=settings.REDIS_ACCESS_HOST,
                                  port=settings.REDIS_ACCESS_PORT,
                                  db=settings.CALL_NUMBER_DB)
 
-SEED_RECORD_ID = 'frbr_rda:278'
+
 def setup_seed_rec():
     """
     Helper function returns a record based on the SEED_RECORD_ID
@@ -69,6 +69,7 @@ def default(request):
                                'next':redis_helpers.get_next(current['call_number']),
                                'previous':redis_helpers.get_previous(current['call_number']),
                                'redis':redis_helpers.get_redis_info()})
+
 
 def get_callnumber(rda_record):
     """

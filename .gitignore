@@ -1,2 +1,4 @@
 *.pyc
+*.db
 local_settings.*
+aristotle/static*
