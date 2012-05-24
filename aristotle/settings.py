@@ -124,6 +124,8 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT,'templates/snippets/'),
     os.path.join(PROJECT_HOME,'article_search/templates/'),
     os.path.join(PROJECT_HOME,'article_search/templates/snippets/'),
+    os.path.join(PROJECT_HOME,'book_search/templates/book_search/'),
+    os.path.join(PROJECT_HOME,'book_search/templates/book_search/snippets/'),
     os.path.join(PROJECT_HOME,'call_number/templates/call_number/'),
     os.path.join(PROJECT_HOME,'call_number/templates/call_number/snippets/'),
     os.path.join(PROJECT_HOME,'hours/templates/'),

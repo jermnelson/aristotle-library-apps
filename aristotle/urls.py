@@ -1,14 +1,17 @@
 from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib.auth.views import login, logout
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'aristotle.views.default', name='home'),
     url(r'^background.html$','aristotle.views.background',name='background'),
     url(r'^getting-started.html$','aristotle.views.starting',name='getting-started'),
+    url(r'^accounts/login/$', login),
+    url(r'^accounts/login/$', logout),
     url(r'^apps/article_search/', include('article_search.urls')),
     url(r'^apps/book_search/', include('book_search.urls')),
     url(r'^apps/call_number/', include('call_number.urls')),
@@ -23,8 +26,8 @@ urlpatterns = patterns('',
     # url(r'^aristotle/', include('aristotle.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
-##    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-##    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
 )
