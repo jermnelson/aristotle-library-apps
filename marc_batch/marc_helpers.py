@@ -44,8 +44,7 @@ class MARCModifier:
             raw_record = self.remove648(raw_record)
             raw_record.fields = sorted(raw_record.fields,key=lambda x: x.tag)
             self.records.append(raw_record)
-            self.stats['records'] += 1dren
-    classes provide validation methods and methods for 
+            self.stats['records'] += 1
 
     def processRecord(self,marc_record):
         ''' Method should be overriddden by derived classes.'''
@@ -277,8 +276,7 @@ class MARCModifier:
         506 field with default of 'Access limited to subscribers.'
 
         Parameters:
-        `marc_record`: Required, MARC recorddren
-    classes provide validation methods and methods for 
+        `marc_record`: Required, MARC record
         """
         all506s = marc_record.get_fields('506')
         for field in all506s:
@@ -315,8 +313,7 @@ class MARCModifier:
 
     def __switch_name__(self,**kwargs):
         """
-dren
-    classes provide validation methods and methods for         Internal method takes a personal name in the format of last_name, 
+         Internal method takes a personal name in the format of last_name, 
         first_name middle_names and returns the direct form of the personal
         name.
 
@@ -332,8 +329,7 @@ dren
         else:
             suffix_list = ['JR','SR','I','II','III','IV',]
         if raw_name[-1].startswith(","):
-            raw_name = raw_name[:-1]dren
-    classes provide validation methods and methods for 
+            raw_name = raw_name[:-1]
         comma_number = raw_name.find(",")
         if comma_number < 1 or comma_number > 1:
             return raw_name

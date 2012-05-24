@@ -13,7 +13,7 @@ from app_settings import APP
 from models import Job,job_types
 from forms import *
 import jobs.ils as ils
-from marc_helpers import 
+import marc_helpers
 
 def default(request):
     """
@@ -83,7 +83,7 @@ def job_process(request):
     elif job.job_type == 1: # Solr Job
         pass
     elif job.job_type == 2: # Legacy ILS Job
-        ils_job_manager(request.POST,job)
+        ils_job_manager(request,job)
     else:
         raise Http404
     return HttpResponseRedirect('/apps/marc_batch/finished')
@@ -106,8 +106,7 @@ def ils_job_manager(request,job):
     :param request: HTTP reaquest
     :param job: Job object
     """
-    ils_job_form = MARCRecordUploadFormRecordLoadLogForm(request.POST,
-                                                         request.FILES)
+    ils_job_form = MARCRecordUploadForm(request.POST,request.FILES)
     marc_modifiers = marc_helpers.MARCModifier(request.FILES['original_file'])
 
 def redis(request):

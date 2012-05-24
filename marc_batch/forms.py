@@ -15,11 +15,10 @@ class MARCRecordUploadForm(forms.Form):
                                     choices= [(1,"Bibliographic"),
                                               (2,"Name Authority"),
                                               (3,"Subject Authority")])
-##    load_table = forms.ChoiceField(required=True,
-##                                    label="Load Table",
-##                                    choices= [(1,"blackdrama"),
-##                                              (2,"LTI bibs")])
-    notes = forms.CharField(required=False,label="Notes",widget=forms.Textarea)
+    notes = forms.CharField(required=False,
+                            label="Notes",
+                            widget=forms.Textarea(attrs={'rows':3,
+                                                         'cols':30}))
         
 
 

@@ -3,11 +3,9 @@
 <ul>
 {% for job in ils_jobs %}
   <li {% if job.pk == current_job.pk %}class="active"{% endif %}>
-   <li></li></lik><a href="/apps/marc_batch/jobs/{{ job.pk }}/">{{ job.name }}</a></li>
+   <a href="/apps/marc_batch/jobs/{{ job.pk }}/">{{ job.name }}</a>
   </li>
 {% endfor %} 
 </ul>
 <a class="btn">Solr Search Index</a>
 <a class="btn" >Redis Datastore</a>
-</div>
-</ul>

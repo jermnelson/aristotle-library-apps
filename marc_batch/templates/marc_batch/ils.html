@@ -12,13 +12,13 @@
      <a class="btn btn-primary">{{ current_job.name }} History</a>
     </p>
     <p>
-    <a class="btn" href="/apps/marc_batch/">{{ app.current_view.title }} Home</a>
+    <a class="btn" href="{% url marc-batch-job-process %}">{{ app.current_view.title }} Home</a>
     </p>
    </div>
   </div>
   <div class="span8 well" id="job-details">
    <h1>{{ current_job.name }} Job</h1>
-   <form>
+   <form method="POST" action="/apps/marc_batch/process">{% csrf_token %}
 	<input type="hidden" value="{{ current_job.pk }}" name="job_id" />
    {{ marc_upload_form }}
    <br/>
