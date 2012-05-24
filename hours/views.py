@@ -18,7 +18,7 @@ def default(request):
     :param request: web request
     """
     return direct_to_template(request,
-                               'hours/test-app.html',
+                               'hours/app.html',
                                {'app':APP,
                                 'library_status':{'status':True}})
 
@@ -48,9 +48,9 @@ def save(request):
        cgiopen="%sopen" % begins.strftime("%a").lower()
        cgiclose="%sclose" % begins.strftime("%a").lower()
        opentime=datetime.datetime.strptime("%s %s" % (begins.strftime("%m-%d-%Y"),request.POST[cgiopen]),
-                                           "%m-%d-%Y %H:%M%p")
+                                           "%m-%d-%Y %I:%M%p")
        closetime=datetime.datetime.strptime("%s %s" % (begins.strftime("%m-%d-%Y"),request.POST[cgiclose]),
-                                           "%m-%d-%Y %H:%M%p")
+                                           "%m-%d-%Y %I:%M%p")
        if opentime>closetime:
           midnight=datetime.datetime(begins.year,begins.month,begins.day,0,0)
           add_library_hours(midnight,closetime)
