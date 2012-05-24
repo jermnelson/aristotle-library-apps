@@ -19,10 +19,27 @@ to run correctly.
    
       pip install -r requirements.txt
 
-#. (If not using `dotCloud`_) Download and install Redis
+#. Download and install Redis, for Linux and Macintosh, follow the `Redis
+   installation directions`_. If you are using Windows, download this
+   experimental Window's port of `Redis`_ `here`_.
+   
+#. Start the `Redis`_ server::
+
+     redis-server
+
+#. In a separate command-line window, start `Django`_ with this command::
+
+      python manage.py runserver
+      
+#. Your new Library App environment will now be live at port 8000 on your
+   computer; i.e. http://localhost:8000/
   
 .. _`Aristotle Library Apps`: https://github.com/jermnelson/aristotle-library-apps
-.. _`dotCloud`: "https://www.dotcloud.com/"
+.. _`Django`: https://www.djangoproject.com/
+.. _`dotCloud`: https://www.dotcloud.com/
+.. _`here`: /static/RedisWinDebug20120510.zip
 .. _`Python`: http://www.python.org/
 .. _`Redis`: http://redis.io
+.. _`Redis installation directions`: http://redis.io/download
 .. _`virtualenv`: http://www.virtualenv.org/en/latest/index.html
+

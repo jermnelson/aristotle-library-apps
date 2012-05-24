@@ -3,7 +3,8 @@
 """
 __author__ = 'Jeremy Nelson'
 
-import aristotle.lib.rda_core as rda_core,redis
+#import aristotle.lib.rda_core as rda_core,redis
+import redis
 from django.views.generic.simple import direct_to_template
 from django.http import HttpResponse
 from django.template import Context,Template,loader

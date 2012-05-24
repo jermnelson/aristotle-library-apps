@@ -4,10 +4,11 @@
 __author__ = 'Jeremy Nelson'
 import re,redis,pymarc
 import datetime,sys
-from app_settings import REDIS_HOST,REDIS_PORT
-from invoice.redis_helpers import ingest_invoice
+from app_settings import REDIS_HOST,REDIS_PORT,REDIS_PASSWORD
 
-redis_server = redis.StrictRedis(host=REDIS_HOST,port=REDIS_PORT)
+redis_server = redis.StrictRedis(host=REDIS_HOST,
+                                 port=REDIS_PORT,
+                                 password=REDIS_PASSWORD)
 PCARD_RE = re.compile(r"^Inv#\sPCARD\s(?P<number>\d+\w+)\sDated:(?P<date>\d+-\d+-\d+)\sAmt:\$(?P<amount>\d+[,|.]*\d*)\sOn:(?P<paid>\d+-\d+-\d+)\sVoucher#(?P<voucher>\d+)")
 INVOICE_RE = re.compile(r"^Inv#\s(?P<number>\d+\w+)\sDated:(?P<date>\d+-\d+-\d+)\sAmt:\$(?P<amount>\d+[,|.]*\d*)\sOn:(?P<paid>\d+-\d+-\d+)\sVoucher#(?P<voucher>\d+)$")
 
@@ -55,6 +56,46 @@ def add_transaction(regex_result,bib_number,parent_key):
                       transaction_date.toordinal(),
                       transaction_key)
 
+def ingest_invoice(marc_record):
+    """
+    Function ingests a III Order MARC Record Invoice into Redis datastore.
+
+    :param marc_record: MARC record
+    :rtype: dictionary
+    """
+    if marc_record['035']:
+        raw_bib = marc_record['035']['a']
+        bib_number = raw_bib[1:-1]
+    if marc_record['995']:
+        invoice_regex = INVOICE_RE.search(marc_record['995']['a'])
+    else:
+        print("ERROR cannot extract invoice number from %s" % marc_record.leader)
+        invoice_regex = None
+    if invoice_regex is not None:
+        invoice_result = invoice_regex.groupdict()
+        
+        # Checks to see if invoice exists, add otherwise
+        invoice_key = redis_server.hget('invoice:numbers',
+                                        invoice_result['number'])
+        if invoice_key is None:
+            invoice_key = 'invoice:%s' % redis_server.incr('global:invoice')
+            redis_server.hset('invoice:numbers',
+                              invoice_result.get('number'),
+                              invoice_key)
+        # Checks if invoice number is present, add otherwise to invoice
+        if not redis_server.exists(invoice_key):
+            redis_server.hset(invoice_key,
+                              'number',
+                              invoice_result.get('number'))
+            redis_server.hset(invoice_key,
+                              'created',
+                              datetime.datetime.today())
+
+        
+        # Checks exists or adds voucher
+        voucher_key = get_or_add_voucher(invoice_result.get('voucher'))
+        redis_server.hset(transaction_key,'voucher',voucher_key)
+
 def ingest_pcard(marc_record):
     """
     Function ingests a III Order MARC Record Invoice into Redis datastore.
@@ -76,14 +117,6 @@ def ingest_pcard(marc_record):
            redis_server.hset('pcard:numbers',
                              pcard_number,
                              pcard_key)
-    
-           
-            
-                                 
-           
-           
-        
-
 
 def load_order_records(pathname):
     """
