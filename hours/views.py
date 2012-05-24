@@ -22,6 +22,26 @@ def default(request):
                                {'app':APP,
                                 'library_status':{'status':True}})
 
+def open(request):
+    """
+    default is the standard view for the Hours app
+
+    :param request: web request
+    """
+    return direct_to_template(request,
+                               'hours/open.html',
+                               {'app':APP})
+
+def closed(request):
+    """
+    default is the standard view for the Hours app
+
+    :param request: web request
+    """
+    return direct_to_template(request,
+                               'hours/closed.html',
+                               {'app':APP,})
+
 def manage(request,message):
     """
     default is the standard view for the Hours app
