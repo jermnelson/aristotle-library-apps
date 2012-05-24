@@ -33,7 +33,6 @@
 	  {% for step in steps %}
       {% comment %}START step DIV{% endcomment %}
       <div class="span3 well">
-	   <h3>{% trans "Step" %} {{ forloop.counter }}:</h3>
 	   {{ step|restructuredtext }}
       {% comment %}END step DIV{% endcomment %}
       {% endfor %}
@@ -43,13 +42,39 @@
    {% comment %}END steps-col DIV{% endcomment %}
    </div>
    {% comment %}START main-col DIV{% endcomment%}
-   <div class="span6 hero-unit">
+   <div class="span6">
+	<div class="row">
+	 <div class="span6 hero-unit">
 	 <h1>{% trans "Getting Started" %}</h1>
      <p><small style="font-size:1.2em">{% trans "Aristotle Library Apps Project" %}<br/>
          {% trans "CoALA 2012 Academic Library Summit" %}</small></p>
+     </div>
+    </div>
+    <div class="row">
+     <div class="span6 well">
+      <h2>Run Aristotle Library Apps on:</h2>
+      <ul>
+        <li><a href="https://www.dotcloud.com/">dotCloud</a></li>
+        <li><a href="http://www.rackspace.com/">Rackspace</a></li>
+        <li><a href="http://aws.amazon.com/">Amazon Web Services (AWS)</a></li>
+        <li>Linux Virtual Machine on <a href="http://www.vmware.com/">VMWare</a>, etc.</a></li>
+      </ul>
+     </div>
+    </div>
+    <div class="row">
+     <div class="span5">
+       <div class="btn-group">
+	   <a href="/apps/portfolio" class="btn btn-large"><i class="icon-th"></i> Your Apps</a>
+      </div>
+     </div>
+    </div>
    {% comment %}END main-hero-unit DIV{% endcomment%}
    </div>
   {% comment %}END first-row DIV{% endcomment%}
+  </div>
+  <div class="row">
+   <div class="span5">This is a test</div>
+  
   </div>
   
  {% comment %}END content DIV{% endcomment %}

@@ -4,11 +4,16 @@
 __author__ = "Jeremy Nelson"
 
 from django.views.generic.simple import direct_to_template
-from django.http import HttpResponse
+from django.core.files import File
+from django.core.files.base import ContentFile
+from django.core.servers.basehttp import FileWrapper
+from django.http import Http404,HttpResponse
 from aristotle.settings import INSTITUTION
 from app_settings import APP
 from models import Job,job_types
 from forms import *
+import jobs.ils as ils
+from marc_helpers import 
 
 def default(request):
     """
@@ -31,6 +36,19 @@ def default(request):
                                'institution':INSTITUTION,
                                'redis_jobs':redis_jobs,
                                'solr_jobs':solr_jobs})
+def download(request):
+    """
+    Download modified MARC21 file
+    """
+    log_pk = request.session['log_pk']
+    record_log = ILSJobLog.objects.get(pk=log_pk)
+    modified_file = open(record_log.modified_file.path,'r')
+    file_wrapper = FileWrapper(file(record_log.modified_file.path))
+    response = HttpResponse(file_wrapper,content_type='text/plain')
+    filename = os.path.split(record_log.modified_file.path)[1]
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    response['Content-Length'] = os.path.getsize(record_log.modified_file.path)
+    return response
 
 def job_display(request,job_pk):
     """
@@ -52,6 +70,24 @@ def job_display(request,job_pk):
                                'institution':INSTITUTION,
                                'marc_upload_form':marc_form})
 
+def job_process(request):
+    """
+    Takes submitted job from form and processes depending on
+    the job type
+    """
+    if request.method != 'POST' or not request.POST.has_key('job_id'):
+        raise Http404
+    job = Job.objects.get(pk=request.POST['job_id'])
+    if job.job_type == 0: # Redis Job
+        pass
+    elif job.job_type == 1: # Solr Job
+        pass
+    elif job.job_type == 2: # Legacy ILS Job
+        ils_job_manager(request.POST,job)
+    else:
+        raise Http404
+    return HttpResponseRedirect('/apps/marc_batch/finished')
+
 def ils(request):
     """
     Displays ils view for the MARC Batch App
@@ -62,6 +98,17 @@ def ils(request):
                               {'app':APP,
                                'institution':INSTITUTION})
 
+def ils_job_manager(request,job):
+    """
+    Helper function takes a Form's QueryDict and processes MARC file with specific
+    rules
+
+    :param request: HTTP reaquest
+    :param job: Job object
+    """
+    ils_job_form = MARCRecordUploadFormRecordLoadLogForm(request.POST,
+                                                         request.FILES)
+    marc_modifiers = marc_helpers.MARCModifier(request.FILES['original_file'])
 
 def redis(request):
     """

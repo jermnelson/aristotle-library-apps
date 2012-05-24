@@ -1,8 +1,7 @@
-#
-# catalog_bots.py
-#
-# Colorado College Cataloging utilities
-#
+"""
+ :mod:`marc_helpers`
+
+"""
 import sys,datetime,logging
 import urlparse,urllib2,re
 import os
@@ -10,11 +9,11 @@ import cStringIO
 from pymarc import *
 
 
-class MARCImportBot:
-    """ Base class for specific vendor MARC files, children
+class MARCModifier:
+    """
+    Base class for specific vendor MARC files, children
     classes provide validation methods and methods for adding/
-    modifying MARC fields and indicators for importing into
-    Colorado College's TIGER iii database.
+    modifying MARC fields and indicators for import
     """
 
     def __init__(self,
@@ -45,7 +44,8 @@ class MARCImportBot:
             raw_record = self.remove648(raw_record)
             raw_record.fields = sorted(raw_record.fields,key=lambda x: x.tag)
             self.records.append(raw_record)
-            self.stats['records'] += 1
+            self.stats['records'] += 1dren
+    classes provide validation methods and methods for 
 
     def processRecord(self,marc_record):
         ''' Method should be overriddden by derived classes.'''
@@ -277,7 +277,8 @@ class MARCImportBot:
         506 field with default of 'Access limited to subscribers.'
 
         Parameters:
-        `marc_record`: Required, MARC record
+        `marc_record`: Required, MARC recorddren
+    classes provide validation methods and methods for 
         """
         all506s = marc_record.get_fields('506')
         for field in all506s:
@@ -314,7 +315,8 @@ class MARCImportBot:
 
     def __switch_name__(self,**kwargs):
         """
-        Internal method takes a personal name in the format of last_name, 
+dren
+    classes provide validation methods and methods for         Internal method takes a personal name in the format of last_name, 
         first_name middle_names and returns the direct form of the personal
         name.
 
@@ -330,7 +332,8 @@ class MARCImportBot:
         else:
             suffix_list = ['JR','SR','I','II','III','IV',]
         if raw_name[-1].startswith(","):
-            raw_name = raw_name[:-1]
+            raw_name = raw_name[:-1]dren
+    classes provide validation methods and methods for 
         comma_number = raw_name.find(",")
         if comma_number < 1 or comma_number > 1:
             return raw_name

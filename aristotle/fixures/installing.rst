@@ -19,7 +19,10 @@ to run correctly.
    
       pip install -r requirements.txt
 
+#. (If not using `dotCloud`_) Download and install Redis
   
 .. _`Aristotle Library Apps`: https://github.com/jermnelson/aristotle-library-apps
+.. _`dotCloud`: "https://www.dotcloud.com/"
 .. _`Python`: http://www.python.org/
+.. _`Redis`: http://redis.io
 .. _`virtualenv`: http://www.virtualenv.org/en/latest/index.html

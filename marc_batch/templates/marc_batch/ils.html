@@ -19,7 +19,7 @@
   <div class="span8 well" id="job-details">
    <h1>{{ current_job.name }} Job</h1>
    <form>
-	<input type="hidden" value="{{ current_job.pk }}" name="job" />
+	<input type="hidden" value="{{ current_job.pk }}" name="job_id" />
    {{ marc_upload_form }}
    <br/>
    <input class="btn btn-large btn-warning" type="submit" value="Upload" />

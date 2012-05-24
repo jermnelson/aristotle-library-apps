@@ -10,7 +10,7 @@ primarily bibliographic research `FRBR-Redis Datastore`_ and the
 unit tests functionality to `Aristotle Library Apps`_.
 
 `Aristotle Discovery Layer`_ has a number of discrete Django applications
-that are good candidates for single use Library Apps that include the
+that are good candidates for single use Library Apps including the
 `MARC Batch App`_ and the `Call Number App`_.
 
 
