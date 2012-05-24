@@ -1,5 +1,4 @@
-beautifulsoup4==4.0.5
-behave==1.2.0cd 
+beautifulsoup4==4.0.5 
 Django==1.4
 docutils==0.9
 redis==2.4.12
