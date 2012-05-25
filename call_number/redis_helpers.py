@@ -128,6 +128,7 @@ def get_slice(start,stop):
 def get_record(call_number):
     record_key = redis_server.hget('call-numbers-hash',call_number)
     record_info = redis_server.hgetall(record_key)
+    print("RECORD INFO %s" % record_info)
     if record_info.has_key('rdaRelationships:author'):
         author = record_info.pop('rdaRelationships:author')
         if author.count("None") < 1:

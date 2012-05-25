@@ -52,7 +52,7 @@ def manage(request,message):
     if request.GET.has_key("message"):
         message=request.GET["message"]
     return direct_to_template(request,
-                               'hours/test-app.html',
+                               'hours/app.html',
                                {'app':APP,
                                 'library_status':{'status':True},
                                 'message':message})

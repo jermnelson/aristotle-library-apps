@@ -45,9 +45,9 @@
   <div id="browse-controls">
    {% comment %}START btn-group DIV{% endcomment %}
    <div class="btn-group">
-     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ previous.0.call_number }}')">&laquo; Previous</a>
+     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ previous.0.lccn }}')">&laquo; Previous</a>
      {% comment %}<a class="btn btn-mini btn-info" href="#">Expand</a>{% endcomment %}
-     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ next.1.call_number }}')">Next &raquo;</a>
+     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ next.1.lccn }}')">Next &raquo;</a>
    {% comment %}END btn-group DIV{% endcomment %}
    </div>
   {% comment %}END browse-controls DIV{% endcomment %}

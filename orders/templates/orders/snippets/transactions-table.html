@@ -14,7 +14,7 @@
    <td>{{ transaction.date|date:"F j, Y" }}</td>
    <td><a href="http://discovery.coloradocollege.edu/catalog/record/{{ transaction.bib_number }}">{{ transaction.bib_number }}</a></td>
    <td>${{ transaction.amount }}</td>
-   <td>{{ transaction.voucher }}</td>
+   <td><a href="/apps/orders/{{ transaction.voucher }}">{{ transaction.voucher }}</a></td>
    <td>{{ transaction.paid_on|date:"F j, Y" }}</td>
   </tr>
  {% endfor %}

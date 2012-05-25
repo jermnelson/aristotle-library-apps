@@ -174,6 +174,15 @@ def get_order_slice(entity_key,slice_size=5):
             entity_slice.append(entity)
     return entity_slice
 
+def get_voucher(voucher_key):
+    output = {'voucher':redis_server.hgetall(voucher_key)}
+    transaction_keys = redis_server.zrange("%s:transactions" % voucher_key,0,-1)
+    transactions = []
+    for row in transaction_keys:
+        transactions.append(redis_server.hgetall(row))
+    output['transactions'] = transactions
+    return output
+
 def ingest_invoice(marc_record):
     """
     Function ingests a III Order MARC Record Invoice into Redis datastore.

@@ -44,6 +44,7 @@ def app(request):
             current = setup_seed_rec()
     except:
         current = setup_seed_rec()
+    print("%s " % current)
     call_number = get_callnumber(current)
     typeahead_data = redis_helpers.get_all(call_number)
     return direct_to_template(request,
@@ -130,8 +131,8 @@ def browse(request):
     current = redis_helpers.get_record(call_number)
     context = Context({'aristotle_url':settings.DISCOVERY_RECORD_URL,
                        'current':current,
-                       'next':redis_helpers.get_next(current['call_number']),
-                       'previous':redis_helpers.get_previous(current['call_number'])})
+                       'next':redis_helpers.get_next(get_callnumber(current)),
+                       'previous':redis_helpers.get_previous(get_callnumber(current))})
     widget_template = loader.get_template('call_number/snippets/widget.html')
     return {'html':widget_template.render(context)}
 
@@ -167,7 +168,6 @@ def widget(request):
                               'call_number/snippets/widget.html',
                               {'aristotle_url':settings.DISCOVERY_RECORD_URL,
                                'current':current,
-                               'next':redis_helpers.get_next(call_number),
-                               'previous':redis_helpers.get_previous(call_number),
-
+                               'next':redis_helpers.get_next(current),
+                               'previous':redis_helpers.get_previous(current),
                                'standalone':standalone})

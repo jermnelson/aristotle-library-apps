@@ -1,0 +1,30 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+{% load order_extras %}
+
+{% block more-css %}{% endblock %}
+
+
+{% block body %}
+{% comment %}
+ <div class="row-fluid">
+
+  {% include 'orders/snippets/top-action-bar.html' %}
+ </div>
+ {% endcomment %}
+ <div class="row-fluid main-pane">
+
+  <div class="span2 well">
+    {{ date|month_calendar }}
+  </div>
+  <div class="span7">
+   <h3>{% trans "Orders for " %} {{ date|date:"F Y" }} </h3>
+   <ul>
+   {% for row in orders %}
+   <li><a href="/apps/orders/{{ row }}">{{ row }}</a></li>
+   {% endfor %}
+   </ul>
+  </div>
+ </div>
+{% endblock %}
+

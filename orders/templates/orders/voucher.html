@@ -1,0 +1,47 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+{% load order_extras %}
+
+{% block more-css %}{% endblock %}
+
+
+{% block body %}
+{% comment %}
+ <div class="row-fluid">
+
+  {% include 'orders/snippets/top-action-bar.html' %}
+ </div>
+ {% endcomment %}
+ <div class="row-fluid main-pane">
+
+  <div class="span2 well">
+    {{ date|month_calendar }}
+  </div>
+  <div class="span7">
+   <h3>{% trans "Voucher " %} {{ voucher.name }}</h3>
+   <table class="table table-striped">
+    <thead>
+     <tr>
+      <th>Date:</th>
+      <th>Item:</th>
+      <th>Amount:</th>
+      <th>Paid on:</th>
+      <th>Order:</th>
+    </thead>
+    <tbody>
+   {% for transaction in voucher.transactions %}
+     <tr>
+      <td>{{ transaction.date }}</td>
+      <td><a href="http://discovery.coloradocollege.edu/catalog/record/{{ transaction.bib_number }}">{{ transaction.bib_number }}</a></td>
+      <td>${{ transaction.amount }}</td>
+      <td>{{ transaction.paid_on }}</td>
+
+      <td><a href="/apps/orders/{{ transaction.pcard }}{{ transaction.invoice }}">{{ transaction.pcard }}</a></td>
+     </tr>
+   {% endfor %}
+    </tbody>
+   </table>
+  </div>
+ </div>
+{% endblock %}
+
