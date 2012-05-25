@@ -1,0 +1,29 @@
+<table class="table table-borderd table-striped table-condensed">
+ <thead>
+  <tr>
+   <th>Transaction Date</th>
+   <th>Item</th>
+   <th>Amount</th>
+   <th>Voucher</th>
+   <th>Paid On</th>
+  </tr>
+ </thead>
+ <tbody>
+ {% for transaction in entity.transactions %}
+  <tr>
+   <td>{{ transaction.date|date:"F j, Y" }}</td>
+   <td><a href="http://discovery.coloradocollege.edu/catalog/record/{{ transaction.bib_number }}">{{ transaction.bib_number }}</a></td>
+   <td>${{ transaction.amount }}</td>
+   <td>{{ transaction.voucher }}</td>
+   <td>{{ transaction.paid_on|date:"F j, Y" }}</td>
+  </tr>
+ {% endfor %}
+  <tr>
+   <td></td>
+   <td>
+    <span style="text-align:right;font-weight:bold">Total</span>
+   </td>
+   <td>${{ entity.total_amount}}</td>
+  </tr>
+ </tbody>
+</table>

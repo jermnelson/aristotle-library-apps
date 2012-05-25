@@ -6,15 +6,20 @@
 
 
 {% block body %}
+{% comment %}
  <div class="row-fluid">
+
   {% include 'orders/snippets/top-action-bar.html' %}
  </div>
+ {% endcomment %}
  <div class="row-fluid main-pane">
+
   <div class="span2 well">
-   {{ date|month_calendar }}
+    {{ date|month_calendar }}
   </div>
   <div class="span7">
-   <p>{{ app.description }}</p>
+   <h3>{% trans "Transactions for " %} {{ entity_type }}</h3>
+   {% include 'orders/snippets/transactions-table.html' %}
   </div>
  </div>
 {% endblock %}

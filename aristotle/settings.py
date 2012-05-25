@@ -79,9 +79,9 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_HOME,'article_search/assets'),
     os.path.join(PROJECT_HOME,'book_search/assets'),
     os.path.join(PROJECT_HOME,'call_number/assets'),
-    os.path.join(PROJECT_HOME,'hours/assets'),
+    # os.path.join(PROJECT_HOME,'hours/assets'),
     os.path.join(PROJECT_HOME,'marc_batch/assets'),
-    os.path.join(PROJECT_HOME,'orders/assets'),
+    # os.path.join(PROJECT_HOME,'orders/assets'),
     os.path.join(PROJECT_HOME,'portfolio/assets')
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
@@ -133,6 +133,7 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME,'marc_batch/templates/marc_batch/'),
     #os.path.join(PROJECT_HOME,'marc_batch/templates/snippets/'),
     os.path.join(PROJECT_HOME,'orders/templates/'),
+    os.path.join(PROJECT_HOME,'orders/templates/snippets/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/portfolio/snippets/'),
     

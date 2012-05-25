@@ -107,7 +107,7 @@ def ils_job_manager(request,job):
     :param job: Job object
     """
     ils_job_form = MARCRecordUploadForm(request.POST,request.FILES)
-    marc_modifiers = marc_helpers.MARCModifier(request.FILES['original_file'])
+    marc_modifiers = marc_helpers.MARCModifier(request.FILES['raw_marc_record'])
 
 def redis(request):
     """
