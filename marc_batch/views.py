@@ -7,7 +7,7 @@ from django.views.generic.simple import direct_to_template
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.servers.basehttp import FileWrapper
-from django.http import Http404,HttpResponse
+from django.http import Http404,HttpResponse,HttpResponseRedirect
 from aristotle.settings import INSTITUTION
 from app_settings import APP
 from models import Job,job_types
@@ -107,7 +107,13 @@ def ils_job_manager(request,job):
     :param job: Job object
     """
     ils_job_form = MARCRecordUploadForm(request.POST,request.FILES)
-    marc_modifiers = marc_helpers.MARCModifier(request.FILES['raw_marc_record'])
+    if ils_job_form.is_valid():
+        job_pk = request.POST['job_id']
+        job_query = Job.objects.get(pk=job_pk)
+        marc_modifiers = marc_helpers.MARCModifier(request.FILES['raw_marc_record'])
+    else:
+        print("Invalid form errors=%s" % ils_job_form.errors)
+    
 
 def redis(request):
     """

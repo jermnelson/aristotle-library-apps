@@ -12,6 +12,10 @@ class Job(models.Model):
     job_type = models.IntegerField(choices=job_types,
                                    default=0)
     name = models.CharField(max_length=155)
+    python_module = models.CharField(max_length=30,
+                                     blank=True,
+                                     null=True)
+    
 
 class JobFeatures(models.Model):
     job = models.ForeignKey(Job)

@@ -18,7 +18,7 @@
   </div>
   <div class="span8 well" id="job-details">
    <h1>{{ current_job.name }} Job</h1>
-   <form method="POST" action="/apps/marc_batch/process">{% csrf_token %}
+   <form method="POST" action="/apps/marc_batch/process" enctype="multipart/form-data">{% csrf_token %}
 	<input type="hidden" value="{{ current_job.pk }}" name="job_id" />
    {{ marc_upload_form }}
    <br/>
