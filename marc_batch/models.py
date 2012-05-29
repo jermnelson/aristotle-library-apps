@@ -4,9 +4,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-job_types = [(0,'redis'),
-             (1,'solr'),
-             (2,'ils')]
+job_types = [(1,'redis'),
+             (2,'solr'),
+             (3,'ils')]
+
+marc_rec_types = [(1,"Bibliographic"),
+                  (2,"Name Authority"),
+                  (3,"Subject Authority")]
 
 class Job(models.Model):
     job_type = models.IntegerField(choices=job_types,
@@ -31,17 +35,16 @@ class JobLog(models.Model):
     original_marc = models.FileField(upload_to="uploads")
     record_type = models.IntegerField(blank=True,
                                       null=True,
-                                      choices=[(1,"Bibliographic"),
-                                               (2,"Name Authority"),
-                                               (3,"Subject Authority")])
+                                      choices=marc_rec_types)
+
 class JobLogNotes(models.Model):
-    job = models.ForeignKey(Job)
+    job = models.ForeignKey(JobLog)
     label = models.CharField(max_length=100, blank=True)
     note_value = models.TextField(blank=True)
 
 class ILSJobLog(JobLog):
     load_table = models.IntegerField(null=True,blank=True)
-    new_records = models.IntegerField(blank=True)
+    new_records = models.IntegerField(null=True,blank=True)
     overlaid_records = models.IntegerField(null=True,blank=True)
     rejected_records = models.IntegerField(null=True,blank=True)
 

@@ -8,10 +8,13 @@ __author__ = 'Jeremy Nelson'
 
 
 import pymarc,copy
+from ybp_ebl import ybp_ebl
 ##from behave.configuration import Configuration,ConfigError
 ##from behave.parser import parse_file
 ##from behave.model import Feature
 ##from behave.runner import Runner,Context
+
+ybp_ebl = ybp_ebl
 
 class job(object):
     """

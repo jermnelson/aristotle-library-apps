@@ -5,16 +5,14 @@ __author__ = 'Jeremy Nelson, Cindy Tappan'
 
 import logging,re
 from django import forms
-from models import ILSJobLog,RedisJobLog,SolrJobLog
+from models import ILSJobLog,RedisJobLog,SolrJobLog,marc_rec_types
 
 class MARCRecordUploadForm(forms.Form):
     """This form contains fields that are necessary for MARC record loads"""
     raw_marc_record = forms.FileField(required=True,label="Single MARC File")
     record_type = forms.ChoiceField(required=True,
                                     label="Record Type",
-                                    choices= [(1,"Bibliographic"),
-                                              (2,"Name Authority"),
-                                              (3,"Subject Authority")])
+                                    choices=marc_rec_types)
     notes = forms.CharField(required=False,
                             label="Notes",
                             widget=forms.Textarea(attrs={'rows':3,
@@ -40,6 +38,7 @@ class ILSJobLogForm(forms.ModelForm):
 
     class Meta:
         model = ILSJobLog
+        fields = ('new_records','overlaid_records','rejected_records')
         
             
 

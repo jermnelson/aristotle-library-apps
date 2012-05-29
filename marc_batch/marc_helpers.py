@@ -9,7 +9,7 @@ import cStringIO
 from pymarc import *
 
 
-class MARCModifier:
+class MARCModifier(object):
     """
     Base class for specific vendor MARC files, children
     classes provide validation methods and methods for adding/
@@ -103,15 +103,14 @@ class MARCModifier:
             marc_record.add_field(new856)
         return marc_record    
 
-    def output(self,marcfile_output):
+    def output(self,marcfile_output=None):
         ''' Method writes all records to a MARC21 output file'''
-        output = open(marcfile_output,'wb')
-        #output = cStringIO.StringIO()
+        #output = open(marcfile_output,'wb')
+        output = cStringIO.StringIO()
         for record in self.records:
             record_str = record.as_marc()
             output.write(record_str.encode('utf8','replace'))
-    #    output.close()
-        return output
+        return output.getvalue()
 
   
 

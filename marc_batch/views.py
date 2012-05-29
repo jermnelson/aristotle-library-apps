@@ -3,6 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 
+import os,sys
 from django.views.generic.simple import direct_to_template
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -12,7 +13,7 @@ from aristotle.settings import INSTITUTION
 from app_settings import APP
 from models import Job,job_types
 from forms import *
-import jobs.ils as ils
+import jobs.ils
 import marc_helpers
 
 def default(request):
@@ -23,11 +24,11 @@ def default(request):
     ils_jobs,redis_jobs,solr_jobs = [],[],[]
     all_jobs = Job.objects.all()
     for job in all_jobs:
-        if job.job_type == 0:
+        if job.job_type == 1:
             redis_jobs.append(job)
-        elif job.job_type == 1:
-            solr_jobs.append(job)
         elif job.job_type == 2:
+            solr_jobs.append(job)
+        elif job.job_type == 3:
             ils_jobs.append(job)
     return direct_to_template(request,
                               'marc-batch-app.html',
@@ -42,12 +43,12 @@ def download(request):
     """
     log_pk = request.session['log_pk']
     record_log = ILSJobLog.objects.get(pk=log_pk)
-    modified_file = open(record_log.modified_file.path,'r')
-    file_wrapper = FileWrapper(file(record_log.modified_file.path))
+    modified_file = open(record_log.modified_marc.path,'r')
+    file_wrapper = FileWrapper(file(record_log.modified_marc.path))
     response = HttpResponse(file_wrapper,content_type='text/plain')
-    filename = os.path.split(record_log.modified_file.path)[1]
+    filename = os.path.split(record_log.modified_marc.path)[1]
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
-    response['Content-Length'] = os.path.getsize(record_log.modified_file.path)
+    response['Content-Length'] = os.path.getsize(record_log.modified_marc.path)
     return response
 
 def job_display(request,job_pk):
@@ -78,12 +79,12 @@ def job_process(request):
     if request.method != 'POST' or not request.POST.has_key('job_id'):
         raise Http404
     job = Job.objects.get(pk=request.POST['job_id'])
-    if job.job_type == 0: # Redis Job
+    if job.job_type == 1: # Redis Job
         pass
-    elif job.job_type == 1: # Solr Job
+    elif job.job_type == 2: # Solr Job
         pass
-    elif job.job_type == 2: # Legacy ILS Job
-        ils_job_manager(request,job)
+    elif job.job_type == 3: # Legacy ILS Job
+        return ils_job_manager(request,job)
     else:
         raise Http404
     return HttpResponseRedirect('/apps/marc_batch/finished')
@@ -109,8 +110,30 @@ def ils_job_manager(request,job):
     ils_job_form = MARCRecordUploadForm(request.POST,request.FILES)
     if ils_job_form.is_valid():
         job_pk = request.POST['job_id']
+        original_marc = request.FILES['raw_marc_record']
         job_query = Job.objects.get(pk=job_pk)
-        marc_modifiers = marc_helpers.MARCModifier(request.FILES['raw_marc_record'])
+        params = {}
+        ils_job_class = getattr(jobs.ils,'%s' % job_query.python_module)
+        ils_job = ils_job_class(original_marc)
+        ils_job.load()
+        ils_log_entry = ILSJobLog(job=job_query,
+                                  description=ils_job_form.cleaned_data['notes'],
+                                  original_marc=original_marc,
+                                  record_type=ils_job_form.cleaned_data['record_type'])
+        ils_log_entry.save()
+        ils_log_entry.modified_marc.save('job-%s-%s-modified.mrc' % (job_query.name,
+                                                                     ils_log_entry.pk),
+                                         ContentFile(ils_job.output()))
+        ils_log_entry.save()
+        data = {'job':int(job_query.pk)}
+        ils_log_form = ILSJobLogForm(data)
+        request.session['log_pk'] = ils_log_entry.pk
+        return direct_to_template(request,
+                                  'marc_batch/log.html',
+                                  {'app':APP,
+                                   'current_job':job_query,
+                                   'log_form':ils_log_form})
+                
     else:
         print("Invalid form errors=%s" % ils_job_form.errors)
     

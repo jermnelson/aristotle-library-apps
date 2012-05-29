@@ -1,0 +1,12 @@
+[
+  {
+    "fields": {
+        "job_type": 3,
+        "name": "YBP EBL DDA eBooks",
+        "python_module":"ybp_ebl"
+    },
+    "model":"marc_batch.Job",
+    "pk":1
+  }
+]
+        
