@@ -3,6 +3,11 @@
 """
 from marc_batch.marc_helpers import MARCModifier
 from pymarc import Field
+import re,logging,copy
+
+VOL_RE = re.compile(r"(vol.\s*)")
+NO_RE = re.compile(r"([n|N]o.*\s*)")
+BD_RE = re.compile(r"(Ba*n*d.*\s*)")
 
 class ybp_ebl(MARCModifier):
     """
@@ -25,10 +30,13 @@ class ybp_ebl(MARCModifier):
        
         :param marc_record: Single MARC record 
         """
+        marc_record = self.validateLeader(marc_record)
+        marc_record = self.validate001(marc_record)
         marc_record = self.validate006(marc_record)
         marc_record = self.validate007s(marc_record)
         marc_record = self.validate008(marc_record)
         marc_record = self.validate050s(marc_record)
+        marc_record = self.validate082(marc_record)
         marc_record = self.validate100(marc_record)
         marc_record = self.validate246(marc_record)
         marc_record = self.validate300s(marc_record)
@@ -36,8 +44,40 @@ class ybp_ebl(MARCModifier):
         marc_record = self.validateSeries(marc_record)
         marc_record = self.validate506(marc_record)
         marc_record = self.validate538s540(marc_record)
+        marc_record = self.validate776(marc_record)
+        if marc_record['776']:
+            print(marc_record['776'].indicators)
+        marc_record = self.validate856(marc_record)
         return marc_record
-        
+
+
+    def validateLeader(self,
+                       marc_record):
+        """
+        Changes encoding level to 3 in leader position 17
+
+        :param marc_record: MARC record
+        """
+        new_leader = ''
+        for i,v in enumerate(marc_record.leader):
+            if i == 16: # Leader is 0-indexed
+                new_leader += str(3)
+            else:
+                new_leader += v
+        marc_record.leader = new_leader
+        return marc_record
+            
+
+    def validate001(self,
+                    marc_record):
+        """
+        Removes prepend in 001
+
+        :param marc_record: MARC record
+        """
+        field001 = marc_record['001'].value()
+        marc_record['001'].value = field001[3:]
+        return marc_record
 
     def validate007s(self,
                      marc_record):
@@ -46,7 +86,8 @@ class ybp_ebl(MARCModifier):
 
         :param marc_record: Single MARC record 
         """
-        return self.replace007(marc_record)
+        return self.replace007(marc_record,
+                               data=r'cr           a')
 
     def validate008(self,
                     marc_record):
@@ -72,12 +113,28 @@ class ybp_ebl(MARCModifier):
             other_a = field050.get_subfields('a')
             for counter in range(0,len(other_a)):
                 field050.delete_subfield('a')
-            field050.add_subfield('a','%seb' % first_a)
+            field050.add_subfield('a',first_a)
             first_b = field050.delete_subfield('b')
-            first_b = first_b.replace('vol.','v.').strip()
-            first_b = first_b.replace('no. ','no.').strip()
-            first_b = first_b.replace('Bd. ','Bd.').strip()
+            if VOL_RE.search(first_b) is not None:
+                first_b = VOL_RE.sub("vol.",first_b)
+            if NO_RE.search(first_b) is not None:
+                first_b = NO_RE.sub("no.",first_b)
+            if BD_RE.search(first_b) is not None:
+                first_b = BD_RE.sub("Bd.",first_b)
+            first_b += 'eb'
             field050.add_subfield('b',first_b)
+        return marc_record
+
+    def validate082(self,
+                    marc_record):
+        """
+        Validates the 082 by making sure the indicators are set to 04
+
+        :param marc_record:
+        """
+        field082s = marc_record.get_fields('082')
+        for field082 in field082s:
+            field082.indicators = ['0','4']
         return marc_record
             
     def validate100(self,
@@ -146,7 +203,7 @@ class ybp_ebl(MARCModifier):
                          indicators=[' ',' '],
                          subfields=['a','online resource',
                                     '2','rdamedia'])
-        marc_record.add_field(field337)
+        marc_record.add_field(field338)
         return marc_record
 
     def validateSeries(self,
@@ -186,10 +243,54 @@ class ybp_ebl(MARCModifier):
         marc_record.add_field(first538)
         second538 = Field('538',
                           indicators=[' ',' '],
-                          subfields=["a","Library users must establish an individual no-charge EBL account, and log in to access the full text. For security, do not use a confidential or important ID and password to log in; create a different username and password."])
+                          subfields=["a","Users at some libraries may be required to establish a separate no-charge EBL account, and log in to access the full text. For security, do not use a confidential or important ID and password to log in; create a different username and password"])
         marc_record.add_field(second538)
         field540 = Field('540',
                          indicators=[' ',' '],
                          subfields=["a","Books may be viewed online or downloaded (to a maximum of two devices per patron) for personal use only. No derivative use, redistribution or public performance is permitted. Maximum usage allowances -- loan period: 7 days for some publishers;  printing: up to 20% of the total pages;  copy/paste: up to 5% of the total pages."])
         marc_record.add_field(field540)
+        return marc_record
+
+    def validate541(self,
+                    marc_record):
+        """
+        Adds a 541 field
+
+        :param marc_record: Single MARC record
+        """
+        field541 = Field('541',
+                         indicators=[' ',' '],
+                         subfields=["a","Permanent access license for participating libraries purchased from YBP"])
+        marc_record.add_field(field541)
+        return marc_record
+
+    def validate776(self,
+                    marc_record):
+        """
+        Validates 776 by insuring indicators are '0' and '8'
+
+        :param marc_record: Single MARC record
+        """
+        if marc_record['776'] is not None:
+            marc_record['776'].indicators = ['0','8']
+##        if len(all776s) > 0:
+##            field776 = copy.deepcopy(all776s[0])
+##        self.__remove_field__(marc_record=marc_record,
+##                              tag='776')
+##        if field776 is not None:
+##            field776.indicators = ['0','8']
+##            marc_record.add_field(field776)
+        return marc_record
+
+    def validate856(self,
+                    marc_record):
+        """
+        Validates 856 by changing $z to 'View electronic book'
+
+        :param marc_record: MARC Record
+        """
+        all856s = marc_record.get_fields('856')
+        for field856 in all856s:
+            field856.delete_subfield('z')
+            field856.add_subfield('z','View electronic book')
         return marc_record

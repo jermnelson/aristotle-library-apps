@@ -38,6 +38,7 @@ class MARCModifier(object):
             if record is None:
                 break
             raw_record = self.processRecord(record)
+            print("IN RAW_RECORD 776 %s" % raw_record['776'])
             # Removes 009, 509, and 648 fields if they exist
             raw_record = self.remove009(raw_record)
             raw_record = self.remove509(raw_record)
