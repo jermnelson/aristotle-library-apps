@@ -121,9 +121,10 @@ def ils_job_manager(request,job):
                                   original_marc=original_marc,
                                   record_type=ils_job_form.cleaned_data['record_type'])
         ils_log_entry.save()
+        ils_marc_output = ils_job.output()
         ils_log_entry.modified_marc.save('job-%s-%s-modified.mrc' % (job_query.name,
                                                                      ils_log_entry.pk),
-                                         ContentFile(ils_job.output()))
+                                         ContentFile(ils_marc_output))
         ils_log_entry.save()
         data = {'job':int(job_query.pk)}
         ils_log_form = ILSJobLogForm(data)

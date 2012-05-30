@@ -4,9 +4,10 @@
 """
 import sys,datetime,logging
 import urlparse,urllib2,re
-import os
+import os,codecs
 import cStringIO
-from pymarc import *
+from pymarc import Field
+import pymarc
 
 
 class MARCModifier(object):
@@ -20,11 +21,11 @@ class MARCModifier(object):
                  *args):
         if len(args) > 0:
             if __name__ == '__main__':
-                self.marc_reader = MARCReader(open(args[0]),
-                                              to_unicode=True)
+                self.marc_reader = pymarc.MARCReader(open(args[0]),
+                                                     utf8_handling='ignore')
             else:
-                self.marc_reader = MARCReader(args[0],
-                                              to_unicode=True)
+                self.marc_reader = pymarc.MARCReader(args[0],
+                                                     utf8_handling='ignore')
         if len(args) == 2:
             self.marcfile_output = args[1]
         self.records = []
@@ -38,7 +39,6 @@ class MARCModifier(object):
             if record is None:
                 break
             raw_record = self.processRecord(record)
-            print("IN RAW_RECORD 776 %s" % raw_record['776'])
             # Removes 009, 509, and 648 fields if they exist
             raw_record = self.remove009(raw_record)
             raw_record = self.remove509(raw_record)
@@ -46,6 +46,8 @@ class MARCModifier(object):
             raw_record.fields = sorted(raw_record.fields,key=lambda x: x.tag)
             self.records.append(raw_record)
             self.stats['records'] += 1
+        
+        
 
     def processRecord(self,marc_record):
         ''' Method should be overriddden by derived classes.'''
@@ -104,14 +106,21 @@ class MARCModifier(object):
             marc_record.add_field(new856)
         return marc_record    
 
-    def output(self,marcfile_output=None):
-        ''' Method writes all records to a MARC21 output file'''
-        #output = open(marcfile_output,'wb')
-        output = cStringIO.StringIO()
+##    def output(self,marcfile_output=None):
+##        ''' Method writes all records to a MARC21 output file'''
+##        #output = open(marcfile_output,'wb')
+##        output = cStringIO.StringIO()
+##        for record in self.records:
+##            record_str = record.as_marc()
+##            output.write(record_str.encode('utf8','ignore'))
+##        return output.getvalue()
+
+    def output(self):
+        output_string = cStringIO.StringIO()
+        marc_writer = pymarc.MARCWriter(output_string)
         for record in self.records:
-            record_str = record.as_marc()
-            output.write(record_str.encode('utf8','replace'))
-        return output.getvalue()
+            marc_writer.write(record)
+        return output_string.getvalue()
 
   
 
