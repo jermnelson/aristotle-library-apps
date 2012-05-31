@@ -59,6 +59,7 @@ class ybp_ebl(MARCModifier):
         """
         leader_list = list(marc_record.leader)
         leader_list[17] = '3'
+        leader_list[18] = 'a'
         marc_record.leader = "".join(leader_list)
         return marc_record
 
@@ -81,7 +82,7 @@ class ybp_ebl(MARCModifier):
         :param marc_record: Single MARC record 
         """
         return self.replace007(marc_record,
-                               data=r'cr           a')
+                               data=r'cr  n        a')
 
     def validate008(self,
                     marc_record):
