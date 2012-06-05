@@ -3,6 +3,7 @@
 <html>
 <head>
  <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
  <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
  <link href="{{ STATIC_URL }}book_search/css/app.css" rel="stylesheet" type="text/css" />
  <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
@@ -28,7 +29,7 @@
          </div>
          <input type="hidden" id="search-type" name="search-type" value="search" />
          <div class="btn-group" style="float:right; padding-right:10px;">
-           <button type="submit" id="searchby" name="btnsubmit" class="btn btn-small" value="Keyword">Keyword</button>
+           <button type="submit" id="searchby" name="btnsubmit" class="btn btn-small" style="width:81px;" value="Keyword">Keyword</button>
            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
              <span class="caret"></span>
            </button>
@@ -49,7 +50,7 @@
        <li>&bull; <a target="_top" href="http://www.coalliance.org/prospector/">Prospector</a></li>
        <li>&bull; <a target="_top" href ="http://www.worldcat.org/">WorldCat</a></li>
        {% if showappicon %}
-       <li><a href="/apps/book_search" rel="tooltip" target="_top" title="Book Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
+       <li><a href="/apps/book_search/" rel="tooltip" target="_top" title="Book Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
        {% endif %}
      </ul>
    </div>

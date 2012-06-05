@@ -4,6 +4,7 @@
 <html>
 <head>
  <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
  <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
  <link href="{{ STATIC_URL }}article_search/css/app.css" rel="stylesheet" type="text/css" />
  <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
@@ -24,18 +25,18 @@
     <div class="control-group">
      <label class="control-label" for="searchIcon" style="font-size:18px">Find <strong><font color="green">Articles</font></strong></label>
      <div class="controls">
-      <div class="input-prepend" style="float:left;width:245px" >
+      <div class="input-prepend" style="float:left;width:243px" >
        <span class="add-on"><i class="icon-search"></i></span><input id="searchArticleIcon" style="width:204px" type="text" placeholder="Search for articles!">
       </div>
       <div class="btn-group {% if usedropup %} dropup {% else %} dropdown {% endif %}" style="float:right; padding-right: 10px;">
-       <button type="submit" class="btn btn-small" id="dbs" value="Academic Search Complete">Academic Search Complete</button>
+       <button type="submit" class="btn btn-small" style="width:157px;" id="dbs" value="Academic Search Complete">Academic Search Complete</button>
        <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
         <span class="caret"></span>
        </button>
        <ul class="dropdown-menu pull-right">
         <li><a onclick='ChangeSearchArticlesText("Academic Search Complete");' href="#">Academic Search Complete</a></li>
-        <li><a onclick='ChangeSearchArticlesText("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JSTOR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");' href="#">JSTOR</a></li>
-        <li><a onclick='ChangeSearchArticlesText("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Google Scholar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");' href="#">Google Scholar</a></li>
+        <li><a onclick='ChangeSearchArticlesText("JSTOR");' href="#">JSTOR</a></li>
+        <li><a onclick='ChangeSearchArticlesText("Google Scholar");' href="#">Google Scholar</a></li>
        </ul>
       </div>
      </div>
@@ -47,7 +48,7 @@
        <li>&bull; <a target="_top" href="http://www2.coloradocollege.edu/library/index.php/collections/databases#subjects">Databases by Subject</a></li>
        <li>&bull; <a target="_top" href ="http://coloradocollege.libguides.com/databases">Databases by Title</a></li>
        {% if showappicon %}
-       <li id="tooltiplink"><a href="/apps/article_search" target="_top" rel="tooltip" title="Article Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
+       <li id="tooltiplink"><a href="/apps/article_search/" target="_top" rel="tooltip" title="Article Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
        {% endif %}
      </ul>
    </div>

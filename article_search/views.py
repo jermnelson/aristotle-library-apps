@@ -5,7 +5,7 @@ __author__ = "Gautam Webb"
 
 from django.views.generic.simple import direct_to_template
 from app_settings import APP
-from aristotle.settings import INSTITUTION  
+from aristotle.settings import INSTITUTION
 
 def default(request):
     """
