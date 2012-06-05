@@ -5,7 +5,7 @@ __author__ = 'Jeremy Nelson, Cindy Tappan'
 
 import logging,re
 from django import forms
-from models import ILSJobLog,RedisJobLog,SolrJobLog,marc_rec_types
+from models import ILSJobLog,JobLogNotes,RedisJobLog,SolrJobLog,marc_rec_types
 
 class MARCRecordUploadForm(forms.Form):
     """This form contains fields that are necessary for MARC record loads"""
@@ -20,15 +20,16 @@ class MARCRecordUploadForm(forms.Form):
         
 
 
-##class JobLogNotesForm(forms.ModelForm):
-##    """`JobLogNotesForm` is a Django form model for the `Notes` model
-##    """
-##
-##    class Meta:
-##        model = JobLogNotes
-##        widgets = {
-##            'note_value':forms.Textarea(attrs={'cols':35,'rows':4}),
-##        }
+class JobLogNotesForm(forms.ModelForm):
+    """`JobLogNotesForm` is a Django form model for the `Notes` model
+    """
+
+    class Meta:
+        fields = ('note_value',)
+        model = JobLogNotes
+        widgets = {
+            'note_value':forms.Textarea(attrs={'cols':35,'rows':4}),
+        }
         
             
 class ILSJobLogForm(forms.ModelForm):

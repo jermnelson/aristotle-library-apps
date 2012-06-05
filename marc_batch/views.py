@@ -11,7 +11,7 @@ from django.core.servers.basehttp import FileWrapper
 from django.http import Http404,HttpResponse,HttpResponseRedirect
 from aristotle.settings import INSTITUTION
 from app_settings import APP
-from models import Job,job_types
+from models import Job,JobLog,ILSJobLog,job_types
 from forms import *
 import jobs.ils
 import marc_helpers
@@ -50,44 +50,6 @@ def download(request):
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
     response['Content-Length'] = os.path.getsize(record_log.modified_marc.path)
     return response
-
-def job_display(request,job_pk):
-    """
-    Displays a Job form for MARC batch operation
-
-    :param request: HTTP Request
-    :param job_pk: Job's Django primary key
-    """
-    template_filename = 'marc-batch-app.html'
-    job = Job.objects.get(pk=job_pk)
-    for row in job_types:
-        if row[0] == job.job_type:
-            template_filename = '%s.html' % row[1]
-    marc_form = MARCRecordUploadForm()
-    return direct_to_template(request,
-                              template_filename,
-                              {'app':APP,
-                               'current_job':job,
-                               'institution':INSTITUTION,
-                               'marc_upload_form':marc_form})
-
-def job_process(request):
-    """
-    Takes submitted job from form and processes depending on
-    the job type
-    """
-    if request.method != 'POST' or not request.POST.has_key('job_id'):
-        raise Http404
-    job = Job.objects.get(pk=request.POST['job_id'])
-    if job.job_type == 1: # Redis Job
-        pass
-    elif job.job_type == 2: # Solr Job
-        pass
-    elif job.job_type == 3: # Legacy ILS Job
-        return ils_job_manager(request,job)
-    else:
-        raise Http404
-    return HttpResponseRedirect('/apps/marc_batch/finished')
 
 def ils(request):
     """
@@ -129,15 +91,101 @@ def ils_job_manager(request,job):
         data = {'job':int(job_query.pk)}
         ils_log_form = ILSJobLogForm(data)
         request.session['log_pk'] = ils_log_entry.pk
+        log_notes_form = JobLogNotesForm()
         return direct_to_template(request,
                                   'marc_batch/log.html',
                                   {'app':APP,
                                    'current_job':job_query,
-                                   'log_form':ils_log_form})
+                                   'current_log':ils_log_entry,
+                                   'log_form':ils_log_form,
+                                   'log_notes_form':log_notes_form})
                 
     else:
         print("Invalid form errors=%s" % ils_job_form.errors)
     
+def job_display(request,job_pk):
+    """
+    Displays a Job form for MARC batch operation
+
+    :param request: HTTP Request
+    :param job_pk: Job's Django primary key
+    """
+    template_filename = 'marc-batch-app.html'
+    job = Job.objects.get(pk=job_pk)
+    for row in job_types:
+        if row[0] == job.job_type:
+            template_filename = '%s.html' % row[1]
+    marc_form = MARCRecordUploadForm()
+    return direct_to_template(request,
+                              template_filename,
+                              {'app':APP,
+                               'current_job':job,
+                               'institution':INSTITUTION,
+                               'marc_upload_form':marc_form})
+
+def job_finished(request,job_log_pk):
+    """
+    Displays finished job
+
+    :param request: HTTP Request
+    :param job_log_pk: Job Log's primary key
+    """
+    job_log = JobLog.objects.get(pk=job_log_pk)
+    return direct_to_template(request,
+                              'marc_batch/finished.html',
+                              {'app':APP,
+                               'institution':INSTITUTION,
+                               'log_entry':job_log})
+
+def job_process(request):
+    """
+    Takes submitted job from form and processes depending on
+    the job type
+    """
+    if request.method != 'POST' or not request.POST.has_key('job_id'):
+        raise Http404
+    job = Job.objects.get(pk=request.POST['job_id'])
+    if job.job_type == 1: # Redis Job
+        pass
+    elif job.job_type == 2: # Solr Job
+        pass
+    elif job.job_type == 3: # Legacy ILS Job
+        return ils_job_manager(request,job)
+    else:
+        raise Http404
+    return HttpResponseRedirect('/apps/marc_batch/finished')
+
+def job_update(request):
+    """
+    Updates job log with results from external systems like legacy ILS
+
+    :param request: HTTP request
+    """
+    if request.method != 'POST' or not request.POST.has_key('log_id'):
+        raise Http404
+    job = Job.objects.get(pk=request.POST['job_id'])
+    if job.job_type == 1: # Redis Job
+        pass
+    elif job.job_type == 2: # Solr Job
+        pass
+    elif job.job_type == 3: # Legacy ILS JOB
+        log = ILSJobLog.objects.get(pk=request.POST['log_id'])
+        if request.POST.has_key("new_records"):
+            new_records = request.POST['new_records']
+            if len(new_records) > 0:
+                log.new_records = new_records
+        if request.POST.has_key('overlaid_records'):
+            overlaid_records = request.POST['overlaid_records']
+            if len(overlaid_records) > 0:
+                log.overlaid_records = overlaid_records
+        if request.POST.has_key('rejected_records'):
+            rejected_records = request.POST['rejected_records']
+            if len(rejected_records) > 0:
+                log.rejected_records = rejected_records
+        log.save()
+    return HttpResponseRedirect('/apps/marc_batch/finished/{0}/'.format(log.pk))
+        
+            
 
 def redis(request):
     """
