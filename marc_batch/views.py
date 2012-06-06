@@ -85,7 +85,7 @@ def ils_job_manager(request,job):
         ils_log_entry.save()
         ils_marc_output = ils_job.output()
         ils_log_entry.modified_marc.save('job-%s-%s-modified.mrc' % (job_query.name,
-                                                                     ils_log_entry.pk),
+                                                                     ils_log_entry.created_on.strftime("%Y-%m-%d")),
                                          ContentFile(ils_marc_output))
         ils_log_entry.save()
         data = {'job':int(job_query.pk)}
@@ -115,7 +115,7 @@ def job_display(request,job_pk):
     for row in job_types:
         if row[0] == job.job_type:
             template_filename = '%s.html' % row[1]
-    marc_form = MARCRecordUploadForm()
+    marc_form = MARCRecordUploadForm() 
     return direct_to_template(request,
                               template_filename,
                               {'app':APP,
