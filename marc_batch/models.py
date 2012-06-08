@@ -15,6 +15,9 @@ marc_rec_types = [(1,"Bibliographic"),
 class Job(models.Model):
     job_type = models.IntegerField(choices=job_types,
                                    default=0)
+    help_rst = models.CharField(max_length=50,
+                                blank=True,
+                                null=True)
     name = models.CharField(max_length=155)
     python_module = models.CharField(max_length=30,
                                      blank=True,

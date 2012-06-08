@@ -2,6 +2,7 @@
   {
     "fields": {
         "job_type": 3,
+        "help_rst":"ybp-ebl-help",
         "name": "YBP EBL DDA eBooks",
         "python_module":"ybp_ebl"
     },

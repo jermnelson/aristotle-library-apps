@@ -11,6 +11,7 @@ from django.core.servers.basehttp import FileWrapper
 from django.http import Http404,HttpResponse,HttpResponseRedirect
 from aristotle.settings import INSTITUTION
 from app_settings import APP
+from marc_batch.fixures import help_loader
 from models import Job,JobLog,ILSJobLog,job_types
 from forms import *
 import jobs.ils
@@ -110,16 +111,22 @@ def job_display(request,job_pk):
     :param request: HTTP Request
     :param job_pk: Job's Django primary key
     """
+    job_help = None
     template_filename = 'marc-batch-app.html'
     job = Job.objects.get(pk=job_pk)
+    if job.help_rst is not None:
+        job_help = {"title":job.name,
+                    "contents":help_loader.get(job.help_rst)}
     for row in job_types:
         if row[0] == job.job_type:
             template_filename = '%s.html' % row[1]
-    marc_form = MARCRecordUploadForm() 
+    
+    marc_form = MARCRecordUploadForm()
     return direct_to_template(request,
                               template_filename,
                               {'app':APP,
                                'current_job':job,
+                               'help':job_help,
                                'institution':INSTITUTION,
                                'marc_upload_form':marc_form})
 
