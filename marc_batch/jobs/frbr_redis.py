@@ -24,7 +24,52 @@ redis_server = redis.StrictRedis(host=REDIS_HOST,
                                  port=REDIS_PORT)    
 
 
-class CreateRDACoreManifestation(object):
+class CreateRDACoreEntityFromMARC(object):
+    """RDACoreEntity is the base class for ingesting MARC21 records into RDACore
+    FRBR entities stored in Redis.
+
+    This class is meant to be over-ridden by child classes for specific RDACore Entities.
+
+    The general 
+
+
+    """
+
+    def __init__(self,**kwargs):
+        self.marc_record = kwargs.get('record')
+        self.redis_server = kwargs.get('redis_server')
+        self.root_redis_key = kwargs.get('root_redis_key')
+        entity_name = kwargs.get('entity')
+        redis_incr_value = self.redis_server.incr("global:{0}:{1}".format(self.root_redis_key,entity_name))
+        self.redis_entity_key = "{0}:{1}:{2}".format(self.root_redis_key,
+                                                     redis_incr_value,
+                                                     entity_name)
+
+    def generate
+
+class CreateRDACoreExpressionFROMMARC(CreateRDACoreEntityFromMARC):
+
+    def __init__(self,**kwargs):
+        self.marc_record = kwargs.get('record')
+        self.redis_server = kwargs.get('redis_server')
+        self.root_redis_key = kwargs.get('root_redis_key')
+        self.manifestation_key = "%s:Item:%s" % (self.root_redis_key,
+                                                 self.redis_server.incr("global:%s:Item" % redis_key))
+
+    def generate(self):
+        
+
+
+class CreateRDACoreItemFromMARC(CreateRDACoreEntityFromMARC):
+
+    def __init__(self,**kwargs):
+        self.marc_record = kwargs.get('record')
+        self.redis_server = kwargs.get('redis_server')
+        self.root_redis_key = kwargs.get('root_redis_key')
+        self.manifestation_key = "%s:Item:%s" % (self.root_redis_key,
+                                                 self.redis_server.incr("global:%s:Item" % redis_key))
+
+class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
 
     def __init__(self,**kwargs):
         self.marc_record = kwargs.get('record')
