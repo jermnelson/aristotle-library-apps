@@ -1,0 +1,20 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block more-css %}{% endblock %}
+
+
+{% block body %}
+ {% comment %}START main-pane DIV{% endcomment %}
+ <div class="row-fluid main-pane">
+  {% comment %}START left-jobs-col DIV{% endcomment %}
+  <div class="span2 well">
+   {% include 'snippets/left-nav-facets.html' %}
+  {% comment %}END left-jobs-col DIV{% endcomment %}
+  </div>
+  <div class="span7">
+   <p>{{ app.description }}</p>
+  </div>
+{% comment %}END main-pane DIV{% endcomment %}
+ </div>
+{% endblock %}

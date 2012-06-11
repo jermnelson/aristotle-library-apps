@@ -5,7 +5,7 @@
 """
 __author__ = 'Jeremy Nelson'
 import pymarc,redis,logging,sys
-from app_settings import APP
+
 
 try:
     import aristotle.settings as settings
@@ -40,23 +40,95 @@ class CreateRDACoreEntityFromMARC(object):
         self.redis_server = kwargs.get('redis_server')
         self.root_redis_key = kwargs.get('root_redis_key')
         entity_name = kwargs.get('entity')
-        redis_incr_value = self.redis_server.incr("global:{0}:{1}".format(self.root_redis_key,entity_name))
-        self.redis_entity_key = "{0}:{1}:{2}".format(self.root_redis_key,
-                                                     redis_incr_value,
-                                                     entity_name)
+        redis_incr_value = self.redis_server.incr("global:{0}:{1}".format(self.root_redis_key,
+                                                                          entity_name))
+        # Redis Key for this Entity
+        self.entity_key = "{0}:{1}:{2}".format(self.root_redis_key,
+                                               entity_name,
+                                               redis_incr_value)
 
-    def generate
-
-class CreateRDACoreExpressionFROMMARC(CreateRDACoreEntityFromMARC):
-
-    def __init__(self,**kwargs):
-        self.marc_record = kwargs.get('record')
-        self.redis_server = kwargs.get('redis_server')
-        self.root_redis_key = kwargs.get('root_redis_key')
-        self.manifestation_key = "%s:Item:%s" % (self.root_redis_key,
-                                                 self.redis_server.incr("global:%s:Item" % redis_key))
+        
 
     def generate(self):
+        """
+        Method is stub, child classes should override this method
+        """
+        pass
+
+    def __add_attribute__(self,attribute,values):
+        """
+        Helper method takes a rda Core attribute and depending on
+        existence of attribute in the datastore and the number of values,
+        either creates a new hash value for the entity key, creates a
+        list or sorted list based on the attribute, or creates a list, or
+        sorted list from the pre-existing value with the values currently
+        being ingested into datastore.
+
+        :param attribute: RDA Core attribute name
+        :param values: A list of values, if len < 2, list is decomposed into
+                       string attribute for entity, otherwise create a set or
+                       sorted set
+        """
+        # Create a key for the set representing this attribute
+        attribute_set_key = '{0}:{1}'.format(self.entity_key,attribute)
+
+        # Checks if existing attribute is a hash value
+        existing_attribute = self.redis_server.hget(self.entitiy_key,
+                                                    attribute)
+        if existing_attribute is not None:
+            # Add existing attribute to the new set, remove from entity's hash
+            self.redis_server.sadd(attribute_set_key,existing_attribute)
+            self.redis_server.hdel(self.entity_key,attribute)
+        else:
+            # If there is only value, create hash key-value for the entity based
+            # attibute value
+            if len(values) == 1:
+                self.redis_server.hset(self.entity_key,
+                                       attribute,
+                                       values[0])
+            else:
+                # Creates a set of all values in list
+                self.redis_server.sadd(attribute_set_key,values)
+                
+                
+            
+
+class CreateRDACoreExpressionFromMARC(CreateRDACoreEntityFromMARC):
+
+    def __init__(self,**kwargs):
+        kwargs["entity"] = "Expression"
+        super(CreateRDACoreExpressionFromMARC,self).__init__(**kwargs)
+        
+
+    def generate(self):
+        self.__content_type__()
+
+    def __content_type__(self):
+        content_types = []
+        field336s = self.marc_record.get_fields('336')
+        for field in field336s:
+            subfld_2 = field.get_subfields('2')
+            if len(subfld_2) > 0:
+                if subfld_2[0] == 'marccontent':
+                    subfld_vals = ''.join(field.get_subfield('a','b'))
+                    content_types.append(subfld_vals)
+        process_tag_list_as_set(self.marc_record,
+                                content_type_key,
+                                self.redis_server,
+                                [('130','h'),
+                                 ('730','h'),
+                                 ('830','h'),
+                                 ('240','h'),
+                                 ('243','h'),
+                                 ('700','h'),
+                                 ('800','h'),
+                                 ('710','h'),
+                                 ('810','h'),
+                                 ('711','h'),
+                                 ('811','h')])
+        
+        
+                                                    
         
 
 
@@ -355,24 +427,6 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                             ["o"],
                             "dissertation-idenitifer")
         
-                                                      
-                     
-                    
-                
-
-            
-                                                          
-                
-                
-                        
-                    
-                    
-                                                 
-                
-            
-                
-        
-        
 
     def __manufacture_statement__(self):
         manufacture_stmt_key = "{0}:manufactureStatement".format(self.manifestation_key)
@@ -597,7 +651,6 @@ def ingest_record(marc_record):
     redis_id = redis_server.incr("global:frbr_rda")
     redis_key = "rdaCore:%s" % redis_id
     
-    create_manifestation(marc_record,manifestation_key)
     
     
 

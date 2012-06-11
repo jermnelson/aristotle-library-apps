@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^apps/marc_batch/', include('marc_batch.urls')),
     url(r'^apps/orders/', include('orders.urls')),
     url(r'^apps/portfolio/', include('portfolio.urls')),
+    url(r'^apps/RDACore/', include('RDACore.urls')),
     url(r'^apps/','portfolio.views.default', name='portfolio.home'),
     
                        

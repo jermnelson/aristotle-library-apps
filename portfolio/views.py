@@ -24,7 +24,6 @@ def get_apps(is_authenticated):
             settings_file = os.path.join(PROJECT_HOME,
                                          row,
                                          "app_settings.py")
-            print(settings_file)
             app_settings = imp.load_source(row,settings_file)
             app_info = app_settings.APP
             if app_info.get('is_productivity'):
