@@ -5,6 +5,7 @@
 """
 __author__ = 'Jeremy Nelson'
 import pymarc,redis,logging,sys
+from marc_batch.fixures import json_loader
 
 
 try:
@@ -176,6 +177,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         
         
     def generate(self):
+        self.__carrier_type__()
         self.__copyright_date__()
         self.__edition_statement__()
         self.__identifiers__()
@@ -184,6 +186,36 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         self.__publication_statement__()
         self.__statement_of_responsiblity__()
         self.__title_proper__()
+
+    def __carrier_type__(self):
+        """
+        Extracts Carrier Type from MARC record
+        """
+        field007 = self.marc_record['007'].value()
+        position0,position1 = field007[0],field007[1]
+        # Load json dict mapping MARC 007 position 0 and 1 to RDA Carrier Types
+        carrier_types_dict = json_loader.get('marc-carrier-types')
+        if carrier_types_dict.has_key(position0):
+            if carrier_types_dict[position0].has_key(position1):
+                self.__add_attribute__('carrierType',
+                                       [carrier_types_dict[position0][position1],])
+        # Adds type of unit in MARC 300 $f
+        field300s = self.marc_record.get_fields('300')
+        for field in field300s:
+            subfield_f = field.get_subfields('f')
+            self.__add_attribute__('carrierType',
+                                   [''.join(subfield_f),])
+        # Adds RDA MARC 338 w/conditional
+        field338s = self.marc_record.get_fields('338')
+        for field in field338s:
+            subfield_2 = ''.join(field.get_subfields('2'))
+            if subfield_2.count('marcmedia') > -1:
+                for subfield in field.get_subfields('a','b'):
+                    self.__add_attribute__('carrierType',
+                                           [subfield,])
+                    
+                
+            
 
     def __copyright_date__(self):
         """

@@ -1,0 +1,51 @@
+{
+  "c": {
+    "a": "computer tape cartridge", 
+    "b": "computer chip cartridge", 
+    "c": "computer disc cartridge", 
+    "d": "computer disc", 
+    "f": "computer tape cassette", 
+    "h": "computer tape reel", 
+    "k": "computer card", 
+    "o": "computer disc", 
+    "r": "online resource"
+  }, 
+  "g": {
+    "c": "filmstrip cartridge", 
+    "d": "filmslip", 
+    "f": "filmstrip", 
+    "o": "film roll", 
+    "s": "slide", 
+    "t": "overhead transparency"
+  }, 
+  "h": {
+    "a": "aperture card", 
+    "b": "microfilm cartridge", 
+    "c": "microfilm cassette", 
+    "d": "microfilm reel", 
+    "e": "microfiche", 
+    "f": "microfiche cassette", 
+    "g": "microopaque", 
+    "h": "microfilm slip", 
+    "j": "microfilm roll"
+  }, 
+  "k": {
+    "a": "card", 
+    "n": "flipchart"
+  }, 
+  "s": {
+    "d": "audio disc", 
+    "e": "audio cylinder", 
+    "g": "audio cartridge", 
+    "i": "sound-track reel", 
+    "q": "audio roll", 
+    "s": "audiocassette", 
+    "t": "audiotape reel"
+  }, 
+  "v": {
+    "c": "video cartridge", 
+    "d": "videodisc", 
+    "f": "videocassette", 
+    "r": "videotape reel"
+  }
+}

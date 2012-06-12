@@ -68,7 +68,11 @@
     <script src="{{ STATIC_URL }}js/bootstrap-carousel.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
     <script src="{{ STATIC_URL }}js/utilities.js"></script>
-    {% block more-js %}{% endblock %}
+    {% block more-js %}
+    <script>
+     $(".collapse").collapse();
+    </script>
+    {% endblock %}
  
     {% block dialogs %}
       {% include 'snippets/about.html' %}

@@ -117,6 +117,8 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
 
     def setUp(self):
         self.test_rec = pymarc.Record()
+        self.test_rec.add_field(pymarc.Field('007',
+                                        data='vd           '))
         self.test_rec.add_field(pymarc.Field('008',
                                              data='100803s20102009nyub\\\\\b\\\\001\0\eng\\'))
         self.test_rec.add_field(pymarc.Field('020',
@@ -142,6 +144,43 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
     def test_init(self):
         self.assertEquals(self.manifestation_generator.entity_key,
                           "{0}:Manifestation:1".format(self.root_key))
+
+
+    def test_carrier_type(self):
+        # Valid TestCase manifestation_generator
+        self.manifestation_generator.__carrier_type__()
+        self.assertEquals(test_ds.hget(self.manifestation_generator.entity_key,
+                                       "carrierType"),
+                          "videodisc")
+        # Create stub MARC record with multiple carrier type encodings
+        test_rec = pymarc.Record()
+        test_rec.add_field(pymarc.Field('007',
+                                        data='cr        '))
+        test_rec.add_field(pymarc.Field('300',
+                                        indicators=['',''],
+                                        subfields=['f','volume']))
+        test_rec.add_field(pymarc.Field('338',
+                                        indicators=['',''],
+                                        subfields=['a',"film roll"]))
+        root_key = "rdaCore:{0}".format(test_ds.incr("global:rdaCore"))
+        manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_rec,
+                                                                     redis_server=redis_server,
+                                                                     root_redis_key=root_key)
+        
+        manifestation_generator.__carrier_type__()
+##        # Now test various iterations of carrier types in record
+        carrier_key = '{0}:carrierType'.format(manifestation_generator.entity_key)
+        print("{0} exists={1}".format(carrier_key,test_ds.exists(carrier_key)))
+##        carrier_types = test_ds.smembers()
+##        self.assertEquals(carrier_types[0],
+##                          "online resource")
+##        self.assertEquals(carrier_types[1],
+##                          "volume")
+##        self.assertEquals(carrier_types[2],
+##                          "film roll")
+                                       
+                                        
+        
         
 
     def test_copyright_date(self):
@@ -193,10 +232,9 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
                                            subfields = ['a','781617290183']))
         manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_id_rec,
                                                                      redis_server=test_ds,
-                                                                     root_redis_key=self.root_key)
+                                                                     root_redis_key="rdaCore:{0}".format(test_ds.incr("global:rdaCore")))
         identifiers_key = "{0}:identifiers".format(manifestation_generator.entity_key)
         values_hash_key = "{0}:values".format(identifiers_key)
-        print("Values are ={0}".format(test_ds.hgetall(identifiers_key)))
         # Test ISSN
         self.assertEquals(test_ds.hget(values_hash_key,
                                        'issn'),
