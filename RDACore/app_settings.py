@@ -3,3 +3,10 @@ APP = {'current_view': {'title':'RDA Core'},
        'icon_url':'rdaCore.png',
        'url':'RDAcore/'}
        
+
+FACETS = [{'body_id':'access-facet',
+           'name':"Access"},
+          {'body_id':'format-facet',
+           'name':"Format"},
+          {"body_id":'topics-facet',
+           'name':'Topics'}]

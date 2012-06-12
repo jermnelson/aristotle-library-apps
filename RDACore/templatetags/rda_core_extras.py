@@ -10,6 +10,7 @@ def display_facet(facet_info):
     Filter takes information about a facet and generates a DIV from
     a template for inclusion in an facet accordion
     """
-    return mark_safe("IN DISPLAY FACET")
+    facet_template = loader.get_template("facet-detail.html")
+    return mark_safe(facet_template.render(Context({'facet':facet_info})))
 
 register.filter('display_facet',display_facet)

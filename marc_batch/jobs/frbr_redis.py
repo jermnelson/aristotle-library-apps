@@ -73,7 +73,7 @@ class CreateRDACoreEntityFromMARC(object):
         attribute_set_key = '{0}:{1}'.format(self.entity_key,attribute)
 
         # Checks if existing attribute is a hash value
-        existing_attribute = self.redis_server.hget(self.entitiy_key,
+        existing_attribute = self.redis_server.hget(self.entity_key,
                                                     attribute)
         if existing_attribute is not None:
             # Add existing attribute to the new set, remove from entity's hash
@@ -105,13 +105,20 @@ class CreateRDACoreExpressionFromMARC(CreateRDACoreEntityFromMARC):
 
     def __content_type__(self):
         content_types = []
+        content_type_key = self.redis_server.hget(self.entity_key,
+                                                  "contentType")
+        if content_type_key is None:
+            content_type_key = "{0}:contentType".format(self.entity_key)
         field336s = self.marc_record.get_fields('336')
         for field in field336s:
             subfld_2 = field.get_subfields('2')
             if len(subfld_2) > 0:
                 if subfld_2[0] == 'marccontent':
-                    subfld_vals = ''.join(field.get_subfield('a','b'))
+                    subfld_vals = ''.join(field.get_subfields('a','b'))
                     content_types.append(subfld_vals)
+        if len(content_types) > 0:
+            for content_type in content_types:
+                self.redis_server.sadd(content_type_key,content_type)
         process_tag_list_as_set(self.marc_record,
                                 content_type_key,
                                 self.redis_server,
@@ -135,20 +142,37 @@ class CreateRDACoreExpressionFromMARC(CreateRDACoreEntityFromMARC):
 class CreateRDACoreItemFromMARC(CreateRDACoreEntityFromMARC):
 
     def __init__(self,**kwargs):
-        self.marc_record = kwargs.get('record')
-        self.redis_server = kwargs.get('redis_server')
-        self.root_redis_key = kwargs.get('root_redis_key')
-        self.manifestation_key = "%s:Item:%s" % (self.root_redis_key,
-                                                 self.redis_server.incr("global:%s:Item" % redis_key))
+        kwargs["entity"] = "Item"
+        super(CreateRDACoreItemFromMARC,self).__init__(**kwargs)
+
+    def generate(self):
+        self.__restrictions_on_use__()
+
+    def __restrictions_on_use__(self):
+        """
+        Extracts any restrictions on use for the Item (this is actually an
+        RDA Enchanced attribute and not part of the RDACore
+        """
+        restriction_on_use_key = self.redis_server.hget(self.entity_key,
+                                                        "restrictionsOnUse")
+        if restriction_on_use_key is None:
+            restriction_on_use_key = "{0}:restrictionsOnUse".format(self.entity_key)
+        process_tag_list_as_set(self.marc_record,
+                                restriction_on_use_key,
+                                self.redis_server,
+                                [('540','a'),
+                                 ('540','b'),
+                                 ('540','c'),
+                                 ('540','d'),
+                                 ('540','u')])
+        
+        
 
 class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
 
     def __init__(self,**kwargs):
-        self.marc_record = kwargs.get('record')
-        self.redis_server = kwargs.get('redis_server')
-        self.root_redis_key = kwargs.get('root_redis_key')
-        self.manifestation_key = "%s:Manifestation:%s" % (self.root_redis_key,
-                                                          self.redis_server.incr("global:%s:Manifestation" % redis_key))
+        kwargs["entity"] = "Manifestation"
+        super(CreateRDACoreManifestationFromMARC,self).__init__(**kwargs)        
         
         
     def generate(self):
@@ -165,10 +189,10 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         """
         Extracts and sets copyright date from MARC record
         """
-        copyright_set_key = self.redis_server.hget(self.manifestation_key,
+        copyright_set_key = self.redis_server.hget(self.entity_key,
                                                    "copyrightDate")
         if copyright_set_key is None:
-            copyright_set_key = "{0}:copyrightDates".format(self.manifestation_key)
+            copyright_set_key = "{0}:copyrightDate".format(self.entity_key)
         field008 = self.marc_record['008']
         field008_values = list(field008.value())
         # Copyright set for monographs
@@ -181,10 +205,10 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         for field in field260s:
             subfield_c = field.get_subfields('c')
             for subfield in subfield_c:
-                if subfield.endswith('c'):
+                if subfield.startswith('c'):
                     self.redis_server.zadd(copyright_set_key,
-                                           int(subfield[:-1]),
-                                           subfield)
+                                           int(subfield[1:]),
+                                           subfield[1:])
         process_tag_list_as_set(self.marc_record,
                                 copyright_set_key,
                                 self.redis_server,
@@ -196,7 +220,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         Extracts and sets Edition statement from MARC record
         """
         field250s = self.marc_record.get_fields('250')
-        edition_stmt_key = "{0}:editionStatement".format(self.manifestation_key)
+        edition_stmt_key = "{0}:editionStatement".format(self.entity_key)
         for field in field250s:
             subfield_a = field.get_subfields('a')
             if len(subfield_a) > 0:
@@ -226,18 +250,17 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         """
         Extracts and sets Manifestation's identifiers from MARC record
         """
-        identifiers_set_key = self.redis_server.hget(self.manifestation_key,
+        identifiers_set_key = self.redis_server.hget(self.entity_key,
                                                      "identifier")
         if identifiers_set_key is None:
-            identifiers_set_key = "{0}:identifiers".format(self.manifestation_key)
+            identifiers_set_key = "{0}:identifiers".format(self.entity_key)
         # get/set ISBN
-        process_identifer(self.marc_record,
-                          self.redis_server,
-                          '020',
-                          identifiers_set_key,
-                          ['a','z'],
-                          "isbn")
-        
+        process_identifier(self.marc_record,
+                           self.redis_server,
+                           '020',
+                           identifiers_set_key,
+                           ['a','z'],
+                           "isbn")
         # get/set ISSN
         process_identifier(self.marc_record,
                            self.redis_server,
@@ -342,94 +365,94 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
             self.redis_server.sadd(identifiers_set_key,
                                    fingerprint_key)
         # Standard technical report number
-        process_identifiers(self.marc_record,
-                            self.redis_server,
-                            '027',
-                            identifiers_set_key,
-                            ['a','z'],
-                            "standard-tech-report")
+        process_identifier(self.marc_record,
+                           self.redis_server,
+                           '027',
+                           identifiers_set_key,
+                           ['a','z'],
+                           "standard-tech-report")
         # Videorecording and other publisher number
         field028s = self.marc_record.get_fields('028')
         for field in field028s:
             if field.indicators[0] == '4':
-                process_identifiers(self.marc_record,
-                                    self.redis_server,
-                                    '028',
-                                    identifiers_set_key,
-                                    ['a'],
-                                    "videorecording-number")
+                process_identifier(self.marc_record,
+                                   self.redis_server,
+                                   '028',
+                                   identifiers_set_key,
+                                   ['a'],
+                                   "videorecording-number")
             elif field.indicators[0] == '5':
-                process_identifiers(self.marc_record,
-                                    self.redis_server,
+                process_identifier(self.marc_record,
+                                   self.redis_server,
                                     '028',
-                                    identifiers_set_key,
-                                    ['a'],
-                                    "other-publisher-number")
+                                   identifiers_set_key,
+                                   ['a'],
+                                   "other-publisher-number")
         # CODEN
-        process_identifiers(self.marc_record,
-                            self.redis_server,
-                            '030',
-                            identifiers_set_key,
-                            ['a','z'],
-                            "coden")
+        process_identifier(self.marc_record,
+                           self.redis_server,
+                           '030',
+                           identifiers_set_key,
+                           ['a','z'],
+                           "coden")
         # Stock number
-        process_identifiers(self.marc_record,
-                            self.redis_server,
-                            '037',
-                            identifiers_set_key,
-                            ['a'],
-                            "stock-number")
+        process_identifier(self.marc_record,
+                           self.redis_server,
+                           '037',
+                           identifiers_set_key,
+                           ['a'],
+                           "stock-number")
         # GPO Item number
-        process_identifiers(self.marc_record,
-                            self.redis_server,
-                            '074',
-                            identifiers_set_key,
-                            ['a','z'],
-                            "gpo-item")
+        process_identifier(self.marc_record,
+                           self.redis_server,
+                           '074',
+                           identifiers_set_key,
+                           ['a','z'],
+                           "gpo-item")
         # SUDOC, Gov't of Canada, or other
-        field086s = self.marc_record.get_field('086')
+        field086s = self.marc_record.get_fields('086')
         for field in field086s:
             if field.indicators[0] == '0':
-                process_identifiers(self.marc_record,
-                                    self.redis_server,
-                                    '086',
-                                    identifiers_set_key,
-                                    ['a','z'],
-                                    'sudoc')
+                process_identifier(self.marc_record,
+                                   self.redis_server,
+                                   '086',
+                                   identifiers_set_key,
+                                   ['a','z'],
+                                   'sudoc')
             elif field.indicators[0] == '1':
-                process_identifiers(self.marc_record,
-                                    self.redis_server,
-                                    '086',
-                                    identifiers_set_key,
-                                    ['a','z'],
-                                    'canada-gov')
+                process_identifier(self.marc_record,
+                                   self.redis_server,
+                                   '086',
+                                   identifiers_set_key,
+                                   ['a','z'],
+                                   'canada-gov')
             else:
                 source = field.get_subfield('2')
                 if len(source) > 0:
-                    process_identifiers(self.marc_record,
-                                        self.redis_server,
-                                        '086',
-                                        identifiers_set_key,
-                                        ['a','z'],
-                                        source[0])
+                    process_identifier(self.marc_record,
+                                       self.redis_server,
+                                       '086',
+                                       identifiers_set_key,
+                                       ['a','z'],
+                                       source[0])
         # Report number
-        process_identifiers(self.marc_record,
-                            self.redis_server,
-                            '088',
-                            identifiers_set_key,
-                            ["a","z"],
-                            "report-number")
+        process_identifier(self.marc_record,
+                           self.redis_server,
+                           '088',
+                           identifiers_set_key,
+                           ["a","z"],
+                           "report-number")
         # Dissertation identifier
-        process_identifiers(self.marc_record,
-                            self.redis_server,
-                            '502',
-                            identifiers_set_key,
-                            ["o"],
-                            "dissertation-idenitifer")
+        process_identifier(self.marc_record,
+                           self.redis_server,
+                           '502',
+                           identifiers_set_key,
+                           ["o"],
+                           "dissertation-idenitifer")
         
 
     def __manufacture_statement__(self):
-        manufacture_stmt_key = "{0}:manufactureStatement".format(self.manifestation_key)
+        manufacture_stmt_key = "{0}:manufactureStatement".format(self.entity_key)
         place_set_key = self.redis_server.hget(manufacture_stmt_key,
                                                "placeOfManufacture")
         if place_set_key is None:
@@ -467,7 +490,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
 
     def __production_statement__(self):
         # Production Statement
-        production_stmt_key = "{0}:productionStatement".format(self.manifestation_key)
+        production_stmt_key = "{0}:productionStatement".format(self.entity_key)
         date_sort_key = self.redis_server.hget(production_stmt_key,
                                                "dateOfProduction")
         if date_sort_key is None:
@@ -487,7 +510,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
 
     def __publication_statement__(self):
         # Publication Statement
-        pub_stmt_key = "{0}:publicationStatement".format(self.manifestation_key)
+        pub_stmt_key = "{0}:publicationStatement".format(self.entity_key)
         place_set_key = self.redis_server.hget(pub_stmt_key,
                                                "placeOfPublication")
         if place_set_key is None:
@@ -526,7 +549,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         
 
     def __title_proper__(self):
-        self.redis_server.hset(self.manifestation_key,
+        self.redis_server.hset(self.entity_key,
                                "titleProper",
                           self.marc_record.title())
         
@@ -538,7 +561,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
             subfield_c = field.get_subfields('c')
             statement_str += "".join(subfield_c)
             if len(statement_str) > 0:
-                redis_server.hset(manifestation_key,
+                redis_server.hset(entity_key,
                                   "statementOfResponsibility",
                                   statement_str)
 
@@ -546,18 +569,23 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
     
         
 
-def create_manifestation(marc_record,manifestation_key):
+def create_manifestation(marc_record,entity_key):
     """
     Ingests a RDA Core Manifestation into Redis datastore
 
     :param marc_record: MARC Record
-    :param manifestation_key: Redis key for the Manifestation
+    :param entity_key: Redis key for the Manifestation
     """
     if volatile_redis is None:
         raise ValueError("Volatile Redis not available")
     redis_server = volatile_redis
     
-def process_identifer(marc_record,field_tag,identifiers_set_key,subfields_list,ident_root):
+def process_identifier(marc_record,
+                       redis_server,
+                       field_tag,
+                       identifiers_set_key,
+                       subfields_list,
+                       ident_root):
     """
     Helper function extracts values from the field's subfields, checks to
     see if the subfield value is in the ident's values hash, gets/adds identifier tp
@@ -570,20 +598,20 @@ def process_identifer(marc_record,field_tag,identifiers_set_key,subfields_list,i
     :param subfields_list: List of subfields to check
     :param ident_root: Root of the entity
     """
-    all_fields = self.marc_record.get_fields(field_tag)
+    all_fields = marc_record.get_fields(field_tag)
     for field in all_fields:
         for subfield in field.get_subfields(subfields_list):
-            identifier_key = self.redis_server.hget("{0}:values".format(ident_root),
-                                              subfield)
+            identifier_key = redis_server.hget("{0}:values".format(ident_root),
+                                               subfield)
             if identifier_key is None:
                 identifier_key = "{0}:{1}".format(ident_root,
-                                                  self.redis_server.incr("global:{0}".format(ident_root)))
+                                                  redis_server.incr("global:{0}".format(ident_root)))
                 
                 self.redis_server.set(identifier_key,subfield)
-                self.redis_server.hset("{0}:values".format(ident_root),
-                                       subfield,
-                                       identifier_key)
-            self.redis_server.sadd(identifiers_set_key,identifier_key)
+                redis_server.hset("{0}:values".format(ident_root),
+                                  subfield,
+                                  identifier_key)
+            redis_server.sadd(identifiers_set_key,identifier_key)
 
 def process_008_date(marc_record,redis_server,date_sort_key):
     """
@@ -597,7 +625,8 @@ def process_008_date(marc_record,redis_server,date_sort_key):
     field008 = marc_record['008']
     if field008 is not None:
         field_values = list(field008.value())
-        date1,date2 = field_values[7:10],field_values[11:14]
+        date1 = ''.join(field_values[7:11])
+        date2 = ''.join(field_values[11:15])
         if len(date1.strip()) > 0:
             redis_server.zadd(date_sort_key,
                               int(date1),

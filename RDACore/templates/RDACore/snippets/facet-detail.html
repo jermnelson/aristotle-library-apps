@@ -1,13 +1,13 @@
 {% load i18n %}
-<div class="accordion-group">
+ <div class="accordion-group">
   <div class="accordion-heading">
-    <a class="accordion-toggle" data-toggle="collapse" data-parent="#{{ facet.parent }}" href="#{{ facet.body_id }}">
+    <a class="accordion-toggle btn btn-primary" data-toggle="collapse" data-parent="#left-col-facets" href="#{{ facet.body_id }}">
      {{ facet.name }}
     </a>
    </div>
    <div id="{{ facet.body_id }}" class="accordion-body collapse {%if facet.open %}in{% endif %}">
      <div class="accordion-inner">
-       
+       Testing {{ facet.name }}
      </div>
    </div>
-</div>
+ </div>
