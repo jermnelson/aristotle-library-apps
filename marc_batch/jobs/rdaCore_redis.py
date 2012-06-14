@@ -5,6 +5,7 @@
 """
 __author__ = 'Jeremy Nelson'
 import pymarc,redis,logging,sys
+import re,datetime
 from marc_batch.fixures import json_loader
 
 
@@ -24,6 +25,7 @@ except:
 redis_server = redis.StrictRedis(host=REDIS_HOST,
                                  port=REDIS_PORT)    
 
+year_re = re.compile(r"(\d+)")
 
 class CreateRDACoreEntityFromMARC(object):
     """RDACoreEntity is the base class for ingesting MARC21 records into RDACore
@@ -89,7 +91,8 @@ class CreateRDACoreEntityFromMARC(object):
                                        values[0])
             else:
                 # Creates a set of all values in list
-                self.redis_server.sadd(attribute_set_key,values)
+                for row in values:
+                    self.redis_server.sadd(attribute_set_key,row)
                 
                 
             
@@ -240,9 +243,11 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
             subfield_c = field.get_subfields('c')
             for subfield in subfield_c:
                 if subfield.startswith('c'):
-                    self.redis_server.zadd(copyright_set_key,
-                                           int(subfield[1:]),
-                                           subfield[1:])
+                    year_search = year_re.search(subfield)
+                    if year_search is not None:
+                        self.redis_server.zadd(copyright_set_key,
+                                               int(year_search.groups()[0]),
+                                               subfield[1:])
         process_tag_list_as_set(self.marc_record,
                                 copyright_set_key,
                                 self.redis_server,
@@ -461,7 +466,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                    ['a','z'],
                                    'canada-gov')
             else:
-                source = field.get_subfield('2')
+                source = field.get_subfields('2')
                 if len(source) > 0:
                     process_identifier(self.marc_record,
                                        self.redis_server,
@@ -500,8 +505,6 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                               "manufactureName")
         if name_set_key is None:
             name_set_key = "{0}:names".format(manufacture_stmt_key)
-            self.redis_server.hget(manufacture_stmt_key,
-                                   "manufactureName")
         process_tag_list_as_set(self.marc_record,
                                 name_set_key,
                                 self.redis_server,
@@ -510,7 +513,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         date_sort_key = self.redis_server.hget(manufacture_stmt_key,
                                                "dateOfManufacture")
         if date_sort_key is None:
-            date_sort_key = "{0}:dates" % manufacture_stmt_key
+            date_sort_key = "{0}:dates".format(manufacture_stmt_key)
             self.redis_server.hset(manufacture_stmt_key,
                                    "dateOfManufacture",
                                    date_sort_key)
@@ -525,7 +528,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         date_sort_key = self.redis_server.hget(production_stmt_key,
                                                "dateOfProduction")
         if date_sort_key is None:
-            date_sort_key = "{0}:dates" % production_stmt_key
+            date_sort_key = "{0}:dates".format(production_stmt_key)
             self.redis_server.hset(production_stmt_key,
                                    "dateOfProduction",
                                    date_sort_key)
@@ -546,7 +549,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                                "placeOfPublication")
         if place_set_key is None:
             place_set_key = "{0}:places".format(pub_stmt_key)
-            self.redis_server.hget(pub_stmt_key,
+            self.redis_server.hset(pub_stmt_key,
                                    "placeOfPublication",
                                    place_set_key)
         process_tag_list_as_set(self.marc_record,
@@ -576,25 +579,25 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                    pub_date_key)
         process_008_date(self.marc_record,
                          self.redis_server,
-                         date_sort_key)
+                         pub_date_key)
         
 
     def __title_proper__(self):
         self.redis_server.hset(self.entity_key,
                                "titleProper",
-                          self.marc_record.title())
+                               self.marc_record.title())
         
     def __statement_of_responsiblity__(self):
         # Statement of Responsibility
-        field245s = marc_record.get_fields('245')
+        field245s = self.marc_record.get_fields('245')
         statement_str = ''
         for field in field245s:
             subfield_c = field.get_subfields('c')
             statement_str += "".join(subfield_c)
             if len(statement_str) > 0:
-                redis_server.hset(entity_key,
-                                  "statementOfResponsibility",
-                                  statement_str)
+                self.redis_server.hset(self.entity_key,
+                                       "statementOfResponsibility",
+                                       statement_str)
 
 class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
 
@@ -606,6 +609,7 @@ class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
     def generate(self):
         self.__date_of_work__()
         self.__form_of_work__()
+        self.__identifier_for_the_work__()
         self.__title_of_work__()
         
 
@@ -639,6 +643,27 @@ class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
                                  ('811','a'),
                                  ('830','a')])
 
+    def __identifier_for_the_work__(self):
+        redis_key = "{0}:identifier".format(self.entity_key)
+        field024s = self.marc_record.get_fields('024')
+        for field in field024s:
+            if [7,8].count(int(field.indicators[1])) > -1:
+                self.redis_server.sadd(redis_key,
+                                       ''.join(field.get_subfields("a","d","z")))
+        process_tag_list_as_set(self.marc_record,
+                                redis_key,
+                                self.redis_server,
+                                [('130','0'),
+                                 ('240','0'),
+                                 ('710','0'),
+                                 ('711','0'),
+                                 ('730','0'),
+                                 ('810','0'),
+                                 ('811','0'),
+                                 ('830','0')])
+        
+               
+
     def __title_of_work__(self):
         redis_key = "{0}:titleOfWork".format(self.entity_key)
         process_tag_list_as_set(self.marc_record,
@@ -649,6 +674,7 @@ class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
                                  ('243','a'),
                                  ('730','a'),
                                  ('830','a')])
+    
 
 
         
@@ -662,28 +688,73 @@ def create_rda_redis(marc_record,datastore):
     :param marc_record: MARC record
     :param datastore: Redis datastore
     """
+    sys.stderr.write(".")
     # Generate a new rdaCore record key
     root_key = "rdaCore:{0}".format(datastore.incr("global rdaCore"))
     work_creator = CreateRDACoreWorkFromMARC(record=marc_record,
                                              redis_server=datastore,
                                              root_redis_key=root_key)
     work_creator.generate()
+    datastore.sadd("rdaCore:Works",work_creator.entity_key)
     expression_creator = CreateRDACoreExpressionFromMARC(record=marc_record,
                                                          redis_server=datastore,
                                                          root_redis_key=root_key)
     expression_creator.generate()
+    datastore.sadd("rdaCore:Expressions",expression_creator.entity_key)
     manifestation_creator = CreateRDACoreManifestationFromMARC(record=marc_record,
                                                                redis_server=datastore,
                                                                root_redis_key=root_key)
     manifestation_creator.generate()
-    item_creator = CreateRDACoreManifestationFromMARC(record=marc_record,
-                                                      redis_server=datastore,
-                                                      root_redis_key=root_key)
+    datastore.sadd("rdaCore:Manifestations",manifestation.entity_key)
+    item_creator = CreateRDACoreItemFromMARC(record=marc_record,
+                                             redis_server=datastore,
+                                             root_redis_key=root_key)
     item_creator.generate()
+    datastore.sadd("rdaCore:Items",item_creator.entity_key)
                               
     
     
+def quick_rda(marc_record,datastore):
+    """
+    Create a quick-and-dirty rdaCore Redis representation of the MARC
+    record
 
+    :param marc_record: MARC record
+    :param datastore: Redis datastore
+    """
+    root_key = "rda:{0}".format(datastore.incr("global rdaCore"))
+    work_key = "rda:Works:{0}".format(datastore.incr("global rda:Works"))
+    datastore.hset(work_key,"record_key",root_key)
+    title_key = "rda:Titles:{0}".format(datastore.incr("global rda:Titles"))
+    datastore.hset(title_key,'preferredTitle',marc_record.title())
+    datastore.hset(work_key,"titleOfWork",title_key)
+    expression_key = "rda:Expressions:{0}".format(datastore.incr("global rda:Expressions"))
+    datastore.hset(expression_key,"record_key",root_key)
+    datastore.hset(expression_key,"workExpressed",work_key)
+    datastore.hset(work_key,"expressionOfWork",expression_key)
+    manifestation_key = "rda:Manifestations:{0}".format(datastore.incr("global rda:Manifestations"))
+    datastore.hset(manifestation_key,"record_key",root_key)
+    datastore.hset(work_key,"manifestationOfWork",manifestation_key)
+    datastore.hset(expression_key,"manifestationOfExpression",manifestation_key)
+    datastore.hset(manifestation_key,"expressionManifested",expression_key)
+    datastore.hset(manifestation_key,"workManifested",work_key)
+    field008 = marc_record['008']
+    if field008 is not None:
+        raw_year = field008.value()[7:11]
+        datastore.hset(manifestation_key,"copyrightDate",raw_year)
+        year_search = year_re.search(raw_year)
+        if year_search is not None:
+            year = year_search.groups()[0]
+            datastore.zadd("rda:SortedCopyrightDates",int(year),manifestation_key)
+            
+    item_key = "rda:Items:{0}".format(datastore.incr('global rda:Items'))
+    datastore.hset(item_key,"record_key",root_key)
+    datastore.hset(manifestation_key,"exemplarOfManifestation",item_key)
+    datastore.hset(item_key,"manifestationExemplified",manifestation_key)
+    bib_number = marc_record['907']['a'][1:-1]
+    datastore.hset(item_key,"tutt:bib_number",bib_number)
+    
+                                            
     
 def process_identifier(marc_record,
                        redis_server,
@@ -733,13 +804,17 @@ def process_008_date(marc_record,redis_server,date_sort_key):
         date1 = ''.join(field_values[7:11])
         date2 = ''.join(field_values[11:15])
         if len(date1.strip()) > 0:
-            redis_server.zadd(date_sort_key,
-                              int(date1),
-                              date1)
+            date_search = year_re.search(date1)
+            if date_search is not None:
+                redis_server.zadd(date_sort_key,
+                                  int(date_search.groups()[0]),
+                                  date1)
         if len(date2.strip()) > 0:
-            redis_server.zadd(date_sort_key,
-                              int(date2),
-                              date2)
+            date_search = year_re.search(date2)
+            if date_search is not None:                
+                redis_server.zadd(date_sort_key,
+                                  int(date_search.groups()[0]),
+                                  date2)
             
 def process_tag_list_as_set(marc_record,
                             redis_key,
@@ -763,9 +838,11 @@ def process_tag_list_as_set(marc_record,
             subfields = field.get_subfields(tag[1])
             for subfield in subfields:
                 if is_sorted is True:
-                    redis_server.zadd(redis_key,
-                                      subfield,
-                                      subfield)
+                    year_search = year_re.search(subfield)
+                    if year_search is not None:
+                        redis_server.zadd(redis_key,
+                                          int(year_search.groups()[0]),
+                                          subfield)
                 else:
                     redis_server.sadd(redis_key,subfield)
     
