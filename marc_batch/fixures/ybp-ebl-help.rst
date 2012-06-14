@@ -16,7 +16,7 @@ Open Filezilla:
     
     FTP User ID: **coalliance (username)**
     
-    FTP Password: **M#22kn (quickconnect)**
+    FTP Password: ** PASSWORD (quickconnect)**
     
     FTP subdirectory: **DDA (select)**
     

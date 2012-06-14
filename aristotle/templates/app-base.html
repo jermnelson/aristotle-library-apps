@@ -70,7 +70,9 @@
     <script src="{{ STATIC_URL }}js/utilities.js"></script>
     {% block more-js %}
     <script>
-     $(".collapse").collapse();
+	 $(function() {
+		$(".collapse").collapse();
+	 })
     </script>
     {% endblock %}
  

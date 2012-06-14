@@ -191,14 +191,16 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         """
         Extracts Carrier Type from MARC record
         """
-        field007 = self.marc_record['007'].value()
-        position0,position1 = field007[0],field007[1]
-        # Load json dict mapping MARC 007 position 0 and 1 to RDA Carrier Types
-        carrier_types_dict = json_loader.get('marc-carrier-types')
-        if carrier_types_dict.has_key(position0):
-            if carrier_types_dict[position0].has_key(position1):
-                self.__add_attribute__('carrierType',
-                                       [carrier_types_dict[position0][position1],])
+        field007 = self.marc_record['007']
+        if field007 is not None:
+            field_value = field007.value()
+            position0,position1 = field_value[0],field_value[1]
+            # Load json dict mapping MARC 007 position 0 and 1 to RDA Carrier Types
+            carrier_types_dict = json_loader.get('marc-carrier-types')
+            if carrier_types_dict.has_key(position0):
+                if carrier_types_dict[position0].has_key(position1):
+                    self.__add_attribute__('carrierType',
+                                           [carrier_types_dict[position0][position1],])
         # Adds type of unit in MARC 300 $f
         field300s = self.marc_record.get_fields('300')
         for field in field300s:
@@ -489,9 +491,6 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                                "placeOfManufacture")
         if place_set_key is None:
             place_set_key = "{0}:places".format(manufacture_stmt_key)
-            self.redis_server.hget(manufacture_stmt_key,
-                                   "placeOfManufacture",
-                                   place_set_key)
         process_tag_list_as_set(self.marc_record,
                                 place_set_key,
                                 self.redis_server,
@@ -597,20 +596,94 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                   "statementOfResponsibility",
                                   statement_str)
 
-    
-    
+class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
+
+    def __init__(self,**kwargs):
+        kwargs["entity"] = "Work"
+        super(CreateRDACoreWorkFromMARC,self).__init__(**kwargs)
         
 
-def create_manifestation(marc_record,entity_key):
-    """
-    Ingests a RDA Core Manifestation into Redis datastore
+    def generate(self):
+        self.__date_of_work__()
+        self.__form_of_work__()
+        self.__title_of_work__()
+        
 
-    :param marc_record: MARC Record
-    :param entity_key: Redis key for the Manifestation
+
+    def __date_of_work__(self):
+        redis_key = "{0}:dateOfWork".format(self.entity_key)
+        process_tag_list_as_set(self.marc_record,
+                                redis_key,
+                                self.redis_server,
+                                [('130','a'),
+                                 ('240','a'),
+                                 ('240','d'),
+                                 ('240','f')],
+                                is_sorted=True)
+
+    def __form_of_work__(self):
+        redis_key = "{0}:formOfWork".format(self.entity_key)
+        process_tag_list_as_set(self.marc_record,
+                                redis_key,
+                                self.redis_server,
+                                [('130','a'),
+                                 ('240','a'),
+                                 ('243','a'),
+                                 ('380','a'),
+                                 ('700','t'),
+                                 ('710','t'),
+                                 ('711','t'),
+                                 ('730','a'),
+                                 ('800','t'),
+                                 ('810','t'),
+                                 ('811','a'),
+                                 ('830','a')])
+
+    def __title_of_work__(self):
+        redis_key = "{0}:titleOfWork".format(self.entity_key)
+        process_tag_list_as_set(self.marc_record,
+                                redis_key,
+                                self.redis_server,
+                                [('130','a'),
+                                 ('240','a'),
+                                 ('243','a'),
+                                 ('730','a'),
+                                 ('830','a')])
+
+
+        
+
+def create_rda_redis(marc_record,datastore):
     """
-    if volatile_redis is None:
-        raise ValueError("Volatile Redis not available")
-    redis_server = volatile_redis
+    Function takes a MARC record and Redis datastore and
+    generates a complete rdaCore Work, Expression, Manifestation,
+    and Items
+
+    :param marc_record: MARC record
+    :param datastore: Redis datastore
+    """
+    # Generate a new rdaCore record key
+    root_key = "rdaCore:{0}".format(datastore.incr("global rdaCore"))
+    work_creator = CreateRDACoreWorkFromMARC(record=marc_record,
+                                             redis_server=datastore,
+                                             root_redis_key=root_key)
+    work_creator.generate()
+    expression_creator = CreateRDACoreExpressionFromMARC(record=marc_record,
+                                                         redis_server=datastore,
+                                                         root_redis_key=root_key)
+    expression_creator.generate()
+    manifestation_creator = CreateRDACoreManifestationFromMARC(record=marc_record,
+                                                               redis_server=datastore,
+                                                               root_redis_key=root_key)
+    manifestation_creator.generate()
+    item_creator = CreateRDACoreManifestationFromMARC(record=marc_record,
+                                                      redis_server=datastore,
+                                                      root_redis_key=root_key)
+    item_creator.generate()
+                              
+    
+    
+
     
 def process_identifier(marc_record,
                        redis_server,
@@ -709,29 +782,12 @@ def ingest_record(marc_record):
         return None
     redis_server = volatile_redis
     bib_number = marc_record['907']['a'][1:-1]
-    redis_id = redis_server.incr("global:frbr_rda")
+    redis_id = redis_server.incr("global:rdaCore")
     redis_key = "rdaCore:%s" % redis_id
+    CreateRDACoreWorkFromMARC(record=marc_record,
+                              redis_server=redis_server,
+                              root_redis_key=redis_key)
     
-    
-    
-
-
-    redis_server.hset(redis_key,
-                      "rdaRelationships:author",
-                      marc_record.author())
-    identifiers_key = '%s:identifiers' % redis_key
-    redis_server.hset(identifiers_key,
-                      'bibliographic-number',
-                      bib_number)
-    get_set_callnumbers(redis_key,
-                        marc_record)
-    redis_server.hset(redis_key,"rdaIdentifierForTheExpression",
-                      '%s:identifiers' % redis_key)
-    isbn = marc_record.isbn()
-    if isbn is not None:
-        redis_server.hset('%s:identifiers' % redis_key,
-                          "isbn",
-                          isbn)
 
 
 def ingest_records(marc_file_location):

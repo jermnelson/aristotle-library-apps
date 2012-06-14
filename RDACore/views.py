@@ -15,9 +15,28 @@ def default(request):
 
     :param request: HTTP Request
     """
+    facets = [{"name":"Work","facets":[{"label":"date of work",
+                                         "count":25,
+                                        "members":["2012 (5)",
+                                                  "2011 (3)",
+                                                  "2010 (7)"]},
+                                        {"label":"form of work",
+                                         "count":3}]},
+              {"name":"Expression","facets":[{"label":"content type",
+                                               "count":10},
+                                              {"label":"date of expression",
+                                               "count":25}]},
+              {"name":"Manifestation","facets":[{"label":"carrier type",
+                                                 "count":4},
+                                                {"label":"copyright date",
+                                                 "count":25}]},
+              {"name":"Item","facets":[{"label":"restrictions on use",
+                                        "count":10}]}]
+               
+                                        
     return direct_to_template(request,
                               'rda-core-app.html',
                               {'app':APP,
-                               'facets':FACETS,
+                               'facets':facets,
                                'institution':INSTITUTION})
                                
