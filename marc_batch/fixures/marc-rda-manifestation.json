@@ -1,0 +1,262 @@
+{
+  "rdaCarrierType": {
+    "007": {
+      "positions": [
+        "0", 
+        "1"
+      ]
+    }, 
+    "300": {
+      "subfields": [
+        "f"
+      ]
+    }, 
+    "338": {
+      "subfields": [
+        "a", 
+        "b"
+      ], 
+      "test": {
+        "condition": {
+          "subfield": "2", 
+          "value": "marcmedia"
+        }
+      }
+    }
+  }, 
+  "rdaCopyrightDate": {
+    "008": {
+      "positions": {
+        "6": [
+          "s", 
+          "t"
+        ]
+      }
+    }, 
+    "260": {
+      "subfields": [
+        "c"
+      ], 
+      "test": {
+        "condition": {
+          "startswith": "c", 
+          "subfield": "c"
+        }
+      }
+    }
+  }, 
+  "rdaEditionStatement": {
+    "rdaDesignationOfEdition": {
+      "250": {
+        "subfields": [
+          "a"
+        ]
+      }
+    }, 
+    "rdaDesignationOfNamedRevisionOfEdition": {
+      "250": {
+        "subfields": [
+          "b"
+        ]
+      }
+    }
+  }, 
+  "rdaIdentifierForTheManifestation": {
+    "024": {
+      "indicators": {
+        "0": {
+          "0": {
+            "label": "ISRC", 
+            "subfields": [
+              "a", 
+              "d", 
+              "z"
+            ]
+          }, 
+          "1": {
+            "label": "UPC", 
+            "subfields": [
+              "a", 
+              "d", 
+              "z"
+            ]
+          }, 
+          "2": {
+            "label": "ISMN", 
+            "subfields": [
+              "a", 
+              "d", 
+              "z"
+            ]
+          }, 
+          "3": {
+            "desc": "International Article Number", 
+            "label": "IAN", 
+            "subfields": [
+              "a", 
+              "d", 
+              "z"
+            ]
+          }, 
+          "4": {
+            "desc": "Serial Item and Contribution", 
+            "label": "SIC", 
+            "subfields": [
+              "a", 
+              "d", 
+              "z"
+            ]
+          }
+        }
+      }
+    }, 
+    "030": {
+      "label": "CODEN", 
+      "subfields": [
+        "a", 
+        "z"
+      ]
+    }, 
+    "037": {
+      "label": "Stock number", 
+      "subfields": [
+        "a"
+      ]
+    }, 
+    "074": {
+      "label": "GPO Item Number", 
+      "subfields": [
+        "a", 
+        "z"
+      ]
+    }, 
+    "086": {
+      "indicators": {
+        "0": {
+          "0": {
+            "label": "SuDoc", 
+            "subfields": [
+              "a", 
+              "z"
+            ]
+          }, 
+          "1": {
+            "label": "Canadian GovDoc", 
+            "subfields": [
+              "a", 
+              "z"
+            ]
+          }
+        }
+      }
+    }
+  }, 
+  "rdaManufactureStatement": {
+    "rdaDateOfManufacture": {
+      "008": {
+        "positions": [
+          "7", 
+          "8", 
+          "9", 
+          "10", 
+          "11", 
+          "12", 
+          "13", 
+          "14", 
+          "15"
+        ]
+      }
+    }, 
+    "rdaManufactureName": {
+      "260": [
+        "f"
+      ], 
+      "542": [
+        "k"
+      ]
+    }, 
+    "rdaPlaceOfManufacture": {
+      "260": [
+        "e"
+      ], 
+      "542": [
+        "k"
+      ]
+    }
+  }, 
+  "rdaProductionStatement": {
+    "rdaDateOfProduction": {
+      "008": {
+        "positions": [
+          "7", 
+          "8", 
+          "9", 
+          "10", 
+          "11", 
+          "12", 
+          "13", 
+          "14", 
+          "15"
+        ]
+      }, 
+      "260": {
+        "subfields": [
+          "c"
+        ]
+      }, 
+      "542": {
+        "subfields": [
+          "j"
+        ]
+      }
+    }
+  }, 
+  "rdaPublicationsStatement": {
+    "rdaDateOfPublication": {
+      "008": {
+        "positions": [
+          "7", 
+          "8", 
+          "9", 
+          "10", 
+          "11", 
+          "12", 
+          "13", 
+          "14", 
+          "15"
+        ]
+      }
+    }, 
+    "rdaPlaceOfPublication": {
+      "260": {
+        "subfields": [
+          "a"
+        ]
+      }, 
+      "542": {
+        "subfields": [
+          "p"
+        ]
+      }
+    }, 
+    "rdaPublisherName": {
+      "260": {
+        "subfields": [
+          "b"
+        ]
+      }, 
+      "542": {
+        "subfields": [
+          "k"
+        ]
+      }
+    }
+  }, 
+  "rdaStatementOfResponsibilty": {
+    "245": {
+      "subfields": [
+        "c"
+      ]
+    }
+  }
+}

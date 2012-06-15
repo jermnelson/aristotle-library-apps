@@ -1,7 +1,7 @@
 <div class="well">
  <ul class="nav nav-tabs nav-stacked">
   {% for row in facets %}
-   <li {% if forloop.first %}class="active"{% endif %}><a href="#rdaCore{{ row.name }}" data-toggle="tab">RDA {{ row.name }}</a></li>
+   <li {% if forloop.first %}class="active"{% endif %}><a href="#rdaCore{{ row.name }}" data-toggle="tab">RDA {{ row.name }} {{ row.count }}</a></li>
   {% endfor %}
  </ul>
  <div class="tab-content">
@@ -9,13 +9,7 @@
   <div id="rdaCore{{ row.name }}" class="tab-pane">
 	<ul class="nav nav-list">
 	 {% for facet in row.facets %}
-	  <li>{{ facet.label|title }} {{ facet.count }}
-	  <ul>
-	  {% for value in facet.members %}
-	   <li><a href="/apps/RDAcore/{{ row.name|slugify }}/{{ facet.label|slugify }}/{{ value|slugify }}">{{ value }}</a></li>
-	  {% endfor %}
-	  </ul>
-	  </li>
+	  <li><a href="/apps/RDAcore/facets/{{ facet|slugify }}/">{{ facet|title }} {{ facet.count }}</a></li>
 	 {% endfor %}
 	</ul>
   </div>

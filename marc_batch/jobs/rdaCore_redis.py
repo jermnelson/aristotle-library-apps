@@ -730,14 +730,26 @@ def quick_rda(marc_record,datastore):
     datastore.hset(work_key,"titleOfWork",title_key)
     expression_key = "rda:Expressions:{0}".format(datastore.incr("global rda:Expressions"))
     datastore.hset(expression_key,"record_key",root_key)
-    datastore.hset(expression_key,"workExpressed",work_key)
-    datastore.hset(work_key,"expressionOfWork",expression_key)
+    datastore.hset("rda:ExpressionOfWork",
+                   expression_key,
+                   work_key)
+    datastore.hset("rda:WorkExpressed",
+                   work_key,
+                   expression_key)
     manifestation_key = "rda:Manifestations:{0}".format(datastore.incr("global rda:Manifestations"))
     datastore.hset(manifestation_key,"record_key",root_key)
-    datastore.hset(work_key,"manifestationOfWork",manifestation_key)
-    datastore.hset(expression_key,"manifestationOfExpression",manifestation_key)
-    datastore.hset(manifestation_key,"expressionManifested",expression_key)
-    datastore.hset(manifestation_key,"workManifested",work_key)
+    datastore.hset("rda:ManifestationOfWork",                   
+                   manifestation_key,
+                   work_key)
+    datastore.hset("rda:ManifestationOfExpression",
+                   manifestation_key,
+                   expression_key)
+    datastore.hset("rda:ExpressionManifested",
+                   expression_key,
+                   manifestation_key)
+    datastore.hset("rda:WorkManifested",
+                   work_key,
+                   manifestation_key)
     field008 = marc_record['008']
     if field008 is not None:
         raw_year = field008.value()[7:11]
@@ -749,8 +761,12 @@ def quick_rda(marc_record,datastore):
             
     item_key = "rda:Items:{0}".format(datastore.incr('global rda:Items'))
     datastore.hset(item_key,"record_key",root_key)
-    datastore.hset(manifestation_key,"exemplarOfManifestation",item_key)
-    datastore.hset(item_key,"manifestationExemplified",manifestation_key)
+    datastore.hset("rda:ExemplarOfManifestation",
+                   item_key,
+                   manifestation_key)
+    datastore.hset("rda:ManifestationExemplified",
+                   manifestation_key,
+                   item_key)
     bib_number = marc_record['907']['a'][1:-1]
     datastore.hset(item_key,"tutt:bib_number",bib_number)
     

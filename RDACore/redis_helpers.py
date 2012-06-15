@@ -3,14 +3,15 @@
 """
 import pymarc,redis,re
 import logging,sys
-from app_settings import APP,SEED_RECORD_ID
+from app_settings import APP
 try:
-    import aristotle.settings as settings
-    REDIS_HOST = settings.REDIS_ACCESS_HOST
-    REDIS_PORT = settings.REDIS_ACCESS_PORT
-    TEST_DB = settings.REDIS_TEST
-    volatile_redis = redis.StrictRedis(host=settings.REDIS_PRODUCTIVITY_HOST,
-                                       port=settings.REDIS_PRODUCTIVITY_PORT)
+    raise ImportError
+##    import aristotle.settings as settings
+##    REDIS_HOST = settings.REDIS_ACCESS_HOST
+##    REDIS_PORT = settings.REDIS_ACCESS_PORT
+##    TEST_DB = settings.REDIS_TEST
+##    volatile_redis = redis.StrictRedis(host=settings.REDIS_PRODUCTIVITY_HOST,
+##                                       port=settings.REDIS_PRODUCTIVITY_PORT)
 
 except ImportError:
     # Setup for local development
@@ -27,6 +28,11 @@ redis_server = redis.StrictRedis(host=REDIS_HOST,
 
 
     
+def get_facets(entity_name):
+    facets = {"label":entity_name,
+              "count":redis_server.get("global rda:{0}s".format(entity_name))}
+    return facets
+                                      
 
 def search(query):
     set_rank = redis_server.zrank('call-number-sorted-search-set',query)
