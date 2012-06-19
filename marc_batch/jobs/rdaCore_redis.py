@@ -27,6 +27,120 @@ redis_server = redis.StrictRedis(host=REDIS_HOST,
 
 year_re = re.compile(r"(\d+)")
 
+class MARCRules(object):
+
+    def __init__(self,**kwargs):
+        self.json_results = {}
+        if kwargs.has_key('json_file'):
+            self.json_rules = json_loader[kwargs.get('json_file')]
+        if kwargs.has_key('json_rules'):
+            self.json_rules = kwargs.get('json_rules')
+
+    def __get_position_values__(self,rule,marc_field):
+        """
+        Helper method checks MARC values from fixed positions based
+        on the rule's position
+        """
+        values = str()
+        if rule.has_key("positions") and marc_field.is_control_field():
+            raw_value = marc_field.value()
+            positions = rule["positions"]
+            for position in positions:
+                values += raw_value[int(position)]
+        if len(values) < 1:
+            return None
+        return values
+
+    def __get_subfields__(self,rule,marc_field):
+        """
+        Helper method extracts any subfields that match pattern
+        in the rule's subfield
+
+        :param rule: JSON Rule
+        :param marc_field: MARC field
+        """
+        if rule.has_key("subfields") and hasattr(marc_field,'subfields'):
+            rule_subfields = rule["subfields"]
+            marc_subfields = marc_field.get_subfields(",".join(rule_subfields))
+            return ''.join(marc_subfields)
+        return None
+
+
+    def __test_indicators__(self,rule,marc_field):
+        """
+        Helper method checks the MARC field indicator againest the
+        rule values
+        
+        :param rule: JSON Rule
+        :param marc_field: MARC field
+        """
+        pass_rule = None
+        if rule.has_key("indicators"):
+            indicator0,indicator1 = marc_field.indicators
+            if rule["indicators"].has_key("0"):
+                if rule["indicators"]["0"].count(indicator0) > -1:
+                    pass_rule = True
+            if rule["indicators"].has_key("1"):
+                if rule["indicators"]["1"].count(indicator1) > -1:
+                    pass_rule = True
+            if pass_rule is None:
+                pass_rule = False
+        return pass_rule
+
+    def __test_position_values__(self,rule,marc_field):
+        """
+        Helper method checks MARC values from fixed positions based
+        on the rule's position
+        """
+        pass_rule = None
+        if rule.has_key("positions"):
+            raw_value = marc_field.value()
+            positions = rule["positions"].keys()
+            for position in positions:
+                conditions = rule["positions"][position]
+                position_value = raw_value[int(position)]
+                if conditions.count(position_value) > -1:
+                    pass_rule = True
+            if pass_rule is None:
+                pass_rule = False
+        return pass_rule
+
+    def load_marc(self,marc_record):
+        """
+        Method takes a MARC record and applies all of its rules
+        to the MARC file. If a MARC field matches the rule's condition,
+        the result is saved to json results dict.
+
+        :param marc_record: MARC record
+        """
+        for rda_element in self.json_rules.keys():
+            rule_fields = self.json_rules[rda_element].keys()
+            for tag in rule_fields:
+                marc_fields = marc_record.get_fields(tag)
+                if len(marc_fields) > 0:
+                    rule = rule_fields[tag]
+                    # Check if indicators are in rule, check
+                    # and apply to MARC field
+                    for field in marc_fields:
+                        test_indicators = self.__test_indicators__(rule,field)
+                        if test_indicators is False:
+                            pass
+                        # For fixed fields
+                        test_position = self.__test_position_values__(rule,field)
+                        # For variable fields
+                        subfield_values = self.__get_subfields__(rule,field)
+                        if subfields_values is not None:
+                            if self.json_results.has_key(rda_element):
+                                self.json_results[rda_element].append(subfields_values)
+                            else:
+                                self.json_results[rda_element] = subfields_values
+                                
+                        
+                        
+                        
+                    
+            
+
 class CreateRDACoreEntityFromMARC(object):
     """RDACoreEntity is the base class for ingesting MARC21 records into RDACore
     FRBR entities stored in Redis.
@@ -88,7 +202,7 @@ class CreateRDACoreEntityFromMARC(object):
             if len(values) == 1:
                 self.redis_server.hset(self.entity_key,
                                        attribute,
-                                       values[0])
+                                       ''.join(values))
             else:
                 # Creates a set of all values in list
                 for row in values:
@@ -599,6 +713,23 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                        "statementOfResponsibility",
                                        statement_str)
 
+class CreateRDACorePersonFromMARC(object):
+
+    def __init__(self,**kwargs):
+        if kwargs.has_key('json-rules'):
+            self.json_rules = kwargs.get('json-rules')
+        else:
+            self.json_rules = json_loader['marc-rda-person']
+
+    def load(self):
+        for rda_element in self.json_rules.keys():
+            marc_fields = rda_element.keys()
+            for field in marc_fields:
+                if field.has_key("indicators"):
+                    for indicator in field["indicators"]:
+                        pass
+                    
+
 class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
 
     def __init__(self,**kwargs):
@@ -716,13 +847,15 @@ def create_rda_redis(marc_record,datastore):
     
 def quick_rda(marc_record,datastore):
     """
-    Create a quick-and-dirty rdaCore Redis representation of the MARC
+    Create a quick-and-dirty rdaCore Redis representation of a MARC
     record
 
     :param marc_record: MARC record
     :param datastore: Redis datastore
     """
     root_key = "rda:{0}".format(datastore.incr("global rdaCore"))
+    bib_number = marc_record['907']['a'][1:-1]
+    datastore.hset(root_key,"tutt:bib_number",bib_number)
     work_key = "rda:Works:{0}".format(datastore.incr("global rda:Works"))
     datastore.hset(work_key,"record_key",root_key)
     title_key = "rda:Titles:{0}".format(datastore.incr("global rda:Titles"))
@@ -767,8 +900,6 @@ def quick_rda(marc_record,datastore):
     datastore.hset("rda:ManifestationExemplified",
                    manifestation_key,
                    item_key)
-    bib_number = marc_record['907']['a'][1:-1]
-    datastore.hset(item_key,"tutt:bib_number",bib_number)
     
                                             
     

@@ -1,0 +1,19 @@
+{
+  "rdaPreferredNameForThePerson": {
+     "100": {
+       "indicators": {
+         "0": ["0","1"]},
+       "subfields": ["a"]
+     },
+     "700": {
+       "indicators": {
+         "0": ["0","1"]},
+       "subfields": ["a"]
+     },
+     "800": {
+       "indicators": {
+         "0": ["0","1"]},
+       "subfields": ["a"]
+     }
+  }    
+}

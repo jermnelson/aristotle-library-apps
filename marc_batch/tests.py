@@ -3,6 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 import redis,pymarc,datetime
+import json
 from django.test import TestCase
 from aristotle.settings import REDIS_TEST_DB
 from jobs.rdaCore_redis import *
@@ -263,4 +264,29 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
 
                                 
 
-    
+class MARCRulesTest(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_get_position_values(self):
+        test_rule = json.loads('''{"positions": ["0", "1"]}''')
+        marc_rule = MARCRules(json_rules=test_rule)
+        valid007 = pymarc.Field(tag='007',indicators=["",""],data='ca   00000')
+        self.assertEquals(marc_rule.__get_position_values__(test_rule,valid007),
+                          'ca')
+        valid245 = pymarc.Field(tag='245',indicators=["",""],subfields=['a','Test Title'])
+        self.assertEquals(marc_rule.__get_position_values__(test_rule,valid245),None)
+
+    def test_get_subfields(self):
+        test_rule = json.loads('''{"subfields": ["a"]}''')
+        marc_rule = MARCRules(json_rules=test_rule)
+        valid245 = pymarc.Field(tag='245',indicators=["",""],subfields=['a','Test Title'])
+        self.assertEquals(marc_rule.__get_subfields__(test_rule,valid245),
+                          'Test Title')
+        valid007 = pymarc.Field(tag='007',indicators=["",""],data='ca   00000')
+        self.assertEquals(marc_rule.__get_subfields__(test_rule,valid007),
+                          None)
+        
+    def tearDown(self):
+        test_ds.flushdb()

@@ -76,24 +76,10 @@
   "rdaIdentifierForTheWork": {
     "024": {
       "indicators": {
-        "1": {
-          "7": {
-            "subfields": [
-              "a", 
-              "d", 
-              "z"
-            ]
-          }, 
-          "8": {
-            "subfields": [
-              "a", 
-              "d", 
-              "z"
-            ]
-          }
-        }
-      }
-    }, 
+        "0":["7","8"]},
+      "subfields": ["a", "d", "z"]
+      
+     }, 
     "130": [
       "0"
     ], 
