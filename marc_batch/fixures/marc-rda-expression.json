@@ -1,0 +1,40 @@
+{
+  "rdaContentTypeForExpression": {
+    "130": {
+       "subfields":["h"]
+    },
+    "240":{
+       "subfields":["h"]
+    },
+    "243": {
+       "subfields":["h"]
+    },
+    "700": {
+       "subfields":["h"]
+    },
+    "710": {
+       "subfields":["h"]
+    },
+    "711": {
+       "subfields":["h"]
+    },
+    "730": {
+       "subfields":["h"]
+    },
+    "810": {
+       "subfields":["h"]
+    },
+    "811": {
+       "subfields":["h"]
+    },
+    "830": {
+       "subfields":["h"]
+    },    
+    "336": {
+       "subfields":["a","b"],
+       "condition": "lambda x: ''.join(x.get_subfields('2')) == 'marccontent'"
+    }
+  }
+
+
+}

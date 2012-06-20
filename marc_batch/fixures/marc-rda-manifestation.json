@@ -1,10 +1,8 @@
 {
   "rdaCarrierType": {
     "007": {
-      "positions": [
-        "0", 
-        "1"
-      ]
+      "positions": {"start":"0",
+                    "end":"1"}
     }, 
     "300": {
       "subfields": [
@@ -16,50 +14,36 @@
         "a", 
         "b"
       ], 
-      "test": {
-        "condition": {
-          "subfield": "2", 
-          "value": "marcmedia"
-        }
-      }
-    }
+      "condition": "lambda x ''.join(x.get_subfields('2')) == 'marcmedia'" 
+     }
   }, 
   "rdaCopyrightDate": {
     "008": {
       "positions": {
-        "6": [
-          "s", 
-          "t"
-        ]
-      }
+        "start":"7",
+        "end":"10"},
+      "condition": "lambda x: ['s','t'].count(x[6]) > -1"
     }, 
     "260": {
       "subfields": [
         "c"
       ], 
-      "test": {
-        "condition": {
-          "startswith": "c", 
-          "subfield": "c"
-        }
-      }
-    }
+      "condition": "lambda x: ''.join(x.get_subfields('c')).startswith('c')"
+     }
   }, 
-  "rdaEditionStatement": {
-    "rdaDesignationOfEdition": {
+  "rdaDesignationOfEdition": {
       "250": {
         "subfields": [
           "a"
         ]
       }
     }, 
-    "rdaDesignationOfNamedRevisionOfEdition": {
+  "rdaDesignationOfNamedRevisionOfEdition": {
       "250": {
         "subfields": [
           "b"
         ]
       }
-    }
   }, 
   "rdaIdentifierForTheManifestation": {
     "024": {
@@ -151,8 +135,7 @@
       }
     }
   }, 
-  "rdaManufactureStatement": {
-    "rdaDateOfManufacture": {
+  "rdaDateOfManufacture": {
       "008": {
         "positions": [
           "7", 
@@ -167,7 +150,7 @@
         ]
       }
     }, 
-    "rdaManufactureName": {
+   "rdaManufactureName": {
       "260": [
         "f"
       ], 
@@ -175,59 +158,33 @@
         "k"
       ]
     }, 
-    "rdaPlaceOfManufacture": {
+   "rdaPlaceOfManufacture": {
       "260": [
         "e"
       ], 
       "542": [
         "k"
       ]
-    }
-  }, 
-  "rdaProductionStatement": {
-    "rdaDateOfProduction": {
-      "008": {
-        "positions": [
-          "7", 
-          "8", 
-          "9", 
-          "10", 
-          "11", 
-          "12", 
-          "13", 
-          "14", 
-          "15"
-        ]
-      }, 
-      "260": {
-        "subfields": [
-          "c"
-        ]
-      }, 
-      "542": {
-        "subfields": [
-          "j"
-        ]
-      }
-    }
-  }, 
-  "rdaPublicationsStatement": {
-    "rdaDateOfPublication": {
-      "008": {
-        "positions": [
-          "7", 
-          "8", 
-          "9", 
-          "10", 
-          "11", 
-          "12", 
-          "13", 
-          "14", 
-          "15"
-        ]
+   }, 
+  "rdaDateOfProduction": {
+    "008": {
+      "positions": {
+        "end": "15", 
+        "start": "7"
       }
     }, 
-    "rdaPlaceOfPublication": {
+    "260": {
+      "subfields": [
+        "c"
+      ]
+    }, 
+    "542": {
+      "subfields": [
+        "j"
+      ]
+    }
+  },
+  "rdaPlaceOfPublication": {
       "260": {
         "subfields": [
           "a"
@@ -239,7 +196,7 @@
         ]
       }
     }, 
-    "rdaPublisherName": {
+  "rdaPublisherName": {
       "260": {
         "subfields": [
           "b"
@@ -250,7 +207,6 @@
           "k"
         ]
       }
-    }
   }, 
   "rdaStatementOfResponsibilty": {
     "245": {

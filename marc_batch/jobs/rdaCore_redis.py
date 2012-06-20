@@ -43,10 +43,11 @@ class MARCRules(object):
         """
         values = str()
         if rule.has_key("positions") and marc_field.is_control_field():
+            start_position = int(rule["positions"]["start"])
+            end_position = int(rule["positions"]["end"])
             raw_value = marc_field.value()
-            positions = rule["positions"]
-            for position in positions:
-                values += raw_value[int(position)]
+            # Adding +1 to end position for string range
+            values += raw_value[start_position:end_position+1]
         if len(values) < 1:
             return None
         return values
@@ -59,11 +60,16 @@ class MARCRules(object):
         :param rule: JSON Rule
         :param marc_field: MARC field
         """
+        output = None
         if rule.has_key("subfields") and hasattr(marc_field,'subfields'):
+            if hasattr(rule,"condition"):
+                if self.__test_subfield__(rule,marc_field) is False:
+                    return output
+            output = str()
             rule_subfields = rule["subfields"]
-            marc_subfields = marc_field.get_subfields(",".join(rule_subfields))
-            return ''.join(marc_subfields)
-        return None
+            for subfield in rule_subfields:
+                output += ''.join(marc_field.get_subfields(subfield))
+        return output
 
 
     def __test_indicators__(self,rule,marc_field):
@@ -93,17 +99,24 @@ class MARCRules(object):
         on the rule's position
         """
         pass_rule = None
-        if rule.has_key("positions"):
+        if rule.has_key("positions") and rule.has_key("condition"):
             raw_value = marc_field.value()
-            positions = rule["positions"].keys()
-            for position in positions:
-                conditions = rule["positions"][position]
-                position_value = raw_value[int(position)]
-                if conditions.count(position_value) > -1:
-                    pass_rule = True
-            if pass_rule is None:
-                pass_rule = False
+            # NOTE condition should be python lambda form and evaluates
+            # to boolean
+            condition = eval(rule["condition"])
+            pass_rule = condition(raw_value)
         return pass_rule
+
+    def __test_subfield__(self,rule,marc_field):
+        """
+        Helper function evaluates a lambda function againest value of
+        MARC field, returns boolean
+        """
+        if not rule.has_key("condition"):
+            return None
+        condition = eval(rule["condition"])
+        return condition(marc_field)
+        
 
     def load_marc(self,marc_record):
         """
@@ -118,7 +131,7 @@ class MARCRules(object):
             for tag in rule_fields:
                 marc_fields = marc_record.get_fields(tag)
                 if len(marc_fields) > 0:
-                    rule = rule_fields[tag]
+                    rule = self.json_rules[rda_element][tag]
                     # Check if indicators are in rule, check
                     # and apply to MARC field
                     for field in marc_fields:
@@ -126,14 +139,19 @@ class MARCRules(object):
                         if test_indicators is False:
                             pass
                         # For fixed fields
-                        test_position = self.__test_position_values__(rule,field)
+                        position_values = self.__get_position_values__(rule,field)
+                        if position_values is not None:
+                            if self.json_results.has_key(rda_element):
+                                self.json_results[rda_element].append(position_values)
+                            else:
+                                self.json_results[rda_element] = [position_values,]
                         # For variable fields
                         subfield_values = self.__get_subfields__(rule,field)
-                        if subfields_values is not None:
+                        if subfield_values is not None:
                             if self.json_results.has_key(rda_element):
-                                self.json_results[rda_element].append(subfields_values)
+                                self.json_results[rda_element].append(subfield_values)
                             else:
-                                self.json_results[rda_element] = subfields_values
+                                self.json_results[rda_element] = [subfield_values,]
                                 
                         
                         
@@ -159,6 +177,10 @@ class CreateRDACoreEntityFromMARC(object):
         entity_name = kwargs.get('entity')
         redis_incr_value = self.redis_server.incr("global:{0}:{1}".format(self.root_redis_key,
                                                                           entity_name))
+        if kwargs.has_key("json_rules"):
+            self.marc_rules = MARCRules(json_file=kwargs.get('json_rules'))
+        else:
+            self.marc_rules = MARCRules(json_file='marc-rda-expression')        
         # Redis Key for this Entity
         self.entity_key = "{0}:{1}:{2}".format(self.root_redis_key,
                                                entity_name,
@@ -170,7 +192,40 @@ class CreateRDACoreEntityFromMARC(object):
         """
         Method is stub, child classes should override this method
         """
-        pass
+        for element,values in self.marc_rules.json_results.iteritems():
+            existing_value = self.redis_server.hget(self.entity_key,
+                                                    element)
+            if existing_value is None:
+                if len(values) == 1:
+                    self.redis_server.hset(self.entity_key,
+                                           element,
+                                           value)
+                else:
+                    new_set_key = "{0}:{1}".format(self.entity_key,
+                                               element)
+                    for row in values:
+                        self.redis_server.sadd(new_set_key,
+                                               row)
+            elif self.redis_server.exists(existing_value):
+                if self.redis_server.type(existing_value) == 'set':
+                    for row in values:
+                        self.redis_server.sadd(existing_value,
+                                               value)
+            # Checks if the existing value and value from MARC
+            # record the same, creates set 
+            elif values.count(existing_value) < 0:
+                new_set_key = "{0}:{1}".format(self.entity_key,
+                                               element)
+                self.redis_server.sadd(new_set_key,
+                                       existing_value)
+                for row in values:
+                    self.redis_server.sadd(new_set_key,
+                                           value)
+                self.redis_server.hset(self.entity_key,
+                                       element,
+                                       new_set_key)
+            else:
+                raise ValueError("{0}:{1} unknown in Redis datastore".format(element,value))
 
     def __add_attribute__(self,attribute,values):
         """
@@ -219,42 +274,11 @@ class CreateRDACoreExpressionFromMARC(CreateRDACoreEntityFromMARC):
         
 
     def generate(self):
-        self.__content_type__()
-
-    def __content_type__(self):
-        content_types = []
-        content_type_key = self.redis_server.hget(self.entity_key,
-                                                  "contentType")
-        if content_type_key is None:
-            content_type_key = "{0}:contentType".format(self.entity_key)
-        field336s = self.marc_record.get_fields('336')
-        for field in field336s:
-            subfld_2 = field.get_subfields('2')
-            if len(subfld_2) > 0:
-                if subfld_2[0] == 'marccontent':
-                    subfld_vals = ''.join(field.get_subfields('a','b'))
-                    content_types.append(subfld_vals)
-        if len(content_types) > 0:
-            for content_type in content_types:
-                self.redis_server.sadd(content_type_key,content_type)
-        process_tag_list_as_set(self.marc_record,
-                                content_type_key,
-                                self.redis_server,
-                                [('130','h'),
-                                 ('730','h'),
-                                 ('830','h'),
-                                 ('240','h'),
-                                 ('243','h'),
-                                 ('700','h'),
-                                 ('800','h'),
-                                 ('710','h'),
-                                 ('810','h'),
-                                 ('711','h'),
-                                 ('811','h')])
+        self.marc_rules.load_marc(self.marc_record)
         
-        
-                                                    
-        
+                    
+                        
+                
 
 
 class CreateRDACoreItemFromMARC(CreateRDACoreEntityFromMARC):

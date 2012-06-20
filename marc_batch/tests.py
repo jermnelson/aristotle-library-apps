@@ -63,15 +63,15 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
         self.expression_generator = CreateRDACoreExpressionFromMARC(record=self.test_rec,
                                                                     redis_server=test_ds,
                                                                     root_redis_key=self.root_key)
+        self.expression_generator.generate()
 
     def test_init(self):
         self.assertEquals(self.expression_generator.entity_key,
                           "{0}:Expression:1".format(self.root_key))
 
     def test_content_type(self):
-        # Calls method in generator
-        self.expression_generator.__content_type__()
-        content_type_key = "{0}:contentType".format(self.expression_generator.entity_key)
+        content_type_key = "{0}:rdaContentTypeForExpression".format(self.expression_generator.entity_key)
+        #print(test_ds.smembers(content_type_key))
         # Tests Expression.contentType in Redis to value in the 336 field
         self.assert_(test_ds.sismember(content_type_key,"text"))
         # Test Expression.contentType in Redis to value in the 130 field
@@ -81,7 +81,7 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
         
 
     def tearDown(self):
-        test_ds.flushdb()
+       test_ds.flushdb()
 
 class CreateRDACoreItemFromMARCTest(TestCase):
 
@@ -171,7 +171,6 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
         manifestation_generator.__carrier_type__()
 ##        # Now test various iterations of carrier types in record
         carrier_key = '{0}:carrierType'.format(manifestation_generator.entity_key)
-        print("{0} exists={1}".format(carrier_key,test_ds.exists(carrier_key)))
 ##        carrier_types = test_ds.smembers()
 ##        self.assertEquals(carrier_types[0],
 ##                          "online resource")
@@ -270,13 +269,14 @@ class MARCRulesTest(TestCase):
         pass
 
     def test_get_position_values(self):
-        test_rule = json.loads('''{"positions": ["0", "1"]}''')
+        test_rule = json.loads('''{"positions": {"start": "0", "end": "1"}}''')
         marc_rule = MARCRules(json_rules=test_rule)
         valid007 = pymarc.Field(tag='007',indicators=["",""],data='ca   00000')
         self.assertEquals(marc_rule.__get_position_values__(test_rule,valid007),
                           'ca')
         valid245 = pymarc.Field(tag='245',indicators=["",""],subfields=['a','Test Title'])
-        self.assertEquals(marc_rule.__get_position_values__(test_rule,valid245),None)
+        self.assertEquals(marc_rule.__get_position_values__(test_rule,valid245),
+                          None)
 
     def test_get_subfields(self):
         test_rule = json.loads('''{"subfields": ["a"]}''')
@@ -287,6 +287,61 @@ class MARCRulesTest(TestCase):
         valid007 = pymarc.Field(tag='007',indicators=["",""],data='ca   00000')
         self.assertEquals(marc_rule.__get_subfields__(test_rule,valid007),
                           None)
+        test_multiple_rule = json.loads('''{"subfields":["a","c"]}''')
+        valid300 = pymarc.Field(tag='300',
+                                indicators=["",""],
+                                subfields=['a','204 p. ;','c','22cm.'])
+        marc_multiple_rule = MARCRules(json_rules=test_multiple_rule)
+        self.assertEquals(marc_multiple_rule.__get_subfields__(test_multiple_rule,
+                                                               valid300),
+                          '204 p. ;22cm.')
+
+    def test_test_subfields(self):
+        test_rule = json.loads('''{"subfields":["a","b"],
+          "condition": "lambda x: ''.join(x.get_subfields('2')) == 'marccontent'"}''')
+        marc_rule = MARCRules(json_rules=test_rule)
+        valid336 = pymarc.Field(tag='336',
+                                indicators=["",""],
+                                subfields=["a","text",
+                                           "2","marccontent"])
+        self.assert_(marc_rule.__test_subfield__(test_rule,valid336))
+        
+        
+
+    def test_load_marc(self):
+        test_record = pymarc.Record()
+        test_record.add_field(pymarc.Field(tag='008',
+                                           data='850611s1985\\\\nyu\\\\\\\\\\\000\1\eng\\'))
+        test_record.add_field(pymarc.Field(tag='035',
+                                           indicators=["",""],
+                                           subfields=['a','(CoCC)1000']))
+        test_record.add_field(pymarc.Field(tag='100',
+                                           indicators=["1",""],
+                                           subfields=['a','Grau, Shirley Ann.']))
+        test_record.add_field(pymarc.Field(tag='300',
+                                           indicators=["",""],
+                                           subfields=['a','204 p. ;','c','22cm.']))
+        json_rule_set = json.loads('''{"rdaExtentOfManifestation": {"300": {"subfields": ["a","c"]}},
+                                    "rdaPreferredNameForThePerson": {"100": {"indicators": {"0": ["0", "1"]},
+                                                                             "subfields": ["a"]}},
+                                    "rdaCopyrightDate": {"008": {"positions": {"start": "7","end":10}}}}''')
+        marc_rules = MARCRules(json_rules=json_rule_set)
+        marc_rules.load_marc(test_record)
+        self.assertEquals(marc_rules.json_results["rdaCopyrightDate"],
+                          ["1985"])
+        self.assertEquals(marc_rules.json_results["rdaExtentOfManifestation"],
+                          ["204 p. ;22cm."])
+        self.assertEquals(marc_rules.json_results["rdaPreferredNameForThePerson"],
+                          ['Grau, Shirley Ann.'])
+
+    def test_test_position_values(self):
+        field008 = pymarc.Field(tag='008',
+                                data='850611s1985\\\\nyu\\\\\\\\\\\000\1\eng\\')
+        test_rule = json.loads('''{"positions": {"start": "7","end":10},"condition":"lambda x: x[6] == 's'"}''')
+        marc_rules = MARCRules(json_rules=test_rule)
+        self.assert_(marc_rules.__test_position_values__(test_rule,field008))
+        
+
         
     def tearDown(self):
         test_ds.flushdb()
