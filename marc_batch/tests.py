@@ -15,33 +15,30 @@ class CreateRDACoreEntityFromMARCTest(TestCase):
 
     def setUp(self):
         self.test_rec = pymarc.Record()
+        self.test_rec.add_field(pymarc.Field(tag="100",
+                                             indicators=["",""],
+                                             subfields=["a","Test 100 value"]))
+        
         self.root_key = "rdaCore:{0}".format(test_ds.incr("global:rdaCore"))
+        json_rule = json.loads('''{"rdaTestRule":{"100":{"subfields":["a"]}}}''')
         self.entity_generator = CreateRDACoreEntityFromMARC(record=self.test_rec,
                                                             redis_server=test_ds,
                                                             root_redis_key=self.root_key,
-                                                            entity='Generic')
+                                                            entity='Generic',
+                                                            json_rules=json_rule)
 
     def test_init(self):
         self.assertEquals(self.entity_generator.entity_key,
                           "{0}:Generic:1".format(self.root_key))
+
+    def test_generate(self):
+        self.entity_generator.generate()
+        self.assertEquals(test_ds.hget(self.entity_generator.entity_key,
+                                       "rdaTestRule"),
+                          "Test 100 value")
+        
                                                
 
-    def test_add_attribute(self):
-        self.entity_generator.__add_attribute__("name",["testing",])
-        # Name should be a hash key because it is a singleton
-        self.assert_(test_ds.hexists(self.entity_generator.entity_key,
-                                     "name"))
-        self.assertEquals(test_ds.hget(self.entity_generator.entity_key,
-                                       "name"),
-                          "testing")
-        self.entity_generator.__add_attribute__("name",["testing two",])
-        # Hash value for attribute should now be deleted
-        self.assert_(not test_ds.hexists(self.entity_generator.entity_key,
-                                         "name"))
-        # Set should now exist for entity
-        entity_attribute_set_key = "{0}:{1}".format(self.entity_generator.entity_key,"name")
-        self.assert_(test_ds.exists(entity_attribute_set_key))
-  
 
     def tearDown(self):
         test_ds.flushdb()
@@ -70,8 +67,7 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
                           "{0}:Expression:1".format(self.root_key))
 
     def test_content_type(self):
-        content_type_key = "{0}:rdaContentTypeForExpression".format(self.expression_generator.entity_key)
-        #print(test_ds.smembers(content_type_key))
+        content_type_key = "{0}:rdaContentType".format(self.expression_generator.entity_key)
         # Tests Expression.contentType in Redis to value in the 336 field
         self.assert_(test_ds.sismember(content_type_key,"text"))
         # Test Expression.contentType in Redis to value in the 130 field
@@ -81,7 +77,7 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
         
 
     def tearDown(self):
-       test_ds.flushdb()
+        test_ds.flushdb()
 
 class CreateRDACoreItemFromMARCTest(TestCase):
 
@@ -95,15 +91,16 @@ class CreateRDACoreItemFromMARCTest(TestCase):
         self.item_generator = CreateRDACoreItemFromMARC(record=self.test_rec,
                                                         redis_server=test_ds,
                                                         root_redis_key=self.root_key)
+        self.item_generator.generate()
 
     def test_init(self):
         self.assertEquals(self.item_generator.entity_key,
                           "{0}:Item:1".format(self.root_key))
 
     def test_restrictions_on_use(self):
-        # Call method in item generator
-        self.item_generator.__restrictions_on_use__()
-        restriction_key = "{0}:restrictionsOnUse".format(self.item_generator.entity_key)
+        
+        restriction_key = "{0}:rdaRestrictionOnUse".format(self.item_generator.entity_key)
+        print(test_ds.hget(self.item_generator.entity_key,'rdaRestrictionOnUseForItem'))
         # Tests Item.restrictionOnUse in Redis for 540 subfield a
         self.assert_(test_ds.sismember(restriction_key,
                                        'Restricted: Copying allowed only for non-profit organizations'))
@@ -140,6 +137,7 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
         self.manifestation_generator = CreateRDACoreManifestationFromMARC(record=self.test_rec,
                                                                           redis_server=test_ds,
                                                                           root_redis_key=self.root_key)
+        self.manifestation_generator.generate()
 
 
     def test_init(self):
@@ -149,28 +147,27 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
 
     def test_carrier_type(self):
         # Valid TestCase manifestation_generator
-        self.manifestation_generator.__carrier_type__()
         self.assertEquals(test_ds.hget(self.manifestation_generator.entity_key,
-                                       "carrierType"),
+                                       "rdaCarrierType"),
                           "videodisc")
         # Create stub MARC record with multiple carrier type encodings
-        test_rec = pymarc.Record()
-        test_rec.add_field(pymarc.Field('007',
-                                        data='cr        '))
-        test_rec.add_field(pymarc.Field('300',
-                                        indicators=['',''],
-                                        subfields=['f','volume']))
-        test_rec.add_field(pymarc.Field('338',
-                                        indicators=['',''],
-                                        subfields=['a',"film roll"]))
-        root_key = "rdaCore:{0}".format(test_ds.incr("global:rdaCore"))
-        manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_rec,
-                                                                     redis_server=redis_server,
-                                                                     root_redis_key=root_key)
-        
-        manifestation_generator.__carrier_type__()
-##        # Now test various iterations of carrier types in record
-        carrier_key = '{0}:carrierType'.format(manifestation_generator.entity_key)
+##        test_rec = pymarc.Record()
+##        test_rec.add_field(pymarc.Field('007',
+##                                        data='cr        '))
+##        test_rec.add_field(pymarc.Field('300',
+##                                        indicators=['',''],
+##                                        subfields=['f','volume']))
+##        test_rec.add_field(pymarc.Field('338',
+##                                        indicators=['',''],
+##                                        subfields=['a',"film roll"]))
+##        root_key = "rdaCore:{0}".format(test_ds.incr("global:rdaCore"))
+##        manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_rec,
+##                                                                     redis_server=redis_server,
+##                                                                     root_redis_key=root_key)
+##        
+##        manifestation_generator.__carrier_type__()
+####        # Now test various iterations of carrier types in record
+##        carrier_key = '{0}:carrierType'.format(manifestation_generator.entity_key)
 ##        carrier_types = test_ds.smembers()
 ##        self.assertEquals(carrier_types[0],
 ##                          "online resource")
@@ -185,8 +182,7 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
 
     def test_copyright_date(self):
         # Call method in manifestation generator
-        self.manifestation_generator.__copyright_date__()
-        copyright_key = "{0}:copyrightDate".format(self.manifestation_generator.entity_key)
+        copyright_key = "{0}:rdaCopyrightDate".format(self.manifestation_generator.entity_key)
         copyright_dates = test_ds.zrange(copyright_key,0,-1)
         # Tests Manifestation.copyrightDate for 008 field
         self.assertEquals(copyright_dates[0],
@@ -203,13 +199,12 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
 
     def test_edition_statement(self):
         # call method in manifestation generator
-        self.manifestation_generator.__edition_statement__()
         edition_key = "{0}:editionStatement".format(self.manifestation_generator.entity_key)
         # Test Manifestation.editionStatement for designations
-        designation_key = test_ds.hget(edition_key,"designationOfEdition")
+        designation_key = test_ds.hget(edition_key,"rdaDesignationOfEdition")
         self.assert_(test_ds.sismember(designation_key,"4th ed."))
         # Test Manifestation.editionStatement for designation of named revision
-        named_key = test_ds.hget(edition_key,"designationOfNamedRevisionOfEdition")
+        named_key = test_ds.hget(edition_key,"rdaDesignationOfNamedRevisionOfEdition")
         self.assert_(test_ds.sismember(named_key,'revised by JB Test'))
 
     def test_all_identifiers(self):
@@ -283,7 +278,7 @@ class MARCRulesTest(TestCase):
         marc_rule = MARCRules(json_rules=test_rule)
         valid245 = pymarc.Field(tag='245',indicators=["",""],subfields=['a','Test Title'])
         self.assertEquals(marc_rule.__get_subfields__(test_rule,valid245),
-                          'Test Title')
+                          ['Test Title'])
         valid007 = pymarc.Field(tag='007',indicators=["",""],data='ca   00000')
         self.assertEquals(marc_rule.__get_subfields__(test_rule,valid007),
                           None)
@@ -294,7 +289,7 @@ class MARCRulesTest(TestCase):
         marc_multiple_rule = MARCRules(json_rules=test_multiple_rule)
         self.assertEquals(marc_multiple_rule.__get_subfields__(test_multiple_rule,
                                                                valid300),
-                          '204 p. ;22cm.')
+                          ['204 p. ;','22cm.'])
 
     def test_test_subfields(self):
         test_rule = json.loads('''{"subfields":["a","b"],
@@ -330,7 +325,7 @@ class MARCRulesTest(TestCase):
         self.assertEquals(marc_rules.json_results["rdaCopyrightDate"],
                           ["1985"])
         self.assertEquals(marc_rules.json_results["rdaExtentOfManifestation"],
-                          ["204 p. ;22cm."])
+                          ["204 p. ;","22cm."])
         self.assertEquals(marc_rules.json_results["rdaPreferredNameForThePerson"],
                           ['Grau, Shirley Ann.'])
 

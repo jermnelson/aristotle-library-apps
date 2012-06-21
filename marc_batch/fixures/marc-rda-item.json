@@ -1,0 +1,13 @@
+{
+  "rdaRestrictionOnUse": {
+    "540": {
+      "subfields": [
+        "a", 
+        "b", 
+        "c", 
+        "d", 
+        "u"
+      ]
+    }
+  }
+}

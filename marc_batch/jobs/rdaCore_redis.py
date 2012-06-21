@@ -32,7 +32,9 @@ class MARCRules(object):
     def __init__(self,**kwargs):
         self.json_results = {}
         if kwargs.has_key('json_file'):
-            self.json_rules = json_loader[kwargs.get('json_file')]
+            json_file = kwargs.get('json_file')
+
+            self.json_rules = json_loader[json_file]
         if kwargs.has_key('json_rules'):
             self.json_rules = kwargs.get('json_rules')
 
@@ -65,10 +67,10 @@ class MARCRules(object):
             if hasattr(rule,"condition"):
                 if self.__test_subfield__(rule,marc_field) is False:
                     return output
-            output = str()
             rule_subfields = rule["subfields"]
+            output = []
             for subfield in rule_subfields:
-                output += ''.join(marc_field.get_subfields(subfield))
+                output.append(''.join(marc_field.get_subfields(subfield)))
         return output
 
 
@@ -81,6 +83,7 @@ class MARCRules(object):
         :param marc_field: MARC field
         """
         pass_rule = None
+        #print("TYPE of {0} {1}".format(type(rule),rule))
         if rule.has_key("indicators"):
             indicator0,indicator1 = marc_field.indicators
             if rule["indicators"].has_key("0"):
@@ -149,9 +152,9 @@ class MARCRules(object):
                         subfield_values = self.__get_subfields__(rule,field)
                         if subfield_values is not None:
                             if self.json_results.has_key(rda_element):
-                                self.json_results[rda_element].append(subfield_values)
+                                self.json_results[rda_element].extend(subfield_values)
                             else:
-                                self.json_results[rda_element] = [subfield_values,]
+                                self.json_results[rda_element] = subfield_values
                                 
                         
                         
@@ -163,11 +166,7 @@ class CreateRDACoreEntityFromMARC(object):
     """RDACoreEntity is the base class for ingesting MARC21 records into RDACore
     FRBR entities stored in Redis.
 
-    This class is meant to be over-ridden by child classes for specific RDACore Entities.
-
-    The general 
-
-
+    This class is meant to be over-ridden by child classes for specific RDACore Entities
     """
 
     def __init__(self,**kwargs):
@@ -177,251 +176,137 @@ class CreateRDACoreEntityFromMARC(object):
         entity_name = kwargs.get('entity')
         redis_incr_value = self.redis_server.incr("global:{0}:{1}".format(self.root_redis_key,
                                                                           entity_name))
-        if kwargs.has_key("json_rules"):
-            self.marc_rules = MARCRules(json_file=kwargs.get('json_rules'))
+        if kwargs.has_key("json_file"):
+            self.marc_rules = MARCRules(json_file=kwargs.get('json_file'))
+        elif kwargs.has_key("json_rules"):
+            self.marc_rules = MARCRules(json_rules=kwargs.get('json_rules'))
         else:
-            self.marc_rules = MARCRules(json_file='marc-rda-expression')        
+            raise ValueError("CreateRDACoreEntityFromMARC requires json_file or json_rules")
         # Redis Key for this Entity
         self.entity_key = "{0}:{1}:{2}".format(self.root_redis_key,
                                                entity_name,
                                                redis_incr_value)
-
-        
-
+    
+     
     def generate(self):
         """
-        Method is stub, child classes should override this method
+        Method iterates through the results of applying the MARC ruleset
+        to a MARC record and then creates a hash value for the RDA Core
+        entity. The hash value can either be a text string or a key to
+        a Redis set of values for the RDA Core entity instance.
         """
+        self.marc_rules.load_marc(self.marc_record)
         for element,values in self.marc_rules.json_results.iteritems():
+            # Checks to see if rdaCore Entity element already exists
+            # in Redis Datastore
             existing_value = self.redis_server.hget(self.entity_key,
                                                     element)
+            # rdaCore element doesn't exist for entity. Either add to datastore
+            # as a hash value for the rdaCore Entity's element or adds
+            # the rdaCore Element as a set to Redis and saves resulting key
+            # to the Entity's hash.
             if existing_value is None:
                 if len(values) == 1:
                     self.redis_server.hset(self.entity_key,
                                            element,
-                                           value)
+                                           values[0])
                 else:
                     new_set_key = "{0}:{1}".format(self.entity_key,
-                                               element)
+                                                   element)
                     for row in values:
                         self.redis_server.sadd(new_set_key,
                                                row)
+                    self.redis_server.hset(self.entity_key,
+                                           element,
+                                           new_set_key)
+            # Checks Redis datastore if existing value is a Redis
+            # key, if so, checks to make sure it is a set before
+            # adding. 
             elif self.redis_server.exists(existing_value):
                 if self.redis_server.type(existing_value) == 'set':
                     for row in values:
                         self.redis_server.sadd(existing_value,
                                                value)
-            # Checks if the existing value and value from MARC
-            # record the same, creates set 
+            # By this point, existing_value should be string value
+            # extracted from Redis datastore. Checks if the existing
+            # value from Redis and the value from the MARC
+            # record are the same, adds to existing set if not
             elif values.count(existing_value) < 0:
-                new_set_key = "{0}:{1}".format(self.entity_key,
-                                               element)
-                self.redis_server.sadd(new_set_key,
+                set_key = self.redis_server.hget(entity_key,
+                                                 element)
+                self.redis_server.sadd(set_key,
                                        existing_value)
                 for row in values:
-                    self.redis_server.sadd(new_set_key,
+                    self.redis_server.sadd(set_key,
                                            value)
                 self.redis_server.hset(self.entity_key,
                                        element,
-                                       new_set_key)
+                                       set_key)
             else:
-                raise ValueError("{0}:{1} unknown in Redis datastore".format(element,value))
-
-    def __add_attribute__(self,attribute,values):
-        """
-        Helper method takes a rda Core attribute and depending on
-        existence of attribute in the datastore and the number of values,
-        either creates a new hash value for the entity key, creates a
-        list or sorted list based on the attribute, or creates a list, or
-        sorted list from the pre-existing value with the values currently
-        being ingested into datastore.
-
-        :param attribute: RDA Core attribute name
-        :param values: A list of values, if len < 2, list is decomposed into
-                       string attribute for entity, otherwise create a set or
-                       sorted set
-        """
-        # Create a key for the set representing this attribute
-        attribute_set_key = '{0}:{1}'.format(self.entity_key,attribute)
-
-        # Checks if existing attribute is a hash value
-        existing_attribute = self.redis_server.hget(self.entity_key,
-                                                    attribute)
-        if existing_attribute is not None:
-            # Add existing attribute to the new set, remove from entity's hash
-            self.redis_server.sadd(attribute_set_key,existing_attribute)
-            self.redis_server.hdel(self.entity_key,attribute)
-        else:
-            # If there is only value, create hash key-value for the entity based
-            # attibute value
-            if len(values) == 1:
-                self.redis_server.hset(self.entity_key,
-                                       attribute,
-                                       ''.join(values))
-            else:
-                # Creates a set of all values in list
-                for row in values:
-                    self.redis_server.sadd(attribute_set_key,row)
-                
-                
-            
+                raise ValueError("{0}:{1} unknown in Redis datastore".format(element,value))            
 
 class CreateRDACoreExpressionFromMARC(CreateRDACoreEntityFromMARC):
 
     def __init__(self,**kwargs):
         kwargs["entity"] = "Expression"
+        kwargs["json_file"] = 'marc-rda-expression'
         super(CreateRDACoreExpressionFromMARC,self).__init__(**kwargs)
-        
-
-    def generate(self):
-        self.marc_rules.load_marc(self.marc_record)
-        
-                    
-                        
                 
-
 
 class CreateRDACoreItemFromMARC(CreateRDACoreEntityFromMARC):
 
     def __init__(self,**kwargs):
         kwargs["entity"] = "Item"
+        kwargs["json_file"] = 'marc-rda-item'
         super(CreateRDACoreItemFromMARC,self).__init__(**kwargs)
-
-    def generate(self):
-        self.__restrictions_on_use__()
-
-    def __restrictions_on_use__(self):
-        """
-        Extracts any restrictions on use for the Item (this is actually an
-        RDA Enchanced attribute and not part of the RDACore
-        """
-        restriction_on_use_key = self.redis_server.hget(self.entity_key,
-                                                        "restrictionsOnUse")
-        if restriction_on_use_key is None:
-            restriction_on_use_key = "{0}:restrictionsOnUse".format(self.entity_key)
-        process_tag_list_as_set(self.marc_record,
-                                restriction_on_use_key,
-                                self.redis_server,
-                                [('540','a'),
-                                 ('540','b'),
-                                 ('540','c'),
-                                 ('540','d'),
-                                 ('540','u')])
-        
-        
 
 class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
 
     def __init__(self,**kwargs):
         kwargs["entity"] = "Manifestation"
-        super(CreateRDACoreManifestationFromMARC,self).__init__(**kwargs)        
-        
-        
+        kwargs["json_file"] = "marc-rda-manifestation"
+        super(CreateRDACoreManifestationFromMARC,self).__init__(**kwargs)
+
     def generate(self):
-        self.__carrier_type__()
-        self.__copyright_date__()
-        self.__edition_statement__()
-        self.__identifiers__()
-        self.__manufacture_statement__()
-        self.__production_statement__()
-        self.__publication_statement__()
-        self.__statement_of_responsiblity__()
-        self.__title_proper__()
+        # First calls parent generate function
+        super(CreateRDACoreManifestationFromMARC,self).generate()
+        self.__carrier_type__() 
+        
+            
+            
 
     def __carrier_type__(self):
         """
-        Extracts Carrier Type from MARC record
+        Secondary lookup for convert MARC character codes into
+        a more human-readable form
         """
-        field007 = self.marc_record['007']
-        if field007 is not None:
-            field_value = field007.value()
-            position0,position1 = field_value[0],field_value[1]
-            # Load json dict mapping MARC 007 position 0 and 1 to RDA Carrier Types
-            carrier_types_dict = json_loader.get('marc-carrier-types')
+        carrier_value = self.redis_server.hget(self.entity_key,
+                                               'rdaCarrierType')
+        # Load json dict mapping MARC 007 position 0 and 1 to RDA Carrier Types
+        carrier_types_dict = json_loader.get('marc-carrier-types')        
+        # Carrier value is a set and not a single value,
+        #!! This is where we should create separate Manifestations and/or
+        #!! Expressions for each carrier type.
+        if self.redis_server.exists(carrier_value):
+            for value in self.redis_server.smembers(carrier_value):
+                if len(value) != 2:
+                    raise ValueError("Carrier Type codes should only be two chars instead of {0}".format(len(value)))
+                position0,position1 = value[0],value[1]
+                if carrier_types_dict.has_key(position0):
+                    if carrier_types_dict[position0].has_key(position1):
+                        # Remove old value and add human friendly value
+                        self.redis_server.srem(carrier_value,value)
+                        self.redis_server.sadd(carrier_value,
+                                               carrier_types_dict[position0][position1])
+        else:
+            position0,position1 = carrier_value[0],carrier_value[1]
             if carrier_types_dict.has_key(position0):
-                if carrier_types_dict[position0].has_key(position1):
-                    self.__add_attribute__('carrierType',
-                                           [carrier_types_dict[position0][position1],])
-        # Adds type of unit in MARC 300 $f
-        field300s = self.marc_record.get_fields('300')
-        for field in field300s:
-            subfield_f = field.get_subfields('f')
-            self.__add_attribute__('carrierType',
-                                   [''.join(subfield_f),])
-        # Adds RDA MARC 338 w/conditional
-        field338s = self.marc_record.get_fields('338')
-        for field in field338s:
-            subfield_2 = ''.join(field.get_subfields('2'))
-            if subfield_2.count('marcmedia') > -1:
-                for subfield in field.get_subfields('a','b'):
-                    self.__add_attribute__('carrierType',
-                                           [subfield,])
+                    if carrier_types_dict[position0].has_key(position1):
+                        self.redis_server.hset(self.entity_key,
+                                               'rdaCarrierType',
+                                               carrier_types_dict[position0][position1])
+    
                     
-                
-            
-
-    def __copyright_date__(self):
-        """
-        Extracts and sets copyright date from MARC record
-        """
-        copyright_set_key = self.redis_server.hget(self.entity_key,
-                                                   "copyrightDate")
-        if copyright_set_key is None:
-            copyright_set_key = "{0}:copyrightDate".format(self.entity_key)
-        field008 = self.marc_record['008']
-        field008_values = list(field008.value())
-        # Copyright set for monographs
-        if field008_values[6] == 's' or\
-           field008_values[6] == 't':
-            process_008_date(self.marc_record,
-                             self.redis_server,
-                             copyright_set_key)
-        field260s = self.marc_record.get_fields('260')
-        for field in field260s:
-            subfield_c = field.get_subfields('c')
-            for subfield in subfield_c:
-                if subfield.startswith('c'):
-                    year_search = year_re.search(subfield)
-                    if year_search is not None:
-                        self.redis_server.zadd(copyright_set_key,
-                                               int(year_search.groups()[0]),
-                                               subfield[1:])
-        process_tag_list_as_set(self.marc_record,
-                                copyright_set_key,
-                                self.redis_server,
-                                [('542','g')],
-                                is_sorted=True)        
-
-    def __edition_statement__(self):
-        """
-        Extracts and sets Edition statement from MARC record
-        """
-        field250s = self.marc_record.get_fields('250')
-        edition_stmt_key = "{0}:editionStatement".format(self.entity_key)
-        for field in field250s:
-            subfield_a = field.get_subfields('a')
-            if len(subfield_a) > 0:
-                edition_designation = self.redis_server.hget(edition_stmt_key,
-                                                             "designationOfEdition")
-                if edition_designation is None:
-                    edition_designation = "{0}:designations".format(edition_stmt_key)
-                self.redis_server.sadd(edition_designation,
-                                       ''.join(subfield_a))
-                self.redis_server.hset(edition_stmt_key,
-                                       "designationOfEdition",
-                                       edition_designation)
-            subfield_b = field.get_subfields('b')
-            if len(subfield_b) > 0:
-                named_revision = self.redis_server.hget(edition_stmt_key,
-                                                        "designationOfNamedRevisionOfEdition")
-                
-                if named_revision is None:
-                    named_revision = "{0}:namedRevisions".format(edition_stmt_key)
-                self.redis_server.sadd(named_revision,
-                                       ''.join(subfield_b))
-                self.redis_server.hset(edition_stmt_key,
-                                       "designationOfNamedRevisionOfEdition",
-                                       named_revision)
 
     def __identifiers__(self):
         """
