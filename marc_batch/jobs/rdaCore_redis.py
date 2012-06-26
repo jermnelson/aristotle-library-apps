@@ -82,7 +82,6 @@ class MARCRules(object):
         :param marc_field: MARC field
         """
         pass_rule = None
-        #print("TYPE of {0} {1}".format(type(rule),rule))
         if rule.has_key("indicators"):
             indicator0,indicator1 = marc_field.indicators
             if rule["indicators"].has_key("0"):
@@ -269,7 +268,8 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
     def generate(self):
         # First calls parent generate function
         super(CreateRDACoreManifestationFromMARC,self).generate()
-        self.__carrier_type__()         
+        self.__carrier_type__()
+        self.__identifiers__()
 
     def __carrier_type__(self):
         """
@@ -304,14 +304,53 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
     
                     
 
-##    def __identifiers__(self):
-##        """
-##        Extracts and sets Manifestation's identifiers from MARC record
-##        """
-##        identifiers_set_key = self.redis_server.hget(self.entity_key,
-##                                                     "identifier")
-##        if identifiers_set_key is None:
-##            identifiers_set_key = "{0}:identifiers".format(self.entity_key)
+    def __identifiers__(self):
+        """
+        Extracts and sets Manifestation's identifiers from MARC record
+        """
+        identifiers_dict = json_loader.get('manifestation-identifiers')
+        identifiers_key = "{0}:identifiers".format(self.entity_key)
+        for tag in identifiers_dict.keys():
+            marc_fields = self.marc_record.get_fields(tag)
+            for field in marc_fields:
+                rule = identifiers_dict[tag]
+                if rule.has_key('indicators'):
+                    marc_indicators = field.indicators
+                    # Test position 0 if in rule
+                    if rule['indicators'].has_key("0") and len(marc_indicators[0]) > 0:
+                        # Test if value for indicators position 0
+                        if rule['indicators']['0'].has_key(marc_indicators[0]):
+                            rule_subfields = rule['indicators']['subfields']
+                            # Only one value for identifier, set as string value for
+                            # the rule's label in the identifiers hash
+                            if len(rule_subfields) == 1:
+                                self.redis_server.hset(identifiers_key,
+                                                       rule['label'],
+                                                       ''.join(field.get_subfields(rule_subfields[0])))
+                            # Create a string value or set to associate values with the rule's label
+                            # in the identifiers hash
+                            else:
+                                marc_data = []
+                                for subfield in rule_subfields:
+                                    marc_data.extend(field.get_subfields(subfield))
+                                if len(marc_data) == 1:
+                                    self.redis_server.hset(identifiers_key,
+                                                           rule['label'],
+                                                           ''.join(marc_data))
+                                else:
+                                    ident_set_key = "{0}:{1}s".format(self.entity_key,
+                                                                      rule['label'].replace(" ",""))
+                                    for row in marc_data:
+                                        self.redis_server.sadd(ident_set_key,
+                                                               row)
+                                    self.redis_server.hset(identifiers_key,
+                                                           rule['label'],
+                                                           ident_set_key)
+                                                                      
+                                                                     
+                                
+                                                   
+                
 ##        # get/set ISBN
 ##        process_identifier(self.marc_record,
 ##                           self.redis_server,

@@ -34,7 +34,51 @@
        "subfields":["a","b"],
        "condition": "lambda x: ''.join(x.get_subfields('2')) == 'marccontent'"
     }
+  },
+  "rdaLanguageOfExpression": {
+    "008": {
+      "positions": {
+      "start":"35",
+      "end":"37"}
+    },
+    "041": {
+      "subfields":["a", "b", "c", "d", "e", "f", "g", "h", "j"]
+    },
+    "130": {
+      "subfields":["1"] 
+    },
+    "240": {
+      "subfields": ["1"]
+    },
+    "243": {
+      "subfields": ["1"]
+    },
+    "546": {
+      "subfields": ["a"]
+    },
+    "700":{
+      "subfields": ["1"]
+    },
+    "710":{
+      "subfields": ["1"]
+    },
+    "711":{
+      "subfields": ["1"]
+    },
+    "730":{
+      "subfields": ["1"]
+    },
+    "800":{
+      "subfields": ["1"]
+    },
+    "810":{
+      "subfields": ["1"]
+    },
+    "811":{
+      "subfields": ["1"]
+    },
+    "830":{
+      "subfields": ["1"]
+    }
   }
-
-
 }
