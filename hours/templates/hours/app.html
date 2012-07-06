@@ -1,7 +1,9 @@
 {% extends 'app-base.html' %}
 
 {% block more-css %}
-
+ <link href="{{ STATIC_URL }}css/datepicker.css" rel="stylesheet">
+ <script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -128,8 +130,6 @@
       </form>
 
 <h3>Exceptions will need to be edited manually on the Date Range tab</h3>
-<a href="/apps/hours/open"><input class="btn btn-success small" value="Open"></button></a>
-<a href="/apps/hours/closed"><input class="btn btn-danger" value="Closed"></button></a>
 
    {% comment %}END block tab content DIV{%endcomment %}
    </div>

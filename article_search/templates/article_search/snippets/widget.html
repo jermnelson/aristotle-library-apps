@@ -42,6 +42,17 @@
      </div>
     </div>
    </form>
+<script>
+$(document).ready(function() {
+    $("a[rel=tooltip]")
+        .tooltip({
+            offset: 10
+        })
+        .click(function(e) {
+            e.preventDefault()
+        })
+});
+</script>
    <div class="articleHorizontalList">
      <ul>
        <li>&bull; <a target="_top" href="http://goldrush.coalliance.org/index.cfm?inst_code=001_CCL">Journals</a></li>

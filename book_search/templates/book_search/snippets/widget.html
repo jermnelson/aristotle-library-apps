@@ -44,6 +44,17 @@
        </div>
      </div>
    </form>
+<script>
+$(document).ready(function() {
+    $("a[rel=tooltip]")
+        .tooltip({
+            offset: 10
+        })
+        .click(function(e) {
+            e.preventDefault()
+        })
+});
+</script>
    <div class="bookHorizontalList">
      <ul>
        <li>&bull; <a target="_top" href="http://discovery.coloradocollege.edu/catalog/advanced">Advanced Book Search</a></li>
