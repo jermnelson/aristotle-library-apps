@@ -24,7 +24,7 @@ def default(request):
 
 def open(request):
     """
-    default is the standard view for the Hours app
+    open is the "we are open" view for the Hours app
 
     :param request: web request
     """
@@ -34,7 +34,7 @@ def open(request):
 
 def closed(request):
     """
-    default is the standard view for the Hours app
+    closed is the "we are closed" view for the Hours app
 
     :param request: web request
     """
@@ -44,7 +44,7 @@ def closed(request):
 
 def manage(request,message):
     """
-    default is the standard view for the Hours app
+    manage is the admin view for the Hours app
 
     :param request: web request
     """

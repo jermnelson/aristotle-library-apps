@@ -100,7 +100,6 @@ class CreateRDACoreItemFromMARCTest(TestCase):
     def test_restrictions_on_use(self):
         
         restriction_key = "{0}:rdaRestrictionOnUse".format(self.item_generator.entity_key)
-        print(test_ds.hget(self.item_generator.entity_key,'rdaRestrictionOnUseForItem'))
         # Tests Item.restrictionOnUse in Redis for 540 subfield a
         self.assert_(test_ds.sismember(restriction_key,
                                        'Restricted: Copying allowed only for non-profit organizations'))
@@ -119,6 +118,9 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
                                         data='vd           '))
         self.test_rec.add_field(pymarc.Field('008',
                                              data='100803s20102009nyub\\\\\b\\\\001\0\eng\\'))
+        self.test_rec.add_field(pymarc.Field('020',
+                                             indicators=['',''],
+                                             subfields = ['a','1234-1231']))
         self.test_rec.add_field(pymarc.Field('020',
                                              indicators=['',''],
                                              subfields = ['a','4041453']))
@@ -149,97 +151,66 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
         # Valid TestCase manifestation_generator
         self.assertEquals(test_ds.hget(self.manifestation_generator.entity_key,
                                        "rdaCarrierType"),
-                          "videodisc")
-        # Create stub MARC record with multiple carrier type encodings
-##        test_rec = pymarc.Record()
-##        test_rec.add_field(pymarc.Field('007',
-##                                        data='cr        '))
-##        test_rec.add_field(pymarc.Field('300',
-##                                        indicators=['',''],
-##                                        subfields=['f','volume']))
-##        test_rec.add_field(pymarc.Field('338',
-##                                        indicators=['',''],
-##                                        subfields=['a',"film roll"]))
-##        root_key = "rdaCore:{0}".format(test_ds.incr("global:rdaCore"))
-##        manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_rec,
-##                                                                     redis_server=redis_server,
-##                                                                     root_redis_key=root_key)
-##        
-##        manifestation_generator.__carrier_type__()
-####        # Now test various iterations of carrier types in record
-##        carrier_key = '{0}:carrierType'.format(manifestation_generator.entity_key)
-##        carrier_types = test_ds.smembers()
-##        self.assertEquals(carrier_types[0],
-##                          "online resource")
-##        self.assertEquals(carrier_types[1],
-##                          "volume")
-##        self.assertEquals(carrier_types[2],
-##                          "film roll")
-                                       
-                                        
+                          "videodisc")  
         
         
 
     def test_copyright_date(self):
         # Call method in manifestation generator
         copyright_key = "{0}:rdaCopyrightDate".format(self.manifestation_generator.entity_key)
-        copyright_dates = test_ds.zrange(copyright_key,0,-1)
-        # Tests Manifestation.copyrightDate for 008 field
+        copyright_dates = list(test_ds.smembers(copyright_key))
+        # Tests Manifestation.copyrightDate for 260 field
         self.assertEquals(copyright_dates[0],
-                          '2009')
-        # Tests second Manifestation.copyrightDate for 008 field
+                          'c2011')
+        # Tests Manifestation.copyrightDate for 008 field
         self.assertEquals(copyright_dates[1],
                           '2010')
-        # Tests third Manifestation.copyrightDate for 260 field
+        # Tests Manifestation.copyrightDate for 542 field
         self.assertEquals(copyright_dates[2],
-                          '2011')
-        # Tests forth Manifestation.copyrightDate for 542 field
-        self.assertEquals(copyright_dates[3],
                           '2012')
 
     def test_edition_statement(self):
         # call method in manifestation generator
         edition_key = "{0}:editionStatement".format(self.manifestation_generator.entity_key)
         # Test Manifestation.editionStatement for designations
-        designation_key = test_ds.hget(edition_key,"rdaDesignationOfEdition")
-        self.assert_(test_ds.sismember(designation_key,"4th ed."))
+        self.assertEquals(test_ds.hget(self.manifestation_generator.entity_key,
+                                       "rdaDesignationOfEdition"),
+                          "4th ed.")
         # Test Manifestation.editionStatement for designation of named revision
-        named_key = test_ds.hget(edition_key,"rdaDesignationOfNamedRevisionOfEdition")
-        self.assert_(test_ds.sismember(named_key,'revised by JB Test'))
+        self.assertEquals(test_ds.hget(self.manifestation_generator.entity_key,
+                                       "rdaDesignationOfNamedRevisionOfEdition"),
+                          'revised by JB Test')
 
     def test_all_identifiers(self):
         """
         Method creates an very artificial MARC records with all of the different identifiers
         set for testing
         """
-        test_id_rec = pymarc.Record()
-        # ISSN
-        test_id_rec.add_field(pymarc.Field('022',
-                                           indicators=['',''],
-                                           subfields = ['a','1234-1231']))
-        # ISRC
-        test_id_rec.add_field(pymarc.Field('024',
-                                           indicators=['0',''],
-                                           subfields = ['a','US-PR3-73-00012']))
-        # UPC
-        test_id_rec.add_field(pymarc.Field('024',
-                                           indicators=['1',''],
-                                           subfields = ['a','781617290183']))
-        manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_id_rec,
-                                                                     redis_server=test_ds,
-                                                                     root_redis_key="rdaCore:{0}".format(test_ds.incr("global:rdaCore")))
-##        identifiers_key = "{0}:identifiers".format(manifestation_generator.entity_key)
-##        values_hash_key = "{0}:values".format(identifiers_key)
+        
+##        # ISRC
+##        test_id_rec.add_field(pymarc.Field('024',
+##                                           indicators=['0',''],
+##                                           subfields = ['a','US-PR3-73-00012']))
+##        # UPC
+##        test_id_rec.add_field(pymarc.Field('024',
+##                                           indicators=['1',''],
+##                                           subfields = ['a','781617290183']))
+##        manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_id_rec,
+##                                                                     redis_server=test_ds,
+##                                                                     root_redis_key="rdaCore:{0}".format(test_ds.incr("global:rdaCore")))
+        identifiers_key = "{0}:identifiers".format(self.manifestation_generator.entity_key)
+        print(test_ds.hgetall(identifiers_key))
+        values_hash_key = "{0}:values".format(identifiers_key)
 ##        # Test ISSN
-##        self.assertEquals(test_ds.hget(values_hash_key,
-##                                       'issn'),
-##                          '1234-1231')
+        self.assertEquals(test_ds.hget(identifiers_key,
+                                       'issn'),
+                          '1234-1231')
 ##        # Test ISRC
-##        self.assertEquals(test_ds.hget(values_hash_key,
+##        self.assertEquals(test_ds.hget(identifiers_key,
 ##                                       'isrc'),
 ##                          'US-PR3-73-00012')
 ##        # Test UPC
-##        self.assertEquals(test_ds.get(values_hash_key,
+##        self.assertEquals(test_ds.get(identifiers_key,
 ##                                      'upc'),
 ##                          '781617290183')
         
@@ -256,7 +227,37 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
     def tearDown(self):
         test_ds.flushdb()
 
-                                
+class CreateRDACoreWorkFromMARCTest(TestCase):
+
+    def setUp(self):
+        self.test_rec = pymarc.Record()
+        self.test_rec.add_field(pymarc.Field(tag='130',
+                                             indicators=["",""],
+                                             subfields=["a","2012"]))
+        self.test_rec.add_field(pymarc.Field(tag='240',
+                                             indicators=["",""],
+                                             subfields=["f","2011"]))
+        self.root_key = "rdaCore:{0}".format(test_ds.incr("global:rdaCore"))
+        self.work_generator = CreateRDACoreWorkFromMARC(record=self.test_rec,
+                                                        redis_server=test_ds,
+                                                        root_redis_key=self.root_key)
+        self.work_generator.generate()
+
+    def test_init(self):
+        self.assertEquals(self.work_generator.entity_key,
+                          "{0}:Work:1".format(self.root_key))
+
+    def test_date_of_work(self):
+        dow_key = test_ds.hget(self.work_generator.entity_key,
+                               "rdaDateOfWork")
+        self.assert_(test_ds.sismember(dow_key,
+                                       "2012"))
+        self.assert_(test_ds.sismember(dow_key,
+                                       "2011"))
+
+    def tearDown(self):
+        test_ds.flushdb()
+        
 
 class MARCRulesTest(TestCase):
 

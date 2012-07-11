@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^apps/orders/', include('orders.urls')),
     url(r'^apps/portfolio/', include('portfolio.urls')),
     url(r'^apps/RDA[c|C]ore/', include('RDACore.urls')),
+    url(r'^apps/reserve_search/', include('reserve_search.urls')),
     url(r'^apps/','portfolio.views.default', name='portfolio.home'),
     
                        
