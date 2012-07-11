@@ -1,6 +1,6 @@
 function ChangeSearchBookText(btn_text) {
  $("#searchby").html(btn_text);
- $("#searchby").val("Search "+btn_text);
+ $("#searchby").val(btn_text);
  var search_char = btn_text.charAt(0);
  switch(search_char) {
   case 'A':
