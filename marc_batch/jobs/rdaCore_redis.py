@@ -27,6 +27,8 @@ redis_server = redis.StrictRedis(host=REDIS_HOST,
 
 year_re = re.compile(r"(\d+)")
 
+
+
 class MARCRules(object):
 
     def __init__(self,**kwargs):
@@ -152,12 +154,7 @@ class MARCRules(object):
                             if self.json_results.has_key(rda_element):
                                 self.json_results[rda_element].extend(subfield_values)
                             else:
-                                self.json_results[rda_element] = subfield_values
-                                
-                        
-                        
-                        
-                    
+                                self.json_results[rda_element] = subfield_values                    
             
 
 class CreateRDACoreEntityFromMARC(object):
