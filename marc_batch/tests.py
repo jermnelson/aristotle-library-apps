@@ -29,7 +29,7 @@ class CreateRDACoreEntityFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.entity_generator.entity_key,
-                          "{0}:Generic:1".format(self.root_key))
+                          "rdaCore:Generic:1")
 
     def test_generate(self):
         self.entity_generator.generate()
@@ -64,7 +64,7 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.expression_generator.entity_key,
-                          "{0}:Expression:1".format(self.root_key))
+                          "rdaCore:Expression:1")
 
     def test_content_type(self):
         content_type_key = "{0}:rdaContentType".format(self.expression_generator.entity_key)
@@ -95,7 +95,7 @@ class CreateRDACoreItemFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.item_generator.entity_key,
-                          "{0}:Item:1".format(self.root_key))
+                          "rdaCore:Item:1")
 
     def test_restrictions_on_use(self):
         
@@ -175,7 +175,7 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.manifestation_generator.entity_key,
-                          "{0}:Manifestation:1".format(self.root_key))
+                          "rdaCore:Manifestation:1")
 
 
     def test_carrier_type(self):
@@ -299,7 +299,7 @@ class CreateRDACoreWorkFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.work_generator.entity_key,
-                          "{0}:Work:1".format(self.root_key))
+                          "rdaCore:Work:1")
 
     def test_date_of_work(self):
         dow_key = test_ds.hget(self.work_generator.entity_key,

@@ -172,8 +172,8 @@ class CreateRDACoreEntityFromMARC(object):
         self.redis_server = kwargs.get('redis_server')
         self.root_redis_key = kwargs.get('root_redis_key')
         entity_name = kwargs.get('entity')
-        redis_incr_value = self.redis_server.incr("global:{0}:{1}".format(self.root_redis_key,
-                                                                          entity_name))
+        base_entity_key = "rdaCore:{0}".format(entity_name)
+        redis_incr_value = self.redis_server.incr("global:{0}".format(base_entity_key))
         if kwargs.has_key("json_file"):
             self.marc_rules = MARCRules(json_file=kwargs.get('json_file'))
         elif kwargs.has_key("json_rules"):
@@ -181,9 +181,8 @@ class CreateRDACoreEntityFromMARC(object):
         else:
             raise ValueError("CreateRDACoreEntityFromMARC requires json_file or json_rules")
         # Redis Key for this Entity
-        self.entity_key = "{0}:{1}:{2}".format(self.root_redis_key,
-                                               entity_name,
-                                               redis_incr_value)
+        self.entity_key = "{0}:{1}".format(base_entity_key,
+                                           redis_incr_value)
     
      
     def generate(self):
@@ -205,15 +204,17 @@ class CreateRDACoreEntityFromMARC(object):
             # to the Entity's hash.
             if existing_value is None:
                 if len(values) == 1:
-                    self.redis_server.hset(self.entity_key,
-                                           element,
-                                           values[0])
+                    if len(values[0]) > 0:
+                        self.redis_server.hset(self.entity_key,
+                                               element,
+                                               values[0])
                 else:
                     new_set_key = "{0}:{1}".format(self.entity_key,
                                                    element)
                     for row in values:
-                        self.redis_server.sadd(new_set_key,
-                                               row)
+                        if len(row) > 0:
+                            self.redis_server.sadd(new_set_key,
+                                                   row)
                     self.redis_server.hset(self.entity_key,
                                            element,
                                            new_set_key)
@@ -223,8 +224,9 @@ class CreateRDACoreEntityFromMARC(object):
             elif self.redis_server.exists(existing_value):
                 if self.redis_server.type(existing_value) == 'set':
                     for row in values:
-                        self.redis_server.sadd(existing_value,
-                                               value)
+                        if len(value) > 0:
+                            self.redis_server.sadd(existing_value,
+                                                   value)
             # By this point, existing_value should be string value
             # extracted from Redis datastore. Checks if the existing
             # value from Redis and the value from the MARC
@@ -235,8 +237,9 @@ class CreateRDACoreEntityFromMARC(object):
                 self.redis_server.sadd(set_key,
                                        existing_value)
                 for row in values:
-                    self.redis_server.sadd(set_key,
-                                           value)
+                    if len(value) > 0:
+                        self.redis_server.sadd(set_key,
+                                               value)
                 self.redis_server.hset(self.entity_key,
                                        element,
                                        set_key)
@@ -294,7 +297,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                         self.redis_server.srem(carrier_value,value)
                         self.redis_server.sadd(carrier_value,
                                                carrier_types_dict[position0][position1])
-        else:
+        elif carrier_value is not None:
             position0,position1 = carrier_value[0],carrier_value[1]
             if carrier_types_dict.has_key(position0):
                     if carrier_types_dict[position0].has_key(position1):
@@ -379,6 +382,9 @@ class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
         kwargs["entity"] = "Work"
         kwargs["json_file"] = 'marc-rda-work'
         super(CreateRDACoreWorkFromMARC,self).__init__(**kwargs)
+
+    def generate(self):
+        super(CreateRDACoreWorkFromMARC,self).generate()
 
         
 
@@ -573,22 +579,30 @@ def process_tag_list_as_set(marc_record,
     
 
 def ingest_record(marc_record):
-    if volatile_redis is None:
-        print("Volatile Redis not available")
-        return None
-    redis_server = volatile_redis
+##    if volatile_redis is None:
+##        print("Volatile Redis not available")
+##        return None
+##    redis_server = volatile_redis
     bib_number = marc_record['907']['a'][1:-1]
     redis_id = redis_server.incr("global:rdaCore")
     redis_key = "rdaCore:%s" % redis_id
     CreateRDACoreWorkFromMARC(record=marc_record,
                               redis_server=redis_server,
-                              root_redis_key=redis_key)
+                              root_redis_key=redis_key).generate()
+    CreateRDACoreExpressionFromMARC(record=marc_record,
+                                    redis_server=redis_server,
+                                    root_redis_key=redis_key).generate()
+    CreateRDACoreManifestationFromMARC(record=marc_record,
+                                       redis_server=redis_server,
+                                       root_redis_key=redis_key).generate()
+    CreateRDACoreItemFromMARC(record=marc_record,
+                              redis_server=redis_server,
+                              root_redis_key=redis_key).generate()
+    
     
 
 
 def ingest_records(marc_file_location):
-    if volatile_redis is None:
-        return None
     marc_reader = pymarc.MARCReader(open(marc_file_location,"rb"))
     for i,record in enumerate(marc_reader):
         if not i%1000:
