@@ -7,6 +7,7 @@ __author__ = 'Jeremy Nelson'
 import pymarc,redis,logging,sys
 import re,datetime
 from marc_batch.fixures import json_loader
+from call_number.redis_helpers import ingest_call_numbers
 
 
 try:
@@ -249,6 +250,21 @@ class CreateRDACoreExpressionFromMARC(CreateRDACoreEntityFromMARC):
         kwargs["entity"] = "Expression"
         kwargs["json_file"] = 'marc-rda-expression'
         super(CreateRDACoreExpressionFromMARC,self).__init__(**kwargs)
+
+    def generate(self):
+        super(CreateRDACoreExpressionFromMARC,self).generate()
+        self.__call_number_app__()
+
+    def __call_number_app__(self):
+        """
+        Helper function populates Redis Datastore to support
+        specific requirements for the Call Number App including
+        a call number hash key - value is this class Redis key
+        and a sorted set for LCCN call number.
+        """
+        ingest_call_numbers(self.marc_record,
+                            self.redis_server,
+                            self.entity_key)
                 
 
 class CreateRDACoreItemFromMARC(CreateRDACoreEntityFromMARC):
@@ -270,6 +286,17 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         super(CreateRDACoreManifestationFromMARC,self).generate()
         self.__carrier_type__()
         self.__identifiers__()
+
+    def __call_number_app__(self):
+        """
+        Helper function populates Redis Datastore to support
+        specific requirements for the Call Number App including
+        a call number hash key - value is this class Redis key
+        and a sorted set for SuDocs and local call number.
+        """
+        ingest_call_numbers(self.marc_record,
+                            self.redis_server,
+                            self.entity_key)
 
     def __carrier_type__(self):
         """
@@ -575,7 +602,7 @@ def process_tag_list_as_set(marc_record,
     
     
 
-def ingest_record(marc_record):
+def ingest_record(marc_record,redis_server):
 ##    if volatile_redis is None:
 ##        print("Volatile Redis not available")
 ##        return None

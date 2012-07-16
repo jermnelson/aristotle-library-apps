@@ -74,6 +74,9 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
         self.assert_(test_ds.sismember(content_type_key,"Sound recording"))
         # Test Expression.contentType in Redis to value in the 700 field
         self.assert_(test_ds.sismember(content_type_key,"Computer Program"))
+
+    def test__call_number_app__(self):
+        pass
         
 
     def tearDown(self):

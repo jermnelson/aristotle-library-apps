@@ -143,6 +143,7 @@ def get_record(call_number):
 def quick_set_callnumber(identifiers_key,
                          call_number_type,
                          call_number,
+                         redis_server,
                          redis_key):
     redis_server.hset(identifiers_key,
                       call_number_type,
@@ -151,13 +152,27 @@ def quick_set_callnumber(identifiers_key,
     redis_server.zadd('%s-sort-set' % call_number_type,0,call_number)
 
 
-def get_set_callnumbers(redis_key,
-                        marc_record):
+def ingest_sudoc(field_086,
+                 entity_key,
+                 redis_server):
+    """
+    Function takes MARC 086, validates, and adds to Redis datastore.
+
+    :param field_086: 086 MARC field
+    :param entity_key: RDACore Redis Entity key
+    :param redis_server: Redis server
+    """
+    indentifier_key = redis_server.hge
+
+def get_set_callnumbers(marc_record,
+                        redis_server,
+                        redis_key):
     """
     Sets sudoc, lc, and local call numbers from the MARC record values
-
-    :param redis_key: Key to RDA Core entity 
+ 
     :param marc_record: MARC21 record
+    :param redis_server: Redis Server
+    :param redis_key: Key to RDA Core entity
     """
     identifiers_key = '%s:identifiers' % redis_key
     sudoc_field = marc_record['086']
@@ -166,12 +181,14 @@ def get_set_callnumbers(redis_key,
         quick_set_callnumber(identifiers_key,
                              "sudoc",
                              call_number,
+                             redis_server,
                              redis_key)
     lccn_field = marc_record['050']
     if lccn_field is not None:
         call_number = lccn_field.value()
         lccn_set(identifiers_key,
                  call_number,
+                 redis_server,
                  redis_key)
         
     local_090 = marc_record['090']
@@ -180,11 +197,13 @@ def get_set_callnumbers(redis_key,
         if lccn_field is None:
             lccn_set(identifiers_key,
                      call_number,
+                     redis_server,
                      redis_key)
         else:
             quick_set_callnumber(identifiers_key,
                                  "local",
                                  call_number,
+                                 redis_server,
                                  redis_key)
     local_099 = marc_record['099']
     if local_099 is not None:
@@ -195,13 +214,26 @@ def get_set_callnumbers(redis_key,
                              redis_key)
         
     
+def ingest_call_numbers(marc_record,redis_server,entity_key):
+    """
+    `ingest_call_numbers` function takes a MARC record and
+    a RDACore FRBR Redis Expression or Manifesation key, ingests the
+    record and depending on the call number type (currently using
+    three types of call numbers; LCCN, SuDoc, and local)
+    associates the call number to the entity key in a
+    hash and then adds the call number to a sorted set, with
+    the weight score using a custom sort algorithm depending
+    on the call number type.
 
+    :param marc_record: MARC Record
+    :param redis_server: Redis Server
+    :param entity_key: Redis FRBR RDACore Entity key
+    """
+    get_set_callnumbers(marc_record,redis_server,entity_key)
+    
+    
 
-def ingest_record(marc_record):
-    if volatile_redis is None:
-        print("Volatile Redis not available")
-        return None
-    redis_server = volatile_redis
+def ingest_record(marc_record,redis_server):
     bib_number = marc_record['907']['a'][1:-1]
     call_number = get_callnumber(marc_record)
     if call_number is None:
@@ -288,6 +320,7 @@ def lccn_normalize(raw_callnumber):
         
 def lccn_set(identifiers_key,
              call_number,
+             redis_server,
              redis_key):
     """
     Sets hash and sorted set for normalized and raw call numbers for
@@ -295,6 +328,7 @@ def lccn_set(identifiers_key,
     
     :param identifiers_key: Key to the RDA Records rdaIdentifiersForTheExpression
     :param call_number: LCCN Call number
+    :param redis_server: Redis Server
     :param redis_key: Redis key
     """
     redis_server.hset(identifiers_key,
