@@ -1,0 +1,73 @@
+{% load i18n %}
+{% if standalone %}
+<!DOCTYPE HTML>
+<html>
+<head>
+ <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+ <link href="{{ STATIC_URL }}reserve_search/css/app.css" rel="stylesheet" type="text/css" />
+ <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
+ <script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-tooltip.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-popover.js"></script>
+ <script src="{{ STATIC_URL }}reserve_search/js/reserve_search.js"></script>
+</head>
+<body>
+{% endif %}
+
+{% block body %}
+{% comment %}START row DIV{% endcomment %}
+<div class="row">
+ {% comment %}START search DIV{% endcomment %}
+ <div class="span5 search">
+  <form class="form-inline" id="searchForm" style="margin:12px;" onsubmit="return OnSubmitForm();" target="_top">
+    <div class="control-group">
+     <label class="control-label" for="searchIcon" style="font-size:18px">Find <strong><font color="blue">Course Reserves</font></strong></label>
+     <div class="controls">
+      <div class="input-prepend" style="float:left;width:220px" >
+       <span class="add-on"><i class="icon-search"></i></span><input id="searchArticleIcon" style="width:181px" type="text" placeholder="Search for reserves!">
+      </div>
+      <div class="btn-group {% if usedropup %} dropup {% else %} dropdown {% endif %}" style="float:right; padding-right: 10px;">
+       <button type="submit" class="btn btn-small" style="width:100px;" id="dbs" value="Course Number">Course Number</button>
+       <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+        <span class="caret"></span>
+       </button>
+       <ul class="dropdown-menu pull-right">
+        <li><a onclick='ChangeSearchArticlesText("Course Number");' href="#">Course Number</a></li>
+        <li><a onclick='ChangeSearchArticlesText("Instructor");' href="#">Instructor</a></li>
+       </ul>
+      </div>
+     </div>
+    </div>
+   </form>
+<script>
+$(document).ready(function() {
+    $("a[rel=tooltip]")
+        .tooltip({
+            offset: 10
+        })
+        .click(function(e) {
+            e.preventDefault()
+        })
+});
+</script>
+   <div class="articleHorizontalList">
+      <ul>
+         <li>How do I search by <a href="#" rel="tooltip" title="Type the course number-space-department abbreviation (hy 200) OR just type the department abbreviation (hy)">Course Number</a> or <a href="#" rel="tooltip" title="Enter the professor or instructor's last name only">Instructor</a></li>
+       {% if showappicon %}
+       <li id="tooltiplink"><a href="/apps/reserve_search/" target="_top" rel="tooltip" title="Course Reserve Search App" class="btn btn-mini" float="right"><i class="icon-share"></i></a></li>
+       {% endif %}
+     </ul>
+</div>
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+{% comment %}END row DIV{% endcomment %}
+</div>
+{% if standalone %}
+</body>
+</html>
+{% endif %}
+{% endblock %}
