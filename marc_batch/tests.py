@@ -29,7 +29,7 @@ class CreateRDACoreEntityFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.entity_generator.entity_key,
-                          "{0}:Generic:1".format(self.root_key))
+                          "rdaCore:Generic:1")
 
     def test_generate(self):
         self.entity_generator.generate()
@@ -64,7 +64,7 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.expression_generator.entity_key,
-                          "{0}:Expression:1".format(self.root_key))
+                          "rdaCore:Expression:1")
 
     def test_content_type(self):
         content_type_key = "{0}:rdaContentType".format(self.expression_generator.entity_key)
@@ -74,6 +74,9 @@ class CreateRDACoreExpressionFromMARCTest(TestCase):
         self.assert_(test_ds.sismember(content_type_key,"Sound recording"))
         # Test Expression.contentType in Redis to value in the 700 field
         self.assert_(test_ds.sismember(content_type_key,"Computer Program"))
+
+    def test__call_number_app__(self):
+        pass
         
 
     def tearDown(self):
@@ -95,7 +98,7 @@ class CreateRDACoreItemFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.item_generator.entity_key,
-                          "{0}:Item:1".format(self.root_key))
+                          "rdaCore:Item:1")
 
     def test_restrictions_on_use(self):
         
@@ -121,9 +124,39 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
         self.test_rec.add_field(pymarc.Field('020',
                                              indicators=['',''],
                                              subfields = ['a','1234-1231']))
-        self.test_rec.add_field(pymarc.Field('020',
+        self.test_rec.add_field(pymarc.Field('022',
                                              indicators=['',''],
                                              subfields = ['a','4041453']))
+        self.test_rec.add_field(pymarc.Field('024',
+                                             indicators=['0',''],
+                                             subfields = ['a','US-PR3-73-00012']))
+        self.test_rec.add_field(pymarc.Field('024',
+                                             indicators=['1',''],
+                                             subfields = ['a','781617290183']))
+        self.test_rec.add_field(pymarc.Field('024',
+                                             indicators=['2',''],
+                                             subfields = ['a','979-0-2600-0043-8']))
+        self.test_rec.add_field(pymarc.Field('024',
+                                             indicators=['3',''],
+                                             subfields = ['a','4006381333931']))
+        self.test_rec.add_field(pymarc.Field('024',
+                                             indicators=['4',''],
+                                             subfields = ['a','0095-4403(199502/03)21:3<12:WATIIB>2.0.TX;2-J']))
+        self.test_rec.add_field(pymarc.Field('030',
+                                             indicators=['',''],
+                                             subfields=['a','NATUAS']))
+        self.test_rec.add_field(pymarc.Field('074',
+                                             indicators=['',''],
+                                             subfields=['a','1224']))
+        self.test_rec.add_field(pymarc.Field('037',
+                                             indicators=['',''],
+                                             subfields=['a','001689 E']))
+        self.test_rec.add_field(pymarc.Field('086',
+                                             indicators=['0',''],
+                                             subfields=['a','HE 20.6209:13/45']))
+        self.test_rec.add_field(pymarc.Field('086',
+                                             indicators=['1',''],
+                                             subfields=['a','CS13-211']))
         self.test_rec.add_field(pymarc.Field('250',
                                              indicators=['',''],
                                              subfields=['a','4th ed.',
@@ -140,11 +173,12 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
                                                                           redis_server=test_ds,
                                                                           root_redis_key=self.root_key)
         self.manifestation_generator.generate()
+        self.identifiers_key = "{0}:identifiers".format(self.manifestation_generator.entity_key)
 
 
     def test_init(self):
         self.assertEquals(self.manifestation_generator.entity_key,
-                          "{0}:Manifestation:1".format(self.root_key))
+                          "rdaCore:Manifestation:1")
 
 
     def test_carrier_type(self):
@@ -181,47 +215,70 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
                                        "rdaDesignationOfNamedRevisionOfEdition"),
                           'revised by JB Test')
 
-    def test_all_identifiers(self):
-        """
-        Method creates an very artificial MARC records with all of the different identifiers
-        set for testing
-        """
-        
-##        # ISRC
-##        test_id_rec.add_field(pymarc.Field('024',
-##                                           indicators=['0',''],
-##                                           subfields = ['a','US-PR3-73-00012']))
-##        # UPC
-##        test_id_rec.add_field(pymarc.Field('024',
-##                                           indicators=['1',''],
-##                                           subfields = ['a','781617290183']))
-##        manifestation_generator = CreateRDACoreManifestationFromMARC(record=test_id_rec,
-##                                                                     redis_server=test_ds,
-##                                                                     root_redis_key="rdaCore:{0}".format(test_ds.incr("global:rdaCore")))
-        identifiers_key = "{0}:identifiers".format(self.manifestation_generator.entity_key)
-        print(test_ds.hgetall(identifiers_key))
-        values_hash_key = "{0}:values".format(identifiers_key)
-##        # Test ISSN
-        self.assertEquals(test_ds.hget(identifiers_key,
-                                       'issn'),
-                          '1234-1231')
-##        # Test ISRC
-##        self.assertEquals(test_ds.hget(identifiers_key,
-##                                       'isrc'),
-##                          'US-PR3-73-00012')
-##        # Test UPC
-##        self.assertEquals(test_ds.get(identifiers_key,
-##                                      'upc'),
-##                          '781617290183')
-        
+    def test_canadian_govdoc(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'Canadian GovDoc'),
+                          'CS13-211')
+
+    def test_coden(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'CODEN'),
+                          'NATUAS')
+
+    
+    def test_ean(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'EAN'),
+                          '4006381333931')
+
+    def test_gpo_item_num(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'GPO Item Number'),
+                          '1224')
 
     def test_isbn(self):
-        # call method in manifestation generator
-        self.manifestation_generator.__identifiers__()
-        identifiers_key = "{0}:identifiers".format(self.manifestation_generator.entity_key)
-##        self.assertEquals(test_ds.hget('{0}:values'.format(identifiers_key),
-##                                       'isbn'),
-##                          '4041453')
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'ISBN'),
+                          '1234-1231')
+
+    def test_ismn(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'ISMN'),
+                          '979-0-2600-0043-8')
+
+    def test_isrc(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'ISRC'),
+                          'US-PR3-73-00012')
+        
+
+    def test_issn(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'ISSN'),
+                          '4041453')
+
+    def test_sic(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'SIC'),
+                          '0095-4403(199502/03)21:3<12:WATIIB>2.0.TX;2-J')
+
+    def test_stock_num(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'Stock number'),
+                          '001689 E')
+
+    def test_sudoc(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'SuDoc'),
+                          'HE 20.6209:13/45')
+
+    def test_upc(self):
+        self.assertEquals(test_ds.hget(self.identifiers_key,
+                                       'UPC'),
+                          '781617290183')
+        
+        
+
         
 
     def tearDown(self):
@@ -245,7 +302,7 @@ class CreateRDACoreWorkFromMARCTest(TestCase):
 
     def test_init(self):
         self.assertEquals(self.work_generator.entity_key,
-                          "{0}:Work:1".format(self.root_key))
+                          "rdaCore:Work:1")
 
     def test_date_of_work(self):
         dow_key = test_ds.hget(self.work_generator.entity_key,

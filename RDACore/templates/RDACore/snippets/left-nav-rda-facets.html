@@ -1,18 +1,22 @@
 <div class="well">
- <ul class="nav nav-tabs nav-stacked">
-  {% for row in facets %}
-   <li {% if forloop.first %}class="active"{% endif %}><a href="#rdaCore{{ row.name }}" data-toggle="tab">RDA {{ row.name }} {{ row.count }}</a></li>
-  {% endfor %}
- </ul>
- <div class="tab-content">
-  {% for row in facets %}
-  <div id="rdaCore{{ row.name }}" class="tab-pane">
-	<ul class="nav nav-list">
-	 {% for facet in row.facets %}
+<div class="accordion" id="left-sidebar-nav">
+{% for row in facets %}
+ <div class="accordion-group">
+  <div class="accordion-heading">
+   <a class="accordion-toggle" 
+      data-toggle="collapse" data-parent="#left-sidebar-nav" 
+      href="#{{ row.name }}-body">RDA {{ row.name }} {{ row.count }}</a>
+  </div>
+  <div class="accordion-body collapse" id="{{ row.name }}-body">
+   <div class="accordion-inner" style="background-color: #FFFFFF;">
+    <ul>
+   	 {% for facet in row.facets %}
 	  <li><a href="/apps/RDAcore/facets/{{ facet|slugify }}/">{{ facet|title }} {{ facet.count }}</a></li>
 	 {% endfor %}
 	</ul>
+   </div>
   </div>
-  {% endfor %}
-  </div>
+ </div>
+{% endfor %}
+</div>
 </div>

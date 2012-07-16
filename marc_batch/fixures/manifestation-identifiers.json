@@ -1,6 +1,11 @@
 {
   "020": {
-    "subfields":["a","z"]
+    "subfields":["a","z"],
+    "label": "ISBN"
+  },
+  "022": {
+    "subfields":["a","y","z"],
+    "label": "ISSN"
   },
   "024": {
     "indicators": {
@@ -31,7 +36,7 @@
         }, 
         "3": {
           "desc": "International Article Number", 
-          "label": "IAN", 
+          "label": "EAN", 
           "subfields": [
             "a", 
             "d", 

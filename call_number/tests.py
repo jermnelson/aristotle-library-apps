@@ -8,13 +8,6 @@ from redis_helpers import lccn_normalize
 
 web_client = Client()
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
-
 class WidgetTest(TestCase):
 
     def test_view(self):
