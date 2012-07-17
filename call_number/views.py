@@ -15,10 +15,10 @@ import redis_helpers,sys,logging
 import redis_helpers 
 from app_settings import APP,SEED_RECORD_ID
 
-redis_server = redis.StrictRedis(host=settings.REDIS_ACCESS_HOST,
-                                 port=settings.REDIS_ACCESS_PORT,
-                                 db=settings.CALL_NUMBER_DB)
+##redis_server = redis.StrictRedis(host=settings.REDIS_ACCESS_HOST,
+##                                 port=settings.REDIS_ACCESS_PORT)
 
+redis_server = redis.StrictRedis()
 
 def setup_seed_rec():
     """
@@ -26,7 +26,8 @@ def setup_seed_rec():
     for the default view
     """
     seed_rec = redis_server.hgetall(SEED_RECORD_ID)
-    idents = redis_server.hgetall(seed_rec['rdaIdentifierForTheExpression'])
+    ident_key = '{0}:identifiers'.format(SEED_RECORD_ID)
+    idents = redis_server.hgetall(ident_key)
     if idents.has_key('lccn'):
         current = redis_helpers.get_record(idents['lccn'])
     return current
@@ -44,7 +45,6 @@ def app(request):
             current = setup_seed_rec()
     except:
         current = setup_seed_rec()
-    print("%s " % current)
     call_number = get_callnumber(current)
     typeahead_data = redis_helpers.get_all(call_number)
     return direct_to_template(request,
@@ -55,7 +55,7 @@ def app(request):
                               'institution':settings.INSTITUTION, 
                               'next':redis_helpers.get_next(call_number),
                               'previous':redis_helpers.get_previous(call_number),
-                              'redis':redis_helpers.get_redis_info(),
+                              'redis':redis_helpers.redis_server.info(),
                               'typeahead_data':typeahead_data})
 
 def default(request):
@@ -63,14 +63,16 @@ def default(request):
     Returns the default view for the Call Number Application
     """
     ## return HttpResponse("Call Number Application index")
-    current = redis_server.hgetall(SEED_RECORD_ID)
+    seed_key = '{0}:identifiers'.format(SEED_RECORD_ID)
+    current = redis_server.hgetall()
+    print('{0} with key={1}'.format(seed_key,current))
     return direct_to_template(request,
                               'call_number/default.html',
                               {'aristotle_url':settings.DISCOVERY_RECORD_URL,
                                'current':current,
-                               'next':redis_helpers.get_next(current['call_number']),
-                               'previous':redis_helpers.get_previous(current['call_number']),
-                               'redis':redis_helpers.get_redis_info()})
+                               'next':redis_helpers.get_next(current['lccn']),
+                               'previous':redis_helpers.get_previous(current['lccn']),
+                               'redis':redis_helpers.redis_server.info()})
 
 
 def get_callnumber(rda_record):
@@ -87,7 +89,7 @@ def get_callnumber(rda_record):
         return rda_record['lccn']
     elif rda_record.has_key('dewey'):
         return rda_record['dewey']
-    elif current.has_key('local'):
+    elif rda_record.has_key('local'):
         return rda_record['local']
     return None
 

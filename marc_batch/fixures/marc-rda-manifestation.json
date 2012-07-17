@@ -1,4 +1,10 @@
 {
+  "legacy-bib-number": {
+   "907":{
+     "subfields":["a"],
+     "condition": "lambda x: x[1:-1]"
+    }
+  },
   "rdaCarrierType": {
     "007": {
       "positions": {"start":"0",
@@ -14,7 +20,7 @@
         "a", 
         "b"
       ], 
-      "condition": "lambda x ''.join(x.get_subfields('2')) == 'marcmedia'" 
+      "condition": "lambda x: ''.join(x.get_subfields('2')) == 'marcmedia'" 
      }
   }, 
   "rdaCopyrightDate": {
@@ -55,6 +61,13 @@
         "subfields": [ 
           "a", 
           "f"]
+      }
+   },
+   "rdaTitle": {
+      "245": {
+         "subfields": [
+           "a",
+           "b"]
       }
    }
 }

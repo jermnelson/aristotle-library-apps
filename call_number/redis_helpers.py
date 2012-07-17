@@ -15,16 +15,16 @@ try:
 
 except ImportError:
     # Setup for local development
-    REDIS_HOST = '172.25.1.108'
-##    REDIS_HOST = '127.0.0.1'
+##    REDIS_HOST = '172.25.1.108'
+    REDIS_HOST = '127.0.0.1'
     REDIS_PORT = 6379
     CALL_NUMBER_DB = 4
     volatile_redis = None
     
 
-redis_server = redis.StrictRedis(host=REDIS_HOST,
-                                 port=REDIS_PORT,
-                                 db=CALL_NUMBER_DB)
+##redis_server = redis.StrictRedis(host=REDIS_HOST,
+##                                 port=REDIS_PORT)
+redis_server = redis.StrictRedis()
 
 
 english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
@@ -47,23 +47,7 @@ lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\
 ##    redis_server.zadd('call-number-sorted-search-set',0,first_cutter)
 ##    redis_server.zadd('call-number-sorted-search-set',0,'%s*' % call_number)   
 
-def get_callnumber(record,
-                   marc_fields=['086',
-                                '090',
-                                '099',
-                                '050']):
-    """
-    Function iterates through the marc_fields list and returns 
-    the first field that has a value. List order matters in 
-    this function!
 
-    :param record: MARC Record
-    :param marc_fields: List of MARC Fields that contain call numbers
-    :rtype str: First matched string
-    """
-    for field_tag in marc_fields:
-        if record[field_tag] is not None:
-            return record[field_tag].value()
 
 def get_all(call_number,slice_size=10):
     """
@@ -74,11 +58,22 @@ def get_all(call_number,slice_size=10):
     :param slice_size: Slice size, default is 10
     :rtype list: List of call numbers
     """
-    current_rank = redis_server.zrank('call-number-sort-set',call_number)
-    print("Current rank is %s, call number %s" % (current_rank,call_number))
-    return redis_server.zrange('call-number-sort-set',
-                               current_rank-slice_size,
-                               current_rank+slice_size)
+    lccn_rank = redis_server.zrank('lccn-sort-set',call_number)
+    if lccn_rank is not None:
+        return redis_server.zrange('lccn-sort-set',
+                                   lccn_rank-slice_size,
+                                   lccn_rank+slice_size)
+    sudoc_rank = redis_server.zrank('sudoc-sort-set',call_number)
+    if sudoc_rank is not None:
+        return redis_server.zrange('sudoc-sort-set',
+                                   sudoc_rank-slice_size,
+                                   sudo_rank+slice_size)
+    local_rank = redis_server.zrank('local-sort-set',call_number)
+    if local_rank is not None:
+        return redis_server.zrange('local-sort-set',
+                                   local_rank-slice_size,
+                                   local_rank+slice_size)
+        
 
 
 def get_previous(call_number):
@@ -89,7 +84,7 @@ def get_previous(call_number):
     :param call_number: Call Number String
     :rtype list: List of two records 
     """
-    current_rank = redis_server.zrank('call-number-sort-set',call_number)
+    current_rank = redis_server.zrank('lccn-sort-set',call_number)
     return get_slice(current_rank-2,current_rank-1)
 
 def get_next(call_number):
@@ -101,15 +96,9 @@ def get_next(call_number):
     :rtype list: List of two records 
     """
 
-    current_rank = redis_server.zrank('call-number-sort-set',call_number)
+    current_rank = redis_server.zrank('lccn-sort-set',call_number)
     return get_slice(current_rank+1,current_rank+2)
 
-
-def get_redis_info():
-    redis_info = {'dbsize':redis_server.dbsize(),
-                  'info':redis_server.info(),
-                  'call_number_size':len(redis_server.hkeys('call-number-hash'))}
-    return redis_info
 
 def get_slice(start,stop):
     """
@@ -126,17 +115,26 @@ def get_slice(start,stop):
     return entities
 
 def get_record(call_number):
-    record_key = redis_server.hget('call-numbers-hash',call_number)
+    if redis_server.hexists('lccn-hash',call_number):
+        record_key = redis_server.hget('lccn-hash',call_number)
+        manifestation_key = redis_server.hget(record_key,
+                                              'rdaManifestationOfExpression')
+        bib_number = redis_server.hget(manifestation_key,
+                                       'legacy-bib-number')
+    elif redis_server.hexists('sudoc-hash',call_number):
+        record_key = redis_server.hget('sudoc-hash',call_number)
+        bib_number = redis_server.hget(record_key,
+                                       'legacy-bib-number')
+    elif redis_server.hexists('local-hash',call_number):
+        record_key = redis_server.hget('local-hash',call_number)
+        bib_number = redis_server.hget(record_key,
+                                       'legacy-bib-number')
     record_info = redis_server.hgetall(record_key)
     if record_info.has_key('rdaRelationships:author'):
         author = record_info.pop('rdaRelationships:author')
         if author.count("None") < 1:
             record_info['author'] = author
-    ident_key = record_info.pop('rdaIdentifierForTheExpression')
-    rec_detail = redis_server.hgetall(ident_key)
-    bib_number = rec_detail.pop('bibliographic-number')
     record_info['bib_number'] = bib_number
-    record_info.update(rec_detail)
     return record_info
     
 
@@ -152,17 +150,6 @@ def quick_set_callnumber(identifiers_key,
     redis_server.zadd('%s-sort-set' % call_number_type,0,call_number)
 
 
-def ingest_sudoc(field_086,
-                 entity_key,
-                 redis_server):
-    """
-    Function takes MARC 086, validates, and adds to Redis datastore.
-
-    :param field_086: 086 MARC field
-    :param entity_key: RDACore Redis Entity key
-    :param redis_server: Redis server
-    """
-    indentifier_key = redis_server.hge
 
 def get_set_callnumbers(marc_record,
                         redis_server,
@@ -194,7 +181,7 @@ def get_set_callnumbers(marc_record,
     local_090 = marc_record['090']
     if local_090 is not None:
         call_number = local_090.value()
-        if lccn_field is None:
+        if not redis_server.hget(identifiers_key,'lccn'):
             lccn_set(identifiers_key,
                      call_number,
                      redis_server,
@@ -211,6 +198,7 @@ def get_set_callnumbers(marc_record,
         quick_set_callnumber(identifiers_key,
                              "local",
                              call_number,
+                             redis_server,
                              redis_key)
         
     
@@ -230,50 +218,6 @@ def ingest_call_numbers(marc_record,redis_server,entity_key):
     :param entity_key: Redis FRBR RDACore Entity key
     """
     get_set_callnumbers(marc_record,redis_server,entity_key)
-    
-    
-
-def ingest_record(marc_record,redis_server):
-    bib_number = marc_record['907']['a'][1:-1]
-    call_number = get_callnumber(marc_record)
-    if call_number is None:
-        return None
-    redis_id = redis_server.incr("global:frbr_rda")
-    redis_key = "frbr_rda:%s" % redis_id
-    redis_server.hset(redis_key,"rdaTitleOfWork",marc_record.title())
-    redis_server.hset(redis_key,
-                      "rdaRelationships:author",
-                      marc_record.author())
-    identifiers_key = '%s:identifiers' % redis_key
-    redis_server.hset(identifiers_key,
-                      'bibliographic-number',
-                      bib_number)
-    get_set_callnumbers(redis_key,
-                        marc_record)
-    redis_server.hset(redis_key,"rdaIdentifierForTheExpression",
-                      '%s:identifiers' % redis_key)
-    isbn = marc_record.isbn()
-    if isbn is not None:
-        redis_server.hset('%s:identifiers' % redis_key,
-                          "isbn",
-                          isbn)
-    # Create search set
-#    generate_search_set(call_number)
-    redis_server.hset('bib-number-hash',bib_number,redis_key)
-    redis_server.hset('call-numbers-hash',call_number,redis_key)
-    redis_server.zadd('call-number-sort-set',0,call_number) 
-
-
-def ingest_records(marc_file_location):
-    if volatile_redis is None:
-        return None
-    marc_reader = pymarc.MARCReader(open(marc_file_location,"rb"))
-    for i,record in enumerate(marc_reader):
-        if not i%1000:
-            sys.stderr.write(".")
-        if not i%10000:
-            sys.stderr.write(str(i))
-        ingest_record(record)
     
 
 def search(query):
@@ -335,10 +279,11 @@ def lccn_set(identifiers_key,
                       'lccn',
                       call_number)
     normalized_call_number = lccn_normalize(call_number)
+    print("{0}".format(call_number))
     redis_server.hset(identifiers_key,
                       'lccn-normalized',
                       normalized_call_number)
-    redis_server.hset('lccn-hash',normalized_call_number,redis_key)
+    redis_server.hset('lccn-hash',call_number,redis_key)
     redis_server.zadd('lccn-sort-set',
                       0,
                       normalized_call_number)

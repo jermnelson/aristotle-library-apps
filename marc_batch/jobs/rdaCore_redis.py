@@ -367,7 +367,8 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                                            ''.join(marc_data))
                                 else:
                                     ident_set_key = "{0}:{1}s".format(self.entity_key,
-                                                                      rule['label'].replace(" ",""))
+                                                                      rule_label.replace(" ",""))
+                                    
                                     for row in marc_data:
                                         self.redis_server.sadd(ident_set_key,
                                                                row)
@@ -607,21 +608,46 @@ def ingest_record(marc_record,redis_server):
 ##        print("Volatile Redis not available")
 ##        return None
 ##    redis_server = volatile_redis
-    bib_number = marc_record['907']['a'][1:-1]
-    redis_id = redis_server.incr("global:rdaCore")
-    redis_key = "rdaCore:%s" % redis_id
-    CreateRDACoreWorkFromMARC(record=marc_record,
-                              redis_server=redis_server,
-                              root_redis_key=redis_key).generate()
-    CreateRDACoreExpressionFromMARC(record=marc_record,
-                                    redis_server=redis_server,
-                                    root_redis_key=redis_key).generate()
-    CreateRDACoreManifestationFromMARC(record=marc_record,
-                                       redis_server=redis_server,
-                                       root_redis_key=redis_key).generate()
-    CreateRDACoreItemFromMARC(record=marc_record,
-                              redis_server=redis_server,
-                              root_redis_key=redis_key).generate()
+    work_generator = CreateRDACoreWorkFromMARC(record=marc_record,
+                                               redis_server=redis_server,
+                                               root_redis_key="rdaCore")
+    work_generator.generate()
+    expression_generator = CreateRDACoreExpressionFromMARC(record=marc_record,
+                                                           redis_server=redis_server,
+                                                           root_redis_key="rdaCore")
+    expression_generator.generate()
+    manifestation_generator = CreateRDACoreManifestationFromMARC(record=marc_record,
+                                                                 redis_server=redis_server,
+                                                                 root_redis_key="rdaCore")
+    manifestation_generator.generate()
+    item_generator = CreateRDACoreItemFromMARC(record=marc_record,
+                                               redis_server=redis_server,
+                                               root_redis_key="rdaCore")
+    item_generator.generate()
+    # Set rdaRelationships for entities
+    redis_server.hset(item_generator.entity_key,
+                      "rdaManifestationExemplified",
+                      manifestation_generator.entity_key)
+    redis_server.hset(manifestation_generator.entity_key,
+                      "rdaExpressionManifested",
+                      expression_generator.entity_key)
+    redis_server.hset(manifestation_generator.entity_key,
+                      "rdaWorkManifested",
+                      work_generator.entity_key)
+    redis_server.hset(expression_generator.entity_key,
+                      "rdaManifestationOfExpression",
+                      manifestation_generator.entity_key)
+    redis_server.hset(expression_generator.entity_key,
+                      "rdaWorkExpressed",
+                      work_generator.entity_key)
+    redis_server.hset(work_generator.entity_key,
+                      "rdaExpressionOfWork",
+                      expression_generator.entity_key)
+    redis_server.hset(work_generator.entity_key,
+                      "rdaManifestationOfWork",
+                      manifestation_generator.entity_key)
+    
+    
     
     
 
