@@ -84,7 +84,9 @@ def get_previous(call_number):
     :param call_number: Call Number String
     :rtype list: List of two records 
     """
-    current_rank = redis_server.zrank('lccn-sort-set',call_number)
+    current_rank = get_rank(call_number)
+    if current_rank is None:
+        return None
     return get_slice(current_rank-2,current_rank-1)
 
 def get_next(call_number):
@@ -95,10 +97,30 @@ def get_next(call_number):
     :param call_number: Call Number String
     :rtype list: List of two records 
     """
-
-    current_rank = redis_server.zrank('lccn-sort-set',call_number)
+    current_rank = get_rank(call_number)
+    if current_rank is None:
+        return None
     return get_slice(current_rank+1,current_rank+2)
 
+def get_rank(call_number):
+    """
+    Function takes a call_number, iterates through Redis datastore hash values
+    for lccn, sudoc, and local, and if call_number is present returns the
+    rank from the sorted set.
+
+    :param call_number: Call Number String
+    :rtype integer or None:
+    """
+    for hash_root in ['lccn','sudoc','local']:
+        if redis_server.hexists("{0}-hash".format(hash_root),
+                                call_number):
+            entity_key = redis_server.hget("{0}-hash".format(hash_root),
+                                           call_number)
+            entity_idents = redis_server.hgetall("{0}:identifiers".format(entity_key))
+            if entity_idents.has_key("{0}-normalized".format(hash_root)):
+                current_rank = redis_server.zrank('{0}-sort-set'.format(hash_root),
+                                                  entity_idents["{0}-normalized".format(hash_root)])
+                return current_rank
 
 def get_slice(start,stop):
     """
@@ -109,12 +131,21 @@ def get_slice(start,stop):
     :rtype: List of entities saved as Redis records
     """
     entities = []
-    record_slice = redis_server.zrange('call-number-sort-set',start,stop)
+    record_slice = redis_server.zrange('lccn-sort-set',start,stop)
     for number in record_slice:
         entities.append(get_record(number))
     return entities
 
 def get_record(call_number):
+    for hash_base in ['lccn','sudoc','local']:
+        hash_name = '{0}-hash'.format(hash_base)
+        if redis_server.hexists(hash_name,call_number):
+            record_key = redis_server.hget(hash_name,call_number)
+        if hash_base == 'lccn':
+            manifestation_key = redis_server.hget(record_key,
+                                                  'rdaManifestationOfExpression')
+            bib_number = redis_server.hget(manifestation_key,
+                                           'legacy-bib-number')
     if redis_server.hexists('lccn-hash',call_number):
         record_key = redis_server.hget('lccn-hash',call_number)
         manifestation_key = redis_server.hget(record_key,
@@ -162,6 +193,8 @@ def get_set_callnumbers(marc_record,
     :param redis_key: Key to RDA Core entity
     """
     identifiers_key = '%s:identifiers' % redis_key
+    if not redis_server.hexists(redis_key,'identifiers'):
+        redis_server.hset(redis_key,'identifiers',identifiers_key)
     sudoc_field = marc_record['086']
     if sudoc_field is not None:
         call_number = sudoc_field.value()
@@ -205,7 +238,7 @@ def get_set_callnumbers(marc_record,
 def ingest_call_numbers(marc_record,redis_server,entity_key):
     """
     `ingest_call_numbers` function takes a MARC record and
-    a RDACore FRBR Redis Expression or Manifesation key, ingests the
+    a RDACore FRBR Redis Expression or Manifestation key, ingests the
     record and depending on the call number type (currently using
     three types of call numbers; LCCN, SuDoc, and local)
     associates the call number to the entity key in a

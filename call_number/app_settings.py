@@ -3,5 +3,5 @@ APP = {'current_view': {'title':'Call Number'},
        'icon_url':'call_number_search.png',
        'url':'call_number/'}
 
-SEED_RECORD_ID = 'rdaCore:Expression:277'
+SEED_RECORD_ID = 'rdaCore:Expression:280'
        

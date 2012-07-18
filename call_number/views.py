@@ -47,13 +47,15 @@ def app(request):
         current = setup_seed_rec()
     call_number = get_callnumber(current)
     typeahead_data = redis_helpers.get_all(call_number)
+    next_recs = redis_helpers.get_next(call_number)
+    print(next_recs)
     return direct_to_template(request,
                               'call_number/app.html',
                              {'app':APP,
                               'aristotle_url':settings.DISCOVERY_RECORD_URL,
                               'current':current,
                               'institution':settings.INSTITUTION, 
-                              'next':redis_helpers.get_next(call_number),
+                              'next':next_recs,
                               'previous':redis_helpers.get_previous(call_number),
                               'redis':redis_helpers.redis_server.info(),
                               'typeahead_data':typeahead_data})
@@ -83,14 +85,15 @@ def get_callnumber(rda_record):
     :param rda_record: RDA record info
     :rtype: string of call number
     """
-    if rda_record.has_key('sudoc'):
-        return rda_record['sudoc']
-    elif rda_record.has_key('lccn'):
-        return rda_record['lccn']
-    elif rda_record.has_key('dewey'):
-        return rda_record['dewey']
-    elif rda_record.has_key('local'):
-        return rda_record['local']
+    ident_key = rda_record.get("identifiers")
+    if redis_server.hexists(ident_key,'sudoc'):
+        return redis_server.hget(ident_key,'sudoc')
+    elif redis_server.hexists(ident_key,'lccn'):
+        return redis_server.hget(ident_key,'lccn')
+    elif redis_server.hexists(ident_key,'dewey'):
+        return redis_server.hget(ident_key,'dewey')
+    elif redis_server.hexists(ident_key,'local'):
+        return redis_server.hget(ident_key,'local')
     return None
 
 def json_view(func):

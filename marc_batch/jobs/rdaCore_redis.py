@@ -40,10 +40,29 @@ class MARCRules(object):
         if kwargs.has_key('json_rules'):
             self.json_rules = kwargs.get('json_rules')
 
+    def __filter_raw_value__(self,rule,raw_value):
+        """
+        Helper method applies any filter associated with the
+        rule to the raw_value extracted from the MARC record.
+
+        :param rule: JSON Rule
+        :param raw_value: Raw value extracted from MARC record
+        """
+        if rule.has_key("filter"):
+            # NOTE filter should be python lambda form and returns
+            # a modified string
+            rule_filter = eval(rule["filter"])
+            return rule_filter(raw_value)
+        return raw_value
+            
+
     def __get_position_values__(self,rule,marc_field):
         """
         Helper method checks MARC values from fixed positions based
         on the rule's position
+
+        :param rule: JSON Rule
+        :param marc_field: MARC field
         """
         values = str()
         if rule.has_key("positions") and marc_field.is_control_field():
@@ -54,7 +73,7 @@ class MARCRules(object):
             values += raw_value[start_position:end_position+1]
         if len(values) < 1:
             return None
-        return values
+        return self.__filter_raw_value__(rule,values)
 
     def __get_subfields__(self,rule,marc_field):
         """
@@ -72,7 +91,9 @@ class MARCRules(object):
             rule_subfields = rule["subfields"]
             output = []
             for subfield in rule_subfields:
-                output.append(''.join(marc_field.get_subfields(subfield)))
+                final_value = self.__filter_raw_value__(rule,
+                                                        ''.join(marc_field.get_subfields(subfield)))
+                output.append(final_value)
         return output
 
 
@@ -96,6 +117,8 @@ class MARCRules(object):
             if pass_rule is None:
                 pass_rule = False
         return pass_rule
+
+
 
     def __test_position_values__(self,rule,marc_field):
         """
@@ -337,6 +360,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         """
         identifiers_dict = json_loader.get('manifestation-identifiers')
         identifiers_key = "{0}:identifiers".format(self.entity_key)
+        # Sets identifiers attribute on entity to 
         for tag in identifiers_dict.keys():
             marc_fields = self.marc_record.get_fields(tag)
             for field in marc_fields:
