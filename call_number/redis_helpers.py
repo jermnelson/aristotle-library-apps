@@ -13,7 +13,7 @@ try:
                                        port=settings.REDIS_PRODUCTIVITY_PORT,
                                        db=CALL_NUMBER_DB)
 
-except ImportError:
+except:
     # Setup for local development
 ##    REDIS_HOST = '172.25.1.108'
     REDIS_HOST = '127.0.0.1'
