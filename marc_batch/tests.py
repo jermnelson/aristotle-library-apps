@@ -157,6 +157,9 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
         self.test_rec.add_field(pymarc.Field('086',
                                              indicators=['1',''],
                                              subfields=['a','CS13-211']))
+        self.test_rec.add_field(pymarc.Field('245',
+                                             indicators=["",""],
+                                             subfields=["a",'Test Record Title']))
         self.test_rec.add_field(pymarc.Field('250',
                                              indicators=['',''],
                                              subfields=['a','4th ed.',
@@ -272,6 +275,12 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
                                        'SuDoc'),
                           'HE 20.6209:13/45')
 
+    def test_title(self):
+        title_set_key = test_ds.hget(self.manifestation_generator.entity_key,
+                                     "rdaTitle")
+        self.assertEquals(''.join(test_ds.smembers(title_set_key)),
+                          'Test Record Title')
+
     def test_upc(self):
         self.assertEquals(test_ds.hget(self.identifiers_key,
                                        'UPC'),
@@ -283,6 +292,39 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
 
     def tearDown(self):
         test_ds.flushdb()
+
+class CreateRDACoreCreateRDACorePersonFromMARC(TestCase):
+
+    def setUp(self):
+        self.test_rec = pymarc.Record()
+        self.test_rec.add_field(pymarc.Field(tag='100',
+                                             indicators=["1",""],
+                                             subfields=["a","Rosebrough, Robert F."]))
+        self.test_rec.add_field(pymarc.Field(tag='700',
+                                             indicators=["1",""],
+                                             subfields=["a","Whipple, Fred L.",
+                                                        "d","1906-2004"]))
+        self.test_rec.add_field(pymarc.Field(tag='700',
+                                             indicators=["1",""],
+                                             subfields=["a","Field, George B.",
+                                                        "d","1929-"]))
+        self.test_rec.add_field(pymarc.Field(tag='700',
+                                             indicators=["1",""],
+                                             subfields=["a","Cameron, A. G. W.",
+                                                        "d","1925-"]))
+        self.person_generator = CreateRDACorePersonsFromMARC(record=self.test_rec,
+                                                             redis_server = test_ds)
+        self.person_generator.generate()
+
+    def test_init(self):
+        self.assertEquals(self.person_generator.people[0],
+                          "rdaCore:Person:1")
+
+    def test_preferred_name(self):
+        self.assertEquals(test_ds.hget(self.person_generator.people[0],
+                                       "rdaPreferredNameForThePerson"),
+                          "Rosebrough, Robert F.")
+        
 
 class CreateRDACoreWorkFromMARCTest(TestCase):
 

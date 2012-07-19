@@ -1,4 +1,21 @@
 {
+  "rdaDateAssociatedWithThePerson": {
+     "100": {
+       "indicators": {
+         "0": ["0"]},
+       "subfields": ["d"]
+     },
+     "700": {
+       "indicators": {
+         "0": ["0"]},
+       "subfields": ["d"]
+     },
+     "800": {
+       "indicators": {
+         "0": ["0"]},
+       "subfields": ["d"]
+     }
+  },
   "rdaPreferredNameForThePerson": {
      "100": {
        "indicators": {

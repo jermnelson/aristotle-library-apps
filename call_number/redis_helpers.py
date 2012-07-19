@@ -85,6 +85,7 @@ def get_previous(call_number):
     :rtype list: List of two records 
     """
     current_rank = get_rank(call_number)
+    print("CURRENT RANK = {0} {1}".format(call_number,current_rank))
     if current_rank is None:
         return None
     return get_slice(current_rank-2,current_rank-1)
@@ -121,6 +122,7 @@ def get_rank(call_number):
                 current_rank = redis_server.zrank('{0}-sort-set'.format(hash_root),
                                                   entity_idents["{0}-normalized".format(hash_root)])
                 return current_rank
+            
 
 def get_slice(start,stop):
     """
@@ -133,42 +135,43 @@ def get_slice(start,stop):
     entities = []
     record_slice = redis_server.zrange('lccn-sort-set',start,stop)
     for number in record_slice:
-        entities.append(get_record(number))
+        entity_key = redis_server.hget('lccn-normalized-hash',number)
+        call_number = redis_server.hget('{0}:identifiers'.format(entity_key),
+                                        'lccn')
+        record = get_record(call_number=call_number)
+        entities.append(record)
     return entities
 
-def get_record(call_number):
+def get_record(**kwargs):
+    call_number = kwargs.get('call_number')
+    record_info = {'call_number':call_number}
     for hash_base in ['lccn','sudoc','local']:
         hash_name = '{0}-hash'.format(hash_base)
         if redis_server.hexists(hash_name,call_number):
             record_key = redis_server.hget(hash_name,call_number)
-        if hash_base == 'lccn':
-            manifestation_key = redis_server.hget(record_key,
-                                                  'rdaManifestationOfExpression')
-            bib_number = redis_server.hget(manifestation_key,
-                                           'legacy-bib-number')
-    if redis_server.hexists('lccn-hash',call_number):
-        record_key = redis_server.hget('lccn-hash',call_number)
-        manifestation_key = redis_server.hget(record_key,
-                                              'rdaManifestationOfExpression')
-        bib_number = redis_server.hget(manifestation_key,
-                                       'legacy-bib-number')
-    elif redis_server.hexists('sudoc-hash',call_number):
-        record_key = redis_server.hget('sudoc-hash',call_number)
-        bib_number = redis_server.hget(record_key,
-                                       'legacy-bib-number')
-    elif redis_server.hexists('local-hash',call_number):
-        record_key = redis_server.hget('local-hash',call_number)
-        bib_number = redis_server.hget(record_key,
-                                       'legacy-bib-number')
-    record_info = redis_server.hgetall(record_key)
-    if record_info.has_key('rdaRelationships:author'):
-        author = record_info.pop('rdaRelationships:author')
-        if author.count("None") < 1:
-            record_info['author'] = author
-    record_info['bib_number'] = bib_number
-    return record_info
-    
+            if hash_base == 'lccn':
+                manifestation_key = redis_server.hget(record_key,
+                                                      'rdaManifestationOfExpression')
+                
+            else:
+                manifestation_key = record_key
+                
 
+            record_info['bib_number'] = redis_server.hget(manifestation_key,
+                                                          'legacy-bib-number')
+            record_info['rdaTitle'] = ''.join(redis_server.smembers(redis_server.hget(manifestation_key,
+                                                                                      'rdaTitle')))
+            work_key = redis_server.hget(manifestation_key,
+                                         'rdaWorkManifested')
+            if redis_server.hexists(work_key,
+                                    'rdaCreator'):
+                creator_key = redis_server.hget(work_key,
+                                                'rdaCreator')
+                record_info['author'] = redis_server.hget(creator_key,
+                                                          'rdaPreferredNameForThePerson')
+            return record_info
+    
+    
 def quick_set_callnumber(identifiers_key,
                          call_number_type,
                          call_number,
@@ -317,6 +320,9 @@ def lccn_set(identifiers_key,
                       'lccn-normalized',
                       normalized_call_number)
     redis_server.hset('lccn-hash',call_number,redis_key)
+    redis_server.hset('lccn-normalized-hash',
+                      normalized_call_number,
+                      redis_key)
     redis_server.zadd('lccn-sort-set',
                       0,
                       normalized_call_number)

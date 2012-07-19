@@ -29,7 +29,7 @@ def setup_seed_rec():
     ident_key = '{0}:identifiers'.format(SEED_RECORD_ID)
     idents = redis_server.hgetall(ident_key)
     if idents.has_key('lccn'):
-        current = redis_helpers.get_record(idents['lccn'])
+        current = redis_helpers.get_record(call_number=idents['lccn'])
     return current
 
 def app(request):
@@ -45,10 +45,9 @@ def app(request):
             current = setup_seed_rec()
     except:
         current = setup_seed_rec()
-    call_number = get_callnumber(current)
-    typeahead_data = redis_helpers.get_all(call_number)
+    call_number = current.get('call_number')
     next_recs = redis_helpers.get_next(call_number)
-    print(next_recs)
+    previous_recs = redis_helpers.get_previous(call_number)
     return direct_to_template(request,
                               'call_number/app.html',
                              {'app':APP,
@@ -56,9 +55,9 @@ def app(request):
                               'current':current,
                               'institution':settings.INSTITUTION, 
                               'next':next_recs,
-                              'previous':redis_helpers.get_previous(call_number),
+                              'previous':previous_recs,
                               'redis':redis_helpers.redis_server.info(),
-                              'typeahead_data':typeahead_data})
+                              'typeahead_data':None})
 
 def default(request):
     """
@@ -67,7 +66,6 @@ def default(request):
     ## return HttpResponse("Call Number Application index")
     seed_key = '{0}:identifiers'.format(SEED_RECORD_ID)
     current = redis_server.hgetall()
-    print('{0} with key={1}'.format(seed_key,current))
     return direct_to_template(request,
                               'call_number/default.html',
                               {'aristotle_url':settings.DISCOVERY_RECORD_URL,

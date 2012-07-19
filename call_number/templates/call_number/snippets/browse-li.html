@@ -2,14 +2,14 @@
 {% load call_number_extras %}
 <li>
 
- <div class="call-number-entity"><a href="{{ aristotle_url }}{{ entity.bib_number }}" target="_top">{{ entity.rdaTitleOfWork|truncatewords:7 }}</a></div>
+ <div class="call-number-entity"><a href="{{ aristotle_url }}{{ entity.bib_number }}" target="_top">{{ entity.rdaTitle|truncatewords:7 }}</a></div>
  {% if entity.author %}
  <div class="call-number-entity">{% trans entity.author %}
  </div>
  {% endif %}
  <div class="call-number-entity">{{ entity.location }} &raquo;
- {% if entity.lccn %}
- {{ entity.lccn }}
+ {% if entity.call_number %}
+ {{ entity.call_number }}
  {% endif %}
  </div>
 </li>

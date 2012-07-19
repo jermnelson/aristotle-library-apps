@@ -407,23 +407,65 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                                                      
                                 
                                                    
-class CreateRDACorePersonFromMARC(object):
+class CreateRDACorePersonsFromMARC(object):
 
     def __init__(self,**kwargs):
-        if kwargs.has_key('json-rules'):
-            self.json_rules = kwargs.get('json-rules')
+        self.marc_record = kwargs.get('record')
+        self.redis_server = kwargs.get('redis_server')
+        self.json_rules = json_loader['marc-rda-person']
+        print(self.json_rules.keys())
+        self.person_name_rule = self.json_rules.pop('rdaPreferredNameForThePerson')
+        self.entity_ruleset = {}
+        for attribute,body in self.json_rules.iteritems():
+            for tag,rule in body.iteritems():
+                if self.entity_ruleset.has_key(tag):
+                    self.entity_ruleset[tag][attribute] = rule
+                else:
+                    self.entity_ruleset[tag] = {attribute:rule}
+        self.people = []
+
+    def __get_or_add_person__(self,field):
+        if self.person_name_rule.has_key(field.tag):
+            field_rule = self.person_name_rule[field.tag]
+            if MARCRule.__test_indicators__(field_rule,field):
+                raw_name = MARCRule.__get_subfields__(field_rule,field)
+            else:
+                return None
         else:
-            self.json_rules = json_loader['marc-rda-person']
+            return None
+        if self.redis_server.hexists('person-name-hash',
+                                     raw_name):
+            person_key = self.redis_server.hget('person-name-hash',raw_name)
+        else:
+            person_key = "rdaCore:Person:{0}".format(self.redis_server.incr("global:rdaCore:Person"))
+            self.redis_server.hset(person_key,
+                                   'rdaPreferredNameForThePerson',
+                                   raw_name)
+            self.redis_server.hset('person-name-hash',
+                                   raw_name,
+                                   person_key)
+        self.people.append(person_key)
+        return person_key
+    
 
     def generate(self):
-        super(CreateRDACorePersonFromMARC,self).generate()
-        for rda_element in self.json_rules.keys():
-            marc_fields = rda_element.keys()
+        for tag,rule in self.entity_ruleset.iteritems():
+            marc_fields = self.marc_record.get_fields(tag)
             for field in marc_fields:
-                if field.has_key("indicators"):
-                    for indicator in field["indicators"]:
-                        pass
-                    
+                person_key = self.__get_or_add_person__(field)
+                if MARCRule.__test_indicators__(rule,field):
+                    raw_value = MARCRule.__get_subfields__(rule,field)
+                    self.redis_server.hset(person_key,
+                                           rule.key,
+                                           raw_value)
+                        
+    
+                        
+                        
+                
+            
+            
+                            
 
 class CreateRDACoreWorkFromMARC(CreateRDACoreEntityFromMARC):
 
@@ -648,6 +690,10 @@ def ingest_record(marc_record,redis_server):
                                                redis_server=redis_server,
                                                root_redis_key="rdaCore")
     item_generator.generate()
+    person_generator = CreateRDACorePersonFromMARC(record=marc_record,
+                                                   redis_server=redis_server,
+                                                   root_redis_key="rdaCore")
+    person_generator.generate()
     # Set rdaRelationships for entities
     redis_server.hset(item_generator.entity_key,
                       "rdaManifestationExemplified",
@@ -670,6 +716,10 @@ def ingest_record(marc_record,redis_server):
     redis_server.hset(work_generator.entity_key,
                       "rdaManifestationOfWork",
                       manifestation_generator.entity_key)
+    if redis_server.exists(person_generator.entity_key):
+        redis_server.hset(work_generator.entity_key,
+                          "rdaCreator",
+                          person_generator.entity_key)
     
     
     

@@ -22,11 +22,11 @@
     {% include 'snippets/browse-li.html' %}
   {% endfor %}
    <li class="current">
-
+      
      {% if current.isbn %}
      {{ current.isbn|google_book_display }}
      {% endif %}
-     <div class="call-number-entity">{{ current.rdaTitleOfWork }}</div>
+     <div class="call-number-entity">{{ current.rdaTitle }}</div>
      {% if current.author %}
       <div class="call-number-entity">{{ current.author }}</div>
      {% endif %}
