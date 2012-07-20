@@ -293,7 +293,7 @@ class CreateRDACoreManifestationFromMARCTest(TestCase):
     def tearDown(self):
         test_ds.flushdb()
 
-class CreateRDACoreCreateRDACorePersonFromMARC(TestCase):
+class CreateRDACoreCreateRDACorePersonsFromMARC(TestCase):
 
     def setUp(self):
         self.test_rec = pymarc.Record()
@@ -301,15 +301,15 @@ class CreateRDACoreCreateRDACorePersonFromMARC(TestCase):
                                              indicators=["1",""],
                                              subfields=["a","Rosebrough, Robert F."]))
         self.test_rec.add_field(pymarc.Field(tag='700',
-                                             indicators=["1",""],
+                                             indicators=["0",""],
                                              subfields=["a","Whipple, Fred L.",
                                                         "d","1906-2004"]))
         self.test_rec.add_field(pymarc.Field(tag='700',
-                                             indicators=["1",""],
+                                             indicators=["0",""],
                                              subfields=["a","Field, George B.",
                                                         "d","1929-"]))
         self.test_rec.add_field(pymarc.Field(tag='700',
-                                             indicators=["1",""],
+                                             indicators=["0",""],
                                              subfields=["a","Cameron, A. G. W.",
                                                         "d","1925-"]))
         self.person_generator = CreateRDACorePersonsFromMARC(record=self.test_rec,
@@ -324,7 +324,29 @@ class CreateRDACoreCreateRDACorePersonFromMARC(TestCase):
         self.assertEquals(test_ds.hget(self.person_generator.people[0],
                                        "rdaPreferredNameForThePerson"),
                           "Rosebrough, Robert F.")
+        self.assertEquals(test_ds.hget(self.person_generator.people[1],
+                                       "rdaPreferredNameForThePerson"),
+                          "Whipple, Fred L.")
+        self.assertEquals(test_ds.hget(self.person_generator.people[2],
+                                       "rdaPreferredNameForThePerson"),
+                          "Field, George B.")
+        self.assertEquals(test_ds.hget(self.person_generator.people[3],
+                                       "rdaPreferredNameForThePerson"),
+                          "Cameron, A. G. W.")
+
+    def test_date_associated_with_person(self):
+        self.assertEquals(test_ds.hget(self.person_generator.people[1],
+                                       "rdaDateAssociatedWithThePerson"),
+                          "1906-2004")
+        self.assertEquals(test_ds.hget(self.person_generator.people[2],
+                                       "rdaDateAssociatedWithThePerson"),
+                          "1929-")
+        self.assertEquals(test_ds.hget(self.person_generator.people[3],
+                                       "rdaDateAssociatedWithThePerson"),
+                          "1925-")
         
+    def tearDown(self):
+        test_ds.flushdb()
 
 class CreateRDACoreWorkFromMARCTest(TestCase):
 

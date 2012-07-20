@@ -5,7 +5,7 @@
 """
 __author__ = 'Jeremy Nelson'
 import pymarc,redis,logging,sys
-import re,datetime
+import re,datetime,copy
 from marc_batch.fixures import json_loader
 from call_number.redis_helpers import ingest_call_numbers
 
@@ -412,8 +412,7 @@ class CreateRDACorePersonsFromMARC(object):
     def __init__(self,**kwargs):
         self.marc_record = kwargs.get('record')
         self.redis_server = kwargs.get('redis_server')
-        self.json_rules = json_loader['marc-rda-person']
-        print(self.json_rules.keys())
+        self.json_rules = copy.deepcopy(json_loader['marc-rda-person'])
         self.person_name_rule = self.json_rules.pop('rdaPreferredNameForThePerson')
         self.entity_ruleset = {}
         for attribute,body in self.json_rules.iteritems():
@@ -427,8 +426,8 @@ class CreateRDACorePersonsFromMARC(object):
     def __get_or_add_person__(self,field):
         if self.person_name_rule.has_key(field.tag):
             field_rule = self.person_name_rule[field.tag]
-            if MARCRule.__test_indicators__(field_rule,field):
-                raw_name = MARCRule.__get_subfields__(field_rule,field)
+            if MARCRules().__test_indicators__(field_rule,field):
+                raw_name = MARCRules().__get_subfields__(field_rule,field)
             else:
                 return None
         else:
@@ -440,24 +439,25 @@ class CreateRDACorePersonsFromMARC(object):
             person_key = "rdaCore:Person:{0}".format(self.redis_server.incr("global:rdaCore:Person"))
             self.redis_server.hset(person_key,
                                    'rdaPreferredNameForThePerson',
-                                   raw_name)
+                                   ''.join(raw_name))
             self.redis_server.hset('person-name-hash',
-                                   raw_name,
+                                   ''.join(raw_name),
                                    person_key)
         self.people.append(person_key)
         return person_key
     
 
     def generate(self):
-        for tag,rule in self.entity_ruleset.iteritems():
+        for tag,rules in self.entity_ruleset.iteritems():
             marc_fields = self.marc_record.get_fields(tag)
             for field in marc_fields:
                 person_key = self.__get_or_add_person__(field)
-                if MARCRule.__test_indicators__(rule,field):
-                    raw_value = MARCRule.__get_subfields__(rule,field)
-                    self.redis_server.hset(person_key,
-                                           rule.key,
-                                           raw_value)
+                for name,rule in rules.iteritems():
+                    if MARCRules().__test_indicators__(rule,field):
+                        raw_value = MARCRules().__get_subfields__(rule,field)
+                        self.redis_server.hset(person_key,
+                                               name,
+                                               ''.join(raw_value))
                         
     
                         
@@ -631,43 +631,6 @@ def process_008_date(marc_record,redis_server,date_sort_key):
                 redis_server.zadd(date_sort_key,
                                   int(date_search.groups()[0]),
                                   date2)
-            
-def process_tag_list_as_set(marc_record,
-                            redis_key,
-                            redis_server,
-                            tag_list,
-                            is_sorted=False):
-    """
-    Helper function takes a MARC record, a RDA redis key for the set,
-    and a listing of MARC Field tags and subfields, and adds each
-    TAG-VALUE to the set or sorted set
-
-    :param marc_record: MARC record
-    :param redis_key: Redis key for the set or sorted set
-    :param redis_server: Redis datastore instance
-    :param tag_list: A listing of ('tag','subfield') tuples
-    :param is_sorted: Boolean if sorted set, default is False
-    """
-    for tag in tag_list:
-        all_fields = marc_record.get_fields(tag[0])
-        for field in all_fields:
-            subfields = field.get_subfields(tag[1])
-            for subfield in subfields:
-                if is_sorted is True:
-                    year_search = year_re.search(subfield)
-                    if year_search is not None:
-                        redis_server.zadd(redis_key,
-                                          int(year_search.groups()[0]),
-                                          subfield)
-                else:
-                    redis_server.sadd(redis_key,subfield)
-    
-            
-            
-                
-                                  
-    
-    
 
 def ingest_record(marc_record,redis_server):
 ##    if volatile_redis is None:
@@ -690,10 +653,10 @@ def ingest_record(marc_record,redis_server):
                                                redis_server=redis_server,
                                                root_redis_key="rdaCore")
     item_generator.generate()
-    person_generator = CreateRDACorePersonFromMARC(record=marc_record,
-                                                   redis_server=redis_server,
-                                                   root_redis_key="rdaCore")
-    person_generator.generate()
+    persons_generator = CreateRDACorePersonsFromMARC(record=marc_record,
+                                                     redis_server=redis_server)
+                                                   
+    persons_generator.generate()
     # Set rdaRelationships for entities
     redis_server.hset(item_generator.entity_key,
                       "rdaManifestationExemplified",
@@ -716,10 +679,13 @@ def ingest_record(marc_record,redis_server):
     redis_server.hset(work_generator.entity_key,
                       "rdaManifestationOfWork",
                       manifestation_generator.entity_key)
-    if redis_server.exists(person_generator.entity_key):
-        redis_server.hset(work_generator.entity_key,
-                          "rdaCreator",
-                          person_generator.entity_key)
+    if len(persons_generator.people) > 0:
+        for rda_person_key in persons_generator.people:
+            redis_server.sadd("{0}:rdaCreator".format(work_generator.entity_key),
+                              rda_person_key)
+            redis_server.hset(work_generator.entity_key,
+                              "rdaCreator",
+                              rda_person_key)
     
     
     

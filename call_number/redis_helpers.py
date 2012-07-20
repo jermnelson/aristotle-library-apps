@@ -85,7 +85,6 @@ def get_previous(call_number):
     :rtype list: List of two records 
     """
     current_rank = get_rank(call_number)
-    print("CURRENT RANK = {0} {1}".format(call_number,current_rank))
     if current_rank is None:
         return None
     return get_slice(current_rank-2,current_rank-1)
@@ -139,6 +138,7 @@ def get_slice(start,stop):
         call_number = redis_server.hget('{0}:identifiers'.format(entity_key),
                                         'lccn')
         record = get_record(call_number=call_number)
+        print("Found slice {0}".format(record))
         entities.append(record)
     return entities
 
@@ -159,7 +159,7 @@ def get_record(**kwargs):
 
             record_info['bib_number'] = redis_server.hget(manifestation_key,
                                                           'legacy-bib-number')
-            record_info['rdaTitle'] = ''.join(redis_server.smembers(redis_server.hget(manifestation_key,
+            record_info['rdaTitle'] = u''.join(redis_server.smembers(redis_server.hget(manifestation_key,
                                                                                       'rdaTitle')))
             work_key = redis_server.hget(manifestation_key,
                                          'rdaWorkManifested')
@@ -167,8 +167,13 @@ def get_record(**kwargs):
                                     'rdaCreator'):
                 creator_key = redis_server.hget(work_key,
                                                 'rdaCreator')
-                record_info['author'] = redis_server.hget(creator_key,
-                                                          'rdaPreferredNameForThePerson')
+                creator = redis_server.hget(creator_key,
+                                            'rdaPreferredNameForThePerson')
+                try:
+                    print("Creator is {0}".format(creator.encode'utf-8','xmlcharrefreplace'))
+                except:
+                    print("{0} {1}".format(creator,sys.exc_info()[0]))
+                record_info['author'] = creator.encode('utf-8','xmlcharrefreplace')
             return record_info
     
     

@@ -131,12 +131,15 @@ def browse(request):
     :param request: HTTP Request
     """
     call_number = request.GET['call_number']
-    current = redis_helpers.get_record(call_number)
+    current = redis_helpers.get_record(call_number=call_number)
+    next_recs = redis_helpers.get_next(call_number)
+    previous_recs = redis_helpers.get_previous(call_number)
     context = Context({'aristotle_url':settings.DISCOVERY_RECORD_URL,
                        'current':current,
-                       'next':redis_helpers.get_next(get_callnumber(current)),
-                       'previous':redis_helpers.get_previous(get_callnumber(current))})
+                       'next':next_recs,
+                       'previous':previous_recs})
     widget_template = loader.get_template('call_number/snippets/widget.html')
+    print("After get_template")
     return {'html':widget_template.render(context)}
 
 @json_view

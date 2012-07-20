@@ -31,8 +31,8 @@
       <div class="call-number-entity">{{ current.author }}</div>
      {% endif %}
      <div class="call-number-entity">{{ current.location }} &raquo;
-      {% if current.lccn %}
-       {{ current.lccn }}
+      {% if current.call_number %}
+       {{ current.call_number }}
       {% endif %}
      </div>
    </li>
@@ -45,9 +45,9 @@
   <div id="browse-controls">
    {% comment %}START btn-group DIV{% endcomment %}
    <div class="btn-group">
-     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ previous.0.lccn }}')">&laquo; Previous</a>
+     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ previous.0.call_number }}')">&laquo; Previous</a>
      {% comment %}<a class="btn btn-mini btn-info" href="#">Expand</a>{% endcomment %}
-     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ next.1.lccn }}')">Next &raquo;</a>
+     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ next.1.call_number }}')">Next &raquo;</a>
    {% comment %}END btn-group DIV{% endcomment %}
    </div>
   {% comment %}END browse-controls DIV{% endcomment %}
@@ -58,7 +58,7 @@
 {% comment %}END call-number-browser DIV{% endcomment %}
 </div>
 {% if standalone %}
-<script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.js"></script>
 <script src="{{ STATIC_URL }}call_number/js/call_number.js"></script>
 </body></html>
 {% endif %}
