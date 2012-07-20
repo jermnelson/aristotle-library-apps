@@ -170,7 +170,7 @@ def get_record(**kwargs):
                 creator = redis_server.hget(creator_key,
                                             'rdaPreferredNameForThePerson')
                 try:
-                    print("Creator is {0}".format(creator.encode'utf-8','xmlcharrefreplace'))
+                    print("Creator is {0}".format(creator.encode('utf-8','xmlcharrefreplace')))
                 except:
                     print("{0} {1}".format(creator,sys.exc_info()[0]))
                 record_info['author'] = creator.encode('utf-8','xmlcharrefreplace')
