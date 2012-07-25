@@ -1,0 +1,25 @@
+{% extends 'app-base.html' %}
+
+{% block more-css %}
+ <link href="{{ STATIC_URL }}css/datepicker.css" rel="stylesheet">
+ <script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
+{% endblock %}
+
+{% block body %}
+<br>
+<div class="well">
+			  <div class="input-append date" id="testy" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+				<input class="span2" size="16" type="text" value="12-02-2012" readonly>
+				<span class="add-on"><i class="icon-th"></i></span>
+			  </div>
+          </div>
+<script>
+$(function(){
+	$('#testy').datepicker();
+});
+</script>
+
+
+
+{% endblock %}

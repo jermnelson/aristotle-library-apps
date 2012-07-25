@@ -35,6 +35,28 @@ font-weight: bold;
 color: green;
 }
 
+.articleHorizontalListSmall ul
+{
+margin: 12px;
+padding-left: 0px;
+padding-top: 24px;
+text-align: justify;
+}
+
+.articleHorizontalListSmall ul li
+{
+display: inline;
+padding-right: 5px;
+color: green;
+}
+
+.articleHorizontalListSmall ul li a
+{
+font-weight: bold;
+color: green;
+}
+
 .btn-mini {
     padding: 1px 6px;
 }​
+

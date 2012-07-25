@@ -1,0 +1,92 @@
+{% if standalone %}
+<!DOCTYPE HTML>
+<html>
+<head>
+ <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+ <link href="{{ STATIC_URL }}book_search/css/app.css" rel="stylesheet" type="text/css" />
+ <script src="{{ STATIC_URL }}js/jquery.js"></script>
+ <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-transition.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-alert.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-modal.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-scrollspy.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-tab.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-tooltip.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-popover.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-button.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-collapse.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-carousel.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+ 
+ 
+ <script src="{{ STATIC_URL }}book_search/js/book_search.js"></script>
+</head>
+<body>
+{% endif %}
+
+{% block body %}
+{% comment %}START row DIV{% endcomment %}
+<div class="row">
+ {% comment %}START search DIV{% endcomment %}
+ <div class="span5 search">
+   <form class="form-inline" style="margin:12px;" action="http://discovery.coloradocollege.edu/catalog/search" method="get"  target="_top">
+     <div class="control-group">
+       <label class="control-label" for="searchBookIcon" style="font-size:18px">Find <strong><font color="purple">Books</font></strong></label>
+       <div class="controls">
+         <div class="input-prepend" style="float:left; width:240px;">
+           <span class="add-on"><i class="icon-search"></i></span><input id="searchBookIcon" style="width:200px;" name="q" type="text" size="14" placeholder="Search TIGER!"></input>
+         </div>
+         <input type="hidden" id="search-type" name="search-type" value="search" />
+         <div class="btn-group" style="float:right; padding-right:10px;">
+           <button type="submit" id="searchby" name="btnsubmit" class="btn btn-small" style="width:81px;" value="Keyword">Keyword</button>
+           <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+             <span class="caret"></span>
+           </button>
+           <ul class="dropdown-menu pull-right">
+             <li><a onclick='ChangeSearchBookText("Keyword");' href="#">Keyword</a></li>
+             <li><a onclick='ChangeSearchBookText("Author");' href="#">Author</a></li>
+             <li><a onclick='ChangeSearchBookText("Title");' href="#">Title</a></li>
+             <li><a onclick='ChangeSearchBookText("Subject");' href="#">Subject</a></li>
+             <li><a onclick='ChangeSearchBookText("Journal Title");' href="#">Journal Title</a></li>
+           </ul>
+         </div>
+       </div>
+     </div>
+   </form>
+<script>
+$(document).ready(function() {
+    $("a[rel=tooltip]")
+        .tooltip({
+            offset: 10
+        })
+        .click(function(e) {
+            e.preventDefault()
+        })
+});
+</script>
+   <div class="bookHorizontalListSmall">
+     <ul>
+       <li>&bull; <a target="_top" href="http://discovery.coloradocollege.edu/catalog/advanced">Advanced Book Search</a></li>
+       <li>&bull; <a target="_top" href="http://www.coalliance.org/prospector/">Prospector</a></li>
+       <li>&bull; <a target="_top" href ="http://www.worldcat.org/">WorldCat</a></li>
+       {% if showappicon %}
+       <li><a href="/apps/book_search/" rel="tooltip" target="_top" title="Book Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
+       {% endif %}
+     </ul>
+   </div>
+ {% comment %}END search DIV{% endcomment %}
+ </div>
+{% comment %}END row DIV{% endcomment %}
+</div>
+{% if standalone %}
+</body>
+</html>
+{% endif %}
+{% endblock %}
+
+
+
