@@ -15,15 +15,15 @@
 
 {% block body %}
 {% comment %}START row DIV{% endcomment %}
-<div class="row">
+<div class="{% if dotCMS %} row-fluid {% else %} row {% endif %}">
  {% comment %}START search DIV{% endcomment %}
- <div class="span5 search">
+ <div class="{% if dotCMS %} span12 {% else %} span5 {% endif %} search">
    <form class="form-inline" style="margin:12px;" action="http://discovery.coloradocollege.edu/catalog/search" method="get"  target="_top">
      <div class="control-group">
        <label class="control-label" for="searchBookIcon" style="font-size:18px">Find <strong><font color="purple">Books</font></strong></label>
        <div class="controls">
-         <div class="input-prepend" style="float:left; width:320px;">
-           <span class="add-on"><i class="icon-search"></i></span><input id="searchBookIcon" style="width:280px;" name="q" type="text" size="14" placeholder="Search TIGER!"></input>
+         <div class="input-prepend" style="float:left; {% if dotCMS %} width:300px {% else %} width:320px {% endif %}">
+           <span class="add-on"><i class="icon-search"></i></span><input id="searchBookIcon" style="{% if dotCMS %} width:260px {% else %} width:280px {% endif %}" name="q" type="text" size="14" placeholder="Search TIGER!"></input>
          </div>
          <input type="hidden" id="search-type" name="search-type" value="search" />
          <div class="btn-group" style="float:right; padding-right:10px;">
@@ -31,7 +31,7 @@
            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
              <span class="caret"></span>
            </button>
-           <ul class="dropdown-menu pull-right">
+           <ul class="dropdown-menu {% if dotCMS %} pull-right {% endif %}">
              <li><a onclick='ChangeSearchBookText("Keyword");' href="#">Keyword</a></li>
              <li><a onclick='ChangeSearchBookText("Author");' href="#">Author</a></li>
              <li><a onclick='ChangeSearchBookText("Title");' href="#">Title</a></li>

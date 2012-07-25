@@ -38,4 +38,4 @@ def dotCMS(request):
                               {'book_app':APP,
                                'article_app':article_app,
                                'showappicon':True,
-                               'usedropup':True})
+                               'dotCMS':True})
