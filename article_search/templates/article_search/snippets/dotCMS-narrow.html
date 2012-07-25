@@ -1,0 +1,74 @@
+{% load i18n %}
+{% if standalone %}
+<!DOCTYPE HTML>
+<html>
+<head>
+ <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+ <link href="{{ STATIC_URL }}article_search/css/app.css" rel="stylesheet" type="text/css" />
+ <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
+ <script src="{{ STATIC_URL }}js/jquery.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+ <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+ <script src="{{ STATIC_URL }}article_search/js/article_search.js"></script>
+</head>
+<body>
+{% endif %}
+
+{% block body %}
+{% comment %}START row DIV{% endcomment %}
+<div class="row">
+ {% comment %}START search DIV{% endcomment %}
+ <div class="span5 search">
+  <form class="form-inline" id="searchForm" style="margin:12px;" onsubmit="return OnSubmitForm();" target="_top">
+    <div class="control-group">
+     <label class="control-label" for="searchArticleIcon" style="font-size:18px">Find <strong><font color="green">Articles</font></strong></label>
+     <div class="controls">
+      <div class="input-prepend" style="float:left;width:160px" >
+       <span class="add-on"><i class="icon-search"></i></span><input id="searchArticleIcon" style="width:100px" type="text" placeholder="Search for articles!">
+      </div>
+      <div class="btn-group {% if usedropup %} dropup {% else %} dropdown {% endif %}" style="float:right; padding-right: 10px;">
+       <button type="submit" class="btn btn-small" style="width:155px;" id="dbs" value="Academic Search Complete">Academic Search Complete</button>
+       <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">
+        <span class="caret"></span>
+       </button>
+       <ul class="dropdown-menu pull-right">
+        <li><a onclick='ChangeSearchArticlesText("Academic Search Complete");' href="#">Academic Search Complete</a></li>
+        <li><a onclick='ChangeSearchArticlesText("JSTOR");' href="#">JSTOR</a></li>
+        <li><a onclick='ChangeSearchArticlesText("Google Scholar");' href="#">Google Scholar</a></li>
+       </ul>
+      </div>
+     </div>
+    </div>
+   </form>
+<script>
+$(document).ready(function() {
+    $("a[rel=tooltip]")
+        .tooltip({
+            offset: 10
+        })
+        .click(function(e) {
+            e.preventDefault()
+        })
+});
+</script>
+   <div class="articleHorizontalListSmall">
+     <ul>
+       <li>&bull; <a target="_top" href="http://goldrush.coalliance.org/index.cfm?inst_code=001_CCL">Journals</a></li>
+       <li>&bull; <a target="_top" href="http://www2.coloradocollege.edu/library/index.php/collections/databases#subjects">Databases by Subject</a></li>
+       <li>&bull; <a target="_top" href ="http://coloradocollege.libguides.com/databases">Databases by Title</a></li>
+       {% if showappicon %}
+       <li id="tooltiplink"><a href="/apps/article_search/" target="_top" rel="tooltip" title="Article Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
+       {% endif %}
+     </ul>
+   </div>
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+{% comment %}END row DIV{% endcomment %}
+</div>
+{% if standalone %}
+</body>
+</html>
+{% endif %}
+{% endblock %}

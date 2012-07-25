@@ -39,3 +39,16 @@ def dotCMS(request):
                                'article_app':article_app,
                                'showappicon':True,
                                'usedropup':True})
+
+def dotCMSnarrow(request):
+    """
+    Returns rendered book and article search in the same widget
+    view, kludge to work in dotCMS
+    """
+    return direct_to_template(request,
+                              'snippets/dotCMS-narrow.html',
+                              {'book_app':APP,
+                               'article_app':article_app,
+                               'showappicon':False,
+                               'usedropup':True})
+

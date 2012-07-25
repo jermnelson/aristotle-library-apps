@@ -33,3 +33,25 @@ color: purple;
 font-weight: bold;
 color: purple;
 }
+
+.bookHorizontalListSmall ul
+{
+margin: 12px;
+padding-left: 0px;
+padding-top: 24px;
+}
+
+.bookHorizontalListSmall ul li
+{
+display: inline;
+padding-right: 10px;
+color: purple;
+}
+
+.bookHorizontalListSmall ul li a
+{
+font-weight: bold;
+color: purple;
+}
+
+
