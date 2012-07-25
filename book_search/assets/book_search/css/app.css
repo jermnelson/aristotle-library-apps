@@ -33,3 +33,7 @@ color: purple;
 font-weight: bold;
 color: purple;
 }
+
+.btn-mini {
+    padding: 1px 6px
+}​
