@@ -138,7 +138,6 @@ def get_slice(start,stop):
         call_number = redis_server.hget('{0}:identifiers'.format(entity_key),
                                         'lccn')
         record = get_record(call_number=call_number)
-        print("Found slice {0}".format(record))
         entities.append(record)
     return entities
 
@@ -170,10 +169,11 @@ def get_record(**kwargs):
                 creator = redis_server.hget(creator_key,
                                             'rdaPreferredNameForThePerson')
                 try:
-                    print("Creator is {0}".format(creator.encode('utf-8','xmlcharrefreplace')))
+                    print("Creator is {0}".format(creator.decode('utf-8','xmlcharrefreplace')))
                 except:
+                    print("ERROR trying to extract creator")
                     print("{0} {1}".format(creator,sys.exc_info()[0]))
-                record_info['author'] = creator.encode('utf-8','xmlcharrefreplace')
+                record_info['author'] = creator.decode('utf-8','ignore')
             return record_info
     
     

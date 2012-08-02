@@ -30,25 +30,8 @@ redis_server = redis.StrictRedis(host=REDIS_HOST,
     
 def get_facets(entity_name):
     facets = {"label":entity_name,
-              "count":redis_server.get("global rda:{0}s".format(entity_name))}
+              "count":redis_server.get("global:rdaCore:{0}".format(entity_name))}
     return facets
-                                      
-
-def search(query):
-    set_rank = redis_server.zrank('call-number-sorted-search-set',query)
-    output = {'result':[]}
-    for row in redis_server.zrange('call-number-sorted-search-set',set_rank,-1):
-        if row[-1] == "*":
-            call_number = row[:-1]
-            record = get_record(call_number)
-            output['result'].append(call_number)
-            output['record'] = record
-            output['discovery_url'] = '%s%s' % (settings.DISCOVERY_RECORD_URL,
-                                                record['bib_number'])
-            return output
-        else:
-            output['result'].append(row)
-    return output
 
     
     
