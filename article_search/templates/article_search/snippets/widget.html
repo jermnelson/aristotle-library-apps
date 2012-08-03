@@ -46,8 +46,8 @@ $(document).ready(function() {
         .tooltip({
             offset: 10
         })
-        .click(function(e) {
-            e.preventDefault()
+        .click(function() {
+            $("#articleAppLink").tooltip("hide")
         })
 });
 </script>
@@ -57,7 +57,7 @@ $(document).ready(function() {
        <li>&bull; <a target="_top" href="http://www2.coloradocollege.edu/library/index.php/collections/databases#subjects">Databases by Subject</a></li>
        <li>&bull; <a target="_top" href ="http://coloradocollege.libguides.com/databases">Databases by Title</a></li>
        {% if showappicon %}
-       <li id="tooltiplink"><a href="/apps/article_search/" target="_top" rel="tooltip" title="Article Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
+       <li id="tooltiplink"><a href="/apps/article_search/" id="articleAppLink" target="_top" rel="tooltip" title="Article Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
        {% endif %}
      </ul>
    </div>

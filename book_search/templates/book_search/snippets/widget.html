@@ -48,8 +48,8 @@ $(document).ready(function() {
         .tooltip({
             offset: 10
         })
-        .click(function(e) {
-            e.preventDefault()
+        .click(function() {
+            $("#bookAppLink").tooltip("hide")
         })
 });
 </script>
@@ -59,7 +59,7 @@ $(document).ready(function() {
        <li>&bull; <a target="_top" href="http://www.coalliance.org/prospector/">Prospector</a></li>
        <li>&bull; <a target="_top" href ="http://www.worldcat.org/">WorldCat</a></li>
        {% if showappicon %}
-       <li><a class="btn btn-mini" href="/apps/book_search/" rel="tooltip" target="_top" title="Book Search App"><i class="icon-share"></i></a></li>
+       <li><a class="btn btn-mini" id="bookAppLink" href="/apps/book_search/" rel="tooltip" target="_top" title="Book Search App"><i class="icon-share"></i></a></li>
        {% endif %}
      </ul>
    </div>
