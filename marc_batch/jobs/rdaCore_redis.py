@@ -12,11 +12,9 @@ from call_number.redis_helpers import ingest_call_numbers
 
 try:
     import aristotle.settings as settings
-    REDIS_HOST = settings.REDIS_ACCESS_HOST
-    REDIS_PORT = settings.REDIS_ACCESS_PORT
-    TEST_DB = settings.REDIS_TEST
-    volatile_redis = redis.StrictRedis(host=settings.REDIS_PRODUCTIVITY_HOST,
-                                       port=settings.REDIS_PRODUCTIVITY_PORT)
+    REDIS_HOST = settings.REDIS_MASTER_HOST
+    REDIS_PORT = settings.REDIS_MASTER_PORT
+                                
 except:
     REDIS_HOST = '127.0.0.1'
     REDIS_PORT = 6379
@@ -633,10 +631,6 @@ def process_008_date(marc_record,redis_server,date_sort_key):
                                   date2)
 
 def ingest_record(marc_record,redis_server):
-##    if volatile_redis is None:
-##        print("Volatile Redis not available")
-##        return None
-##    redis_server = volatile_redis
     work_generator = CreateRDACoreWorkFromMARC(record=marc_record,
                                                redis_server=redis_server,
                                                root_redis_key="rdaCore")
@@ -699,4 +693,4 @@ def ingest_records(marc_file_location):
             sys.stderr.write(".")
         if not i%10000:
             sys.stderr.write(str(i))
-        ingest_record(record)
+        ingest_record(record,redis_server)
