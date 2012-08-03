@@ -13,12 +13,9 @@ from django.utils.translation import ugettext
 import aristotle.settings as settings
 import redis_helpers,sys,logging
 import redis_helpers 
-from app_settings import APP,SEED_RECORD_ID
+from app_settings import APP,SEED_RECORD_ID,REDIS_SERVER
 
-##redis_server = redis.StrictRedis(host=settings.REDIS_ACCESS_HOST,
-##                                 port=settings.REDIS_ACCESS_PORT)
-
-redis_server = redis.StrictRedis()
+redis_server = REDIS_SERVER
 
 def setup_seed_rec():
     """
@@ -38,9 +35,9 @@ def app(request):
     """
     try:
         if request.POST.has_key('call_number'):
-            current = redis_helpers.get_record(request.POST['call_number'])
+            current = redis_helpers.get_record(call_number=request.POST['call_number'])
         elif request.GET.has_key('call_number'):
-            current = redis_helpers.get_record(request.GET['call_number'])
+            current = redis_helpers.get_record(call_number=request.GET['call_number'])
         if len(current) < 1:
             current = setup_seed_rec()
     except:
@@ -168,7 +165,7 @@ def widget(request):
             standalone = request.GET['standalone']
          if request.GET.has_key('call_number'):
             call_number = request.GET['call_number']
-    current = redis_helpers.get_record(call_number)
+    current = redis_helpers.get_record(call_number=call_number)
     return direct_to_template(request,
                               'call_number/snippets/widget.html',
                               {'aristotle_url':settings.DISCOVERY_RECORD_URL,

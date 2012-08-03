@@ -3,29 +3,9 @@
 """
 import pymarc,redis,re
 import logging,sys
-from app_settings import APP,SEED_RECORD_ID
-try:
-    import aristotle.settings as settings
-    REDIS_HOST = settings.REDIS_ACCESS_HOST
-    REDIS_PORT = settings.REDIS_ACCESS_PORT
-    CALL_NUMBER_DB = settings.CALL_NUMBER_DB
-    volatile_redis = redis.StrictRedis(host=settings.REDIS_PRODUCTIVITY_HOST,
-                                       port=settings.REDIS_PRODUCTIVITY_PORT,
-                                       db=CALL_NUMBER_DB)
+from app_settings import APP,SEED_RECORD_ID,REDIS_SERVER
 
-except:
-    # Setup for local development
-##    REDIS_HOST = '172.25.1.108'
-    REDIS_HOST = '127.0.0.1'
-    REDIS_PORT = 6379
-    CALL_NUMBER_DB = 4
-    volatile_redis = None
-    
-
-##redis_server = redis.StrictRedis(host=REDIS_HOST,
-##                                 port=REDIS_PORT)
-redis_server = redis.StrictRedis()
-
+redis_server = REDIS_SERVER
 
 english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
                     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
