@@ -168,11 +168,11 @@ def get_record(**kwargs):
                                                 'rdaCreator')
                 creator = redis_server.hget(creator_key,
                                             'rdaPreferredNameForThePerson')
-                try:
-                    print("Creator is {0}".format(creator.decode('utf-8','xmlcharrefreplace')))
-                except:
-                    print("ERROR trying to extract creator")
-                    print("{0} {1}".format(creator,sys.exc_info()[0]))
+##                try:
+##                    print("Creator is {0}".format(creator.decode('utf-8','xmlcharrefreplace')))
+##                except:
+##                    print("ERROR trying to extract creator")
+##                    print("{0} {1}".format(creator,sys.exc_info()[0]))
                 record_info['author'] = creator.decode('utf-8','ignore')
             return record_info
     
@@ -320,7 +320,6 @@ def lccn_set(identifiers_key,
                       'lccn',
                       call_number)
     normalized_call_number = lccn_normalize(call_number)
-    print("{0}".format(call_number))
     redis_server.hset(identifiers_key,
                       'lccn-normalized',
                       normalized_call_number)

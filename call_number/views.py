@@ -139,7 +139,6 @@ def browse(request):
                        'next':next_recs,
                        'previous':previous_recs})
     widget_template = loader.get_template('call_number/snippets/widget.html')
-    print("After get_template")
     return {'html':widget_template.render(context)}
 
 @json_view
