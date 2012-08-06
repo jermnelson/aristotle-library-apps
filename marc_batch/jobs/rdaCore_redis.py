@@ -682,9 +682,6 @@ def ingest_record(marc_record,redis_server):
                               rda_person_key)
     
     
-    
-    
-
 
 def ingest_records(marc_file_location):
     marc_reader = pymarc.MARCReader(open(marc_file_location,"rb"))
@@ -694,3 +691,22 @@ def ingest_records(marc_file_location):
         if not i%10000:
             sys.stderr.write(str(i))
         ingest_record(record,redis_server)
+
+def ingest_directory(marc_directory):
+    walker = os.walk(marc_directory)
+    all_files = next(walker)[2]
+    begin = datetime.datetime.now()
+    print("Ingesting all mrc files in {0}".format(marc_directory))
+    for filename in all_files:
+        ext = os.path.splitext(filename)[1]
+        if ext == '.mrc':
+            start = datetime.datetime.now()
+            ingest_records(os.path.join(marc_directory,filename))
+            end = datetime.datetime.now()
+            elapsed = end - start
+            print("\t{0} finished ingesting, total time {1}".format(filename,
+                                                                    elapsed.total_seconds()))
+    finished = datetime.datetime.now()
+    total_time = finished - begin
+    print("Finished ingesting all mrc files for {0} in {1} minutes".format(marc_file_directory,
+                                                                           total_time.total_seconds()/60.0))
