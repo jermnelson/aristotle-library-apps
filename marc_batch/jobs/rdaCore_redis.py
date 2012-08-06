@@ -5,7 +5,7 @@
 """
 __author__ = 'Jeremy Nelson'
 import pymarc,redis,logging,sys
-import re,datetime,copy
+import re,datetime,copy,os
 from marc_batch.fixures import json_loader
 from call_number.redis_helpers import ingest_call_numbers
 
@@ -333,8 +333,8 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         #!! Expressions for each carrier type.
         if self.redis_server.exists(carrier_value):
             for value in self.redis_server.smembers(carrier_value):
-                if len(value) != 2:
-                    raise ValueError("Carrier Type codes should only be two chars instead of {0}".format(len(value)))
+                if len(value) < 2:
+                    raise ValueError("Carrier Type codes should be greater than 2 chars instead of {0}".format(len(value)))
                 position0,position1 = value[0],value[1]
                 if carrier_types_dict.has_key(position0):
                     if carrier_types_dict[position0].has_key(position1):
