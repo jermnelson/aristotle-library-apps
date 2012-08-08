@@ -13,12 +13,9 @@ from django.utils.translation import ugettext
 import aristotle.settings as settings
 import redis_helpers,sys,logging
 import redis_helpers 
-from app_settings import APP,SEED_RECORD_ID
+from app_settings import APP,SEED_RECORD_ID,REDIS_SERVER
 
-##redis_server = redis.StrictRedis(host=settings.REDIS_ACCESS_HOST,
-##                                 port=settings.REDIS_ACCESS_PORT)
-
-redis_server = redis.StrictRedis()
+redis_server = REDIS_SERVER
 
 def setup_seed_rec():
     """

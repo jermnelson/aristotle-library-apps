@@ -158,10 +158,10 @@ INSTALLED_APPS = (
     'book_search',
     'call_number',
     'hours',
-    'marc_batch',
-    'orders',
+#    'marc_batch',
+#    'orders',
     'portfolio',
-    'RDACore',
+#    'RDACore',
     'reserve_search',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
