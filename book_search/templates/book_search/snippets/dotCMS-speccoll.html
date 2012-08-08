@@ -1,8 +1,10 @@
+{% load i18n %}
 {% if standalone %}
 <!DOCTYPE HTML>
 <html>
 <head>
  <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
  <link href="{{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet">
  <link href="{{ STATIC_URL }}book_search/css/app.css" rel="stylesheet" type="text/css" />
  <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
@@ -17,13 +19,13 @@
 {% comment %}START row DIV{% endcomment %}
 <div class="row">
  {% comment %}START search DIV{% endcomment %}
- <div class="span5 search">
-   <form class="form-inline" style="margin:12px;" action="http://discovery.coloradocollege.edu/catalog/search" method="get"  target="_top">
+ <div class="span4 search">
+   <form class="form-inline" id="searchForm" style="margin:12px;" action="http://discovery.coloradocollege.edu/catalog/search" method="get"  target="_top">
      <div class="control-group">
-       <label class="control-label" for="searchBookIcon" style="font-size:18px">Find <strong><font color="purple">Books</font></strong></label>
+       <label class="control-label" for="searchBookIcon" style="font-size:18px">Find <strong><font color="purple">Books</font></strong> in Special Collections</label>
        <div class="controls">
-         <div class="input-prepend" style="float:left; width:200px;">
-           <input id="searchBookIcon" style="width:200px;" name="q" type="text" size="14" placeholder="Search TIGER!"></input>
+         <div class="input-prepend" style="float:left; width:300px">
+           <span class="add-on"><i class="icon-search"></i></span><input id="searchBookIcon" style="width:260px" name="q" type="text" size="14" placeholder="Search TIGER!"></input>
          </div>
          <input type="hidden" id="search-type" name="search-type" value="search" />
          <div class="btn-group" style="float:right; padding-right:10px;">
@@ -48,18 +50,18 @@ $(document).ready(function() {
         .tooltip({
             offset: 10
         })
-        .click(function(e) {
-            e.preventDefault()
+        .click(function() {
+            $("#bookAppLink").tooltip("hide")
         })
 });
 </script>
-   <div class="bookHorizontalListSmall">
+   <div class="bookHorizontalList">
      <ul>
-       <li>&bull; <a target="_top" href="http://discovery.coloradocollege.edu/catalog/advanced">Advanced Search</a></li>
+       <li>&bull; <a target="_top" href="http://discovery.coloradocollege.edu/catalog/advanced">Advanced Book Search</a></li>
        <li>&bull; <a target="_top" href="http://www.coalliance.org/prospector/">Prospector</a></li>
        <li>&bull; <a target="_top" href ="http://www.worldcat.org/">WorldCat</a></li>
        {% if showappicon %}
-       <li><a href="/apps/book_search/" rel="tooltip" target="_top" title="Book Search App" class="btn btn-mini"><i class="icon-share"></i></a></li>
+       <li><a class="btn btn-mini" id="bookAppLink" href="/apps/book_search/" rel="tooltip" target="_top" title="Book Search App"><i class="icon-share"></i></a></li>
        {% endif %}
      </ul>
    </div>

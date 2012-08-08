@@ -40,6 +40,16 @@ def dotCMS(request):
                                'showappicon':True,
                                'dotCMS':True})
 
+def dotCMSspeccoll(request):
+    """
+    Returns rendered html snippet of book_search widget
+    """
+    return direct_to_template(request,
+                              'book_search/snippets/dotCMS-speccoll.html',
+                              {'app':APP,
+                               'standalone':True,
+                               'showappicon':False})
+
 def dotCMSnarrow(request):
     """
     Returns rendered book and article search in the same widget
@@ -51,3 +61,4 @@ def dotCMSnarrow(request):
                                'article_app':article_app,
                                'showappicon':False,
                                'usedropup':True})
+

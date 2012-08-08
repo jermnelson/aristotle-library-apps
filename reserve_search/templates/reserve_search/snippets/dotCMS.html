@@ -4,15 +4,11 @@
 <html>
 <head>
  <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
- <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
- <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
+ <link href="{{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet">
  <link href="{{ STATIC_URL }}reserve_search/css/app.css" rel="stylesheet" type="text/css" />
  <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
  <script src="{{ STATIC_URL }}js/jquery.js"></script>
  <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
- <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
- <script src="{{ STATIC_URL }}js/bootstrap-tooltip.js"></script>
- <script src="{{ STATIC_URL }}js/bootstrap-popover.js"></script>
  <script src="{{ STATIC_URL }}reserve_search/js/reserve_search.js"></script>
 </head>
 <body>
@@ -27,8 +23,8 @@
     <div class="control-group">
      <label class="control-label" for="searchIcon" style="font-size:18px">Find <strong><font color="blue">Course Reserves</font></strong></label>
      <div class="controls">
-      <div class="input-prepend" style="float:left;width:220px" >
-       <span class="add-on"><i class="icon-search"></i></span><input id="searchArticleIcon" style="width:181px" type="text" placeholder="Search for reserves!">
+      <div class="input-prepend" style="float:left;width:200px" >
+       <span class="add-on"><i class="icon-search"></i></span><input id="searchArticleIcon" style="width:161px" type="text" placeholder="Search for reserves!">
       </div>
       <div class="btn-group {% if usedropup %} dropup {% else %} dropdown {% endif %}" style="float:right; padding-right: 10px;">
        <button type="submit" class="btn btn-small" style="width:100px;" id="dbs" value="Course Number">Course Number</button>

@@ -38,4 +38,4 @@ def dotCMS(request):
                               'reserve_search/snippets/dotCMS.html',
                               {'app':APP,
                                'standalone':True,
-                               'showappicon':True})
+                               'showappicon':False})

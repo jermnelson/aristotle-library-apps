@@ -1,16 +1,14 @@
 {% extends 'app-base.html' %}
 {% load i18n %}
 {% block more-css %}
- <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
- <link href="{{ STATIC_URL }}css/bootstrap.min.responsive" rel="stylesheet">
  <link href="{{ STATIC_URL }}reserve_search/css/app.css" rel="stylesheet" type="text/css" />
- <script src="{{ STATIC_URL }}js/less-1.2.2.min.js"></script>
- <script src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script>
- <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
- <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
- <script src="{{ STATIC_URL }}reserve_search/js/reserve_search.js"></script>
 {% endblock %}
 
 {% block body %}
 {% include 'reserve_search/snippets/widget.html' %}
 {% endblock %}
+
+{% block more-js %}
+ <script src="{{ STATIC_URL }}reserve_search/js/article_search.js"></script>
+{% endblock %}
+
