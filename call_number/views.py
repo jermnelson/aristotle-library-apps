@@ -33,18 +33,17 @@ def app(request):
     """
     Returns responsive app view for the Call Number App
     """
+
     try:
-        if request.POST.has_key('call_number'):
-            current = redis_helpers.get_record(request.POST['call_number'])
-        elif request.GET.has_key('call_number'):
-            current = redis_helpers.get_record(request.GET['call_number'])
-        if len(current) < 1:
-            current = setup_seed_rec()
+        current = redis_helpers.get_record(call_number=request.REQUEST.get('call_number'))
     except:
+        print("{0}".format(sys.exc_info()))
         current = setup_seed_rec()
     call_number = current.get('call_number')
-    next_recs = redis_helpers.get_next(call_number)
-    previous_recs = redis_helpers.get_previous(call_number)
+    next_recs = redis_helpers.get_next(call_number,
+                                      call_number_type=current['type_of'])
+    previous_recs = redis_helpers.get_previous(call_number,
+                                               call_number_type=current['type_of'])
     return direct_to_template(request,
                               'call_number/app.html',
                              {'app':APP,

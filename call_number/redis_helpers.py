@@ -15,20 +15,7 @@ english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
 #lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\w{0,1}\d*)\s*(?P<decimal>[.|\w]*\d*)\s*(?P<cutter1alpha>\w*)\s*(?P<last>\d*)")
 lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\s*(?P<cutter1>[.|\w]*\d*)\s*(?P<cutter2>\w*)\s*(?P<last>\d*)")
-
-##def generate_search_set(call_number):
-##    if volatile_redis is None:
-##        return None
-##    redis_server = volatile_redis
-##    sections = call_number.split(".")
-##    first_cutter = sections[0].strip()
-##    for i in range(0,len(first_cutter)):
-##        redis_server.zadd('call-number-sorted-search-set',0,first_cutter[0:i])
-##    redis_server.zadd('call-number-sorted-search-set',0,first_cutter)
-##    redis_server.zadd('call-number-sorted-search-set',0,'%s*' % call_number)   
-
-
-
+   
 def get_all(call_number,slice_size=10):
     """
     Function returns a list of call numbers with the param centered between
@@ -56,67 +43,91 @@ def get_all(call_number,slice_size=10):
         
 
 
-def get_previous(call_number):
+def get_previous(call_number,
+                 call_number_type='lccn'):
     """
     Function returns a list of two records that preceed the current
     param call_number using the get_slice method.
 
     :param call_number: Call Number String
+    :param call_number_type: Type of call number (lccn, sudoc, or local)
     :rtype list: List of two records 
     """
-    current_rank = get_rank(call_number)
+    current_rank = get_rank(call_number,
+                            call_number_type=call_number_type)
     if current_rank is None:
         return None
-    return get_slice(current_rank-2,current_rank-1)
+    return get_slice(current_rank-2,
+                     current_rank-1,
+                     call_number_type)
 
-def get_next(call_number):
+def get_next(call_number,
+             call_number_type='lccn'):
     """
     Function returns a list of two records that follow the current
     param call_number using the get_slice method.
 
     :param call_number: Call Number String
+    :param call_number_type: Type of call number (lccn, sudoc, or local)
     :rtype list: List of two records 
     """
-    current_rank = get_rank(call_number)
+    current_rank = get_rank(call_number,
+                            call_number_type=call_number_type)
     if current_rank is None:
         return None
-    return get_slice(current_rank+1,current_rank+2)
+    return get_slice(current_rank+1,
+                     current_rank+2,
+                     call_number_type)
 
-def get_rank(call_number):
+def get_rank(call_number,
+             call_number_type='lccn'):
     """
     Function takes a call_number, iterates through Redis datastore hash values
     for lccn, sudoc, and local, and if call_number is present returns the
     rank from the sorted set.
 
     :param call_number: Call Number String
+    :param call_number_type: Type of call number (lccn, sudoc, or local)
     :rtype integer or None:
     """
-    for hash_root in ['lccn','sudoc','local']:
-        if redis_server.hexists("{0}-hash".format(hash_root),
-                                call_number):
-            entity_key = redis_server.hget("{0}-hash".format(hash_root),
-                                           call_number)
-            entity_idents = redis_server.hgetall("{0}:identifiers".format(entity_key))
-            if entity_idents.has_key("{0}-normalized".format(hash_root)):
-                current_rank = redis_server.zrank('{0}-sort-set'.format(hash_root),
-                                                  entity_idents["{0}-normalized".format(hash_root)])
-                return current_rank
+    print("{0}-hash {1}".format(call_number_type,call_number))
+    if redis_server.hexists("{0}-hash".format(call_number_type),
+                            call_number):
+        entity_key = redis_server.hget("{0}-hash".format(call_number_type),
+                                       call_number)
+        entity_idents = redis_server.hgetall("{0}:identifiers".format(entity_key))
+        if entity_idents.has_key("{0}-normalized".format(call_number_type)):
+            current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
+                                              entity_idents["{0}-normalized".format(call_number_type)])
+        else:
+            current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
+                                              entity_idents[call_number_type])
+        return current_rank
             
 
-def get_slice(start,stop):
+def get_slice(start,stop,
+              call_number_type='lccn'):
     """
     Function gets a list of entities saved as Redis records
 
-    :param start: Beginning of 
+    :param start: Beginning of slice of sorted call number
     :param stop: End of slice of sorted call numbers
+    :param call_number_type: Type of call number (lccn, sudoc, or local), defaults
+                             to lccn.
     :rtype: List of entities saved as Redis records
     """
     entities = []
-    record_slice = redis_server.zrange('lccn-sort-set',start,stop)
+    record_slice = redis_server.zrange('{0}-sort-set'.format(call_number_type),
+                                       start,
+                                       stop)
     for number in record_slice:
-        entity_key = redis_server.hget('lccn-normalized-hash',number)
+        if call_number_type == 'lccn':
+            entity_key = redis_server.hget('lccn-normalized-hash',number)
+        else:
+            entity_key = redis_server.hget('{0}-hash'.format(call_number_type),
+                                           number)
         call_number = redis_server.hget('{0}:identifiers'.format(entity_key),
-                                        'lccn')
+                                        call_number_type)
         record = get_record(call_number=call_number)
         entities.append(record)
     return entities
@@ -127,19 +138,16 @@ def get_record(**kwargs):
     for hash_base in ['lccn','sudoc','local']:
         hash_name = '{0}-hash'.format(hash_base)
         if redis_server.hexists(hash_name,call_number):
+            record_info['type_of'] = hash_base
             record_key = redis_server.hget(hash_name,call_number)
-            if hash_base == 'lccn':
-                manifestation_key = redis_server.hget(record_key,
-                                                      'rdaManifestationOfExpression')
-                
-            else:
-                manifestation_key = record_key
-                
-
+            manifestation_key = redis_server.hget(record_key,
+                                                  'rdaManifestationOfExpression')
             record_info['bib_number'] = redis_server.hget(manifestation_key,
                                                           'legacy-bib-number')
-            record_info['rdaTitle'] = u''.join(redis_server.smembers(redis_server.hget(manifestation_key,
-                                                                                      'rdaTitle')))
+            title_list = list(redis_server.smembers(redis_server.hget(manifestation_key,
+                                                                 'rdaTitle')))
+            title_list.reverse()
+            record_info['rdaTitle'] = u''.join([x.decode('utf-8','ignore') for x in title_list])
             work_key = redis_server.hget(manifestation_key,
                                          'rdaWorkManifested')
             if redis_server.hexists(work_key,
