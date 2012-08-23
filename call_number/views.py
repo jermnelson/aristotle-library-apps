@@ -138,6 +138,41 @@ def browse(request):
     return {'html':widget_template.render(context)}
 
 @json_view
+def term_search(request):
+    """
+     JSON view that outputs a list of record's legacy bib numbers in JSON
+
+    :param request: Djagno HTTP Request
+    """
+    call_number=request.REQUEST.get('call_number')
+    if request.REQUEST.has_key("type"):
+        call_number_type = request.REQUEST.get('type')
+    else:
+        call_number_type = "lccn"
+    if request.REQUEST.has_key("slice-size"):
+        slice_size = int(request.REQUEST.get('slice-size'))
+    else:
+        slice_size = 2 # Default assumes browse display of two results
+    current = redis_helpers.get_record(call_number=call_number)
+    bib_numbers = []
+    if current is not None:
+        bib_numbers.append(current.get('bib_number'))
+        current_rank = redis_helpers.get_rank(call_number,
+                                              call_number_type=call_number_type)
+        
+        next_recs = redis_helpers.get_slice(current_rank+1,
+                                            current_rank+slice_size,
+                                            call_number_type)
+        for row in next_recs:
+            bib_numbers.append(row.get('bib_number'))
+        previous_recs = redis_helpers.get_previous(call_number,
+                                                   call_number_type=call_number_type)
+        for row in previous_recs:
+            bib_numbers.insert(0,row.get('bib_number'))
+    return {'bib_numbers':bib_numbers}
+
+
+@json_view
 def typeahead_search(request):
     """
     JSON view for typeahead search on call number
