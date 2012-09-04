@@ -18,7 +18,7 @@ try:
 except:
     REDIS_HOST = '127.0.0.1'
     REDIS_PORT = 6379
-    REDIS_TEST_DB = 3
+    REDIS_TEST_DB = 1
 
 # RDA Core should reside on primary DB of 0
 redis_server = redis.StrictRedis(host=REDIS_HOST,
@@ -307,6 +307,7 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
         super(CreateRDACoreManifestationFromMARC,self).generate()
         self.__carrier_type__()
         self.__identifiers__()
+        self.__title__()
 
     def __call_number_app__(self):
         """
@@ -402,7 +403,40 @@ class CreateRDACoreManifestationFromMARC(CreateRDACoreEntityFromMARC):
                                            rule['label'],
                                            ''.join(field.get_subfields(rule['subfields'][0])))
                                                                       
-                                                                     
+    def __title__(self):
+        """
+        Extracts and creates a Manifestation rdaTitle with values extracted from
+        the MARC record.
+        """
+        title_rules = MARCRules(json_file='marc-rda-title')
+        title_rules.load_marc(self.marc_record)
+        title_key = "{0}:rdaTitle".format(self.entity_key)
+        self.redis_server.hset(self.entity_key,"rdaTitle",title_key)
+        for element,values in title_rules.json_results.iteritems():
+            title_element_value = ''.join(values)
+            # Checks and removes trailing /
+            if len(title_element_value) > 0 and title_element_value[-1] == "/":
+                title_element_value = title_element_value[:-1].strip()
+            self.redis_server.hset(title_key,element,title_element_value)
+        # Creates a label for the Manifestation Title
+        if self.redis_server.hexists(title_key,"rdaRemainingTitle"):
+            title_pipe = self.redis_server.pipeline()
+            title_pipe.hget(title_key,"rdaTitleProper")
+            title_pipe.hget(title_key,"rdaRemainingTitle")
+            title_label = ' '.join(title_pipe.execute())
+            self.redis_server.hset(title_key,
+                                   'label',
+                                   title_label)
+        else:
+            self.redis_server.hset(title_key,
+                                   'label',
+                                   self.redis_server.hget(title_key,
+                                                          "rdaTitleProper"))
+        
+        
+                                   
+            
+            
                                 
                                                    
 class CreateRDACorePersonsFromMARC(object):
@@ -683,7 +717,7 @@ def ingest_record(marc_record,redis_server):
     
     
 
-def ingest_records(marc_file_location):
+def ingest_records(marc_file_location,redis_server=redis_server):
     marc_reader = pymarc.MARCReader(open(marc_file_location,"rb"))
     for i,record in enumerate(marc_reader):
         if not i%1000:

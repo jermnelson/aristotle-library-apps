@@ -1,0 +1,14 @@
+{
+   "rdaTitleProper": {
+      "245": {
+         "subfields": [
+           "a"]
+      }
+   },
+   "rdaRemainingTitle": {
+      "245": {
+         "subfields": [
+           "b"]
+      }
+   }
+}

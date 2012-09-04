@@ -37,29 +37,31 @@ def add_transaction(regex_result,bib_number,parent_key):
     """ 
     # Creates a transaction to associate with invoice
     transaction_key = 'transaction:%s' % redis_server.incr('global:transaction')
+    transaction_pipeline = redis_server.pipeline()
     # Converts dates to python datetimes and set in redis
     transaction_date = datetime.datetime.strptime(regex_result.get('date'),
                                                   '%m-%d-%y')
-    redis_server.hset(transaction_key,'date',transaction_date)
+    transaction_pipeline.hset(transaction_key,'date',transaction_date)
     if not redis_server.hexists(parent_key,'transaction-date'):
-        redis_server.hset(parent_key,
-                          'transaction-date',
-                          transaction_date)
+        transaction_pipeline.hset(parent_key,
+                                  'transaction-date',
+                                  transaction_date)
     # Sets date whent the transaction was paid on
     paid_on_date = datetime.datetime.strptime(regex_result.get('paid'),
                                               '%m-%d-%y')
-    redis_server.hset(transaction_key,'paid_on',paid_on_date)
+    transaction_pipeline.hset(transaction_key,'paid_on',paid_on_date)
     # Sets bib number and amount to transaction hash
-    redis_server.hset(transaction_key,'bib_number',bib_number)
-    redis_server.hset(transaction_key,'amount',regex_result.get('amount'))
+    transaction_pipeline.hset(transaction_key,'bib_number',bib_number)
+    transaction_pipeline.hset(transaction_key,'amount',regex_result.get('amount'))
     # Add to entity:transactions sorted set by date
-    redis_server.zadd('%s:transactions' % parent_key,
-                      transaction_date.toordinal(),
-                      transaction_key)
+    transaction_pipeline.zadd('%s:transactions' % parent_key,
+                              transaction_date.toordinal(),
+                              transaction_key)
     # Add to orders sorted set
-    redis_server.zadd('orders',
-                      transaction_date.toordinal(),
-                      parent_key)
+    transaction_pipeline.zadd('orders',
+                              transaction_date.toordinal(),
+                              parent_key)
+    transaction_pipeline.execute()
     return transaction_key
 
 def get_entity(**kwargs):

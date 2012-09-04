@@ -16,7 +16,7 @@ def default(request):
     :param request: HTTP Request
     """
     facets = []
-    for entity in ["Work","Expression","Manifestation","Items"]:
+    for entity in ["Work","Expression","Manifestation","Item","Person","CorporateBody"]:
         
         facets.append({"name":entity,
                        "facets":get_facets(entity)})
