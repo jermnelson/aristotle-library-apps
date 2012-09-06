@@ -45,6 +45,7 @@ class ybp_ebl(MARCModifier):
         marc_record = self.validateSeries(marc_record)
         marc_record = self.validate506(marc_record)
         marc_record = self.validate538s540(marc_record)
+        marc_record = self.validate710(marc_record)
         marc_record = self.validate776(marc_record)
         marc_record = self.validate856(marc_record)
         return marc_record
@@ -71,7 +72,7 @@ class ybp_ebl(MARCModifier):
         :param marc_record: MARC record
         """
         field001 = marc_record['001'].value()
-        marc_record['001'].value = field001[3:]
+        marc_record['001'].value = field001[3:].lower()
         return marc_record
 
     def validate007s(self,
@@ -272,6 +273,20 @@ class ybp_ebl(MARCModifier):
         marc_record.add_field(field541)
         return marc_record
 
+    def validate710(self,marc_record):
+        """Adds a 710 field if missing from marc_record.
+       
+        :param marc_record: Single MARC record
+        """
+        if not marc_record['710']:
+	    field710 = Field('710',
+                             indicators=['2',' '],
+                             subfields=["a","Ebooks Corporation"])
+            marc_record.add_field(field710)
+        return marc_record
+
+        
+
     def validate776(self,
                     marc_record):
         """
@@ -302,6 +317,8 @@ class ybp_ebl(MARCModifier):
         return marc_record
 
 def subfld_b_process(regex,value,repl):
+    if value is None:
+        return ''
     regex_result = regex.search(value)
     if regex_result is None:
         return value
