@@ -36,6 +36,45 @@ def add_or_get_title(raw_title,redis_server):
     :param raw_title: Raw title either extracted from record source
                       or from submission by user
     """
+    metaphones,alt_metaphones,title_metaphone = process_title(raw_title)
+    # Very primitive, checks if title_metaphone exists, if does checks value
+    # of title_metaphone with value in datastore, returns rda:Title if present
+    # or creates a new title_key
+    if redis_server.hexists('h-title-metaphone',title_metaphone):
+        tmp_redis_key = redis_server.hget('h-title-metaphone',title_metaphone)
+        if redis_server.hget(tmp_redis_key,"raw") == raw_title:
+            title_key = tmp_redis_key
+        else:
+            title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
+            
+    else:
+        title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
+    title_pipeline = redis_server.pipeline()
+    title_pipeline.hset(title_key,"raw",raw_title)
+    title_pipeline.hset(title_key,"phonetic",title_metaphone)
+    redis_server.hset('h-title-metaphone',title_metaphone,title_key)
+    
+    for phonetic in metaphones + alt_metaphones:
+        phonetic_key = "title-phonetic:{0}".format(phonetic)
+        title_pipeline.sadd(phonetic_key,title_key)
+        title_pipeline.zadd('z-title-phonetic',0,phonetic_key)
+    term_incr = ''
+    for phonetic in metaphones:
+        term_incr += " {0}".format(phonetic)
+        title_pipeline.zadd('z-title-phonetic-build',0,term_incr.strip())
+    
+    title_pipeline.execute()        
+        
+                              
+def process_title(raw_title):
+    """
+    Function takes a raw_title, removes any stopwords from the beginning,
+    extracts the metaphone for the terms in the title and returns
+    a list of primary phonetics, a list of alternative phonetics, and
+    the title as phonetic phrase with spaces between words.
+
+    :param raw_title: Raw title
+    """
     raw_terms,terms = raw_title.split(" "),[]
     for term in raw_terms:
         term = term.lower()
@@ -45,53 +84,64 @@ def add_or_get_title(raw_title,redis_server):
     metaphones,alt_metaphones = [],[]
     for term in terms:
         first_phonetic,second_phonetic = metaphone.dm(term.decode('utf8'))
-        metaphones.append(first_phonetic)
+        if len(first_phonetic) > 0:
+            metaphones.append(first_phonetic.strip())
         if len(second_phonetic) > 0:
-            alt_metaphones.append(second_phonetic)
+            alt_metaphones.append(second_phonetic.strip())
     title_metaphone = " ".join(metaphones)
-    # Very primitive, checks if title_metaphone exists, if does checks value
-    # of raw_title with value in datastore, returns rda:Title if present
-    # or creates a new title_key
+    return metaphones,alt_metaphones,title_metaphone
+        
+def search_title(user_input,redis_server):
+    """
+    Function attempts to find a match first with title_metaphone phrase,
+    followed by a union of each of the metaphones. Finally, if no hits,
+    starts from the first metaphone and progressively checks each from zset
+    z-title-phonetic-build.
+
+    :param user_input: User input
+    :param redis_server: Title Redis instance
+    :rtype list: Redis key of title
+    """
+    metaphones,alt_metaphones,title_metaphone = process_title(raw_title)
+    # First checks if title_metaphone already exists
     if redis_server.hexists('h-title-metaphone',title_metaphone):
-        tmp_redis_key = redis_server.hget('h-title-metaphone',title_metaphone)
-        if redis_server.hget(tm_redis_key,"raw") == raw_title:
-            title_key = tmp_redis_key
+        title_redis_key = redis_server.hget('h-title-metaphone',title_metaphone)
+        return [title_redis_key,]
+    # Second, checks intersection of each title phonetically title-key set
+    phonetic_keys = []
+    for metaphone in metaphones:
+        phonetic_keys.append("title-phonetic:{0}".format(metaphone))
+    intersection_title_keys = redis_server.sinter(phonetic_keys)
+    if len(intersection_title_keys) > 0:
+        return list(intersection_title_keys)
+    # Third, checks intersection of each title in the phonetically alternate
+    # in the title-key set
+    alt_phonetic_keys = []
+    for metaphone in alt_metaphones:
+        alt_phonetic_keys.append("title-phonetic:{0}".format(metaphone))
+    intersection_title_keys = redis_server.sinter(alt_phonetic_keys)
+    if len(intersection_title_keys) > 0:
+        return list(intersection_title_keys)
+    # Forth, iterates through metaphones, building up and then checking each
+    # increment if it exists already in datastore
+    nearby_keys = []
+    title_phonetics = []
+    for metaphone in metaphones:
+        title_phonetics.append(metaphone)
+        title_incr = ' '.join(title_phonetics)
+        rank = redis_server.zrank('z-title-phonetic-build',title_incr)
+        if rank is None:
+            return nearby_keys
         else:
-            title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
+            if redis_server.hexists('h-title-metaphone',title_incr):
+                nearby_keys.append(redis_server.hget('h-title-metaphone',title_incr))
+    return None
             
-    else:
-        title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
-    redis_server.hset(title_key,"raw",raw_title)
-    title_pipeline = redis_server.pipeline()
-    for phonetic in metaphones + alt_metaphones:
-        phonetic_key = "title-phonetic:{0}".format(phonetic)
-        title_pipeline.sadd(phonetic_key,title_key)
-        title_pipeline.zadd('z-title-phonetic',0,phonetic_key)
-    term_incr = ''
-    for phonetic in metaphones:
-        term_incr += " {0}".format(phonetic)
-        title_pipeline.zadd('z-title-phonetic-build',0,term_incr.strip())
-    title_pipeline.execute()
+            
+        
+        
     
     
-                
+        
     
-        
-        
-                              
-def ingest_title(raw_title,redis_server):
-    """
-    Function takes a raw_title, removes any stopwords from the beginning,
-    extracts the metaphone for the terms in the title, saves each metaphone
-    as a Redis set.
-
-    :param raw_title: Raw title
-    :param redis_server: Redis server
-    """
-    #rda_key = redis_server.incr("global rda:Title")
-
-    for term in terms:
-        metaphones = metaphone.dm(term)
-        
-        
     
