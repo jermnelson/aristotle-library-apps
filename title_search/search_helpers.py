@@ -32,7 +32,7 @@ def add_or_get_title(raw_title,redis_server):
     Function takes a raw_title, checks if value exists "as is"
     along with a stopword and metaphone checks in datastore.
     
-    Returns existing rda:Title key or
+    Returns existing rda:Title key or new key
     :param raw_title: Raw title either extracted from record source
                       or from submission by user
     """
@@ -63,7 +63,8 @@ def add_or_get_title(raw_title,redis_server):
         term_incr += " {0}".format(phonetic)
         title_pipeline.zadd('z-title-phonetic-build',0,term_incr.strip())
     
-    title_pipeline.execute()        
+    title_pipeline.execute()
+    
         
                               
 def process_title(raw_title):
@@ -83,7 +84,9 @@ def process_title(raw_title):
     
     metaphones,alt_metaphones = [],[]
     for term in terms:
-        first_phonetic,second_phonetic = metaphone.dm(term.decode('utf8'))
+        first_phonetic,second_phonetic = metaphone.dm(term.decode('utf8'
+                                                                  "ignore"))
+            
         if len(first_phonetic) > 0:
             metaphones.append(first_phonetic.strip())
         if len(second_phonetic) > 0:
