@@ -64,6 +64,7 @@ def add_or_get_title(raw_title,redis_server):
         title_pipeline.zadd('z-title-phonetic-build',0,term_incr.strip())
     
     title_pipeline.execute()
+    return title_key
     
         
                               
@@ -84,7 +85,7 @@ def process_title(raw_title):
     
     metaphones,alt_metaphones = [],[]
     for term in terms:
-        first_phonetic,second_phonetic = metaphone.dm(term.decode('utf8'
+        first_phonetic,second_phonetic = metaphone.dm(term.decode('utf8',
                                                                   "ignore"))
             
         if len(first_phonetic) > 0:
