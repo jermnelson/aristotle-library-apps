@@ -1,4 +1,6 @@
 *.pyc
 *.db
+*.bundle
+*.class
 local_settings.*
 aristotle/static*
