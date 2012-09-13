@@ -7,9 +7,9 @@ APP = {'current_view': {'title':'Title Search'},
 try:
     import aristotle.settings as settings
     REDIS_HOST = settings.REDIS_MASTER_HOST
-    REDIS_PORT = settings.REDIS_MASTER_PORT
 except:
     # Setup for local development
     REDIS_HOST = '127.0.0.1'
-    REDIS_PORT = 6379
+# Redis RDA Title runs as its own instance on port 6380
+REDIS_PORT = 6380
 REDIS_SERVER = redis.StrictRedis(host=REDIS_HOST,port=REDIS_PORT)

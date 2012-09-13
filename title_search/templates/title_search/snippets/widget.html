@@ -1,0 +1,15 @@
+{% load i18n %}
+{% comment %}START title-search-browser DIV{% endcomment %}
+<div id="title-search-browser">
+  <h2>Search Results: <em data-bind="text: newSearchQuery">query</em></h2>
+  <ul data-bind="foreach: titles, visible: titles().length > 0">
+    <li>
+      <span data-bind="text: raw_title">raw title</span>
+    </li>
+  </ul>
+  <div class="alert alert-error" data-bind="visible: errorMessage">
+    Error <em data-bind="text: newSearchQuery">query</em> not found!
+	Would you like to search <em data-bind="text: newSearchQuery">query</em> 
+	as keywords? <a href="#" class="btn">Search</a>
+	</div>
+ </div>

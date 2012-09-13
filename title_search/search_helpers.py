@@ -37,30 +37,24 @@ def add_or_get_title(raw_title,redis_server):
                       or from submission by user
     """
     stop_metaphones,all_metaphones,title_metaphone = process_title(raw_title)
-    # Very primitive, checks if title_metaphone exists, if does checks value
-    # of title_metaphone with value in datastore, returns rda:Title if present
-    # or creates a new title_key
-    if redis_server.hexists('h-title-metaphone',title_metaphone):
-        tmp_redis_key = redis_server.hget('h-title-metaphone',title_metaphone)
-        if redis_server.hget(tmp_redis_key,"raw") == raw_title:
-            title_key = tmp_redis_key
-        else:
-            title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
-            
-    else:
-        title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
     title_pipeline = redis_server.pipeline()
-    title_pipeline.hset(title_key,"raw",raw_title)
-    title_pipeline.hset(title_key,"phonetic",title_metaphone)
-    redis_server.hset('h-title-metaphone',title_metaphone,title_key)
-    for phonetic in stop_metaphones:
-        phonetic_key = "title-phonetic:{0}".format(phonetic)
-        title_pipeline.sadd(phonetic_key,title_key)
-        title_pipeline.zadd('z-title-phonetic',0,phonetic_key)
-    term_incr = ''
-    for phonetic in all_metaphones:
-        term_incr += phonetic
-        title_pipeline.zadd('z-title-phonetic-build',0,term_incr.strip())
+    if title_redis.exists(title_metaphone):
+        title_keys = title_redis.smembers(title_metaphone)
+        raw_already_exists = False
+        for title_key in title_keys:
+            if raw_title == title_redis.hget(title_key,"raw"):
+                raw_already_exists = True
+                continue
+        if raw_already_exists == False:
+            title_key = "rda:Title:{0}".format(title_redis.incr("global rda:Title"))
+            title_pipeline.sadd(title_metaphone,title_key)
+            title_pipeline.hset(title_key,"phonetic",title_metaphone)
+            title_pipeline.hset(title_key,"raw",raw_title)
+    else:
+        title_key = "rda:Title:{0}".format(title_redis.incr("global rda:Title"))
+        title_pipeline.sadd(title_metaphone,title_key)
+        title_pipeline.hset(title_key,"phonetic",title_metaphone)
+        title_pipeline.hset(title_key,"raw",raw_title)    
     title_pipeline.execute()
     
         
@@ -92,57 +86,29 @@ def search_title(user_input,redis_server):
     """
     Function attempts to find a match first with title_metaphone phrase,
     followed by a union of each of the metaphones. Finally, if no hits,
-    starts from the first metaphone and progressively checks each from zset
-    z-title-phonetic-build.
+    starts from the first metaphone and progressively checks for close
+    matches
 
     :param user_input: User input
     :param redis_server: Title Redis instance
-    :rtype list: Redis key of title
+    :rtype list: Redis keys for title
     """
+    title_keys = []
     metaphones,all_metaphones,title_metaphone = process_title(user_input)
-    # First checks if title_metaphone already exists
-    print("\tFirst test: {0}".format(redis_server.hexists('h-title-metaphone',title_metaphone)))
-    if redis_server.hexists('h-title-metaphone',title_metaphone):
-        title_redis_key = redis_server.hget('h-title-metaphone',title_metaphone)
-        return [title_redis_key,]
-    # Second, checks intersection of each title phonetically title-key set
-    phonetic_keys = []
-    for metaphone in metaphones:
-        phonetic_keys.append("title-phonetic:{0}".format(metaphone))
-    intersection_title_keys = redis_server.sinter(phonetic_keys)
-    if len(intersection_title_keys) > 0:
-        return list(intersection_title_keys)
-    # Third, checks intersection of each title in the phonetically alternate
-    # in the title-key set
-##    alt_phonetic_keys = []
-##    for metaphone in alt_metaphones:
-##        alt_phonetic_keys.append("title-phonetic:{0}".format(metaphone))
-##    intersection_title_keys = redis_server.sinter(alt_phonetic_keys)
-##    if len(intersection_title_keys) > 0:
-##        return list(intersection_title_keys)
-    # Forth, iterates through metaphones, building up and then checking each
-    # increment if it exists already in datastore
-    nearby_keys = []
-    title_phonetics = []
-    for metaphone in all_metaphones:
-        title_phonetics.append(metaphone)
-        title_incr = ''.join(title_phonetics)
-##        print("\t\ttitle_incr={0} {1}".format(title_incr,
-##                                              redis_server.zrank('z-title-phonetic-build',title_incr)))
-        rank = redis_server.zrank('z-title-phonetic-build',title_incr)
-        if rank is None:
-            continue
+    if redis_server.exists(title_metaphone):
+        title_keys = list(redis_server.smembers(title_metaphone))
+    else:
+        phonetic_keys = redis_server.keys("{0}*".format(title_metaphone))
+        # Recursive call, eliminates last character from string and
+        # returns the result from call func again
+        if len(phonetic_keys) < 1:
+            truncated_input = user_input[:-1]
+            return search_title(truncated_input,redis_server)
         else:
-            for phonetic in redis_server.zrange('z-title-phonetic-build',
-                                                rank-15,
-                                                rank+15):
-                # Checks slice of nearby matches to see if they exists
-                if redis_server.hexists('h-title-metaphone',phonetic):
-                    print("\t\tAdding {0} to nearby keys".format(phonetic))
-                    nearby_keys.append(redis_server.hget('h-title-metaphone',phonetic))
-    if len(nearby_keys) > 0:
-        return nearby_keys
-    return None
+            for phonetic_key in phonetic_keys:
+                for title_key in redis_server.smembers(phonetic_key):
+                    title_keys.append(title_key)
+    return title_keys
             
             
         

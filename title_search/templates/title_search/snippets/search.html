@@ -1,0 +1,7 @@
+{% load i18n %}
+{% comment %}START autocomplete FORM{% endcomment %}
+<form class="well form-search" data-bind="submit: searchTitle">
+ <input type="text" data-bind="value: newSearchQuery" name="q" id="" class="input-medium search-query">
+ <button type="submit" class="btn"><i class="icon-eye-open"></i> Find</button>
+{% comment %}END autocomplete FORM{% endcomment %} 
+</form>

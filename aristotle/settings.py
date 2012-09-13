@@ -141,6 +141,8 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME,'RDACore/templates/RDACore/snippets/'),
     os.path.join(PROJECT_HOME,'reserve_search/templates/reserve_search/'),
     os.path.join(PROJECT_HOME,'reserve_search/templates/reserve_search/snippets/'),
+    os.path.join(PROJECT_HOME,'title_search/templates/title_search/'),
+    os.path.join(PROJECT_HOME,'title_search/templates/title_search/snippets/'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -163,6 +165,7 @@ INSTALLED_APPS = (
     'portfolio',
     'RDACore',
     'reserve_search',
+    'title_search',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
