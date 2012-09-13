@@ -27,7 +27,26 @@ STOPWORDS = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
              'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will',
              'just', 'don', 'should', 'now']
 
+
+
 def add_or_get_title(raw_title,redis_server):
+    def add_title():
+        title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
+        title_pipeline.sadd(title_metaphone,title_key)
+        title_pipeline.hset(title_key,"phonetic",title_metaphone)
+        title_pipeline.hset(title_key,"raw",raw_title)
+        return title_key
+    stop_metaphones,all_metaphones,title_metaphone = process_title(raw_title)
+    title_pipeline = redis_server.pipeline()
+    if not redis_server.hexists('h-title-metaphones',title_metaphone):
+        
+        redis_server.hset('h-title-metaphones',title_metaphone)
+            
+    
+   
+    
+
+def old_add_or_get_title(raw_title,redis_server):
     """
     Function takes a raw_title, checks if value exists "as is"
     along with a stopword and metaphone checks in datastore.
@@ -38,24 +57,45 @@ def add_or_get_title(raw_title,redis_server):
     """
     stop_metaphones,all_metaphones,title_metaphone = process_title(raw_title)
     title_pipeline = redis_server.pipeline()
-    if title_redis.exists(title_metaphone):
-        title_keys = title_redis.smembers(title_metaphone)
+    if redis_server.exists(title_metaphone):
+        title_keys = redis_server.smembers(title_metaphone)
         raw_already_exists = False
         for title_key in title_keys:
-            if raw_title == title_redis.hget(title_key,"raw"):
+            if raw_title == redis_server.hget(title_key,"raw"):
                 raw_already_exists = True
                 continue
         if raw_already_exists == False:
-            title_key = "rda:Title:{0}".format(title_redis.incr("global rda:Title"))
+            title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
             title_pipeline.sadd(title_metaphone,title_key)
             title_pipeline.hset(title_key,"phonetic",title_metaphone)
             title_pipeline.hset(title_key,"raw",raw_title)
     else:
-        title_key = "rda:Title:{0}".format(title_redis.incr("global rda:Title"))
+        title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
         title_pipeline.sadd(title_metaphone,title_key)
         title_pipeline.hset(title_key,"phonetic",title_metaphone)
-        title_pipeline.hset(title_key,"raw",raw_title)    
+        title_pipeline.hset(title_key,"raw",raw_title) 
     title_pipeline.execute()
+    return title_key
+
+def add_marc_title(title_field,redis_server):
+    """
+    Function takes a MARC21 title field, extracts the title information
+    from subfields and creates a sort title depending on second indicator
+
+    :param title_field: MARC21 field
+    :param redis_server: Title Redis instance
+    """
+    if title_field.tag not in ['210','222','240','242','243',
+                               '245','246','247']:
+        raise ValueError("{0} not a title field".format(title_field.tag))
+    raw_title = ' '.join(title_field.get_subfields('a','b'))
+    title_key = add_or_get_title(raw_title,redis_server)
+    if int(title_field.indicators[1]) > 0:
+        nonfiling_offset = int(title_field.indicators[1])
+        sort_title = raw_title[nonfiling_offset:]
+        redis_server.hset(title_key,"sort",sort_title)
+        
+    
     
         
                               
@@ -78,8 +118,9 @@ def process_title(raw_title):
         if term not in STOPWORDS:
             stop_metaphones.append(first_phonetic)
         all_metaphones.append(first_phonetic)
-    title_metaphone = metaphone.dm(raw_title.decode('utf8',
-                                                    "ignore"))[0]
+##    title_metaphone = metaphone.dm(raw_title.decode('utf8',
+##                                                    "ignore"))[0]
+    title_metaphone = ''.join(all_metaphones)
     return stop_metaphones,all_metaphones,title_metaphone
         
 def search_title(user_input,redis_server):
