@@ -8,6 +8,8 @@ import pymarc,redis,logging,sys
 import re,datetime,copy,os
 from marc_batch.fixures import json_loader
 from call_number.redis_helpers import ingest_call_numbers
+from rdaCore.app_settings import WORK_REDIS,EXPRESSION_REDIS,MANIFESTATION_REDIS
+from rdaCore.app_settings import ITEM_REDIS,TITLE_REDIS
 
 
 try:
@@ -524,22 +526,22 @@ def create_rda_redis(marc_record,datastore):
     # Generate a new rdaCore record key
     root_key = "rdaCore:{0}".format(datastore.incr("global rdaCore"))
     work_creator = CreateRDACoreWorkFromMARC(record=marc_record,
-                                             redis_server=datastore,
+                                             redis_server=WORK_REDIS,
                                              root_redis_key=root_key)
     work_creator.generate()
     datastore.sadd("rdaCore:Works",work_creator.entity_key)
     expression_creator = CreateRDACoreExpressionFromMARC(record=marc_record,
-                                                         redis_server=datastore,
+                                                         redis_server=EXPRESSION_REDIS,
                                                          root_redis_key=root_key)
     expression_creator.generate()
     datastore.sadd("rdaCore:Expressions",expression_creator.entity_key)
     manifestation_creator = CreateRDACoreManifestationFromMARC(record=marc_record,
-                                                               redis_server=datastore,
+                                                               redis_server=MANIFESTATION_REDIS,
                                                                root_redis_key=root_key)
     manifestation_creator.generate()
     datastore.sadd("rdaCore:Manifestations",manifestation.entity_key)
     item_creator = CreateRDACoreItemFromMARC(record=marc_record,
-                                             redis_server=datastore,
+                                             redis_server=ITEM_REDIS,
                                              root_redis_key=root_key)
     item_creator.generate()
     datastore.sadd("rdaCore:Items",item_creator.entity_key)
@@ -666,19 +668,19 @@ def process_008_date(marc_record,redis_server,date_sort_key):
 
 def ingest_record(marc_record,redis_server):
     work_generator = CreateRDACoreWorkFromMARC(record=marc_record,
-                                               redis_server=redis_server,
+                                               redis_server=WORK_REDIS,
                                                root_redis_key="rdaCore")
     work_generator.generate()
     expression_generator = CreateRDACoreExpressionFromMARC(record=marc_record,
-                                                           redis_server=redis_server,
+                                                           redis_server=EXPRESSION_REDIS,
                                                            root_redis_key="rdaCore")
     expression_generator.generate()
     manifestation_generator = CreateRDACoreManifestationFromMARC(record=marc_record,
-                                                                 redis_server=redis_server,
+                                                                 redis_server=MANIFESTATION_REDIS,
                                                                  root_redis_key="rdaCore")
     manifestation_generator.generate()
     item_generator = CreateRDACoreItemFromMARC(record=marc_record,
-                                               redis_server=redis_server,
+                                               redis_server=ITEM_REDIS,
                                                root_redis_key="rdaCore")
     item_generator.generate()
     persons_generator = CreateRDACorePersonsFromMARC(record=marc_record,
@@ -686,34 +688,34 @@ def ingest_record(marc_record,redis_server):
                                                    
     persons_generator.generate()
     # Set rdaRelationships for entities
-    redis_server.hset(item_generator.entity_key,
-                      "rdaManifestationExemplified",
-                      manifestation_generator.entity_key)
-    redis_server.hset(manifestation_generator.entity_key,
-                      "rdaExpressionManifested",
-                      expression_generator.entity_key)
-    redis_server.hset(manifestation_generator.entity_key,
-                      "rdaWorkManifested",
-                      work_generator.entity_key)
-    redis_server.hset(expression_generator.entity_key,
-                      "rdaManifestationOfExpression",
-                      manifestation_generator.entity_key)
-    redis_server.hset(expression_generator.entity_key,
-                      "rdaWorkExpressed",
-                      work_generator.entity_key)
-    redis_server.hset(work_generator.entity_key,
-                      "rdaExpressionOfWork",
-                      expression_generator.entity_key)
-    redis_server.hset(work_generator.entity_key,
-                      "rdaManifestationOfWork",
-                      manifestation_generator.entity_key)
-    if len(persons_generator.people) > 0:
-        for rda_person_key in persons_generator.people:
-            redis_server.sadd("{0}:rdaCreator".format(work_generator.entity_key),
-                              rda_person_key)
-            redis_server.hset(work_generator.entity_key,
-                              "rdaCreator",
-                              rda_person_key)
+    ITEM_REDIS.hset(item_generator.entity_key,
+                    "rdaManifestationExemplified",
+                    manifestation_generator.entity_key)
+    MANIFESTATION_REDIS.hset(manifestation_generator.entity_key,
+                             "rdaExpressionManifested",
+                             expression_generator.entity_key)
+    MANIFESTATION_REDIS.hset(manifestation_generator.entity_key,
+                             "rdaWorkManifested",
+                             work_generator.entity_key)
+    EXPRESSION_REDIS.hset(expression_generator.entity_key,
+                          "rdaManifestationOfExpression",
+                          manifestation_generator.entity_key)
+    EXPRESSION_REDIS.hset(expression_generator.entity_key,
+                          "rdaWorkExpressed",
+                          work_generator.entity_key)
+    WORK_REDIS.hset(work_generator.entity_key,
+                    "rdaExpressionOfWork",
+                    expression_generator.entity_key)
+    WORK_REDIS.hset(work_generator.entity_key,
+                    "rdaManifestationOfWork",
+                    manifestation_generator.entity_key)
+##    if len(persons_generator.people) > 0:
+##        for rda_person_key in persons_generator.people:
+##            PERSON_REDIS.sadd("{0}:rdaCreator".format(work_generator.entity_key),
+##                              rda_person_key)
+##            redis_server.hset(work_generator.entity_key,
+##                              "rdaCreator",
+##                              rda_person_key)
     
     
 

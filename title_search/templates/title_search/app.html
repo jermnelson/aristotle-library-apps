@@ -63,7 +63,7 @@ Title Search
 		   for(i=0;i<=parsed_titles.length;i++) {
 		      var title = parsed_titles[i];
 			  if(title) {
-			    self.titles.push(new Title(title.raw,""));
+			    self.titles.push(new Title(title.raw,title['legacy-bib-id']));
 			  }
 		   }
 		

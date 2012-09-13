@@ -3,7 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-import redis,sys
+import redis,sys,re,logging
 try:
     import aristotle.lib.metaphone as metaphone
 except ImportError:
@@ -28,22 +28,41 @@ STOPWORDS = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
              'just', 'don', 'should', 'now']
 
 
+def add_title(raw_title,title_metaphone,redis_server):
+    title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
+    title_pipeline = redis_server.pipeline()
+    title_pipeline.sadd(title_metaphone,title_key)
+    title_pipeline.hset(title_key,"phonetic",title_metaphone)
+    title_pipeline.hset(title_key,"raw",raw_title)
+    title_pipeline.execute()
+    return title_key
+
+def add_metaphone_key(metaphone,title_keys,redis_server):
+    metaphone_key = "all-metaphones:{0}".format(metaphone)
+    title_pipeline = redis_server.pipeline()
+    for title_key in title_keys:
+        title_pipeline.sadd(metaphone_key,title_key)
+    title_pipeline.execute()
+
 
 def add_or_get_title(raw_title,redis_server):
-    def add_title():
-        title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
-        title_pipeline.sadd(title_metaphone,title_key)
-        title_pipeline.hset(title_key,"phonetic",title_metaphone)
-        title_pipeline.hset(title_key,"raw",raw_title)
-        return title_key
     stop_metaphones,all_metaphones,title_metaphone = process_title(raw_title)
-    title_pipeline = redis_server.pipeline()
-    if not redis_server.hexists('h-title-metaphones',title_metaphone):
-        
-        redis_server.hset('h-title-metaphones',title_metaphone)
-            
+    first_word = raw_title.split(" ")[0].lower()
+    redis_server.sadd("title-first:{0}".format(all_metaphones[0]),
+                      first_word)
+    title_metaphone_key = 'title-metaphones:{0}'.format(title_metaphone)
+    title_key = add_title(raw_title,
+                              title_metaphone,
+                              redis_server)
+    redis_server.sadd(title_metaphone_key,
+                      title_key)
     
-   
+    title_keys = redis_server.smembers(title_metaphone_key)
+    for metaphone in all_metaphones:
+        add_metaphone_key(metaphone,title_keys,redis_server)
+    for metaphone in stop_metaphones:
+        add_metaphone_key(metaphone,title_keys,redis_server)
+    return title_keys
     
 
 def old_add_or_get_title(raw_title,redis_server):
@@ -77,28 +96,41 @@ def old_add_or_get_title(raw_title,redis_server):
     title_pipeline.execute()
     return title_key
 
-def add_marc_title(title_field,redis_server):
+slash_re = re.compile(r"/$")
+def add_marc_title(marc_record,redis_server):
     """
-    Function takes a MARC21 title field, extracts the title information
+    Function takes a MARC21 record, extracts the title information
     from subfields and creates a sort title depending on second indicator
 
-    :param title_field: MARC21 field
+    :param marc_record: MARC21 record
     :param redis_server: Title Redis instance
     """
-    if title_field.tag not in ['210','222','240','242','243',
-                               '245','246','247']:
-        raise ValueError("{0} not a title field".format(title_field.tag))
-    raw_title = ' '.join(title_field.get_subfields('a','b'))
-    title_key = add_or_get_title(raw_title,redis_server)
-    if int(title_field.indicators[1]) > 0:
-        nonfiling_offset = int(title_field.indicators[1])
-        sort_title = raw_title[nonfiling_offset:]
-        redis_server.hset(title_key,"sort",sort_title)
-        
+    # Extract 245    
+    title_field = marc_record['245']
+    
+    if title_field is not None:
+        raw_title = ''.join(title_field.get_subfields('a'))
+        if slash_re.search(raw_title):
+            raw_title = slash_re.sub("",raw_title).strip()
+        raw_title += ' '.join(title_field.get_subfields('b'))
+        title_keys = add_or_get_title(raw_title,redis_server)
+        for title_key in title_keys:
+            if raw_title == redis_server.hget(title_key,"raw"):
+                if int(title_field.indicators[1]) > 0:
+                    nonfiling_offset = int(title_field.indicators[1])
+                    sort_title = raw_title[nonfiling_offset:]
+                    redis_server.hset(title_key,"sort",sort_title)
+                    sort_stop,sort_all,sort_metaphone = process_title(sort_title)
+                    redis_server.sadd("title-metaphones:{0}".format(sort_metaphone),
+                                      title_key)
+                # Set legacy bib id
+                field907 = marc_record['907']
+                if field907 is not None:
+                    raw_bib_id = ''.join(field907.get_subfields('a'))
+                    redis_server.hset(title_key,"legacy-bib-id",raw_bib_id[1:-1])        
     
     
-        
-                              
+    
 def process_title(raw_title):
     """
     Function takes a raw_title, removes any stopwords from the beginning,
@@ -118,12 +150,11 @@ def process_title(raw_title):
         if term not in STOPWORDS:
             stop_metaphones.append(first_phonetic)
         all_metaphones.append(first_phonetic)
-##    title_metaphone = metaphone.dm(raw_title.decode('utf8',
-##                                                    "ignore"))[0]
     title_metaphone = ''.join(all_metaphones)
     return stop_metaphones,all_metaphones,title_metaphone
+
         
-def search_title(user_input,redis_server):
+def typeahead_search_title(user_input,redis_server):
     """
     Function attempts to find a match first with title_metaphone phrase,
     followed by a union of each of the metaphones. Finally, if no hits,
@@ -136,20 +167,38 @@ def search_title(user_input,redis_server):
     """
     title_keys = []
     metaphones,all_metaphones,title_metaphone = process_title(user_input)
-    if redis_server.exists(title_metaphone):
-        title_keys = list(redis_server.smembers(title_metaphone))
+    title_metaphone_key = "title-metaphones:{0}".format(title_metaphone)
+    if redis_server.exists(title_metaphone_key):
+        for title_key in redis_server.smembers(title_metaphone_key):
+            title_keys.append(title_key)
+    phonetic_keys = redis_server.keys("{0}*".format(title_metaphone_key))
+    # Recursive call, eliminates last character from string and
+    # returns the result from call func again
+    if len(phonetic_keys) < 1:
+        truncated_input = user_input[:-1]
+        return search_title(truncated_input,redis_server)
     else:
-        phonetic_keys = redis_server.keys("{0}*".format(title_metaphone))
-        # Recursive call, eliminates last character from string and
-        # returns the result from call func again
-        if len(phonetic_keys) < 1:
-            truncated_input = user_input[:-1]
-            return search_title(truncated_input,redis_server)
-        else:
-            for phonetic_key in phonetic_keys:
-                for title_key in redis_server.smembers(phonetic_key):
-                    title_keys.append(title_key)
-    return title_keys
+        more_keys = []
+        for phonetic_key in phonetic_keys:
+            this_title_keys = redis_server.smembers(phonetic_key)
+            if this_title_keys is not None:
+                more_keys.extend(this_title_keys)
+        title_keys.extend(more_keys)
+    all_keys = set(title_keys)
+    return list(all_keys)
+
+def search_title(user_input,redis_server):
+    title_keys = []
+    metaphones,all_metaphones,title_metaphone = process_title(user_input)
+    metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
+    title_keys = redis_server.sinter(metaphone_keys)
+    typeahead_keys = typeahead_search_title(user_input,redis_server)
+    if typeahead_keys is not None:
+        all_keys = list(title_keys).extend(typeahead_keys)
+        logging.error("After::\t{0}".format(all_keys))
+    else:
+        all_keys = title_keys
+    return set(all_keys)
             
             
         
