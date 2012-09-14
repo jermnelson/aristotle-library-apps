@@ -192,13 +192,13 @@ def search_title(user_input,redis_server):
     metaphones,all_metaphones,title_metaphone = process_title(user_input)
     metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
     title_keys = redis_server.sinter(metaphone_keys)
-    typeahead_keys = typeahead_search_title(user_input,redis_server)
-    if typeahead_keys is not None:
-        all_keys = list(title_keys).extend(typeahead_keys)
-        logging.error("After::\t{0}".format(all_keys))
-    else:
-        all_keys = title_keys
-    return set(all_keys)
+##    typeahead_keys = typeahead_search_title(user_input,redis_server)
+##    if typeahead_keys is not None:
+##        all_keys = list(title_keys)
+##        all_keys.extend(typeahead_keys)
+##    else:
+##        all_keys = title_keys
+    return title_keys
             
             
         

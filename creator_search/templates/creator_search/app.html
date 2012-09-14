@@ -1,0 +1,75 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block head-title %}
+{% if library %}{{ library.name }}{% else %}Aristotle Library Apps{% endif %}
+Title Search
+{% endblock %}
+
+{% block more-css %}
+{% endblock %}
+
+
+{% block body %}
+{% comment %}START content DIV{% endcomment %}
+<div class="container-fluid">
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START search DIV{% endcomment %}
+  <div class="row12">
+  {% include 'title_search/snippets/search.html' %}
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START widget DIV{% endcomment %}
+  <div class="row12">
+  {% include 'title_search/snippets/widget.html' %}
+  {% comment %}END widget DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{% comment %}END content DIV{% endcomment %}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/jquery.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script>
+ function Title(raw_title,record_id) {
+   this.raw_title = raw_title;
+   this.record_id = record_id;
+ }
+ function TitleSearchAppViewModel() {
+   var self = this;
+   self.titles = ko.observableArray([]);
+   self.newSearchQuery = ko.observable();
+   self.errorMessage = ko.observable(false);
+   self.searchTitle = function() {
+     self.titles.removeAll();
+     var data = 'q=' + ko.toJS(self.newSearchQuery);
+	 $.ajax({
+	    url:'/apps/title_search/search',
+		data:data,
+		dataType: 'json',
+		success: function(data) {
+		   var parsed_titles = data['results'];
+		   if(parsed_titles.length < 1) {
+		     self.errorMessage(true);
+		   }
+		   for(i=0;i<=parsed_titles.length;i++) {
+		      var title = parsed_titles[i];
+			  if(title) {
+			    self.titles.push(new Title(title.raw,title['legacy-bib-id']));
+			  }
+		   }
+		
+     }});
+   }
+ }
+ ko.applyBindings(new TitleSearchAppViewModel());
+</script>
+{% endblock %}
