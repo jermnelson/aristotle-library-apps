@@ -52,8 +52,8 @@ def add_or_get_title(raw_title,redis_server):
                       first_word)
     title_metaphone_key = 'title-metaphones:{0}'.format(title_metaphone)
     title_key = add_title(raw_title,
-                              title_metaphone,
-                              redis_server)
+                          title_metaphone,
+                          redis_server)
     redis_server.sadd(title_metaphone_key,
                       title_key)
     
@@ -112,11 +112,19 @@ def add_marc_title(marc_record,redis_server):
         raw_title = ''.join(title_field.get_subfields('a'))
         if slash_re.search(raw_title):
             raw_title = slash_re.sub("",raw_title).strip()
-        raw_title += ' '.join(title_field.get_subfields('b'))
+        subfield_b = ' '.join(title_field.get_subfields('b'))
+        if slash_re.search(subfield_b):
+            subfield_b = slash_re.sub("",raw_title).strip()
+        raw_title += subfield_b
         title_keys = add_or_get_title(raw_title,redis_server)
         for title_key in title_keys:
             if raw_title == redis_server.hget(title_key,"raw"):
-                if int(title_field.indicators[1]) > 0:
+                indicator_one = title_field.indicators[1]
+                try:
+                    indicator_one = int(indicator_one)
+                except ValueError:
+                    continue
+                if int(indicator_one) > 0:
                     nonfiling_offset = int(title_field.indicators[1])
                     sort_title = raw_title[nonfiling_offset:]
                     redis_server.hset(title_key,"sort",sort_title)
@@ -190,15 +198,16 @@ def typeahead_search_title(user_input,redis_server):
 def search_title(user_input,redis_server):
     title_keys = []
     metaphones,all_metaphones,title_metaphone = process_title(user_input)
-    metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
-    title_keys = redis_server.sinter(metaphone_keys)
-##    typeahead_keys = typeahead_search_title(user_input,redis_server)
-##    if typeahead_keys is not None:
-##        all_keys = list(title_keys)
-##        all_keys.extend(typeahead_keys)
-##    else:
-##        all_keys = title_keys
-    return title_keys
+##    metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
+##    title_keys = redis_server.sinter(metaphone_keys)
+    typeahead_keys = typeahead_search_title(user_input,redis_server)
+    if typeahead_keys is not None:
+        all_keys = list(title_keys)
+        all_keys.extend(typeahead_keys)
+    else:
+        all_keys = title_keys
+##    return title_keys
+    return all_keys
             
             
         

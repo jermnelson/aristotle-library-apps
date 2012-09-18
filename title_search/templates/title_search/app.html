@@ -59,7 +59,9 @@ Title Search
 		   var parsed_titles = data['results'];
 		   if(parsed_titles.length < 1) {
 		     self.errorMessage(true);
-		   }
+		   } else {
+		     self.errorMessage(false);
+		   } 
 		   for(i=0;i<=parsed_titles.length;i++) {
 		      var title = parsed_titles[i];
 			  if(title) {
