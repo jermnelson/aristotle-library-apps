@@ -37,8 +37,18 @@ Title Search
 
 {% block more-js %}
 <script src="{{ STATIC_URL }}js/jquery.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script>
+//$('.typeahead').typeahead();
+$('#typeahead-search').typeahead({
+    source: function (query, process) {
+        return $.get('/apps/title_search/search', { query: query }, function (data) {
+            return process(data);
+        });
+    }
+});
+
  function Title(raw_title,record_id) {
    this.raw_title = raw_title;
    this.record_id = record_id;

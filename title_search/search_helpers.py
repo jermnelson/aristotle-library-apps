@@ -3,7 +3,8 @@
 """
 __author__ = "Jeremy Nelson"
 
-import redis,sys,re,logging
+import redis,sys,re
+import hashlib,logging
 try:
     import aristotle.lib.metaphone as metaphone
 except ImportError:
@@ -48,8 +49,6 @@ def add_metaphone_key(metaphone,title_keys,redis_server):
 def add_or_get_title(raw_title,redis_server):
     stop_metaphones,all_metaphones,title_metaphone = process_title(raw_title)
     first_word = raw_title.split(" ")[0].lower()
-    redis_server.sadd("title-first:{0}".format(all_metaphones[0]),
-                      first_word)
     title_metaphone_key = 'title-metaphones:{0}'.format(title_metaphone)
     title_key = add_title(raw_title,
                           title_metaphone,
@@ -116,6 +115,8 @@ def add_marc_title(marc_record,redis_server):
         if slash_re.search(subfield_b):
             subfield_b = slash_re.sub("",raw_title).strip()
         raw_title += subfield_b
+        if raw_title.startswith("..."):
+            raw_title = raw_title.replace("...","")
         title_keys = add_or_get_title(raw_title,redis_server)
         for title_key in title_keys:
             if raw_title == redis_server.hget(title_key,"raw"):
@@ -123,13 +124,22 @@ def add_marc_title(marc_record,redis_server):
                 try:
                     indicator_one = int(indicator_one)
                 except ValueError:
-                    continue
+                    indicator_one = 0
                 if int(indicator_one) > 0:
                     nonfiling_offset = int(title_field.indicators[1])
                     sort_title = raw_title[nonfiling_offset:]
+                    title_sha1 = hashlib.sha1(sort_title)
+                    redis_server.zadd("z-titles-alpha",0,sort_title)
                     redis_server.hset(title_key,"sort",sort_title)
                     sort_stop,sort_all,sort_metaphone = process_title(sort_title)
                     redis_server.sadd("title-metaphones:{0}".format(sort_metaphone),
+                                      title_key)
+                else:
+                    redis_server.zadd("z-titles-alpha",0,raw_title)
+                    title_sha1 = hashlib.sha1(raw_title)
+                
+                # Adds title keys to set of title sha1 value
+                redis_server.sadd("s-sha1:{0}".format(title_sha1.hexdigest()),
                                       title_key)
                 # Set legacy bib id
                 field907 = marc_record['907']
