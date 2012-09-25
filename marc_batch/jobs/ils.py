@@ -8,13 +8,17 @@ __author__ = 'Jeremy Nelson'
 
 
 import pymarc,copy
+from springer import SpringerEBookJob
 from ybp_ebl import ybp_ebl
+from ybp_ebrary import ybp_ebrary
+
 ##from behave.configuration import Configuration,ConfigError
 ##from behave.parser import parse_file
 ##from behave.model import Feature
 ##from behave.runner import Runner,Context
-
+springer = SpringerEBookJob
 ybp_ebl = ybp_ebl
+ybp_ebrary = ybp_ebrary
 
 class job(object):
     """

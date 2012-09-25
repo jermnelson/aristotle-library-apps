@@ -160,7 +160,7 @@ INSTALLED_APPS = (
     'book_search',
     'call_number',
     'hours',
-#    'marc_batch',
+    'marc_batch',
     'orders',
     'portfolio',
     'RDACore',

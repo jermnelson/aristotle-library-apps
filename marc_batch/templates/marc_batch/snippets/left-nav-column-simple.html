@@ -1,11 +1,16 @@
-<h2>Jobs</h2>
-<a class="btn" >Legacy ILS</a>   
-<ul>
+{% load marc_batch_extras %}
+<li class="nav-header">ILS Jobs</li>
 {% for job in ils_jobs %}
-  <li {% if job.pk == current_job.pk %}class="active"{% endif %}>
+  {{ job|generate_job_item:current_job }}
+{% endfor %}
+{% if redis_jobs %}
+<li class="nav-header">Redis Jobs</li>
+{% for job in redis_jobs %}
+<li {% if job.pk == current_job.pk %}class="active"{% endif %}>
    <a href="/apps/marc_batch/jobs/{{ job.pk }}/">{{ job.name }}</a>
-  </li>
-{% endfor %} 
-</ul>
-<a class="btn">Solr Search Index</a>
-<a class="btn" >Redis Datastore</a>
+</li>
+{% endfor %}
+{% endif %}
+{% if solr_jobs %}
+<li class="nav-header">Solr Jobs</li>
+{% endif %}

@@ -1,33 +1,21 @@
-{% extends 'app-base.html' %}
+{% extends 'marc-batch-app.html' %}
 {% load i18n %}
 
 {% block more-css %}{% endblock %}
 
 
-{% block body %}
- <div class="row-fluid main-pane">
-  <div class="span2">
-   <div class="well">
-    <p>
-     <a class="btn btn-primary">{{ current_job.name }} History</a>
-    </p>
-    <p>
-    <a class="btn" href="/apps/{{ app.url}}">{{ app.current_view.title }} Home</a>
-    </p>
-   </div>
-  </div>
-  <div class="span8 well" id="job-details">
-   <h1>{{ current_job.name }} Job</h1>
+
+
+ {% block app-main-body %}
+   <h1>{{ current_job.name }}</h1>
    <form method="POST" action="/apps/marc_batch/process" enctype="multipart/form-data">{% csrf_token %}
 	<input type="hidden" value="{{ current_job.pk }}" name="job_id" />
    {{ marc_upload_form }}
    <br/>
    <input class="btn btn-large btn-warning" type="submit" value="Upload" />
    </form>
-  </div>
- </div>
 {% endblock %}
-
+ 
 {% block more-dialogs %}
 <div class="modal hide fade" id="job_logs_dlg">
  <div class="modal-header">

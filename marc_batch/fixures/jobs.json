@@ -8,6 +8,26 @@
     },
     "model":"marc_batch.Job",
     "pk":1
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"springer-help",
+        "name": "Springer eBooks",
+        "python_module":"springer"
+    },
+    "model":"marc_batch.Job",
+    "pk":2
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"ybp-ebrary-help",
+        "name": "YBP eBrary DDA eBooks",
+        "python_module":"ybp_ebrary"
+    },
+    "model":"marc_batch.Job",
+    "pk":3
   }
 ]
         

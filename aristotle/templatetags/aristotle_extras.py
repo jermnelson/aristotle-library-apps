@@ -22,6 +22,6 @@ def get_navbar_menu(menu):
         params = {"menu":menu}
         return mark_safe(navbar_template.render(Context(params)))
     except:
-        return ''
+        return 
 
 register.filter('get_navbar_menu',get_navbar_menu)

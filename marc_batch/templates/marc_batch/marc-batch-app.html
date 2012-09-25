@@ -8,13 +8,23 @@
  {% comment %}START main-pane DIV{% endcomment %}
  <div class="row-fluid main-pane">
   {% comment %}START left-jobs-col DIV{% endcomment %}
-  <div class="span2 well">
+  <div class="span2">
+   <ul class="nav nav-list">
    {% include 'snippets/left-nav-column-simple.html' %}
+   {% block more-left-nav %}{% endblock %}   
+   </ul>
   {% comment %}END left-jobs-col DIV{% endcomment %}
   </div>
   <div class="span7">
+   {% block app-main-body %}
    <p>{{ app.description }}</p>
+   {% endblock %}
   </div>
 {% comment %}END main-pane DIV{% endcomment %}
  </div>
 {% endblock %}
+
+ {% block more-js %}
+ <script src="{{ STATIC_URL }}js/bootstrap-affix.js"></script>
+ 
+ {% endblock %}
