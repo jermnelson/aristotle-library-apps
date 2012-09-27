@@ -17,7 +17,7 @@
  <div class="row-fluid">
   {% comment %}START fedora batch nav DIV{% endcomment %}
   <div class="span3">
-   <ul data-spy="affix" class="nav nav-stacked" >
+   <ul data-spy="affix" class="nav nav-stacked affix" >
      <li>
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#ingest">Batch Ingest</a>
@@ -35,15 +35,31 @@
   </div>
   {% comment %}START widget DIV{% endcomment %}
   <div class="span7">
-   <div name="ingest">
+   <div name="ingest" class="well">
     <h2>Batch Ingest</h2>
 	<form>
-	 <label>Director location</label>
+	 {{ ingest_form.as_p }}
 	 <a href="#" class="btn btn-primary">Run</a>
 	</form>
    </div>
+   <hr />
+   <div name="modify" class="well">
+     <h2>Batch Modify Metadata</h2>
+	 <p>With this form you'll be able to modify the existing metadata for one 
+	    or more objects in a Fedora Commons server.</p>
+	 <form>
+	  {{ modify_form.as_p }}
+	 </form>
+   </div>
+   <div name="mover" class="well">
+     <h2>PID Mover</h2>
+	 <p>Moves a single object or collection in a Fedora Commons Server</p>
+	 <form>
+	   {{ object_mover_form.as_p }}
+	 </form>
   {% comment %}END widget DIV{% endcomment %}
   </div>
+  
  {% comment %}END row-fluid DIV{% endcomment %}
  </div>
 {% comment %}END content DIV{% endcomment %}

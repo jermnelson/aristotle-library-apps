@@ -18,7 +18,8 @@ except:
 
 APP = {'current_view': {'title':'Fedora Batch'},
        'description': 'The Fedora Batch App provides a batch utilties for a Fedora Commons Repository',
-       'icon_url':'title-search.png',
+       'icon_url':'fedora-commons.png',
+       'productivity':True,
        'url':'fedora_batch/'}
 
 fedora_repo = FCRepoRestAPI(repository_url=FEDORA_URL,

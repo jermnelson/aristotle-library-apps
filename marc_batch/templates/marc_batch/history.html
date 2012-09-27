@@ -1,0 +1,33 @@
+{% extends 'marc-batch-app.html' %}
+{% load i18n %}
+
+{% block more-css %}{% endblock %}
+
+
+{% block app-main-body %}
+   <h1>History of {{ current_job.name }}</h1>
+   <table>
+    <tr>
+	 <th>Date</th>
+	 <th>Description</th>
+	 <th>New Records</th>
+	 <th>Overlaid</th>
+	 <th>Rejected</th>
+	 <th>File Downloads</th>
+	</tr>
+   {% for log in logs %}
+   <tr>
+     <td>{{ log.created_on|date:"d F Y h:i:s a"}}</td>
+     <td>{{ log.description }}</td>
+	 <td>{{ log.new_records }}</td>
+	 <td>{{ log.overlaid_records }}</td>
+	 <td>{{ log.rejected_records }}</td>
+	 <td>
+	   <a class="btn btn-success btn-mini" href="/apps/{{ app.url }}download?log_pk={{ log.pk }}">Modified MARC File</a>
+	   <br/>
+	   <a class="btn btn-success btn-mini" href="/apps/{{ app.url }}download?original=yes&log_pk={{ log.pk }}">Original MARC File</a>
+	 </td>
+   </tr>
+   {% endfor %}
+   </table>
+{% endblock %}

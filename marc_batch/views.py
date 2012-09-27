@@ -43,14 +43,22 @@ def download(request):
     """
     Download modified MARC21 file
     """
-    log_pk = request.session['log_pk']
+    if request.REQUEST.has_key("log_pk"):
+        log_pk = request.REQUEST["log_pk"]
+    else:
+        log_pk = request.session['log_pk']
     record_log = ILSJobLog.objects.get(pk=log_pk)
-    modified_file = open(record_log.modified_marc.path,'r')
-    file_wrapper = FileWrapper(file(record_log.modified_marc.path))
+    if request.REQUEST.has_key("original"):
+        file_path = record_log.original_marc.path
+    else:
+        file_path = record_log.modified_marc.path  
+    file_object = open(file_path,'r')
+    file_wrapper = FileWrapper(file(file_path))
+    filename = os.path.split(file_path)[1]
     response = HttpResponse(file_wrapper,content_type='text/plain')
-    filename = os.path.split(record_log.modified_marc.path)[1]
+    filename = os.path.split(file_path)[1]
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
-    response['Content-Length'] = os.path.getsize(record_log.modified_marc.path)
+    response['Content-Length'] = os.path.getsize(file_path)
     return response
 
 def ils(request):
@@ -135,6 +143,23 @@ def job_display(request,job_pk):
                                'ils_jobs':ils_jobs,
                                'institution':INSTITUTION,
                                'marc_upload_form':marc_form})
+
+def job_history(request,job_pk):
+    """
+    Displays the history for a MARC batch job
+
+    :param request: HTTP request
+    :param job_pk: Django primary key for job
+    """
+    job = Job.objects.get(pk=job_pk)
+    job_logs = JobLog.objects.filter(job=job).order_by("created_on")
+    return direct_to_template(request,
+                              'marc_batch/history.html',
+                              {'app':APP,
+                               'current_job':job,
+                               'institution':INSTITUTION,
+                               'logs':job_logs})
+                               
 
 def job_finished(request,job_log_pk):
     """

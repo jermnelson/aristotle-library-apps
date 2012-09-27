@@ -4,19 +4,9 @@
 {% block more-css %}{% endblock %}
 
 
-{% block body %}
- <div class="row-fluid main-pane">
-  <div class="span2">
-   <div class="well">
-    <p>
-    <a class="btn" href="/apps/{{ app.url}}">{{ app.current_view.title }} Home</a>
-    </p>
-   </div>
-  </div>
-  <div class="span8 well" id="job-details">
+{% block app-main-body %}
    <h1>Finished {{ log.job.name }}</h1>
+   <p>
    {{ log }}
-   
-  </div>
- </div>
+   </p>
 {% endblock %}
