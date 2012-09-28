@@ -7,6 +7,17 @@
 {% endblock %}
 
 {% block more-css %}
+<style media="screen" type="text/css">
+ ul.fedora-batch-nav {
+   background-color: rgb(209,208,208);
+   border-radius: 5px;
+   -webkit-border-radius: 5px;
+   -moz-border-radius: 5px;
+   padding: .5em;
+   width: 12%;
+ }
+
+</style>
 {% endblock %}
 
 
@@ -16,8 +27,8 @@
  {% comment %}START row-fluid DIV{% endcomment %}
  <div class="row-fluid">
   {% comment %}START fedora batch nav DIV{% endcomment %}
-  <div class="span3">
-   <ul data-spy="affix" class="nav nav-stacked affix" >
+  <div class="span2">
+   <ul data-spy="affix" class="nav nav-stacked affix fedora-batch-nav" >
      <li>
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#ingest">Batch Ingest</a>
@@ -26,32 +37,51 @@
 	  <i class="icon-chevron-right pull-right"></i>
 	  <a href="#modify">Batch Modify</a> 
 	 </li>
+     <li>
+	   <i class="icon-chevron-right pull-right"></i>
+	   <a href="#generate-marc">Generate MARC Record</a>
+	 </li>	 
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#mover">Object Mover</a>
 	 </li>
+	 <li>
+	  
+	 </li>
    </ul>
   {% comment %}END fedora batch nav DIV{% endcomment %}
   </div>
-  {% comment %}START widget DIV{% endcomment %}
+  {% comment %}START views DIV{% endcomment %}
   <div class="span7">
-   <div name="ingest" class="well">
+   <div class="well">
+    <a name="ingest"></a>
     <h2>Batch Ingest</h2>
 	<form>
 	 {{ ingest_form.as_p }}
-	 <a href="#" class="btn btn-primary">Run</a>
+	 <a href="#" class="btn btn-primary">Ingest</a>
 	</form>
    </div>
    <hr />
-   <div name="modify" class="well">
+   <div class="well">
+     <a name="modify"></a>
      <h2>Batch Modify Metadata</h2>
 	 <p>With this form you'll be able to modify the existing metadata for one 
 	    or more objects in a Fedora Commons server.</p>
 	 <form>
 	  {{ modify_form.as_p }}
+	  <a href="#" class="btn btn-primary">Modify</a>
 	 </form>
    </div>
-   <div name="mover" class="well">
+   <hr />
+   <div class="well">
+    <a name="generate-marc"></a>
+	<h2>Generate MARC record</h2>
+	
+	  <a href="#" class="btn btn-primary">Generate MARC</a>
+   </div>
+   <hr />
+   <div class="well">
+     <a name="mover" ></a>
      <h2>PID Mover</h2>
 	 <p>Moves a single object or collection in a Fedora Commons Server</p>
 	 <form>
@@ -71,48 +101,11 @@
 <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script>
-//$('.typeahead').typeahead();
-$('#typeahead-search').typeahead({
-    source: function (query, process) {
-        return $.get('/apps/title_search/search', { query: query }, function (data) {
-            return process(data);
-        });
-    }
-});
+ function BatchIngestViewModel() {
+   this.
+ 
+ }
 
- function Title(raw_title,record_id) {
-   this.raw_title = raw_title;
-   this.record_id = record_id;
- }
- function TitleSearchAppViewModel() {
-   var self = this;
-   self.titles = ko.observableArray([]);
-   self.newSearchQuery = ko.observable();
-   self.errorMessage = ko.observable(false);
-   self.searchTitle = function() {
-     self.titles.removeAll();
-     var data = 'q=' + ko.toJS(self.newSearchQuery);
-	 $.ajax({
-	    url:'/apps/title_search/search',
-		data:data,
-		dataType: 'json',
-		success: function(data) {
-		   var parsed_titles = data['results'];
-		   if(parsed_titles.length < 1) {
-		     self.errorMessage(true);
-		   } else {
-		     self.errorMessage(false);
-		   } 
-		   for(i=0;i<=parsed_titles.length;i++) {
-		      var title = parsed_titles[i];
-			  if(title) {
-			    self.titles.push(new Title(title.raw,title['legacy-bib-id']));
-			  }
-		   }
-		
-     }});
-   }
- }
- ko.applyBindings(new TitleSearchAppViewModel());
+ ko.applyBindings();
 </script>
 {% endblock %}

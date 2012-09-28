@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'article_search',
     'book_search',
     'call_number',
+    'dbfinder',
     'fedora_batch',
     'hours',
     'marc_batch',
