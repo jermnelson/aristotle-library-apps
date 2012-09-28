@@ -31,7 +31,7 @@
    <ul data-spy="affix" class="nav nav-stacked affix fedora-batch-nav" >
      <li>
 	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#ingest">Batch Ingest</a>
+	   <a href="#" data-bind="click: ShowBatchIngest">Batch Ingest</a>
 	 </li>
 	 <li>
 	  <i class="icon-chevron-right pull-right"></i>
@@ -53,7 +53,7 @@
   </div>
   {% comment %}START views DIV{% endcomment %}
   <div class="span7">
-   <div class="well">
+   <div class="well" data-bind="visible: batchIngest">
     <a name="ingest"></a>
     <h2>Batch Ingest</h2>
 	<form>
@@ -102,10 +102,14 @@
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script>
  function BatchIngestViewModel() {
-   this.
+   this.batchIngest = ko.observable(false);
+   
+   this.ShowBatchIngest = function() {
+      this.batchIngest = ko.observable(true);
+   }
  
  }
 
- ko.applyBindings();
+ ko.applyBindings(new BatchIngestViewModel());
 </script>
 {% endblock %}
