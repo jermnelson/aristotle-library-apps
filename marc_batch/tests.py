@@ -5,11 +5,13 @@ __author__ = "Jeremy Nelson"
 import redis,pymarc,datetime
 import json
 from django.test import TestCase
-from aristotle.settings import REDIS_TEST_DB
+from aristotle.settings import TEST_REDIS
 from jobs.rdaCore_redis import *
 
-
-test_ds = redis.StrictRedis(db=REDIS_TEST_DB)
+if TEST_REDIS is None:
+    test_ds = redis.StrictRedis()
+else:
+    test_ds = TEST_REDIS
 
 class CreateRDACoreEntityFromMARCTest(TestCase):
 

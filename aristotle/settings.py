@@ -158,6 +158,7 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'article_search',
     'book_search',
+    'bibframework',
     'call_number',
     'dbfinder',
     'fedora_batch',
