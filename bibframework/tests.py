@@ -7,7 +7,7 @@ from app_helpers import *
 try:
     from aristotle.settings import TEST_REDIS
 except ImportError, e:
-    TEST_REDIS = redis.StrictRedis(host="192.168.64.128",port=6385)
+    TEST_REDIS = redis.StrictRedis(host="192.168.64.139",port=6385)
 test_redis = TEST_REDIS
 
 class BibFrameworkModelTest(TestCase):

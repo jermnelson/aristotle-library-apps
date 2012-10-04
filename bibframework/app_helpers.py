@@ -168,10 +168,15 @@ class Work(BibFrameworkModel):
         """
         Creates a Work object
         """
-        
         if not kwargs.has_key('redis'):
             kwargs['redis'] = WORK_REDIS
         super(Work,self).__init__(**kwargs)
+
+    def add_annotation(self,annotation_key):
+        """
+        Function adds an annotation to the
+        """
+        pass
 
     def save(self):
         """
