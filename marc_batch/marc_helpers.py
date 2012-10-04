@@ -112,7 +112,7 @@ class MARCModifier(object):
 ##        output = cStringIO.StringIO()
 ##        for record in self.records:
 ##            record_str = record.as_marc()
-##            output.write(record_str.encode('utf8','ignore'))
+##            output.write(record_str.decode('utf8','ignore'))
 ##        return output.getvalue()
 
     def output(self):

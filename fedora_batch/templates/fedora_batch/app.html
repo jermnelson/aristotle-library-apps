@@ -31,7 +31,7 @@
    <ul data-spy="affix" class="nav nav-stacked affix fedora-batch-nav" >
      <li>
 	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#" data-bind="click: displayJob">Batch Ingest</a>
+	   <a href="#" data-bind="click: displayIngest">Batch Ingest</a>
 	 </li>
 	 <li>
 	  <i class="icon-chevron-right pull-right"></i>
@@ -43,19 +43,21 @@
 	 </li>	 
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#mover">Object Mover</a>
-	 </li>
-	 <li>
-	  
+	   <a href="#mover" data-bind="click: displayMover">Object Mover</a>
 	 </li>
    </ul>
   {% comment %}END fedora batch nav DIV{% endcomment %}
   </div>
   {% comment %}START views DIV{% endcomment %}
   <div class="span7">
+   
    <div class="well well-small"> 
-    <h2>{{ app.current_view.title }} App</h2>
-    <p>{{ app.description }}</p>
+   <h2>{{ app.current_view.title }} App</h2>
+    {% if message %}
+      <p>{{ message }}</p>
+	{% else %}
+	 <p>{{ app.description }}</p>
+    {% endif %}
    </div>
    <div class="well well-small" data-bind="visible: batchIngest">
     <a name="ingest"></a>
@@ -76,6 +78,7 @@
 	 </form>
    </div>
    <div class="well" data-bind="visible: marcGenerate">
+   <form method="POST" action="{% url pid-mover %}"
     <a name="generate-marc"></a>
 	<h2>Generate MARC record</h2>
 	
@@ -85,13 +88,17 @@
      <a name="mover" ></a>
      <h2>PID Mover</h2>
 	 <p>Moves a single object or collection in a Fedora Commons Server</p>
-	 <form>
-	   {{ object_mover_form }}
+	 <p>
+	  {% csrf_token %}
+	   <label>{{ object_mover_form.collection_pid.label }}</label>
+	   {{ object_mover_form.collection_pid }}<br/>
+	   <label>{{ object_mover_form.source_pid.label }}</label>
+	   {{ object_mover_form.source_pid }}<br />
 	   <input type="submit" class="btn btn-primary" value="Move PID" />
-	 </form>
+	 </p>
   {% comment %}END widget DIV{% endcomment %}
   </div>
-  
+  </form>
  {% comment %}END row-fluid DIV{% endcomment %}
  </div>
 {% comment %}END content DIV{% endcomment %}
@@ -107,35 +114,27 @@
    this.batchIngest = ko.observable(false);
    this.batchModfiy = ko.observable(false);
    this.marcGenerate = ko.observable(false);
-   this.pidMover = ko.observable(false);
+   this.pidMover = ko.observable(true);
    
-   this.displayJob = function() {
-     var current_job = this.value;
-     this.batchIngest = ko.observable(false);
-     this.batchModfiy = ko.observable(false);
-     this.marcGenerate = ko.observable(false);
-     this.pidMover = ko.observable(false);
-     switch(current_job) {
-	   case "ingest":
-	     this.batchIngest = ko.observable(true)
-		 break;
-	
-	   case "modify":
-	     this.batchModfiy = ko.observable(true);
-		 break;
-		 
-	   case "marc":
-	     this.marcGenerate = ko.observable(true);
-		 break;
-		 
-	   case "mover":
-	     this.pidMover = ko.observable(true);
-		 break;
-	  
-	  }
+   
+   
+   this.displayMover = function() {
+    this.pidMover = ko.observable();
+	alert("In DisplayMover");
+	this.pidMover = ko.observable(true);
    }
+   
  }
- 
+ function hideAll(){
+    FedoraBatchViewModel.batchIngest = ko.observable(false);
+    FedoraBatchViewModel.batchModfiy = ko.observable(false);
+    FedoraBatchViewModel.marcGenerate = ko.observable(false);
+    FedoraBatchViewModel.pidMover = ko.observable(false);
+ }
+ function displayIngest() {
+    hideAll();
+	FedoraBatchViewModel.batchIngest.visible = true;  
+ }
 
 
  ko.applyBindings(new FedoraBatchViewModel());

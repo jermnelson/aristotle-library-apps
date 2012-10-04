@@ -3,6 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 from lxml import etree
+import aristotle.settings as settings
 from eulfedora.server import Repository
 
 def repository_move(source_pid,collection_pid):
@@ -17,7 +18,9 @@ def repository_move(source_pid,collection_pid):
     ns = {'rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
           'fedora':'info:fedora/fedora-system:def/relations-external#'}
 
-    repository = Repository()
+    repository = Repository(root=settings.FEDORA_ROOT,
+                            username=settings.FEDORA_USER,
+                            password=settings.FEDORA_PASSWORD)
     raw_rels_ext = repository.api.getDatastreamDissemination(pid=source_pid,
                                                              dsID='RELS-EXT')
     rels_ext = etree.XML(raw_rels_ext[0])

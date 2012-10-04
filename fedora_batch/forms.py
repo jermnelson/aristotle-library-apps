@@ -1,5 +1,9 @@
 from django import forms
 from fedora_batch.models import *
+from eulfedora.server import Repository
+from eulfedora.util import RequestFailed
+
+repository = Repository()
 
 class BatchIngestForm(forms.Form):
     metadata_template = forms.FileField()
