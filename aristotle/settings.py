@@ -148,7 +148,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -156,24 +156,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.markup',
-    'article_search',
-    'book_search',
-    'bibframework',
-    'call_number',
-    'dbfinder',
-    'fedora_batch',
-    'hours',
-    'marc_batch',
-    'orders',
-    'portfolio',
-    'RDACore',
-    'reserve_search',
-    'title_search',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-)
+]
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -205,5 +192,6 @@ LOGGING = {
 }
 try:
     from local_settings import *
+    INSTALLED_APPS.extend(ACTIVE_APPS)
 except ImportError:
     pass
