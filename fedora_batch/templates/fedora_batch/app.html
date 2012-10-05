@@ -90,11 +90,11 @@
 	 <p>Moves a single object or collection in a Fedora Commons Server</p>
 	 <p>
 	  {% csrf_token %}
-	   <label>{{ object_mover_form.collection_pid.label }}</label>
-	   {{ object_mover_form.collection_pid }}<br/>
-	   <label>{{ object_mover_form.source_pid.label }}</label>
-	   {{ object_mover_form.source_pid }}<br />
-	   <input type="submit" class="btn btn-primary" value="Move PID" />
+	    
+	   <strong>Move Source PID</strong> {{ object_mover_form.source_pid }} to <strong>Target PID</strong> 
+	   {{ object_mover_form.collection_pid }}
+	   <br />
+	   <input type="submit" class="btn btn-primary" value="Move" />
 	 </p>
   {% comment %}END widget DIV{% endcomment %}
   </div>
