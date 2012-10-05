@@ -82,7 +82,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_HOME,'reserve_search/assets'),
     # os.path.join(PROJECT_HOME,'hours/assets'),
     os.path.join(PROJECT_HOME,'marc_batch/assets'),
-    os.path.join(PROJECT_HOME,'orders/assets'),
+    # os.path.join(PROJECT_HOME,'orders/assets'),
     os.path.join(PROJECT_HOME,'portfolio/assets')
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
