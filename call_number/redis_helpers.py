@@ -15,7 +15,50 @@ english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
 #lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\w{0,1}\d*)\s*(?P<decimal>[.|\w]*\d*)\s*(?P<cutter1alpha>\w*)\s*(?P<last>\d*)")
 lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\s*(?P<cutter1>[.|\w]*\d*)\s*(?P<cutter2>\w*)\s*(?P<last>\d*)")
-   
+
+
+def generate_call_number_app(instance,redis_server):
+    """
+    Helper function takes a MARCR Instance with call-numbers, creates supporting
+    Redis datastructures to support the call number app
+
+    :param instance: MARCR Instance
+    :parm redis_server: Redis server
+    """
+    identifiers = instance.attributes.get('rda:identifierForTheManifestation',None)
+    if identifiers.has_key('lccn'):
+        redis_server.hset('lccn-hash',
+                          identifiers.get('lccn'),
+                          instance.redis_key)
+        normalized_call_number = lccn_normalize(identifiers.get('lccn'))
+        redis_server.hset('lccn-normalized-hash',
+                          normalized_call_number,
+                          instance.redis_key)
+        redis_server.zadd('lccn-sort-set',
+                          0,
+                          normalized_call_number)
+        instance.attributes['lccn-normalized'] = normalized_call_number
+        instance.save()
+    if identifiers.has_key('sudoc'):
+        call_number = identifiers.get('sudoc')
+        redis_server.hset('sudoc-hash',
+                          call_number,
+                          instance.redis_key)
+        redis_server.zadd('sudoc-sort-set',
+                          0,
+                          call_number)
+    if identifiers.has_key('local'):
+        call_number = identifiers.get('sudoc')
+        redis_server.hset('local-hash',
+                          call_number,
+                          instance.redis_key)
+        redis_server.zadd('local-sort-set',
+                          0,
+                          call_number)
+        
+        
+        
+    
 def get_all(call_number,slice_size=10):
     """
     Function returns a list of call numbers with the param centered between
@@ -175,95 +218,6 @@ def quick_set_callnumber(identifiers_key,
                       call_number)
     redis_server.hset('%s-hash' % call_number_type,call_number,redis_key)
     redis_server.zadd('%s-sort-set' % call_number_type,0,call_number)
-
-
-
-def get_set_callnumbers(marc_record,
-                        redis_server,
-                        redis_key):
-    """
-    Sets sudoc, lc, and local call numbers from the MARC record values
- 
-    :param marc_record: MARC21 record
-    :param redis_server: Redis Server
-    :param redis_key: Key to RDA Core entity
-    """
-    identifiers_key = '%s:identifiers' % redis_key
-    if not redis_server.hexists(redis_key,'identifiers'):
-        redis_server.hset(redis_key,'identifiers',identifiers_key)
-    sudoc_field = marc_record['086']
-    if sudoc_field is not None:
-        call_number = sudoc_field.value()
-        quick_set_callnumber(identifiers_key,
-                             "sudoc",
-                             call_number,
-                             redis_server,
-                             redis_key)
-    lccn_field = marc_record['050']
-    if lccn_field is not None:
-        call_number = lccn_field.value()
-        lccn_set(identifiers_key,
-                 call_number,
-                 redis_server,
-                 redis_key)
-        
-    local_090 = marc_record['090']
-    if local_090 is not None:
-        call_number = local_090.value()
-        if not redis_server.hget(identifiers_key,'lccn'):
-            lccn_set(identifiers_key,
-                     call_number,
-                     redis_server,
-                     redis_key)
-        else:
-            quick_set_callnumber(identifiers_key,
-                                 "local",
-                                 call_number,
-                                 redis_server,
-                                 redis_key)
-    local_099 = marc_record['099']
-    if local_099 is not None:
-        call_number = local_099.value()
-        quick_set_callnumber(identifiers_key,
-                             "local",
-                             call_number,
-                             redis_server,
-                             redis_key)
-        
-    
-def ingest_call_numbers(marc_record,redis_server,entity_key):
-    """
-    `ingest_call_numbers` function takes a MARC record and
-    a RDACore FRBR Redis Expression or Manifestation key, ingests the
-    record and depending on the call number type (currently using
-    three types of call numbers; LCCN, SuDoc, and local)
-    associates the call number to the entity key in a
-    hash and then adds the call number to a sorted set, with
-    the weight score using a custom sort algorithm depending
-    on the call number type.
-
-    :param marc_record: MARC Record
-    :param redis_server: Redis Server
-    :param entity_key: Redis FRBR RDACore Entity key
-    """
-    get_set_callnumbers(marc_record,redis_server,entity_key)
-    
-
-def search(query):
-    set_rank = redis_server.zrank('call-number-sorted-search-set',query)
-    output = {'result':[]}
-    for row in redis_server.zrange('call-number-sorted-search-set',set_rank,-1):
-        if row[-1] == "*":
-            call_number = row[:-1]
-            record = get_record(call_number)
-            output['result'].append(call_number)
-            output['record'] = record
-            output['discovery_url'] = '%s%s' % (settings.DISCOVERY_RECORD_URL,
-                                                record['bib_number'])
-            return output
-        else:
-            output['result'].append(row)
-    return output
 
 
 def lccn_normalize(raw_callnumber):

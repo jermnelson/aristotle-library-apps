@@ -20,7 +20,7 @@ except ImportError, e:
     OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
 
 
-class BibFrameworkModel(object):
+class MARCRModel(object):
     """
     Base class for all classes of the Bibliographic Framework's High level
     models
@@ -61,16 +61,16 @@ class BibFrameworkModel(object):
             # Redis datastore
             for attrib_key,value in self.attributes.iteritems():
                 if type(value) is list:
-                    self.redis.lpush("{0}{1}".format(self.redis_key,
-                                                     attrib_key),
+                    self.redis.lpush("{0}:{1}".format(self.redis_key,
+                                                      attrib_key),
                                      value)
                 elif type(value) is set:
-                    self.redis.sadd("{0}{1}".format(self.redis_key,
-                                                    attrib_key),
+                    self.redis.sadd("{0}:{1}".format(self.redis_key,
+                                                     attrib_key),
                                     value)
                 elif type(value) is dict:
-                    new_hash_key = "{0}{1}".format(self.redis_key,
-                                                   attrib_key)
+                    new_hash_key = "{0}:{1}".format(self.redis_key,
+                                                    attrib_key)
                     for nk,nv in value.iteritems():
                         self.redis.hset(new_hash_key,
                                         nk,
@@ -80,7 +80,7 @@ class BibFrameworkModel(object):
                                     attrib_key,
                                     value)
 
-class Annotation(BibFrameworkModel):
+class Annotation(MARCRModel):
     """
     Annotation class is a high level model in the Bibliographic Framework. It is
     made up of attributes derived from RDA/FRBR and noted as such.
@@ -99,11 +99,11 @@ class Annotation(BibFrameworkModel):
         Saves the Annotation object to the Redis datastore
         """
         if self.redis_key is None:
-            self.redis_key = "Annotation:{0}".format(self.redis.incr("global Annotation"))
+            self.redis_key = "marcr:Annotation:{0}".format(self.redis.incr("global marcr:Annotation"))
         super(Annotation,self).save()
 
 
-class Authority(BibFrameworkModel):
+class Authority(MARCRModel):
     """
     Author class is a high level model in the Bibliographic Framework. It is
     made up of attributes derived from RDA/FRBR and noted as such.
@@ -121,21 +121,22 @@ class CorporateBody(Authority):
 
     def save(self):
         if self.redis_key is None:
-            self.redis_key = "Authority:CorporateBody:{0}".format(self.redis.incr("global Authority:CorporateBody"))
+            self.redis_key = "marcr:Authority:CorporateBody:{0}".format(self.redis.incr("global marcr:Authority:CorporateBody"))
         super(Person,self).save()
+
 
 class Person(Authority):
 
     def save(self):
         if self.redis_key is None:
-            self.redis_key = "Authority:Person:{0}".format(self.redis.incr("global Authority:Person"))
+            self.redis_key = "marcr:Authority:Person:{0}".format(self.redis.incr("global marcr:Authority:Person"))
         super(Person,self).save()
 
 
 
     
         
-class Instance(BibFrameworkModel):
+class Instance(MARCRModel):
     """
     Instance class is a high level model in the Bibliographic Framework. It is
     made up of attributes derived from RDA/FRBR and noted as such.
@@ -154,11 +155,11 @@ class Instance(BibFrameworkModel):
         Saves the Instance object to the Redis datastore
         """
         if self.redis_key is None:
-            self.redis_key = "Instance:{0}".format(self.redis.incr("global Instance"))
+            self.redis_key = "marcr:Instance:{0}".format(self.redis.incr("global marcr:Instance"))
         super(Instance,self).save()
                 
 
-class Work(BibFrameworkModel):
+class Work(MARCRModel):
     """
     Work class is a high level model in the Bibliographic Framework. It is
     made up of attributes derived from RDA/FRBR and noted as such.
@@ -174,7 +175,7 @@ class Work(BibFrameworkModel):
 
     def add_annotation(self,annotation_key):
         """
-        Function adds an annotation to the
+        Function adds an annotation to the work
         """
         pass
 
@@ -183,7 +184,7 @@ class Work(BibFrameworkModel):
         Saves the Work object to the Redis datastore
         """
         if self.redis_key is None:
-            self.redis_key = "Work:{0}".format(self.redis.incr("global Work"))
+            self.redis_key = "marcr:Work:{0}".format(self.redis.incr("global marcr:Work"))
         super(Work,self).save()
 
 

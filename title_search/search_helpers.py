@@ -62,92 +62,31 @@ def add_or_get_title(raw_title,redis_server):
     for metaphone in stop_metaphones:
         add_metaphone_key(metaphone,title_keys,redis_server)
     return title_keys
-    
 
-def old_add_or_get_title(raw_title,redis_server):
+def generate_title_app(work,redis_server):
     """
-    Function takes a raw_title, checks if value exists "as is"
-    along with a stopword and metaphone checks in datastore.
-    
-    Returns existing rda:Title key or new key
-    :param raw_title: Raw title either extracted from record source
-                      or from submission by user
+    Helper function takes a MARCR Work with a title, creates supporting
+    Redis datastructures to support the title app
+
+    :param work: MARCR Work
+    :parm redis_server: Redis server
     """
-    stop_metaphones,all_metaphones,title_metaphone = process_title(raw_title)
+    stop_metaphones,all_metaphones,title_metaphone = process_title(work.attributes['rda:Title']['rda:preferredTitleForTheWork'])
+    title_metaphone_key = 'title-metaphones:{0}'.format(title_metaphone)
     title_pipeline = redis_server.pipeline()
-    if redis_server.exists(title_metaphone):
-        title_keys = redis_server.smembers(title_metaphone)
-        raw_already_exists = False
-        for title_key in title_keys:
-            if raw_title == redis_server.hget(title_key,"raw"):
-                raw_already_exists = True
-                continue
-        if raw_already_exists == False:
-            title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
-            title_pipeline.sadd(title_metaphone,title_key)
-            title_pipeline.hset(title_key,"phonetic",title_metaphone)
-            title_pipeline.hset(title_key,"raw",raw_title)
+    title_pipeline.sadd(title_metaphone_key,work.redis_key)
+    work.attributes['rda:Title']['phonetic'] = title_metaphone
+    if work.attributes['rda:Title'].has_key('rda:variantTitleForTheWork:sort'):
+        title_pipeline.zadd("z-titles-alpha",0,work.attributes['rda:Title'].get('rda:variantTitleForTheWork:sort'))
     else:
-        title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
-        title_pipeline.sadd(title_metaphone,title_key)
-        title_pipeline.hset(title_key,"phonetic",title_metaphone)
-        title_pipeline.hset(title_key,"raw",raw_title) 
+        title_pipeline.zadd("z-titles-alpha",0,work.attributes['rda:Title'].get('rda:preferredTitleForTheWork'))
+    for metaphone in all_metaphones:
+        add_metaphone_key(metaphone,[work.redis_key,],redis_server)
+    for metaphone in stop_metaphones:
+        add_metaphone_key(metaphone,[work.redis_key,],redis_server)
     title_pipeline.execute()
-    return title_key
-
-slash_re = re.compile(r"/$")
-def add_marc_title(marc_record,redis_server):
-    """
-    Function takes a MARC21 record, extracts the title information
-    from subfields and creates a sort title depending on second indicator
-
-    :param marc_record: MARC21 record
-    :param redis_server: Title Redis instance
-    """
-    # Extract 245    
-    title_field = marc_record['245']
-    
-    if title_field is not None:
-        raw_title = ''.join(title_field.get_subfields('a'))
-        if slash_re.search(raw_title):
-            raw_title = slash_re.sub("",raw_title).strip()
-        subfield_b = ' '.join(title_field.get_subfields('b'))
-        if slash_re.search(subfield_b):
-            subfield_b = slash_re.sub("",raw_title).strip()
-        raw_title += subfield_b
-        if raw_title.startswith("..."):
-            raw_title = raw_title.replace("...","")
-        title_keys = add_or_get_title(raw_title,redis_server)
-        for title_key in title_keys:
-            if raw_title == redis_server.hget(title_key,"raw"):
-                indicator_one = title_field.indicators[1]
-                try:
-                    indicator_one = int(indicator_one)
-                except ValueError:
-                    indicator_one = 0
-                if int(indicator_one) > 0:
-                    nonfiling_offset = int(title_field.indicators[1])
-                    sort_title = raw_title[nonfiling_offset:]
-                    title_sha1 = hashlib.sha1(sort_title)
-                    redis_server.zadd("z-titles-alpha",0,sort_title)
-                    redis_server.hset(title_key,"sort",sort_title)
-                    sort_stop,sort_all,sort_metaphone = process_title(sort_title)
-                    redis_server.sadd("title-metaphones:{0}".format(sort_metaphone),
-                                      title_key)
-                else:
-                    redis_server.zadd("z-titles-alpha",0,raw_title)
-                    title_sha1 = hashlib.sha1(raw_title)
-                
-                # Adds title keys to set of title sha1 value
-                redis_server.sadd("s-sha1:{0}".format(title_sha1.hexdigest()),
-                                      title_key)
-                # Set legacy bib id
-                field907 = marc_record['907']
-                if field907 is not None:
-                    raw_bib_id = ''.join(field907.get_subfields('a'))
-                    redis_server.hset(title_key,"legacy-bib-id",raw_bib_id[1:-1])        
-    
-    
+    work.save()
+        
     
 def process_title(raw_title):
     """
@@ -170,6 +109,7 @@ def process_title(raw_title):
         all_metaphones.append(first_phonetic)
     title_metaphone = ''.join(all_metaphones)
     return stop_metaphones,all_metaphones,title_metaphone
+
 
         
 def typeahead_search_title(user_input,redis_server):

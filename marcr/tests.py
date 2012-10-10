@@ -1,21 +1,25 @@
 """
  :mod:`tests` - Unit tests for the Bibliographic Framework App
 """
-import redis
+import redis,pymarc
 from django.test import TestCase
 from app_helpers import *
+from ingesters import MARC21toInstance,MARC21toWork
 try:
     from aristotle.settings import TEST_REDIS
 except ImportError, e:
-    TEST_REDIS = redis.StrictRedis(host="192.168.64.139",port=6385)
+    TEST_REDIS = redis.StrictRedis(host="192.168.64.143",port=6385)
+    
 test_redis = TEST_REDIS
 
-class BibFrameworkModelTest(TestCase):
+
+
+class MARCRModelTest(TestCase):
 
     def setUp(self):
-        self.base_bibframe = BibFrameworkModel(redis=test_redis,
-                                               redis_key='base-bib-framework:1')
-        self.empty_base_bibframe = BibFrameworkModel()
+        self.base_bibframe = MARCRModel(redis=test_redis,
+                                        redis_key='marcr:1')
+        self.empty_base_bibframe = MARCRModel()
         
     
     def test_init(self):
@@ -24,7 +28,7 @@ class BibFrameworkModelTest(TestCase):
         """
         self.assert_(self.base_bibframe.redis is not None)
         self.assertEquals(self.base_bibframe.redis_key,
-                          'base-bib-framework:1')
+                          'marcr:1')
         self.assertEquals(self.base_bibframe.attributes,{})
         self.assert_(self.empty_base_bibframe.redis is None)
         self.assert_(self.empty_base_bibframe.redis_key is None)
@@ -47,15 +51,112 @@ class AuthorityTest(TestCase):
     def setUp(self):
         self.new_base_authority = Authority(redis=test_redis)
         self.base_authority = Authority(redis=test_redis,
-                                        redis_key="Authority:1")
+                                        redis_key="marcr:Authority:1")
 
     def test_init(self):
         self.assert_(self.new_base_authority.redis is not None)
         self.assertEquals(self.base_authority.redis_key,
-                          "Authority:1")
+                          "marcr:Authority:1")
 
     def tearDown(self):
         test_redis.flushdb()
+
+class MARC21toInstanceTest(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(pymarc.Field(tag='050',
+                                           indicators=['0','0'],
+                                           subfields=['a','QC861.2',
+                                                      'b','.B36']))
+        marc_record.add_field(pymarc.Field(tag='086',
+                                           indicators=['0',' '],
+                                           subfields=['a','HE 20.6209:13/45']))
+        marc_record.add_field(pymarc.Field(tag='099',
+                                           indicators=[' ',' '],
+                                           subfields=['a','Video 6716']))
+        marc_record.add_field(pymarc.Field(tag='907',
+                                           indicators=[' ',' '],
+                                           subfields=['a','.b1112223x']))
+        self.instance_ingester = MARC21toInstance(annotation_ds=test_redis,
+                                                  authority_ds=test_redis,
+                                                  instance_ds=test_redis,
+                                                  marc_record=marc_record,
+                                                  work_ds=test_redis)
+        self.instance_ingester.ingest()
+
+    def test_init(self):
+        self.assert_(self.instance_ingester.instance.redis_key)
+
+    def test_lccn(self):
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['lccn'],
+                          'QC861.2 .B36')    
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['lccn'],
+                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+                                          "lccn"))
+
+    def test_local(self):
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['local'],
+                          'Video 6716')
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['local'],
+                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+                                          "local"))
+
+    def test_ils_bib_number(self):
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
+                          'b1112223')
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
+                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+                                          'ils-bib-number'))
+
+    def test_sudoc(self):
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
+                          'HE 20.6209:13/45')
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
+                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+                                          "sudoc"))
+        
+    def tearDown(self):
+        test_redis.flushdb()
+
+class MARC21toWorkTest(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(pymarc.Field(tag='245',
+                                           indicators=['1','0'],
+                                           subfields=['a','Statistics:',
+                                                      'b','facts or fiction.']))
+        self.work_ingester = MARC21toWork(annotation_ds=test_redis,
+                                          authority_ds=test_redis,
+                                          instance_ds=test_redis,
+                                          marc_record=marc_record,
+                                          work_ds=test_redis)
+        self.work_ingester.ingest()
+
+    def test_init(self):
+        self.assert_(self.work_ingester.work.redis_key)
+
+    def test_metaphone(self):
+        self.assertEquals(self.work_ingester.work.attributes['rda:Title']["phonetic"],
+                          "STTSTKSFKTSARFKXN")
+        self.assertEquals(self.work_ingester.work.attributes['rda:Title']["phonetic"],
+                          test_redis.hget("{0}:{1}".format(self.work_ingester.work.redis_key,
+                                                           'rda:Title'),
+                                          "phonetic"))
+    
+
+    def test_title(self):
+        self.assertEquals(self.work_ingester.work.attributes['rda:Title']['rda:preferredTitleForTheWork'],
+                          'Statistics: facts or fiction.')
+        self.assertEquals(self.work_ingester.work.attributes['rda:Title']['rda:preferredTitleForTheWork'],
+                          test_redis.hget("{0}:{1}".format(self.work_ingester.work.redis_key,
+                                                           'rda:Title'),
+                                          'rda:preferredTitleForTheWork'))
+
+    def tearDown(self):
+        test_redis.flushdb()    
+        
 
 class PersonAuthorityTest(TestCase):
 
@@ -64,7 +165,7 @@ class PersonAuthorityTest(TestCase):
                              attributes={'rda:dateOfBirth':'1962-04-21',
                                          'rda:dateOfDeath':'2008-09-12',
                                          'rda:gender':'male',
-                                         'rda:Name':'Wallace, David Foster',
+                                         'rda:preferredNameForThePerson':'Wallace, David Foster',
                                          'rda:identifierFor':{'loc':'http://id.loc.gov/authorities/names/n86001949'}})
         self.person.save()
 
@@ -89,21 +190,21 @@ class PersonAuthorityTest(TestCase):
 
     def test_loc_id(self):
         self.assertEquals(self.person.attributes['rda:identifierFor']['loc'],
-                          test_redis.hget("{0}{1}".format(self.person.redis_key,
-                                                          'rda:identifierFor'),
+                          test_redis.hget("{0}:{1}".format(self.person.redis_key,
+                                                           'rda:identifierFor'),
                                           'loc'))
 
     def test_name(self):
-        self.assertEquals(self.person.attributes['rda:Name'],
+        self.assertEquals(self.person.attributes['rda:preferredNameForThePerson'],
                           test_redis.hget(self.person.redis_key,
-                                          'rda:Name'))
+                                          'rda:preferredNameForThePerson'))
 
     
 
     
     def test_save(self):
         self.assertEquals(self.person.redis_key,
-                          "Authority:Person:1")
+                          "marcr:Authority:Person:1")
 
     def tearDown(self):
         test_redis.flushdb()
@@ -111,29 +212,61 @@ class PersonAuthorityTest(TestCase):
 class InstanceTest(TestCase):
 
     def setUp(self):
-        existing_attributes = {'rda:publisher':'Authority:CorporateBody:1'}
-        new_attributes = {'rda:publisher':'Authority:CorporateBody:2'}
+        existing_attributes = {'rda:publisher':'marcr:Authority:CorporateBody:1',
+                               'rda:identifierForTheManifestation':{'lccn':'C1.D11',
+                                                                    'local':'Video 6716'}}
+        new_attributes = {'rda:publisher':'marcr:Authority:CorporateBody:2',
+                          'rda:identifierForTheManifestation':{'ils-bib-number':'b1762075',
+                                                               'sudoc':'HD1695.C7C55 2007'}}
         self.instance = Instance(redis=test_redis,
-                                 redis_key="Instance:2",
+                                 redis_key="marcr:Instance:2",
                                  attributes=existing_attributes)        
         self.new_instance = Instance(redis=test_redis,
                                      attributes=new_attributes)
         
+
+    def test_ils_bib_number(self):
+        self.new_instance.save()
+        self.assertEquals(self.new_instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
+                          test_redis.hget("{0}:{1}".format(self.new_instance.redis_key,
+                                                           'rda:identifierForTheManifestation'),
+                                          "ils-bib-number"))
 
     def test_init(self):
         self.assert_(self.new_instance.redis)
         self.assert_(self.new_instance.redis_key is None)
         self.assert_(self.instance.redis)
         self.assertEquals(self.instance.redis_key,
-                          "Instance:2")
+                          "marcr:Instance:2")
+
+    def test_lccn_callnumber(self):
+        self.instance.save()
+        self.assertEquals(self.instance.attributes['rda:identifierForTheManifestation']['lccn'],
+                          test_redis.hget("{0}:{1}".format(self.instance.redis_key,
+                                                           'rda:identifierForTheManifestation'),
+                                          "lccn"))
+
+    def test_local_callnumber(self):
+        self.instance.save()
+        self.assertEquals(self.instance.attributes['rda:identifierForTheManifestation']['local'],
+                          test_redis.hget("{0}:{1}".format(self.instance.redis_key,
+                                                           'rda:identifierForTheManifestation'),
+                                          "local"))
 
     def test_publisher(self):
         self.new_instance.save()
         self.instance.save()
         self.assertEquals(self.new_instance.attributes['rda:publisher'],
-                          'Authority:CorporateBody:2')
+                          'marcr:Authority:CorporateBody:2')
         self.assertEquals(self.instance.attributes['rda:publisher'],
-                          'Authority:CorporateBody:1')
+                          'marcr:Authority:CorporateBody:1')
+
+    def test_sudoc_callnumber(self):
+        self.new_instance.save()
+        self.assertEquals(self.new_instance.attributes['rda:identifierForTheManifestation']['sudoc'],
+                          test_redis.hget("{0}:{1}".format(self.new_instance.redis_key,
+                                                           'rda:identifierForTheManifestation'),
+                                          "sudoc"))
                 
 
     def tearDown(self):
@@ -151,7 +284,7 @@ class WorkTest(TestCase):
                                'rda:isCreatedBy':'Authority:CorporateBody:1'}
         # Tests work w/pre-existing Redis key
         self.work = Work(redis=test_redis,
-                         redis_key="Work:2",
+                         redis_key="marcr:Work:2",
                          attributes=existing_attributes)
 
     def test_init_(self):
@@ -159,7 +292,7 @@ class WorkTest(TestCase):
         self.assert_(self.new_work.redis_key is None)
         self.assert_(self.work.redis)
         self.assertEquals(self.work.redis_key,
-                          "Work:2")
+                          "marcr:Work:2")
 
     def test_dateOfWork(self):
         self.new_work.save()
@@ -183,12 +316,13 @@ class WorkTest(TestCase):
     def test_save(self):
         self.new_work.save()
         self.work.save()
-        self.assertEquals(self.new_work.redis_key,"Work:1")
+        self.assertEquals(self.new_work.redis_key,"marcr:Work:1")
         self.assert_(test_redis.hget(self.work.redis_key,
                                      'created'))
-        self.assertEquals(self.new_work.attributes['created'],
+        # Extracting just the year-month-day to test
+        self.assertEquals(self.new_work.attributes['created'].split(":")[0],
                           test_redis.hget(self.work.redis_key,
-                                          'created'))
+                                          'created').split(":")[0])
         self.assert_(test_redis.exists(self.work.redis_key))
         
 
