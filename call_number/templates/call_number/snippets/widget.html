@@ -22,7 +22,6 @@
     {% include 'snippets/browse-li.html' %}
   {% endfor %}
    <li class="current">
-      
      {% if current.isbn %}
      {{ current.isbn|google_book_display }}
      {% endif %}

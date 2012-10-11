@@ -3,8 +3,8 @@
 """
 import redis,pymarc
 from django.test import TestCase
-from app_helpers import *
-from ingesters import MARC21toInstance,MARC21toMARCR,MARC21toWork
+from marcr_models import *
+from ingesters import MARC21toInstance,MARC21toMARCR,MARC21toPerson,MARC21toWork
 try:
     from aristotle.settings import TEST_REDIS
 except ImportError, e:
@@ -158,7 +158,48 @@ class MARC21toMARCRTest(TestCase):
         test_redis.flushdb()
 
 
-    
+class MARC21toPersonTest(TestCase):
+
+    def setUp(self):
+        field100 = pymarc.Field(tag='100',
+                                indicators=['1','0'],
+                                subfields=['a','Austen, Jane',
+                                           'd','1775-1817'])
+        self.person_ingester = MARC21toPerson(annotation_ds=test_redis,
+                                              authority_ds=test_redis,
+                                              field=field100,
+                                              instance_ds=test_redis,
+                                              work_ds=test_redis)
+        self.person_ingester.ingest()
+
+    def test_init(self):
+        self.assert_(self.person_ingester.person.redis_key)
+
+    def test_dob(self):
+        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfBirth'],
+                          '1775')
+        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfBirth'],
+                          test_redis.hget(self.person_ingester.person.redis_key,
+                                          'rda:dateOfBirth'))
+
+    def test_dod(self):
+        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfDeath'],
+                          '1817')
+        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfDeath'],
+                          test_redis.hget(self.person_ingester.person.redis_key,
+                                          'rda:dateOfDeath'))
+
+    def test_preferred_name(self):
+        self.assertEquals(self.person_ingester.person.attributes['rda:preferredNameForThePerson'],
+                          'Austen, Jane')
+        self.assertEquals(self.person_ingester.person.attributes['rda:preferredNameForThePerson'],
+                          test_redis.hget(self.person_ingester.person.redis_key,
+                                          'rda:preferredNameForThePerson'))
+                                                           
+
+    def tearDown(self):
+        test_redis.flushdb()
+        
         
 
 class MARC21toWorkTest(TestCase):

@@ -24,7 +24,6 @@ def setup_seed_rec():
     """
     seed_rec = redis_server.hgetall(SEED_RECORD_ID)
     ident_key = '{0}:rda:identifierForTheManifestation'.format(SEED_RECORD_ID)
-    print("IDENT key is {0}".format(ident_key))
     idents = redis_server.hgetall(ident_key)
     
     if idents.has_key('lccn'):
@@ -43,6 +42,7 @@ def app(request):
     call_number = current.get('call_number')
     next_recs = redis_helpers.get_next(call_number,
                                        call_number_type=current['type_of'])
+    print(len(next_recs))
     previous_recs = redis_helpers.get_previous(call_number,
                                                call_number_type=current['type_of'])
     return direct_to_template(request,

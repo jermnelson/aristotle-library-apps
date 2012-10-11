@@ -4,9 +4,10 @@
 """
 __author__ = "Jeremy Nelson"
 
-import datetime,re,pymarc,sys
+import datetime,re,pymarc,sys,logging
 from app_helpers import Annotation,CorporateBody,Person,Work,Instance
 from call_number.redis_helpers import generate_call_number_app
+from person_authority.redis_helpers import get_or_generate_person
 from title_search.search_helpers import generate_title_app
 
 import redis,datetime,pymarc
@@ -111,6 +112,32 @@ class MARC21toInstance(MARC21Ingester):
             # Extract III specific bib number
             bib_number = raw_bib_id[1:-1]
             self.entity_info['rda:identifierForTheManifestation']['ils-bib-number'] = bib_number
+
+    def extract_isbn(self):
+        """
+        Extract's ISBN  from MARC21 record and
+        saves as a rda:identifierForTheManifestation:isbn 
+        """
+        isbn_field = self.record['020']
+        isbn_values = []
+        if isbn_field is not None:
+            for subfield in isbn_field.get_subfields('a','z'):
+                isbn_values.append(''.join(subfield))
+            self.entity_info['rda:identifierForTheManifestation:isbn'] = set(isbn_values)
+
+    def extract_issn(self):
+        """
+        Extract's ISSN  from MARC21 record and
+        saves as a rda:identifierForTheManifestation:issn
+        """
+        issn_field = self.record['022']
+        issn_values = []
+        if issn_field is not None:
+            for subfield in issn_field.get_subfields('a',
+                                                     'y',
+                                                     'z'):
+                issn_values.append(''.join(subfield))
+            self.entity_info['rda:identifierForTheManifestation:issn'] = set(issn_values)            
             
     def extract_lccn(self):
         """
@@ -154,6 +181,8 @@ class MARC21toInstance(MARC21Ingester):
         Ingests a MARC21 record into a MARCR Instance Redis datastore
         """
         self.extract_ils_bibnumber()
+        self.extract_isbn()
+        self.extract_issn()
         self.extract_lccn()
         self.extract_sudoc()
         self.extract_local()
@@ -201,39 +230,31 @@ class MARC21toPerson(MARC21Ingester):
     """
 
     def __init__(self,**kwargs):
-        self.person = None
         super(MARC21toPerson,self).__init__(**kwargs)
-
-    def get_or_add_person(self):
-        """
-        Method either returns a new Person or an existing Person based
-        on a similarity metric
-        """
-        pass
+        self.person = None
+        self.people = []
+        self.field = kwargs.get("field",None)
 
     def extractDates(self):
         """
-        Extracts rda:dateOfBirth and rda:dateOfDeath from MARC21 record
+        Extracts rda:dateOfBirth and rda:dateOfDeath from MARC21 field
         """
         date_range = re.compile(r"(\d+)-*(\d*)")
-        for tag in ['100','700','800']:
-            field = self.record[tag]
-            if field is not None:
-                if ['0','1'].count(field.indicators[0]) > -1:
-                    raw_dates = ''.join(field.get_subfields('d'))
+        if self.field is not None and ['100','700','800'].count(self.field.tag)> -1:
+            if ['0','1'].count(self.field.indicators[0]) > -1:
+                raw_dates = ''.join(self.field.get_subfields('d'))
+                if len(raw_dates) > 0:
                     date_result = date_range.search(raw_dates)
                     if date_result is not None:
                         groups = date_result.groups()
                         if len(groups[0]) > 0:
-                            self.entity_values['rda:dateOfBirth'] = groups[0]
+                            self.entity_info['rda:dateOfBirth'] = groups[0]
                         if len(groups[1]) > 0:
-                            self.entity_values['rda:dateOfDeath'] = groups[1]
-                    else:
-                        raise ValueError("Raw dates: {0} not matched".format(raw_dates))
-        if self.record['542'] is not None:
-            field542b = self.record['542'].get_subfields('b')
+                            self.entity_info['rda:dateOfDeath'] = groups[1]
+        if self.field.tag == '542':
+            field542b = self.field.get_subfields('b')
             if len(field542b) > 0:
-                self.entity_values['rda:dateOfDeath'] = ''.join(field542b)
+                self.entity_info['rda:dateOfDeath'] = ''.join(field542b)
                 
 
     def extract_preferredNameForThePerson(self):
@@ -241,19 +262,24 @@ class MARC21toPerson(MARC21Ingester):
         Extracts RDA's preferredNameForThePerson from MARC21 record
         """
         preferred_name = []
-        for tag in ['100','700','800']:
-            field = self.record[tag]
-            if field is not None:
-                if ['0','1'].count(field.indicators[0]) > -1:
-                    preferred_name.extend(field.get_subfields('a','b'))
-        self.entity_values['rda:preferredNameForThePerson'] = ' '.join(preferred_name)
+        if ['100','700','800'].count(self.field.tag)> -1:
+            if ['0','1'].count(self.field.indicators[0]) > -1:
+                preferred_name.extend(self.field.get_subfields('a','b'))
+        if len(preferred_name) > 0:
+            self.entity_info['rda:preferredNameForThePerson'] = ' '.join(preferred_name)
                         
                 
 
     def ingest(self):
         self.extract_preferredNameForThePerson()
         self.extractDates()
-        self.extractTitle()                              
+        result  = get_or_generate_person(self.entity_info,
+                                         self.authority_ds)
+        if type(result) == list:
+            self.people = result
+        else:
+            self.person = result
+            self.people.append(self.person)
 
 class MARC21toWork(MARC21Ingester):
     """
@@ -267,12 +293,22 @@ class MARC21toWork(MARC21Ingester):
         super(MARC21toWork,self).__init__(**kwargs)
         self.work = None
 
-    def extract_people(self):
+    def extract_creators(self):
         """
-        Extracts and associates marcr:Authority:Person entities with
+        Extracts and associates marcr:Authority:Person entities creators
         work.
         """
-        pass
+        people_keys = []
+        for tag in ['100','700','800']:
+            field = self.record[tag]
+            if field is not None:
+                people_ingester = MARC21toPerson(redis=self.authority_ds,
+                                                 field=field)
+                people_ingester.ingest()
+                for person in people_ingester.people:
+                    people_keys.append(person.redis_key)
+        if len(people_keys) > 0:
+            self.entity_info['rda:creator'] = set(people_keys)
 
     def extract_title(self):
         """
@@ -319,7 +355,13 @@ class MARC21toWork(MARC21Ingester):
         :param record: MARC21 record
         """
         self.extract_title()
+        self.extract_creators()
         self.get_or_add_work()
+        # Adds work to creators
+        if self.work.attributes.has_key('rda:creator'):
+            for creator_key in self.work.attributes['rda:creator']:
+                self.authority_ds.sadd("{0}:rda:isCreatorPersonOf".format(creator_key),
+                                       self.work.redis_key)
         generate_title_app(self.work,self.work_ds)
         super(MARC21toWork,self).ingest()
 
@@ -330,8 +372,9 @@ def ingest_marcfile(**kwargs):
     work_ds = kwargs.get("work_redis")
     instance_ds =kwargs.get("instance_redis")
     if marc_filename is not None:
+        marc_file = open(marc_filename,'rb')
         count = 0
-        marc_reader = pymarc.MARCReader(open(marc_filename),
+        marc_reader = pymarc.MARCReader(marc_file,
                                         utf8_handling='ignore')
         for record in marc_reader:
             ingester = MARC21toMARCR(annotation_ds=annotation_ds,
@@ -340,10 +383,13 @@ def ingest_marcfile(**kwargs):
                                      marc_record=record,
                                      work_ds=work_ds)
             ingester.ingest()
-            if count%1000:
-                sys.stderr.write(".")
-            else:
-                sys.stderr.write(str(count))
+            if not count%1000:
+                print(count)
+##                yield(".")
+##            else:
+##                yield(str(count))
+                
             count += 1
+        return count
             
     

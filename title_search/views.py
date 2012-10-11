@@ -83,7 +83,6 @@ def search(request):
                      raw_results['ils-bib-numbers'].append(instance_redis.hget("{0}:rda:identifierForTheManifestation".format(instance_key),
                                                                                'ils-bib-number'))
                 results.append(raw_results)
-    print(results)
     return {'q':raw_title,'results':results}
     
             

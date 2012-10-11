@@ -1,10 +1,12 @@
 """
  :mod:`redis_helpers` Call Number Helper Utilities
 """
+__author__ = "Jeremy Nelson"
 import pymarc,redis,re
 import logging,sys
 from app_settings import APP,SEED_RECORD_ID
 import aristotle.settings as settings
+authority_redis = settings.AUTHORITY_REDIS
 redis_server = settings.INSTANCE_REDIS
 work_redis = settings.WORK_REDIS
 
@@ -171,9 +173,11 @@ def get_slice(start,stop,
         else:
             entity_key = redis_server.hget('{0}-hash'.format(call_number_type),
                                            number)
-        call_number = redis_server.hget('{0}:identifiers'.format(entity_key),
+        call_number = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(entity_key),
                                         call_number_type)
+        
         record = get_record(call_number=call_number)
+        print(record,call_number_type)
         entities.append(record)
     return entities
 
@@ -190,6 +194,14 @@ def get_record(**kwargs):
             work_key = redis_server.hget(instance_key,'marcr:Work')
             record_info['rdaTitle'] = work_redis.hget("{0}:rda:Title".format(work_key),
                                                       'rda:preferredTitleForTheWork')
+            creator_keys = work_redis.smembers("{0}:rda:creator".format(work_key))
+            if len(creator_keys) > 0:
+                creator_keys = list(creator_keys)
+                creator = authority_redis.hget(creator_keys[0],
+                                               "rda:preferredNameForThePerson")
+                if len(creator_keys) > 1:
+                    creator += " et.al."
+                record_info['author'] = creator
     return record_info
     
 

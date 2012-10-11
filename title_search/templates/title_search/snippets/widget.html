@@ -1,7 +1,7 @@
 {% load i18n %}
 {% comment %}START title-search-browser DIV{% endcomment %}
 <div id="title-search-browser">
-  <h2>Closest Search Results for <em data-bind="text: newSearchQuery">query</em></h2>
+  <h2>{% trans "Closest Search Results for" %} <em data-bind="text: newSearchQuery">query</em></h2>
   <ul data-bind="foreach: titles, visible: titles().length > 0">
     <li>
       <span data-bind="text: rdaTitle">raw title</span>
@@ -9,8 +9,8 @@
     </li>
   </ul>
   <div class="alert alert-error" data-bind="visible: errorMessage">
-    Error <em data-bind="text: newSearchQuery">query</em> not found!
-	Would you like to search <em data-bind="text: newSearchQuery">query</em> 
-	as keywords? <a href="#" class="btn">Search</a>
+    {% trans "Error" %} <em data-bind="text: newSearchQuery">query</em> {% trans "not found!" %}
+	{% trans "Would you like to search" %} <em data-bind="text: newSearchQuery">query</em> 
+	{% trans "as keywords?" %} <a href="#" class="btn">{% trans "Search" %}</a>
 	</div>
  </div>

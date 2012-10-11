@@ -1,0 +1,30 @@
+{% load i18n %}
+
+<div class="row">
+ <ul class="nav nav-pills span5 offset1">
+   <li class="active"><a href="#info" data-toggle="tab">Datastore Information</a></li>
+   <li><a href="#marc21" data-toggle="tab">MARC21 Ingester</a></li>
+   <li><a href="#mods" data-toggle="tab">MODS Ingester</a></li>
+ <ul>
+</div>
+<div class="row">
+ <div id="marcr-management" class="tab-content span5 offset1">
+   <div id="info" class="tab-pane active">
+    <h2>Active MARCR Redis Datastores</h2>
+ 
+   </div>
+   <div id="marc21" class="tab-pane" data-bind="submit: ingestMARC21">
+    <h2>MARC21 Ingester</h2>
+	<div data-bind="value: ingestResult" class="alert alert-block"></div>
+    <form class="form-horizontal">
+	 <input type="text" data-bind="value: marc21Filepath" name="marc_file_location" />
+    <div class="form-actions">
+     <button type="submit" class="btn btn-primary">{% trans "Run Process" %}</button>
+	</div>
+	</form>
+   </div>
+   <div id="mods" class="tab-pane">
+    <h2>MODS Ingester</h2>
+   </div>
+ </div>
+ </div>
