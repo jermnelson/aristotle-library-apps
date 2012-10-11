@@ -4,7 +4,7 @@
 import redis,pymarc
 from django.test import TestCase
 from app_helpers import *
-from ingesters import MARC21toInstance,MARC21toWork
+from ingesters import MARC21toInstance,MARC21toMARCR,MARC21toWork
 try:
     from aristotle.settings import TEST_REDIS
 except ImportError, e:
@@ -118,6 +118,48 @@ class MARC21toInstanceTest(TestCase):
         
     def tearDown(self):
         test_redis.flushdb()
+
+class MARC21toMARCRTest(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(pymarc.Field(tag='245',
+                                           indicators=['1','0'],
+                                           subfields=['a','Statistics:',
+                                                      'b','facts or fiction.']))
+        marc_record.add_field(pymarc.Field(tag='050',
+                                           indicators=['0','0'],
+                                           subfields=['a','QC861.2',
+                                                      'b','.B36']))
+        marc_record.add_field(pymarc.Field(tag='907',
+                                           indicators=[' ',' '],
+                                           subfields=['a','.b1112223x']))
+        self.marc21_ingester =  MARC21toMARCR(annotation_ds=test_redis,
+                                              authority_ds=test_redis,
+                                              instance_ds=test_redis,
+                                              marc_record=marc_record,
+                                              work_ds=test_redis)
+        self.marc21_ingester.ingest()
+
+    def test_init(self):
+        self.assert_(self.marc21_ingester.marc2work.work.redis_key)
+        self.assert_(self.marc21_ingester.marc2instance.instance.redis_key)
+
+    def test_instance_work(self):
+        self.assertEquals(self.marc21_ingester.marc2instance.instance.attributes['marcr:Work'],
+                          self.marc21_ingester.marc2work.work.redis_key)
+
+    def test_work_instance(self):
+        self.assertEquals(list(self.marc21_ingester.marc2work.work.attributes['marcr:Instances'])[0],
+                          self.marc21_ingester.marc2instance.instance.redis_key)
+
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+
+    
+        
 
 class MARC21toWorkTest(TestCase):
 

@@ -71,6 +71,10 @@ def generate_title_app(work,redis_server):
     :param work: MARCR Work
     :parm redis_server: Redis server
     """
+    if not work.attributes.has_key('rda:Title'):
+        print("Work with redis-key={0} doesn't have a title.\n\tValues:{1}".format(work.redis_key,
+                                                                                   work.attributes))
+        return
     stop_metaphones,all_metaphones,title_metaphone = process_title(work.attributes['rda:Title']['rda:preferredTitleForTheWork'])
     title_metaphone_key = 'title-metaphones:{0}'.format(title_metaphone)
     title_pipeline = redis_server.pipeline()
@@ -148,16 +152,16 @@ def typeahead_search_title(user_input,redis_server):
 def search_title(user_input,redis_server):
     title_keys = []
     metaphones,all_metaphones,title_metaphone = process_title(user_input)
-##    metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
-##    title_keys = redis_server.sinter(metaphone_keys)
-    typeahead_keys = typeahead_search_title(user_input,redis_server)
-    if typeahead_keys is not None:
-        all_keys = list(title_keys)
-        all_keys.extend(typeahead_keys)
-    else:
-        all_keys = title_keys
-##    return title_keys
-    return all_keys
+    metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
+    title_keys = redis_server.sinter(metaphone_keys)
+##    typeahead_keys = typeahead_search_title(user_input,redis_server)
+##    if typeahead_keys is not None:
+##        all_keys = list(title_keys)
+##        all_keys.extend(typeahead_keys)
+##    else:
+##        all_keys = title_keys
+    return title_keys
+##    return all_keys
             
             
         

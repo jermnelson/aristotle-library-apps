@@ -65,9 +65,10 @@ class MARCRModel(object):
                                                       attrib_key),
                                      value)
                 elif type(value) is set:
-                    self.redis.sadd("{0}:{1}".format(self.redis_key,
-                                                     attrib_key),
-                                    value)
+                    for member in list(value):
+                        self.redis.sadd("{0}:{1}".format(self.redis_key,
+                                                         attrib_key),
+                                    member)
                 elif type(value) is dict:
                     new_hash_key = "{0}:{1}".format(self.redis_key,
                                                     attrib_key)
@@ -185,6 +186,8 @@ class Work(MARCRModel):
         """
         if self.redis_key is None:
             self.redis_key = "marcr:Work:{0}".format(self.redis.incr("global marcr:Work"))
+        if self.attributes.has_key('marcr:Instances'):
+            self.attributes['marcr:Instances'] = set(self.attributes['marcr:Instances'])
         super(Work,self).save()
 
 

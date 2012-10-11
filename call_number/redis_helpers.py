@@ -3,9 +3,10 @@
 """
 import pymarc,redis,re
 import logging,sys
-from app_settings import APP,SEED_RECORD_ID,REDIS_SERVER
-
-redis_server = REDIS_SERVER
+from app_settings import APP,SEED_RECORD_ID
+import aristotle.settings as settings
+redis_server = settings.INSTANCE_REDIS
+work_redis = settings.WORK_REDIS
 
 english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
                     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
@@ -37,7 +38,7 @@ def generate_call_number_app(instance,redis_server):
         redis_server.zadd('lccn-sort-set',
                           0,
                           normalized_call_number)
-        instance.attributes['lccn-normalized'] = normalized_call_number
+        instance.attributes['rda:identifierForTheManifestation']['lccn-normalized'] = normalized_call_number
         instance.save()
     if identifiers.has_key('sudoc'):
         call_number = identifiers.get('sudoc')
@@ -48,7 +49,7 @@ def generate_call_number_app(instance,redis_server):
                           0,
                           call_number)
     if identifiers.has_key('local'):
-        call_number = identifiers.get('sudoc')
+        call_number = identifiers.get('local')
         redis_server.hset('local-hash',
                           call_number,
                           instance.redis_key)
@@ -118,6 +119,7 @@ def get_next(call_number,
                             call_number_type=call_number_type)
     if current_rank is None:
         return None
+    print("IN GET NEXT current_rank={0}".format(current_rank))
     return get_slice(current_rank+1,
                      current_rank+2,
                      call_number_type)
@@ -133,12 +135,12 @@ def get_rank(call_number,
     :param call_number_type: Type of call number (lccn, sudoc, or local)
     :rtype integer or None:
     """
-    print("{0}-hash {1}".format(call_number_type,call_number))
     if redis_server.hexists("{0}-hash".format(call_number_type),
                             call_number):
         entity_key = redis_server.hget("{0}-hash".format(call_number_type),
                                        call_number)
-        entity_idents = redis_server.hgetall("{0}:identifiers".format(entity_key))
+        ident_key = "{0}:rda:identifierForTheManifestation".format(entity_key)
+        entity_idents = redis_server.hgetall(ident_key)
         if entity_idents.has_key("{0}-normalized".format(call_number_type)):
             current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
                                               entity_idents["{0}-normalized".format(call_number_type)])
@@ -182,43 +184,14 @@ def get_record(**kwargs):
         hash_name = '{0}-hash'.format(hash_base)
         if redis_server.hexists(hash_name,call_number):
             record_info['type_of'] = hash_base
-            record_key = redis_server.hget(hash_name,call_number)
-            manifestation_key = redis_server.hget(record_key,
-                                                  'rdaManifestationOfExpression')
-            record_info['bib_number'] = redis_server.hget(manifestation_key,
-                                                          'legacy-bib-number')
-            title_list = list(redis_server.smembers(redis_server.hget(manifestation_key,
-                                                                 'rdaTitle')))
-            title_list.reverse()
-            record_info['rdaTitle'] = u''.join([x.decode('utf-8','ignore') for x in title_list])
-            work_key = redis_server.hget(manifestation_key,
-                                         'rdaWorkManifested')
-            if redis_server.hexists(work_key,
-                                    'rdaCreator'):
-                creator_key = redis_server.hget(work_key,
-                                                'rdaCreator')
-                creator = redis_server.hget(creator_key,
-                                            'rdaPreferredNameForThePerson')
-##                try:
-##                    print("Creator is {0}".format(creator.decode('utf-8','xmlcharrefreplace')))
-##                except:
-##                    print("ERROR trying to extract creator")
-##                    print("{0} {1}".format(creator,sys.exc_info()[0]))
-                record_info['author'] = creator.decode('utf-8','ignore')
-            return record_info
+            instance_key = redis_server.hget(hash_name,call_number)
+            record_info['bib_number'] = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(instance_key),
+                                                          'ils-bib-number')
+            work_key = redis_server.hget(instance_key,'marcr:Work')
+            record_info['rdaTitle'] = work_redis.hget("{0}:rda:Title".format(work_key),
+                                                      'rda:preferredTitleForTheWork')
+    return record_info
     
-    
-def quick_set_callnumber(identifiers_key,
-                         call_number_type,
-                         call_number,
-                         redis_server,
-                         redis_key):
-    redis_server.hset(identifiers_key,
-                      call_number_type,
-                      call_number)
-    redis_server.hset('%s-hash' % call_number_type,call_number,redis_key)
-    redis_server.zadd('%s-sort-set' % call_number_type,0,call_number)
-
 
 def lccn_normalize(raw_callnumber):
     """

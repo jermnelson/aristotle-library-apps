@@ -49,8 +49,8 @@ $('#typeahead-search').typeahead({
     }
 });
 
- function Title(raw_title,record_id) {
-   this.raw_title = raw_title;
+ function Title(rdaTitle,record_id) {
+   this.rdaTitle = rdaTitle;
    this.record_id = record_id;
  }
  function TitleSearchAppViewModel() {
@@ -75,7 +75,7 @@ $('#typeahead-search').typeahead({
 		   for(i=0;i<=parsed_titles.length;i++) {
 		      var title = parsed_titles[i];
 			  if(title) {
-			    self.titles.push(new Title(title.raw,title['legacy-bib-id']));
+			    self.titles.push(new Title(title.rdaTitle,title['ils-bib-numbers']));
 			  }
 		   }
 		

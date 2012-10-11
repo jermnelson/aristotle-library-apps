@@ -4,7 +4,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-import datetime,re,pymarc
+import datetime,re,pymarc,sys
 from app_helpers import Annotation,CorporateBody,Person,Work,Instance
 from call_number.redis_helpers import generate_call_number_app
 from title_search.search_helpers import generate_title_app
@@ -166,27 +166,30 @@ class MARC21toMARCR(Ingester):
     datastore
     """
 
-    def __init__(self,marc_record):
+    def __init__(self,marc_record,**kwargs):
         super(MARC21toMARCR,self).__init__(**kwargs)
         self.record = marc_record
 
     def ingest(self):
-        marc2work = MARC21toWork(annotation_ds=self.annotation_ds,
-                                 authority_ds=self.authority_ds,
-                                 instance_ds=self.instance_ds,
-                                 marc_record=self.record,
-                                 work_ds=self.work_ds)
-        marc2work.ingest()
-        marc2instance = MARC21toInstance(annotation_ds=self.annotation_ds,
-                                         authority_ds=self.authority_ds,
-                                         instance_ds=self.instance_ds,
-                                         marc_record=self.record,
-                                         work_ds=self.work_ds)
-        marc2instance.ingest()
-        if marc2work.work.attributes.has_key('marcr:Instances'):
-            marc2work.work.attributes['marcr:Instances'].append(marc2instance.instance.redis_key)
+        self.marc2work = MARC21toWork(annotation_ds=self.annotation_ds,
+                                      authority_ds=self.authority_ds,
+                                      instance_ds=self.instance_ds,
+                                      marc_record=self.record,
+                                      work_ds=self.work_ds)
+        self.marc2work.ingest()
+        self.marc2instance = MARC21toInstance(annotation_ds=self.annotation_ds,
+                                              authority_ds=self.authority_ds,
+                                              instance_ds=self.instance_ds,
+                                              marc_record=self.record,
+                                              work_ds=self.work_ds)
+        self.marc2instance.ingest()
+        self.marc2instance.instance.attributes["marcr:Work"] = self.marc2work.work.redis_key
+        self.marc2instance.instance.save()
+        if self.marc2work.work.attributes.has_key('marcr:Instances'):
+            self.marc2work.work.attributes['marcr:Instances'].append(self.marc2instance.instance.redis_key)
         else:
-            marc2work.work.attributes['marcr:Instances'] = [marc2instance.instance.redis_key]
+            self.marc2work.work.attributes['marcr:Instances'] = [self.marc2instance.instance.redis_key,]
+        self.marc2work.work.save()
             
         
 
@@ -283,7 +286,7 @@ class MARC21toWork(MARC21Ingester):
                 raw_title = slash_re.sub("",raw_title).strip()
             subfield_b = ' '.join(title_field.get_subfields('b'))
             if slash_re.search(subfield_b):
-                subfield_b = slash_re.sub("",raw_title).strip()
+                subfield_b = slash_re.sub("",subfield_b).strip()
             raw_title += ' {0}'.format(subfield_b)
             if raw_title.startswith("..."):
                 raw_title = raw_title.replace("...","")
