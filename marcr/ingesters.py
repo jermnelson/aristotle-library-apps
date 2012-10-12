@@ -383,11 +383,11 @@ def ingest_marcfile(**kwargs):
                                      marc_record=record,
                                      work_ds=work_ds)
             ingester.ingest()
-            if not count%1000:
-                print(count)
-##                yield(".")
-##            else:
-##                yield(str(count))
+            if count%1000:
+##                print(count)
+                sys.stderr.write(".")
+            else:
+                sys.stderr.write(str(count))
                 
             count += 1
         return count
