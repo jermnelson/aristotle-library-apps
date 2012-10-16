@@ -88,7 +88,8 @@ def ils_job_manager(request,job):
         original_marc = request.FILES['raw_marc_record']
         job_query = Job.objects.get(pk=job_pk)
         params = {}
-        ils_job_class = getattr(jobs.ils,'%s' % job_query.python_module)
+        ils_job_class = getattr(jobs.ils,
+                                '{0}'.format(job_query.python_module))
         ils_job = ils_job_class(original_marc)
         ils_job.load()
         ils_log_entry = ILSJobLog(job=job_query,
@@ -97,8 +98,8 @@ def ils_job_manager(request,job):
                                   record_type=ils_job_form.cleaned_data['record_type'])
         ils_log_entry.save()
         ils_marc_output = ils_job.output()
-        ils_log_entry.modified_marc.save('job-%s-%s-modified.mrc' % (job_query.name,
-                                                                     ils_log_entry.created_on.strftime("%Y-%m-%d")),
+        ils_log_entry.modified_marc.save('job-{0}-{1}-modified.mrc'.format(job_query.name,
+                                                                           ils_log_entry.created_on.strftime("%Y-%m-%d")),
                                          ContentFile(ils_marc_output))
         ils_log_entry.save()
         data = {'job':int(job_query.pk)}
@@ -115,7 +116,7 @@ def ils_job_manager(request,job):
                                    'log_notes_form':log_notes_form})
                 
     else:
-        print("Invalid form errors=%s" % ils_job_form.errors)
+        print("Invalid form errors={0}".format(ils_job_form.errors))
     
 def job_display(request,job_pk):
     """

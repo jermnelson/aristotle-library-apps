@@ -8,17 +8,19 @@ __author__ = 'Jeremy Nelson'
 
 
 import pymarc,copy
+from asp_cml import AlexanderStreetPressClassicalMusicLibrary
+from asp_jml import AlexanderStreetPressJazzMusicLibrary
 from springer import SpringerEBookJob
 from ybp_ebl import ybp_ebl
 from ybp_ebrary import ybp_ebrary
 
-##from behave.configuration import Configuration,ConfigError
-##from behave.parser import parse_file
-##from behave.model import Feature
-##from behave.runner import Runner,Context
+
+asp_cml = AlexanderStreetPressClassicalMusicLibrary
+asp_jml = AlexanderStreetPressJazzMusicLibrary
 springer = SpringerEBookJob
 ybp_ebl = ybp_ebl
 ybp_ebrary = ybp_ebrary
+
 
 class job(object):
     """
@@ -38,12 +40,6 @@ class job(object):
         """
         self.original_record = marc_record
         self.marc_record = marc_record
-##        self.config = Configuration()
-##        self.features = []
-##        for filename in features:
-##            self.features.append(parse_file(filename))
-##        self.runner = Runner(self.config)
-##        self.context = self.runner.context
         
 
     def run(self):

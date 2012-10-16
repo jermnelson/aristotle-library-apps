@@ -19,18 +19,16 @@ def add_person(authority_redis,
     new_person = Person(redis=authority_redis,
                         attributes=person_attributes)
     new_person.save()
-    pipeline = authority_redis.pipeline()
     for metaphone in person_metaphones_keys:
-        pipeline.sadd(metaphone,new_person.redis_key)
+        authority_redis.sadd(metaphone,new_person.redis_key)
     if new_person.attributes.has_key('rda:dateOfBirth'):
         raw_dob = person_attributes.get('rda:dateOfDeath')
-        pipeline.sadd('person-dob:{0}'.format(raw_dob),
-                      new_person.redis_key)
+        authority_redis.sadd('person-dob:{0}'.format(raw_dob),
+                             new_person.redis_key)
     if new_person.attributes.has_key('rda:dateOfDeath'):
         raw_dod = person_attributes.get('rda:dateOfDeath')
-        pipeline.sadd('person-dod:{0}'.format(raw_dod),
-                      new_person.redis_key)
-    pipeline.execute()
+        authority_redis.sadd('person-dod:{0}'.format(raw_dod),
+                             new_person.redis_key)
     return new_person
 
 def get_person(authority_redis,
@@ -71,8 +69,8 @@ def get_or_generate_person(person_attributes,authority_redis):
     if person_attributes.has_key("rda:dateOfDeath"):
         raw_dod = person_attributes.get('rda:dateOfDeath')
         dod_keys = authority_redis.smembers('person-dod:{0}'.format(raw_dob))
-    # No match on names, assume Person is not in the datastore and add to datastore
-    if len(person_keys) <= 0:        
+    # No match on names, assume Person is not in the datastore and add to datastore    
+    if len(person_keys) <= 0:
         return add_person(authority_redis,
                           person_attributes,
                           person_metaphones_keys)
@@ -82,20 +80,26 @@ def get_or_generate_person(person_attributes,authority_redis):
     if len(person_metaphones_keys) > 0 and\
        len(dob_keys) > 0 and\
        len(dod_keys) > 0:
+        
         found_persons = [get_person(redis_key) for redis_key in list(set(person_metaphones_keys).intersection(set(dob_keys),
                                                                                                               set(dod_keys)))]
+        
         
     # Matches on person_metaphones_keys and dob_keys (for creators that
     # are still living)
     elif len(person_metaphones_keys) > 0 and\
          len(dob_keys) > 0:
         found_persons = [get_person(redis_key) for redis_key in list(set(person_metaphones_keys).intersection(set(dob_keys)))]
+        
     if len(found_persons) == 1:
+        
         return found_persons[0]
     elif len(found_persons) > 0:
+        
         return found_persons
     # Assumes that person does not exist, add to datastore
     else:
+        
         return add_person(authority_redis,
                           person_attributes,
                           person_metaphones_keys)

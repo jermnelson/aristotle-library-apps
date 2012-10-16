@@ -273,8 +273,10 @@ class MARC21toPerson(MARC21Ingester):
     def ingest(self):
         self.extract_preferredNameForThePerson()
         self.extractDates()
-        result  = get_or_generate_person(self.entity_info,
-                                         self.authority_ds)
+        #print("In ingest after extracting info {0}".format(self.entity_info))
+        result = get_or_generate_person(self.entity_info,
+                                        self.authority_ds)
+        #print("Redis key is {0}".format(self.people))
         if type(result) == list:
             self.people = result
         else:
@@ -303,6 +305,7 @@ class MARC21toWork(MARC21Ingester):
             field = self.record[tag]
             if field is not None:
                 people_ingester = MARC21toPerson(redis=self.authority_ds,
+                                                 authority_ds=self.authority_ds,
                                                  field=field)
                 people_ingester.ingest()
                 for person in people_ingester.people:
@@ -360,8 +363,10 @@ class MARC21toWork(MARC21Ingester):
         # Adds work to creators
         if self.work.attributes.has_key('rda:creator'):
             for creator_key in self.work.attributes['rda:creator']:
-                self.authority_ds.sadd("{0}:rda:isCreatorPersonOf".format(creator_key),
-                                       self.work.redis_key)
+                creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
+                self.authority_ds.sadd(creator_set_key,
+                                       self.work.redis_key)                
+        self.work.save()
         generate_title_app(self.work,self.work_ds)
         super(MARC21toWork,self).ingest()
 

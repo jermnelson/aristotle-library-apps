@@ -28,6 +28,26 @@
     },
     "model":"marc_batch.Job",
     "pk":3
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"asp-help",
+        "name": "Alexander Street Press - Classical Music Library",
+        "python_module":"asp_cml"
+    },
+    "model":"marc_batch.Job",
+    "pk":4
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"asp-help",
+        "name": "Alexander Street Press - Jazz Music Library ",
+        "python_module":"asp_jml"
+    },
+    "model":"marc_batch.Job",
+    "pk":5
   }
 ]
         

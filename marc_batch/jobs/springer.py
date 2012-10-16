@@ -1,5 +1,6 @@
 """
- springerbots.py -- Bots for manipulating Springer MARC records
+ :mod:`springer` -- Classes support manipulating Springer MARC records to CC's
+ standards.
 """
 __author__ = 'Jeremy Nelson'
 

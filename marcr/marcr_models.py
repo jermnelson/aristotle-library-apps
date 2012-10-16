@@ -114,8 +114,8 @@ class Authority(MARCRModel):
         """
         Creates an Annotation object
         """
-        if not kwargs.has_key('redis'):
-            kwargs['redis'] = AUTHORITY_REDIS
+        if not kwargs.has_key('authority_ds'):
+            kwargs['authority_ds'] = AUTHORITY_REDIS
         super(Authority,self).__init__(**kwargs)
 
 class CorporateBody(Authority):
