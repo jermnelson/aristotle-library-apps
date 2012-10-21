@@ -76,7 +76,7 @@ def generate_title_app(work,redis_server):
                                                                                    work.attributes))
         return
     stop_metaphones,all_metaphones,title_metaphone = process_title(work.attributes['rda:Title']['rda:preferredTitleForTheWork'])
-    title_metaphone_key = 'title-metaphones:{0}'.format(title_metaphone)
+    title_metaphone_key = 'first-term-metaphones:{0}'.format(all_metaphones[0])
     title_pipeline = redis_server.pipeline()
     title_pipeline.sadd(title_metaphone_key,work.redis_key)
     work.attributes['rda:Title']['phonetic'] = title_metaphone
@@ -153,6 +153,7 @@ def search_title(user_input,redis_server):
     title_keys = []
     metaphones,all_metaphones,title_metaphone = process_title(user_input)
     metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
+    metaphone_keys.append('first-term-metaphones:{0}'.format(all_metaphones[0]))
     title_keys = redis_server.sinter(metaphone_keys)
 ##    typeahead_keys = typeahead_search_title(user_input,redis_server)
 ##    if typeahead_keys is not None:

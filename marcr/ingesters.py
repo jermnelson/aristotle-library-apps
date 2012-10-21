@@ -27,6 +27,7 @@ except ImportError, e:
     OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
 
 
+
 class Ingester(object):
     """
      Base Ingester class for ingesting metadata and bibliographic
@@ -82,6 +83,7 @@ class MARC21Ingester(Ingester):
         super(MARC21Ingester,self).__init__(**kwargs)
 
 
+isbn_regex = re.compile(r'([0-9\-]+)')
 class MARC21toInstance(MARC21Ingester):
     """
     MARC21toInstance ingests a MARC record into the MARCR Redis datastore
@@ -91,6 +93,7 @@ class MARC21toInstance(MARC21Ingester):
         self.instance = None
         super(MARC21toInstance,self).__init__(**kwargs)
         self.entity_info['rda:identifierForTheManifestation'] = {}
+        
 
     def add_instance(self):
         """
@@ -381,6 +384,8 @@ def ingest_marcfile(**kwargs):
         count = 0
         marc_reader = pymarc.MARCReader(marc_file,
                                         utf8_handling='ignore')
+        start_time = datetime.datetime.now()
+        print("Starting at {0}".format(start_time.isoformat()))
         for record in marc_reader:
             ingester = MARC21toMARCR(annotation_ds=annotation_ds,
                                      authority_ds=authority_ds,
@@ -395,6 +400,10 @@ def ingest_marcfile(**kwargs):
                 sys.stderr.write(str(count))
                 
             count += 1
+        end_time = datetime.datetime.now()
+        print("Finished at {0}".format(end_time.isoformat()))
+        print("Total time elapsed is {0} seconds".format((end_time-start_time).seconds))
+        
         return count
             
     
