@@ -133,7 +133,7 @@ class AlexanderStreetPressBase(MARCModifier):
         - `uniform_title`: Uniform title, required
         """
         new730field = Field(tag='730',
-                            indicators=['0','b'],
+                            indicators=['0',' '],
                             subfields=['a',uniform_title])
         marc_record.add_field(new730field)
         return marc_record
