@@ -75,8 +75,10 @@ def search(request):
                 raw_results = redis_server.hgetall(work_key)
                 for k,v in raw_results.iteritems():
                     raw_results[k] = v.encode('utf8','replace')
-                raw_results['rdaTitle'] = unicode(redis_server.hget("{0}:rda:Title".format(work_key),
-                                                                     'rda:preferredTitleForTheWork'),
+                raw_results["marcr_work"] = work_key
+                raw_results['search_prefix'] = raw_title
+                raw_results['title'] = unicode(redis_server.hget("{0}:rda:Title".format(work_key),
+                                                                 'rda:preferredTitleForTheWork'),
                                                   errors="replace")
                 raw_results['ils-bib-numbers'] = []
                 for instance_key in list(redis_server.smembers("{0}:marcr:Instances".format(work_key))):
