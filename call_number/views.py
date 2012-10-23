@@ -12,8 +12,8 @@ import django.utils.simplejson as json
 from django.utils.translation import ugettext
 import aristotle.settings as settings
 import redis_helpers,sys,logging
-import redis_helpers 
 from app_settings import APP,SEED_RECORD_ID
+import marcr.app_helpers
 
 redis_server = settings.INSTANCE_REDIS
 
@@ -137,6 +137,42 @@ def browse(request):
                        'previous':previous_recs})
     widget_template = loader.get_template('call_number/snippets/widget.html')
     return {'html':widget_template.render(context)}
+
+@json_view
+def discovery_search(request):
+    """
+    Supports discovery layer search
+
+    :param request: HTTP Request
+    """
+    brief_marcr = []
+    call_number = request.REQUEST.get('q')
+    if request.REQUEST.has_key("type"):
+        call_number_type = request.REQUEST.get('type')
+    else:
+        call_number_type = "lccn"
+    if request.REQUEST.has_key("slice-size"):
+        slice_size = int(request.REQUEST.get('slice-size'))
+    else:
+        slice_size = 20
+    rank = redis_helpers.get_rank(call_number,
+                                  call_number_type=call_number_type)
+    call_num_slice  = redis_server.zrange("{0}-sort-set".format(call_number_type),
+                                          rank,
+                                          rank+slice_size)
+    instance_keys = []
+    for call_num in call_num_slice:
+        instance_keys.append(redis_server.hget('{0}-hash'.format(call_number_type),
+                                               call_num))
+    for key in instance_keys:
+        rec = marcr.app_helpers.get_brief(redis_authority=settings.AUTHORITY_REDIS,
+                                          redis_instance=settings.INSTANCE_REDIS,
+                                          redis_work=settings.WORK_REDIS,
+                                          instance_key=key)
+        rec["search_prefix"] = redis_server.hget("{0}:rda:identifierForTheManifestation".format(key),
+                                                 call_number_type) 
+        brief_marcr.append(rec)
+    return {'results':brief_marcr}
 
 @json_view
 def term_search(request):

@@ -11,8 +11,9 @@ import aristotle.settings as settings
 import json,sys,logging
 import search_helpers
 
-redis_server = settings.WORK_REDIS
+authority_redis = settings.AUTHORITY_REDIS
 instance_redis = settings.INSTANCE_REDIS
+work_redis = settings.WORK_REDIS
 
 def app(request):
     """
@@ -69,21 +70,30 @@ def search(request):
     results = []
     raw_title = request.REQUEST.get('q')
     if raw_title is not None:
-        search_results = search_helpers.search_title(raw_title,redis_server)
+        search_results = search_helpers.search_title(raw_title,work_redis)
         if len(search_results) > 0:
             for work_key in search_results:
-                raw_results = redis_server.hgetall(work_key)
+                raw_results = work_redis.hgetall(work_key)
                 for k,v in raw_results.iteritems():
                     raw_results[k] = v.encode('utf8','replace')
                 raw_results["marcr_work"] = work_key
                 raw_results['search_prefix'] = raw_title
-                raw_results['title'] = unicode(redis_server.hget("{0}:rda:Title".format(work_key),
-                                                                 'rda:preferredTitleForTheWork'),
-                                                  errors="replace")
+                raw_results['title'] = unicode(work_redis.hget("{0}:rda:Title".format(work_key),
+                                                               'rda:preferredTitleForTheWork'),
+                                               errors="replace")
                 raw_results['ils-bib-numbers'] = []
-                for instance_key in list(redis_server.smembers("{0}:marcr:Instances".format(work_key))):
+                for instance_key in list(work_redis.smembers("{0}:marcr:Instances".format(work_key))):
                      raw_results['ils-bib-numbers'].append(instance_redis.hget("{0}:rda:identifierForTheManifestation".format(instance_key),
                                                                                'ils-bib-number'))
+                creator_keys = work_redis.smembers("{0}:rda:creator".format(work_key))
+                if len(creator_keys) > 0:
+                    raw_results['creator'] = []
+                    creator_keys = list(creator_keys)
+                    for creator_key in creator_keys:
+                        creator_name = unicode(authority_redis.hget(creator_key,
+                                                                    "rda:preferredNameForThePerson"),
+                                               errors="replace")
+                        raw_results['creator'].append(creator_name)
                 results.append(raw_results)
     return {'q':raw_title,'results':results}
     

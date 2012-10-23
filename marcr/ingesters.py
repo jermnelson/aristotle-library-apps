@@ -5,7 +5,7 @@
 __author__ = "Jeremy Nelson"
 
 import datetime,re,pymarc,sys,logging
-from app_helpers import Annotation,CorporateBody,Person,Work,Instance
+from marcr_models import Annotation,CorporateBody,Person,Work,Instance
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from title_search.search_helpers import generate_title_app

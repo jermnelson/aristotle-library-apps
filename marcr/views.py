@@ -103,7 +103,38 @@ def search(request):
 
     :param request: HTTP Request
     """
-    return {}
+    output,work_key,instance_keys = {},None,[]
+    if request.REQUEST.has_key('work'):
+        work_key = request.REQUEST.get('work')
+    if request.REQUEST.has_key('instance'):
+        instance_keys.append(request.REQUEST.get('instance'))
+        if work_key is None:
+            work_key = INSTANCE_REDIS.hget(instance_keys[0],'marcr:Work')
+        for instance_key in instance_keys:
+            if INSTANCE_REDIS.hget(instance_key,'marcr:Work') != work_key:
+                return {"result":"error",
+                           "msg":"{0} is not assocated as a work with {1}".format(work_key,
+                                                                                   instance_key)}
+    else:
+        instance_keys = WORK_REDIS.smembers("{0}:marcr:Instances".format(work_key)) 
+    output["title"] = unicode(WORK_REDIS.hget("{0}:rda:Title".format(work_key),
+                                              "rda:preferredTitleForTheWork"),
+                              errors="ignore")
+    output['ils-bib-numbers'] = []
+    for instance_key in instance_keys:
+        raw_results['ils-bib-numbers'].append(INSTANCE_REDIS.hget("{0}:rda:identifierForTheManifestation".format(instance_key),
+                                                                  'ils-bib-number'))
+    output['creators'] = []
+    creator_keys = WORK_REDIS.smembers("{0}:rda:creator".format(work_key))
+    for creator_key in creator_keys:
+        output['creators'].append(unicode(AUTHORITY_REDIS.hget(creator_key,
+                                                               "rda:preferredNameForThePerson"),
+                                          errors="ignore"))
+    return output
+
+
+
+    return output
 
 
     

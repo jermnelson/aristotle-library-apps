@@ -121,7 +121,6 @@ def get_next(call_number,
                             call_number_type=call_number_type)
     if current_rank is None:
         return None
-    print("IN GET NEXT current_rank={0}".format(current_rank))
     return get_slice(current_rank+1,
                      current_rank+2,
                      call_number_type)
@@ -177,7 +176,6 @@ def get_slice(start,stop,
                                         call_number_type)
         
         record = get_record(call_number=call_number)
-        print(record,call_number_type)
         entities.append(record)
     return entities
 
