@@ -53,7 +53,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = PROJECT_HOME
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -136,6 +136,7 @@ TEMPLATE_DIRS = (
     #os.path.join(PROJECT_HOME,'marc_batch/templates/snippets/'),
     os.path.join(PROJECT_HOME,'orders/templates/'),
     os.path.join(PROJECT_HOME,'orders/templates/snippets/'),
+    os.path.join(PROJECT_HOME,'person_authority/templates/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/'),
     os.path.join(PROJECT_HOME,'portfolio/templates/portfolio/snippets/'),
     os.path.join(PROJECT_HOME,'reserve_search/templates/reserve_search/'),

@@ -11,6 +11,7 @@ from django.template import Context,Template,loader
 import django.utils.simplejson as json
 from django.utils.translation import ugettext
 import aristotle.settings as settings
+from aristotle.views import json_view
 import redis_helpers,sys,logging
 from app_settings import APP,SEED_RECORD_ID
 import marcr.app_helpers
@@ -90,35 +91,6 @@ def get_callnumber(rda_record):
     elif redis_server.hexists(ident_key,'local'):
         return redis_server.hget(ident_key,'local')
     return None
-
-def json_view(func):
-    """
-    Returns JSON results from method call, from Django snippets
-    `http://djangosnippets.org/snippets/622/`_
-    """
-    def wrap(request, *a, **kw):
-        response = None
-        try:
-            func_val = func(request, *a, **kw)
-            assert isinstance(func_val, dict)
-            response = dict(func_val)
-            if 'result' not in response:
-                response['result'] = 'ok'
-        except KeyboardInterrupt:
-            raise
-        except Exception,e:
-            exc_info = sys.exc_info()
-            logging.error(exc_info)
-            if hasattr(e,'message'):
-                msg = e.message
-            else:
-                msg = ugettext("Internal error: %s" % str(e))
-            response = {'result': 'error',
-                        'text': msg}
-        json_output = json.dumps(response)
-        return HttpResponse(json_output,
-                            mimetype='application/json')
-    return wrap
 
 @json_view    
 def browse(request):

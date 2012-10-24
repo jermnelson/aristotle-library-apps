@@ -3,11 +3,12 @@
 """
 __author__ = "Jeremy Nelson"
 
-from app_settings import APP,REDIS_SERVER
+from app_settings import APP
 from django.views.generic.simple import direct_to_template
 from django.http import HttpResponse
 from django.template import Context,Template,loader
 import aristotle.settings as settings
+from aristotle.views import json_view
 import json,sys,logging
 import search_helpers
 
@@ -27,36 +28,7 @@ def app(request):
                                'aristotle_url':settings.DISCOVERY_RECORD_URL})
 
 
-def json_view(func):
-    """
-    Returns JSON results from method call, from Django snippets
-    `http://djangosnippets.org/snippets/622/`_
-    """
-    def wrap(request, *a, **kw):
-        response = None
-        try:
-            func_val = func(request, *a, **kw)
-            assert isinstance(func_val, dict)
-            response = dict(func_val)
-            if 'result' not in response:
-                response['result'] = 'ok'
-        except KeyboardInterrupt:
-            raise
-        except Exception,e:
-            exc_info = sys.exc_info()
-            print(exc_info)
-            logging.error(exc_info)
-            if hasattr(e,'message'):
-                msg = e.message
-            else:
-                msg = ugettext("Internal error: %s" % str(e))
-            response = {'result': 'error',
-                        'text': msg}
-            
-        json_output = json.dumps(response)
-        return HttpResponse(json_output,
-                            mimetype='application/json')
-    return wrap
+
 
 @json_view
 def search(request):

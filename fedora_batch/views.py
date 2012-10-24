@@ -4,6 +4,7 @@
 from app_settings import APP,fedora_repo
 from app_helpers import repository_move,repository_update
 from aristotle.settings import INSTITUTION,FEDORA_URI
+from aristotle.views import json_view
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import redirect
 from fedora_batch.forms import *
@@ -27,37 +28,6 @@ def default(request):
                                'modify_form':batch_modify_form,
                                'object_mover_form':object_mover_form})
     
-
-def json_view(func):
-    """
-    Returns JSON results from method call, from Django snippets
-    `http://djangosnippets.org/snippets/622/`_
-    """
-    def wrap(request, *a, **kw):
-        response = None
-        try:
-            func_val = func(request, *a, **kw)
-            assert isinstance(func_val, dict)
-            response = dict(func_val)
-            if 'result' not in response:
-                response['result'] = 'ok'
-        except KeyboardInterrupt:
-            raise
-        except Exception,e:
-            exc_info = sys.exc_info()
-            print(exc_info)
-            logging.error(exc_info)
-            if hasattr(e,'message'):
-                msg = e.message
-            else:
-                msg = ugettext("Internal error: %s" % str(e))
-            response = {'result': 'error',
-                        'text': msg}
-            
-        json_output = json.dumps(response)
-        return HttpResponse(json_output,
-                            mimetype='application/json')
-    return wrap
 
 def object_mover(request):
     """

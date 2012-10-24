@@ -1,5 +1,5 @@
 """
- mod:`urls` Title Search App URL rourting
+ mod:`urls` Title Search App URL routing
 """
 __author__ = "Jeremy Nelson"
 

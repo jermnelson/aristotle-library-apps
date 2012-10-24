@@ -1,0 +1,87 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block head-title %}
+{% if library %}{{ library.name }}{% else %}Aristotle Library Apps{% endif %}
+Person Search
+{% endblock %}
+
+{% block more-css %}
+{% endblock %}
+
+
+{% block body %}
+{% comment %}START content DIV{% endcomment %}
+<div class="container-fluid">
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START search DIV{% endcomment %}
+  <div class="row12">
+   <h2>Person Authority App</h2>
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START widget DIV{% endcomment %}
+  <div class="row12">
+
+  {% comment %}END widget DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{% comment %}END content DIV{% endcomment %}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/jquery.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script>
+//$('.typeahead').typeahead();
+$('#typeahead-search').typeahead({
+    source: function (query, process) {
+        return $.get('/apps/title_search/search', { query: query }, function (data) {
+            return process(data);
+        });
+    }
+});
+
+ function Title(rdaTitle,record_id) {
+   this.rdaTitle = rdaTitle;
+   this.record_id = record_id;
+ }
+ function TitleSearchAppViewModel() {
+   var self = this;
+   self.titles = ko.observableArray([]);
+   self.newSearchQuery = ko.observable();
+   self.errorMessage = ko.observable(false);
+   self.searchTitle = function() {
+     self.titles.removeAll();
+     var data = 'q=' + ko.toJS(self.newSearchQuery);
+	 $.ajax({
+	    url:'/apps/title_search/search',
+		data:data,
+		dataType: 'json',
+		success: function(data) {
+		   var parsed_titles = data['results'];
+		   if(parsed_titles.length < 1) {
+		     self.errorMessage(true);
+		   } else {
+		     self.errorMessage(false);
+		   } 
+		   for(i=0;i<=parsed_titles.length;i++) {
+		      var title = parsed_titles[i];
+			  if(title) {
+			    self.titles.push(new Title(title.rdaTitle,title['ils-bib-numbers']));
+			  }
+		   }
+		
+     }});
+   }
+ }
+ ko.applyBindings(new TitleSearchAppViewModel());
+</script>
+{% endblock %}
