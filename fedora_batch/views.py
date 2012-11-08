@@ -2,13 +2,14 @@
  mod:`views` Fedora Batch App Views
 """
 from app_settings import APP,fedora_repo
-from app_helpers import repository_move,repository_update
+from app_helpers import repository_move,repository_update,ingest_folder
 from aristotle.settings import INSTITUTION,FEDORA_URI
 from aristotle.views import json_view
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import redirect
 from fedora_batch.forms import *
 from fedora_batch.models import *
+import mimetypes,os
 
 def default(request):
     """
@@ -27,7 +28,24 @@ def default(request):
                                'message':request.session.get('msg'),
                                'modify_form':batch_modify_form,
                                'object_mover_form':object_mover_form})
-    
+
+@json_view    
+def batch_ingest(request):
+    """
+    JSON handler for batch ingest view in app
+    """
+    output = {}
+    batch_ingest_form = BatchIngestForm(request.POST,request.FILES)
+    if batch_ingest_form.is_valid():
+        collection_pid = batch_ingest_form.cleaned_data['collection_pid']
+        compressed_file = request.FILES['compressed_file']
+        extension = os.path.splitext(compressed_file.name)[1]
+        if ['.zip','.tar','.gz','.tgz'].count(extension) > 0:
+            output["msg"] = "Now need to unzip and iterate through contents of zip file"
+        else:
+            raise ValueError("{0} is not a compressed file".format(compressed_file.name))
+        output['collection_pid'] = collection_pid
+    return output
 
 def object_mover(request):
     """

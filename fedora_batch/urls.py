@@ -8,4 +8,5 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('fedora_batch.views',
     url(r"$^","default",name="fedora-batch-default"),
     url(r"mover$","object_mover",name="pid-mover"),
+    url(r"ingest$","batch_ingest"),
 )

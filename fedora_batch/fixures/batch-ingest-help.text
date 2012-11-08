@@ -1,0 +1,15 @@
+Aristotle Library Apps Fedora Batch Ingest Help
+===============================================
+
+The Fedora Batch Ingest Utility assumes that you have a parent
+directory with one or more subdirectories. Each subdirectory will
+be imported separately as a Fedora Object into a Fedora Commons 
+repository. 
+
+Fedora Object Directory
+-----------------------
+Each Fedora Object Directory should contain at a minimum,
+the following:
+
+* MODS XML file
+* One or more datastreams

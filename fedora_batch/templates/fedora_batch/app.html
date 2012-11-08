@@ -28,18 +28,18 @@
  <div class="row-fluid">
   {% comment %}START fedora batch nav DIV{% endcomment %}
   <div class="span2">
-   <ul data-spy="affix" class="nav nav-stacked affix fedora-batch-nav" >
+   <ul class="nav nav-stacked well well-small" >
+     <li class="active">
+      <i class="icon-chevron-right pull-right"></i>
+      <a href="#" data-bind="click: displayIngest">Batch Ingest</a>
+     </li>
      <li>
-	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#" data-bind="click: displayIngest">Batch Ingest</a>
-	 </li>
-	 <li>
 	  <i class="icon-chevron-right pull-right"></i>
-	  <a href="#modify">Batch Modify</a> 
+	  <a href="#modify" data-bind="click: displayModifyBatch">Batch Modify</a> 
 	 </li>
      <li>
 	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#generate-marc">Generate MARC Record</a>
+	   <a href="#generate-marc" data-bind="click: displayMARC">Generate MARC Record</a>
 	 </li>	 
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
@@ -53,21 +53,26 @@
    
    <div class="well well-small"> 
    <h2>{{ app.current_view.title }} App</h2>
+    <div data-bind="visible: JobStatus"></div>
     {% if message %}
       <p>{{ message }}</p>
-	{% else %}
+    {% else %}
 	 <p>{{ app.description }}</p>
     {% endif %}
    </div>
    <div class="well well-small" data-bind="visible: batchIngest">
-    <a name="ingest"></a>
-    <h2>Batch Ingest</h2>
-	<form>
+       <a name="ingest"></a>
+       <h2>Batch Ingest</h2>
+	<form method="POST" action="{% url fedora_batch.views.batch_ingest %}" id="ingest_form" enctype="multipart/form-data" >
+	  {% csrf_token %}
 	 {{ ingest_form.as_p }}
-	 <a href="#" class="btn btn-primary">Ingest</a>
+         <div class="btn-group">
+	  <a href="#" class="btn btn-primary" onclick="UploadCompressedFile()"><i class="icon-upload"></i> Ingest</a>
+          <a href="#" class="btn"><i class="icon-question-sign"></i> Help</a>
+         </div>
 	</form>
    </div>
-   <div class="well well-small" data-bind="visible: batchModfiy">
+   <div class="well well-small" data-bind="visible: batchModify">
      <a name="modify"></a>
      <h2>Batch Modify Metadata</h2>
 	 <p>With this form you'll be able to modify the existing metadata for one 
@@ -78,8 +83,7 @@
 	 </form>
    </div>
    <div class="well" data-bind="visible: marcGenerate">
-   <form method="POST" action="{% url pid-mover %}"
-    <a name="generate-marc"></a>
+       <a name="generate-marc"></a>
 	<h2>Generate MARC record</h2>
 	
 	  <a href="#" class="btn btn-primary">Generate MARC</a>
@@ -88,6 +92,8 @@
      <a name="mover" ></a>
      <h2>PID Mover</h2>
 	 <p>Moves a single object or collection in a Fedora Commons Server</p>
+         <form method="POST" action="{% url pid-mover %}">
+
 	 <p>
 	  {% csrf_token %}
 	    
@@ -112,32 +118,49 @@
 <script>
  function FedoraBatchViewModel() {
    this.batchIngest = ko.observable(false);
-   this.batchModfiy = ko.observable(false);
+   this.batchModify = ko.observable(false);
    this.marcGenerate = ko.observable(false);
    this.pidMover = ko.observable(true);
-   
-   
-   
-   this.displayMover = function() {
-    this.pidMover = ko.observable();
-	alert("In DisplayMover");
-	this.pidMover = ko.observable(true);
+   this.JobStatus = ko.observable(true);
+
+   this.displayIngest = function() {
+     this.hideAll();
+     this.batchIngest(true);
    }
-   
- }
- function hideAll(){
-    FedoraBatchViewModel.batchIngest = ko.observable(false);
-    FedoraBatchViewModel.batchModfiy = ko.observable(false);
-    FedoraBatchViewModel.marcGenerate = ko.observable(false);
-    FedoraBatchViewModel.pidMover = ko.observable(false);
- }
- function displayIngest() {
-    hideAll();
-	FedoraBatchViewModel.batchIngest.visible = true;  
- }
 
 
- ko.applyBindings(new FedoraBatchViewModel());
+   this.displayModifyBatch = function() {
+     this.hideAll();
+     this.batchModify(true);
+   }
+
+   this.displayMARC = function() {
+     this.hideAll();
+     this.marcGenerate(true);
+
+   }
+
+   this.displayMover = function() {
+    this.hideAll();
+    this.pidMover(true);
+   }
+   this.hideAll = function() {
+     this.batchIngest(false);
+     this.batchModify(false);
+     this.marcGenerate(false);
+     this.pidMover(false);
+   }
+
+ }
+
+function UploadCompressedFile() {
+  var success = $('#ingest_form').submit();
+  alert(success);
+
+}
+
+//$("#id_target_directory").change(TestEvent);
+ko.applyBindings(new FedoraBatchViewModel());
 // ko.applyBindings(PIDMoverViewModel);
 </script>
 {% endblock %}

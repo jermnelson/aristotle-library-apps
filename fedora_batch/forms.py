@@ -6,8 +6,14 @@ from eulfedora.util import RequestFailed
 repository = Repository()
 
 class BatchIngestForm(forms.Form):
-    metadata_template = forms.FileField()
-    target_directory = forms.CharField(max_length=255)
+    collection_pid = forms.CharField(max_length=20)
+    compressed_file = forms.FileField(label="A .tar or .zip file",
+                                      required=False)
+##    target_directory = forms.FileField(label="Select Directory to upload",
+##                                       required=False,
+##                                       widget=forms.ClearableFileInput(attrs={"webkitdirectory":"",
+##                                                                              "directory":"",
+##                                                                              "mozdirectory":""}))
     
 class BatchModifyMetadataForm(forms.ModelForm):
 
