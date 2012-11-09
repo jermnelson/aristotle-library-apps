@@ -6,7 +6,7 @@
 {% endblock %}
 {% block app-icon %}
  <a class="app-ico-float" href="/apps/{% if app.url %}{{ app.url }}{% else %}/apps/{% endif %}">
-  <img src="{{ STATIC_URL }}img/{% if app.icon_url %}{{ app.icon_url }}{% else %}portfolio.png{% endif %}" />
+  <img src="{{ STATIC_URL }}img/{% if app.icon_url %}{{ app.icon_url }}{% else %}portfolio.png{% endif %}" style="width:32px;height:32px" />
  </a>
  {% endblock %}
 {% block action-view-title %}
