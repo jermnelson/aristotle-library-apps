@@ -55,7 +55,9 @@
    <h2>{{ app.current_view.title }} App</h2>
     <div data-bind="visible: JobStatus"></div>
     {% if message %}
+      {% autoescape off %}
       <p>{{ message }}</p>
+      {% endautoescape %}
     {% else %}
 	 <p>{{ app.description }}</p>
     {% endif %}
@@ -155,7 +157,7 @@
 
 function UploadCompressedFile() {
   var success = $('#ingest_form').submit();
-  alert(success);
+  //alert(success);
 
 }
 

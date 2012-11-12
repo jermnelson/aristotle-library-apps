@@ -3,20 +3,66 @@
 """
 __author__ = "Jeremy Nelson"
 from lxml import etree
+from django.template import Context,Template
 import aristotle.settings as settings
 from eulfedora.server import Repository
+import os,mimetypes,shutil
 #import Queue,threading
 
-MODS_NS = ''
+MODS_NS = 'http://www.loc.gov/mods/v3'
 repository = Repository(root=settings.FEDORA_ROOT,
                         username=settings.FEDORA_USER,
                         password=settings.FEDORA_PASSWORD)
 
+RELS_EXT = open(os.path.join(settings.PROJECT_HOME,
+                "fedora_batch",
+                "fixures",
+                "rels-ext.xml"),"rb").read()
 
+def handle_uploaded_zip(file_request,parent_pid):
+    """
+    Function takes a compressed file object from the Request
+    (should be either a .zip, .tar, .gz, or .tgz), opens
+    and extracts contents to a temp upload directory. Iterates
+    through and attempts to ingest each folder into the 
+    repository. Returns a list of status for each
+    attempted ingestion.
 
-def ingest_folder(file_path):
-    # Queries repository and gets the next available pid in the coccc
-    # namespace
+    :param file_request: File from request 
+    :param parent_pid: PID of parent collection
+    :rtype: List of status from ingesting subfolders
+    """
+    statuses = []
+    zip_filepath = os.path.join(settings.MEDIA_ROOT,file_request.name)
+    zip_filename,zip_extension = os.path.splitext(file_request.name)
+    zip_destination = open(zip_filepath,"wb")
+    for chunk in file_request.chunks():
+        zip_destination.write(chunk)
+    zip_destination.close()
+    if zip_extension == ".zip":
+        import zipfile
+        new_zip = zipfile.ZipFile(zip_filepath,'r')
+    elif [".gz",".tar",".tgz"].count(zip_extension) > 0:
+        import tarfile
+        new_zip = tarfile.open(zip_filepath)
+    else:
+        raise ValueError("File {0} in handle_uploaded_zip not recognized".format(zip_filepath))
+    zip_contents = os.path.join(settings.MEDIA_ROOT,zip_filename)
+    new_zip.extractall(path=zip_contents)
+    zip_walker = next(os.walk(zip_contents))[1]
+    for folder in zip_walker:
+        full_path = os.path.join(zip_contents,folder)
+        if os.path.isdir(full_path) and not folder.startswith(".git"):
+            statuses.append(ingest_folder(full_path,parent_pid))
+        #shutil.rmtree(full_path)
+    #os.remove(zip_contents)
+    return statuses
+    
+
+def ingest_folder(file_path,
+                  parent_pid,
+                  content_model="adr:adrBasicObject"):
+    # Queries repository and gets the next available pid
     new_pid = repository.api.ingest(text=None)
     # Opens up the mods.xml from the directory
     mods = etree.XML(open(os.path.join(file_path,"mods.xml"),'rb').read())
@@ -24,7 +70,7 @@ def ingest_folder(file_path):
     title_element = mods.find("{{{0}}}titleInfo/{{{0}}}title".format(MODS_NS))
     repository.api.modifyObject(pid=new_pid,
                                 label=title_element.text,
-                                ownerId=FEDORA_USER,
+                                ownerId=settings.FEDORA_USER,
                                 state="A")
     # Adds MODS datastream to the new object
     repository.api.addDatastream(pid=new_pid,
@@ -52,18 +98,16 @@ def ingest_folder(file_path):
                                                   content=content) 
     # finally, add RELS-EXT datastream
     rels_ext_template = Template(RELS_EXT)
-    rels_ext = rels_ext_template.render(object_pid=new_pid,
-                                        content_model="adr:adrBasicObject",
-                                        parent_pid=COLLECTION_PID)
+    rels_ext_context = Context({'object_pid':new_pid,
+                                'content_model':content_model,
+                                'parent_pid':parent_pid})
+    rels_ext = rels_ext_template.render(rels_ext_context)
     repository.api.addDatastream(pid=new_pid,
                                  dsID="RELS-EXT",
                                  dsLabel="RELS-EXT",
                                  mimeType="application/rdf+xml",
                                  content=rels_ext)
     return new_pid
-
-
-
 
 
 def repository_move(source_pid,collection_pid):
