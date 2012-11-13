@@ -30,5 +30,3 @@ APP = {'current_view': {'title':'Fedora Batch'},
                             
 fedora_repo = Repository()
 
-
-

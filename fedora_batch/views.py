@@ -1,15 +1,16 @@
 """
  mod:`views` Fedora Batch App Views
 """
-from app_settings import APP,fedora_repo
-from app_helpers import repository_move,repository_update, handle_uploaded_zip
-from aristotle.settings import INSTITUTION,FEDORA_URI
+from app_settings import *
+from app_helpers import *
+#from app_helpers import repository_move,repository_update, handle_uploaded_zip,start_indexing
+from aristotle.settings import INSTITUTION,FEDORA_URI,FEDORA_ROOT,SOLR_URL
 from aristotle.views import json_view
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import redirect
 from fedora_batch.forms import *
 from fedora_batch.models import *
-import mimetypes,os
+import mimetypes,os,datetime
 
 def default(request):
     """
@@ -27,11 +28,12 @@ def default(request):
                                'institution':INSTITUTION,
                                'message':request.session.get('msg'),
                                'modify_form':batch_modify_form,
-                               'object_mover_form':object_mover_form})
+                               'object_mover_form':object_mover_form,
+                               'solr_url':SOLR_URL})
 
 def batch_ingest(request):
     """
-    JSON handler for batch ingest view in app
+    Handler for batch ingest view in app
     """
     output = {}
     batch_ingest_form = BatchIngestForm(request.POST,request.FILES)
@@ -50,6 +52,22 @@ def batch_ingest(request):
         else:
             raise ValueError("{0} is not a compressed file".format(compressed_file.name))
         output['collection_pid'] = collection_pid
+
+@json_view
+def index_solr(request):
+    """
+    Starts or updates view for indexing Fedora objects into Solr
+
+    :param request:
+    """
+    output = {}
+    if request.REQUEST.has_key('start'):
+       start_indexing() 
+       output['msg'] = 'started indexing at {0}'.format(datetime.datetime.now().isoformat())
+    else:
+       output['msg'] = "{0} {1}".format(datetime.datetime.now().isoformat(),
+                                        SOLR_QUEUE.get())
+    return output
 
 def object_mover(request):
     """
