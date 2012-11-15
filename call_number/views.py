@@ -182,14 +182,22 @@ def term_search(request):
 
 
 @json_view
-def typeahead_search(request):
+def widget_search(request):
     """
-    JSON view for typeahead search on call number
+    JSON view for widget search on call number
 
     :param request: Request
     """
-    query = request.GET['q']
-    return redis_helpers.search(query)
+    call_number = request.REQUEST.get('q')
+    if request.REQUEST.has_key("type"):
+        call_number_type = request.REQUEST.get('type')
+    else:
+        call_number_type = "lccn"
+    current = redis_helpers.get_record(call_number=call_number)
+    next_recs = redis_helpers.get_next(call_number,call_number_type)
+    previous_recs = redis_helpers.get_previous(call_number,call_number_type)
+    return {'current':current,'nextRecs':next_recs,'previousRecs':previous_recs}
+
 
 
 def widget(request):

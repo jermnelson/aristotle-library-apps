@@ -13,40 +13,47 @@
 {% comment %}START call-number-browser DIV{% endcomment %}
 <div id="call-number-browser">
  <h2>Browse by call number:</h2>
- <span id="current-callnumber">{{ current.call_number }}</span>
+ <span id="current-callnumber" data-bind="text: currentCallNumber"></span>
  {% comment %}START nearby-entities DIV{% endcomment %}
  <div id="nearby-entities">
   {% comment %}START nearby-entities OL{% endcomment %}
   <ol>
-  {% for entity in previous %}
-    {% include 'snippets/browse-li.html' %}
-  {% endfor %}
-   <li class="current">
-     {% if current.isbn %}
-     {{ current.isbn|google_book_display }}
-     {% endif %}
-     <div class="call-number-entity">{{ current.rdaTitle }}</div>
-     {% if current.author %}
-      <div class="call-number-entity">{{ current.author }}</div>
-     {% endif %}
-     <div class="call-number-entity">{{ current.location }} &raquo;
-      {% if current.call_number %}
-       {{ current.call_number }}
-      {% endif %}
+    <!-- ko foreach: previousItems -->
+    <li>
+     <div class="call-number-entity">
+      <a data-bind="attr: { href: $data.bib_link }, text: $data.title"></a>
      </div>
-   </li>
-   {% for entity in next %}
-     {% include 'snippets/browse-li.html' %}
-   {% endfor %}
+     <div class="call-number-entity" data-bind="text: $data.authors"></div>
+     <div class="call-number-entity" ><span data-bind="text: $data.location"></span>
+      <span data-bind="text: $data.call_number"></span></div>
+    </li>
+    <!-- /ko -->
+    <li class="current">
+     <div class="call-number-entity" data-bind="text: currentTitle"></div>
+     <div class="call-number-entity" data-bind="text: currentAuthors"></div>
+     <div class="call-number-entity">&raquo;
+      <span data-bind="text: currentCallNumber"></span>
+     </div>
+     </li>
+   <!-- ko foreach: nextItems -->
+   <li>
+     <div class="call-number-entity">
+      <a data-bind="attr: { href: $data.bib_link }, text: $data.title"></a>
+     </div>
+     <div class="call-number-entity" data-bind="text: $data.authors"></div>
+     <div class="call-number-entity" ><span data-bind="text: $data.location"></span>
+     <span data-bind="text: $data.call_number"</div>
+    </li>
+   <!-- /ko -->
   {% comment %}END nearby-entities OL{% endcomment %}
   </ol>
   {% comment %}START browse-controls DIV{% endcomment %}
   <div id="browse-controls">
    {% comment %}START btn-group DIV{% endcomment %}
    <div class="btn-group">
-     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ previous.0.call_number }}')">&laquo; Previous</a>
+	   <a class="btn btn-mini" href="#" data-bind="click: browsePrevious">&laquo; Previous</a>
      {% comment %}<a class="btn btn-mini btn-info" href="#">Expand</a>{% endcomment %}
-     <a class="btn btn-mini" href="#" onclick="BrowseDisplay('{{ next.1.call_number }}')">Next &raquo;</a>
+     <a class="btn btn-mini" href="#" data-bind="click: browseNext">Next &raquo;</a>
    {% comment %}END btn-group DIV{% endcomment %}
    </div>
   {% comment %}END browse-controls DIV{% endcomment %}

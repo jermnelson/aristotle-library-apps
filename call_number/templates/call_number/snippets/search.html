@@ -4,7 +4,8 @@
 <form class="well form-search" data-bind="submit: searchCallNumber">
   <input type="text" name="call_number" data-bind="value: newSearchQuery" id="call-num-search" class="input-medium search-query">
   <select data-bind="options: callNumberTypes,
-	             optionsText: 'name'"></select>
+                     optionsText: 'name',
+		     value: chosenNumberType"></select>
  <button type="submit" class="btn"><i class="icon-eye-open"></i> Find</button>
 {% comment %}END autocomplete FORM{% endcomment %} 
 </form>
