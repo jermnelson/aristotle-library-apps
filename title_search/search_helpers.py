@@ -30,8 +30,9 @@ STOPWORDS = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
 
 
 def add_title(raw_title,title_metaphone,redis_server):
-    title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
+    #title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
     title_pipeline = redis_server.pipeline()
+    title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
     title_pipeline.sadd(title_metaphone,title_key)
     title_pipeline.hset(title_key,"phonetic",title_metaphone)
     title_pipeline.hset(title_key,"raw",raw_title)
@@ -75,10 +76,13 @@ def generate_title_app(work,redis_server):
         print("Work with redis-key={0} doesn't have a title.\n\tValues:{1}".format(work.redis_key,
                                                                                    work.attributes))
         return
-    stop_metaphones,all_metaphones,title_metaphone = process_title(work.attributes['rda:Title']['rda:preferredTitleForTheWork'])
+    raw_title = work.attributes['rda:Title']['rda:preferredTitleForTheWork']
+    stop_metaphones,all_metaphones,title_metaphone = process_title(raw_title)
     title_metaphone_key = 'first-term-metaphones:{0}'.format(all_metaphones[0])
+    first_word_key = 'first-word:{0}'.format(raw_title.split(" ")[0].lower())
     title_pipeline = redis_server.pipeline()
     title_pipeline.sadd(title_metaphone_key,work.redis_key)
+    title_pipeline.sadd(first_word_key,work.redis_key)
     work.attributes['rda:Title']['phonetic'] = title_metaphone
     if work.attributes['rda:Title'].has_key('rda:variantTitleForTheWork:sort'):
         title_pipeline.zadd("z-titles-alpha",0,work.attributes['rda:Title'].get('rda:variantTitleForTheWork:sort'))
@@ -153,7 +157,8 @@ def search_title(user_input,redis_server):
     title_keys = []
     metaphones,all_metaphones,title_metaphone = process_title(user_input)
     metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
-    metaphone_keys.append('first-term-metaphones:{0}'.format(all_metaphones[0]))
+##    metaphone_keys.append('first-term-metaphones:{0}'.format(all_metaphones[0]))
+    metaphone_keys.append('first-word:{0}'.format(user_input.split(" ")[0].lower()))
     title_keys = redis_server.sinter(metaphone_keys)
 ##    typeahead_keys = typeahead_search_title(user_input,redis_server)
 ##    if typeahead_keys is not None:

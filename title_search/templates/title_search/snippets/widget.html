@@ -4,7 +4,7 @@
   <h2>{% trans "Closest Search Results for" %} <em data-bind="text: newSearchQuery">query</em></h2>
   <ul data-bind="foreach: titles, visible: titles().length > 0">
     <li>
-      <span data-bind="text: rdaTitle">raw title</span>
+      <span data-bind="text: title">raw title</span>
 	  <span data-bind="text: record_id">record id</span>
     </li>
   </ul>

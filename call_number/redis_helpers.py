@@ -199,7 +199,7 @@ def get_record(**kwargs):
                                                "rda:preferredNameForThePerson")
                 if len(creator_keys) > 1:
                     creator += " et.al."
-                record_info['author'] = creator
+                record_info['author'] = unicode(creator,encoding="utf-8",errors='ignore')
     return record_info
     
 

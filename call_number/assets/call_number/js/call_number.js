@@ -39,3 +39,28 @@ function CNtypeahead(ev) {
     }
   }
 }
+
+function CallNumberAppViewModel() {
+  var self = this;
+
+  self.callNumberTypes = [
+    { name: "LCCN Call Number", number_type: "lccn" },
+    { name: "SuDoc Call Number", number_type: "sudoc" },
+    { name: "Local Call Number", number_type: "local" },
+    { name: "ISBN", number_type: "isbn" },
+    { name: "ISSN", number_type: "issn" }]; 
+
+  self.newSearchQuery = ko.observable(); 
+
+  self.searchCallNumber = function() {
+    var data = 'q=' + ko.toJS(new self.newSearchQuery());
+    $.ajax({
+      data: data,
+      dataType: 'json',	    
+      url: '/call_number/discovery_search',
+      success: function(data) {
+
+      }
+    });
+  }
+}
