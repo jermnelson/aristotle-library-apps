@@ -7,8 +7,6 @@ from django.template import Context,Template
 import aristotle.settings as settings
 from eulfedora.server import Repository
 import os,mimetypes,shutil
-from multiprocessing import Process, Queue
-#import Queue,threading
 
 MODS_NS = 'http://www.loc.gov/mods/v3'
 repository = Repository(root=settings.FEDORA_ROOT,
@@ -20,9 +18,7 @@ RELS_EXT = open(os.path.join(settings.PROJECT_HOME,
                 "fixures",
                 "rels-ext.xml"),"rb").read()
 
-SOLR_QUEUE = Queue()
 
-from solr_helpers import index_digital_object
 
 def handle_uploaded_zip(file_request,parent_pid):
     """
@@ -154,31 +150,3 @@ def repository_update(pid,mods_snippet):
     """
     pass
    
-
-def index_process(dig_obj):
-    """
-    Function adds result of indexing fedora digital object into 
-    Solr index.
-
-    :param dig_obj: Digital Object
-    """
-    index_digital_object(pid=dig_obj.pid)
-    SOLR_QUEUE.put("Indexed {0} with PID={1} into Solr Index".format(dig_obj.label,dig_obj.pid))
- 
-def start_indexing(pid_prefix='coccc'):
-    """
-    Function starts Solr indexing queue for all objects in 
-    the repository.
-
-    :param pid_prefix: PID prefix to search, defaults to CC
-    """
-    all_pids_generator = repository.find_objects(query = "{0}*".format(pid_prefix),)
-    while 1:
-        try:
-            digital_object = next(all_pids_generator)
-            process = Process(target=index_process, args=(digital_object,))
-            process.start()
-            #process.join()
-        except:
-            break
-

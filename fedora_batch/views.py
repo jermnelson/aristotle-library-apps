@@ -3,7 +3,7 @@
 """
 from app_settings import *
 from app_helpers import *
-#from app_helpers import repository_move,repository_update, handle_uploaded_zip,start_indexing
+from solr_helpers import SOLR_QUEUE,start_indexing
 from aristotle.settings import INSTITUTION,FEDORA_URI,FEDORA_ROOT,SOLR_URL
 from aristotle.views import json_view
 from django.views.generic.simple import direct_to_template

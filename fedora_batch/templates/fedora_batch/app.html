@@ -153,6 +153,7 @@
        data: { csrfmiddlewaretoken: "{{ csrf_token }}"},
        url: "{% url fedora_batch.views.index_solr %}"
      }).done(function (json_response) {
+       alert("In Done of $ajax call");
        if(json_response['result'] == 'error') {
           alert("Error! " + json_response['text']);
        } 

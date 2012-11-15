@@ -3,3 +3,5 @@ Django==1.4
 docutils==0.9
 redis==2.4.12
 pymarc
+eulfedora
+lxml

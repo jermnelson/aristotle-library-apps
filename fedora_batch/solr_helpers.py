@@ -4,6 +4,9 @@ import xml.etree.ElementTree as etree
 import aristotle.settings as settings
 import sunburnt
 from app_helpers import repository
+from multiprocessing import Process, Queue
+
+SOLR_QUEUE = Queue(maxsize=5)
 
 MODS_NS = 'http://www.loc.gov/mods/v3'
 solr_server = sunburnt.SolrInterface(settings.SOLR_URL)
@@ -195,6 +198,7 @@ def index_digital_object(**kwargs):
     solr_doc['pubyear'] = get_published_year(mods)
     solr_doc['text'] = get_text(solr_doc,mods)
     solr_doc['url'] = get_url(mods)
+    print("Adding {0} to Solr index".format(solr_doc))
     solr_server.add(Solr_doc)
     solr_server.commit()               
 
@@ -203,4 +207,37 @@ def index_manuscript(pid):
     Function takes PID, extracts MODS, creates Solr document and attempts to ingest into Solr.
     """
     index_digital_object(pid=pid,format='Manuscript')
+
+def index_process(dig_obj,queue):
+    """
+    Function adds result of indexing fedora digital object into 
+    Solr index.
+
+    :param dig_obj: Digital Object
+    """
+    print("In index_process")
+    index_digital_object(pid=dig_obj.pid)
+    queue.put("Indexed {0} with PID={1} into Solr Index".format(dig_obj.label,dig_obj.pid))
+
+def start_indexing(pid_prefix='coccc'):
+    """
+    Function starts Solr indexing queue for all objects in 
+    the repository.
+
+    :param pid_prefix: PID prefix to search, defaults to CC
+    """
+    print("Before get pid generator")
+    all_pids_generator = repository.find_objects(query = "{0}*".format(pid_prefix))
+    print("after get pid generator {0}".format(all_pids_generator))
+    while 1:
+        try:
+            print("Before extracting next digital object")
+            digital_object = next(all_pids_generator)
+            print("Digital object PID={0}".format(digital_object.pid))
+            process = Process(target=index_process, args=(digital_object,SOLR_QUEUE))
+            process.start()
+            #process.join()
+        except:
+            break
+
 
