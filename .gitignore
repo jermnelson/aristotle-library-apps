@@ -5,4 +5,5 @@
 *.swp
 local_settings.*
 aristotle/static*
+modified/*
 uploads/*
