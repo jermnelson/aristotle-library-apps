@@ -190,8 +190,8 @@ def get_record(**kwargs):
             record_info['bib_number'] = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(instance_key),
                                                           'ils-bib-number')
             work_key = redis_server.hget(instance_key,'marcr:Work')
-            record_info['rdaTitle'] = work_redis.hget("{0}:rda:Title".format(work_key),
-                                                      'rda:preferredTitleForTheWork')
+            record_info['title'] = work_redis.hget("{0}:rda:Title".format(work_key),
+                                                  'rda:preferredTitleForTheWork')
             creator_keys = work_redis.smembers("{0}:rda:creator".format(work_key))
             if len(creator_keys) > 0:
                 creator_keys = list(creator_keys)
@@ -199,7 +199,7 @@ def get_record(**kwargs):
                                                "rda:preferredNameForThePerson")
                 if len(creator_keys) > 1:
                     creator += " et.al."
-                record_info['author'] = creator
+                record_info['authors'] = unicode(creator,encoding="utf-8",errors='ignore')
     return record_info
     
 

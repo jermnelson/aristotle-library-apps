@@ -11,6 +11,7 @@ urlpatterns = patterns('call_number.views',
     url(r"discovery$","discovery_search"),
     url(r"json/browse$",'browse'),
     url(r"json/search$","typeahead_search"),
+    url(r"json/widget_search$","widget_search"),
     url(r"json/term_search","term_search"),
     url(r'widget$','widget'),
 )

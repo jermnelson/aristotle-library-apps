@@ -39,3 +39,97 @@ function CNtypeahead(ev) {
     }
   }
 }
+
+function CallNumberItem(bib_link,title,authors,location,call_number) {
+  this.bib_link = bib_link;
+  this.authors = authors;
+  this.call_number=call_number;
+  this.location=location;
+  this.title = title;
+}
+
+function CallNumberAppViewModel() {
+  var self = this;
+
+  self.browseNext = function() {
+    var last_position = self.nextItems().length -1;
+    var data = 'q=' +  self.nextItems()[last_position].call_number+ "&type=" + self.chosenNumberType()["number_type"];
+    $.ajax({
+      data: data,
+      dataType: 'json',	    
+      url: '/apps/call_number/json/widget_search',
+      success: function(data) {
+        self.updateWidget(data);
+      }
+    });
+
+  }
+
+  self.browsePrevious = function() {
+    var data = 'q=' +  self.previousItems()[0].call_number+ "&type=" + self.chosenNumberType()["number_type"];
+    $.ajax({
+      data: data,
+      dataType: 'json',	    
+      url: '/apps/call_number/json/widget_search',
+      success: function(data) {
+        self.updateWidget(data);
+      }
+    });
+
+  }
+
+  self.callNumberTypes = [
+    { name: "LCCN Call Number", number_type: "lccn" },
+    { name: "SuDoc Call Number", number_type: "sudoc" },
+    { name: "Local Call Number", number_type: "local" },
+    { name: "ISBN", number_type: "isbn" },
+    { name: "ISSN", number_type: "issn" }]; 
+
+  self.chosenNumberType = ko.observable();
+  self.currentTitle = ko.observable();
+  self.currentAuthors = ko.observable();
+  self.currentCallNumber = ko.observable()
+  self.newSearchQuery = ko.observable(); 
+
+  self.nextItems = ko.observableArray([]);
+  self.previousItems = ko.observableArray([]);
+
+  self.searchCallNumber = function() {
+    var data = 'q=' + ko.toJS(self.newSearchQuery()) + "&type=" + self.chosenNumberType()["number_type"];
+    $.ajax({
+      data: data,
+      dataType: 'json',	    
+      url: '/apps/call_number/json/widget_search',
+      success: function(data) {
+        self.updateWidget(data);
+      }
+    });
+  }
+
+ self.updateWidget = function(data) {
+   self.nextItems.removeAll();
+   self.previousItems.removeAll();
+   var previousRecs = data['previousRecs'];
+   if(previousRecs) {
+     for(row in previousRecs) {
+       rec = previousRecs[row];
+       var bib_link = "/catalog/record/" + rec['bib_number'];
+       self.previousItems.push(new CallNumberItem(bib_link,rec['title'],rec['authors'],' ',rec['call_number']));
+     }
+   }
+   var current = data['current'];
+   self.currentTitle(current['title']);
+   self.currentAuthors(current['authors'])
+   self.currentCallNumber(current['call_number']);
+   var nextRecs = data['nextRecs'];
+   if(nextRecs) {
+     for(row in nextRecs) {
+       rec = nextRecs[row];
+       var bib_link = "/catalog/record/" + rec['bib_number'];
+       self.nextItems.push(new CallNumberItem(bib_link,rec['title'],rec['authors'],' ',rec['call_number']));
+     }
+   }
+ }
+
+
+}

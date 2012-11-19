@@ -83,6 +83,19 @@ class MARC21Ingester(Ingester):
         super(MARC21Ingester,self).__init__(**kwargs)
 
 
+
+class MARC21toFacet(MARC21Ingester):
+    """
+     MARC21toFacet creates a MARCR annotation to be associated with
+     either a Work or Instance.
+    """
+
+    def __init__(self,**kwargs):
+        self.facets = None
+	super(MARC21toFacet,self).__init__(**kwargs)
+
+
+        
 isbn_regex = re.compile(r'([0-9\-]+)')
 class MARC21toInstance(MARC21Ingester):
     """

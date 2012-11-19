@@ -1,8 +1,11 @@
 {% load i18n %}
 {% load call_number_extras %}
 {% comment %}START autocomplete FORM{% endcomment %}
-<form class="well form-search" action="/apps/call_number/">
- <input type="text" data-provide="typeahead" data-items="15" name="call_number" id="call-num-typeahead" {% if typeahead_data %}data-source="{{ typeahead_data }}"{% endif %} class="input-medium search-query">
+<form class="well form-search" data-bind="submit: searchCallNumber">
+  <input type="text" name="call_number" data-bind="value: newSearchQuery" id="call-num-search" class="input-medium search-query">
+  <select data-bind="options: callNumberTypes,
+                     optionsText: 'name',
+		     value: chosenNumberType"></select>
  <button type="submit" class="btn"><i class="icon-eye-open"></i> Find</button>
 {% comment %}END autocomplete FORM{% endcomment %} 
 </form>
