@@ -226,7 +226,9 @@ def start_indexing(pid_prefix='coccc'):
 
     :param pid_prefix: PID prefix to search, defaults to CC
     """
-    print("Before get pid generator")
+    query = "{0}*".format(pid_prefix)
+    print("Before get pid generator {0}".format(query))
+    
     all_pids_generator = repository.find_objects(query = "{0}*".format(pid_prefix))
     print("after get pid generator {0}".format(all_pids_generator))
     while 1:
