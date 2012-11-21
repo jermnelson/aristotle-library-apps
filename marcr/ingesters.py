@@ -10,6 +10,8 @@ from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from title_search.search_helpers import generate_title_app
 
+import marc21_facets
+
 import redis,datetime,pymarc
 try:
     import aristotle.settings as settings
@@ -84,15 +86,101 @@ class MARC21Ingester(Ingester):
 
 
 
-class MARC21toFacet(MARC21Ingester):
+class MARC21toFacets(MARC21Ingester):
     """
-     MARC21toFacet creates a MARCR annotation to be associated with
+     MARC21toFacets creates a MARCR annotations to be associated with
      either a Work or Instance.
     """
 
     def __init__(self,**kwargs):
         self.facets = None
-	super(MARC21toFacet,self).__init__(**kwargs)
+	super(MARC21toFacets,self).__init__(**kwargs)
+
+
+    def add_access_facet(self,instance,record):
+        """
+	Creates a marcr:Annotation:Facet:Access based on 
+	extracted info from the MARC21 Record
+	
+	:param instance: MARCR Instance
+	:parma record: MARC21 Record
+	"""
+	access = marc21_facets.get_access(record)
+	facet_key = "marcr:Annotation:Facet:Access:{0}".format(access)
+	self.annotation_ds.sadd(facet_key,instance.redis_key)
+	self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),
+			      facet_key)
+
+
+    def add_format_facet(self,instance):
+	"""
+	Creates a marcr:Annotation:Facet:Format based on the 
+	rda:carrierTypeManifestation property of the marcr:Instance
+
+	:param instance: MARCR Instance
+	"""
+	# Extract's the Format facet value from the Instance and
+	# creates an Annotation key that the instance's redis key
+	# is either added to an existing set or creates a new 
+	# sorted set for the facet marcr:Annotation
+	facet_key = "marcr:Annotation:Facet:Format:{0}".format(instance.attributes['rda:carrierTypeManifestation'])
+	self.annotation_ds.sadd(facet_key,instance.redis_key)
+	self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),facet_key)
+
+
+    def add_lc_facet(self,work,record):
+        """
+	Adds marcr:Work to the marcr:Annotation:Facet:LOCLetter facet
+	based on extracted info from the MARC21 Record
+
+	:param work: MARCR Work entity
+	:param record: MARC21 record
+	"""
+	lc_facet,lc_facet_desc = marc21_facets.get_lcletter(record)
+	for row in lc_facet_desc:
+	    facet_key = "marcr:Annotation:Facet:LOCFirstLetter:{0}".format(lc_facet)
+	    self.annotation_ds.sadd(facet_key,work.redis_key)
+	    self.work_ds.sadd("{0}:Annotations:facets".format(work.redis_key),facet_key)
+	    self.annotation_ds.hset("marcr:Annotation:Facet:LOCFirstLetters",lc_facet,row)
+    
+    def add_location_facet(self,instance,record):
+        """
+	Method takes an instance and a MARC21 record, extracts all CC's
+	location codes from the MARC21 record, and if there is more
+	than one location, creates distinct MARCR Instances for the 
+	remaining locations
+
+	:param instance: MARCR Instance
+	:param record: MARC21 record
+	"""
+	locations = marc21_facets.get_location(record)
+	if len(locations) > 0:
+	    # Associates first location with the existing Instance
+	    first_key = "marcr:Annotation:Facet:Location:{0}".format(locations[0][0])
+	    self.annotation_ds.sadd(first_key,
+			            instance.redis_key)
+	    if not self.annotation_ds.hexists("marcr:Annotation:Facet:Locations",locations[0][0]):
+	        self.annotation_ds.hset("marcr:Annotation:Facet:Locations",
+			                locations[0][0],
+			                locations[0][1])
+	    self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),first_key)
+
+	    # Now iterate through the remaining locations, creating Instances for each
+	    # location with a copy of the original MARCR Instance's attributes
+	    for location in locations[1:]:
+                new_instance = Instance(redis=instance.redis,
+				        attributes=instance.attributes)
+		new_instance.save()
+		redis_key = "marcr:Annotation:Facet:Location:{0}".format(location[0])
+		self.annotation_ds.sadd(redis_key,new_instance.redis_key)
+		if not self.annotation_ds.hexists("marcr:Annotation:Facet:Locations",location[0]):
+		    self.annotation_ds.hset("marcr:Annotation:Facet:Locations",
+				            location[0],
+					    location[1])
+		self.instance_ds.sadd("{0}:Annotations:facets".format(new_instance.redis_key),
+				      redis_key)
+		    
+
 
 
         
@@ -115,6 +203,16 @@ class MARC21toInstance(MARC21Ingester):
         self.instance = Instance(redis=self.instance_ds,
                                  attributes=self.entity_info)
         self.instance.save()
+
+    def extract_carrier_type(self):
+	"""
+	Extract's the RDA carrier type from a MARC21 record and
+	saves result as an Instance's rda:carrierTypeManifestation,
+	
+	NOTE: method currently using CC's MARC21 mapping, needs to
+	normalized to the controlled vocabulary of rda:carrierType
+	"""
+	self.entity_info['rda:carrierTypeManifestation'] = marc21_facets.get_format(self.record)
                                  
 
     def extract_ils_bibnumber(self):
@@ -196,6 +294,7 @@ class MARC21toInstance(MARC21Ingester):
         """
         Ingests a MARC21 record into a MARCR Instance Redis datastore
         """
+	self.extract_carrier_type()
         self.extract_ils_bibnumber()
         self.extract_isbn()
         self.extract_issn()

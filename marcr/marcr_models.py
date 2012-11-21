@@ -93,6 +93,10 @@ class Annotation(MARCRModel):
         """
         if not kwargs.has_key('redis'):
             kwargs['redis'] = ANNOTATION_REDIS
+	if not kwargs.has_key('annotation_key_pattern'):
+	    self.annotation_key_pattern = "marcr:Annotation"
+	else:
+	    self.annotation_key_pattern = kwargs.get('annotation_key_pattern')
         super(Annotation,self).__init__(**kwargs)
 
     def save(self):
@@ -100,7 +104,8 @@ class Annotation(MARCRModel):
         Saves the Annotation object to the Redis datastore
         """
         if self.redis_key is None:
-            self.redis_key = "marcr:Annotation:{0}".format(self.redis.incr("global marcr:Annotation"))
+	    self.redis_key = "{0}:{1}".format(self.annotation_key_pattern,
+		                              self.redis.incr("global {0}".format(self.annotation_key_pattern)))
         super(Annotation,self).save()
 
 

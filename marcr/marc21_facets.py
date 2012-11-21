@@ -4,13 +4,16 @@
  project's marc parser.
 """
 __author__ = "Jeremy Nelson"
-import re
+import re,logging
+import marc21_maps,tutt_maps
 
 LOCATION_RE = re.compile(r'\(\d+\)')
 NONINT_RE = re.compile(r'\D')
 PER_LOC_RE = re.compile(r'(tper*)')
 REF_LOC_RE = re.compile(r'(tarf*)')
 
+
+access_search = re.compile(r'ewww')
 def get_access(record):
     '''Generates simple access field specific to CC's location codes
 
@@ -117,7 +120,8 @@ def get_format(record):
                     elif field007[4] == 'b':
                         format = 'VHS Video' 
                     else:
-                        logging.error("247 UNKNOWN field007 %s for %s" % (field007[4],record.title()))
+                        #logging.error("247 UNKNOWN field007 %s for %s" % (field007[4],record.title()))
+			pass
                 elif field007[1] == 'f':        # videocassette
                     format = 'VHS Video'
                 elif field007[1] == 'r':
@@ -200,7 +204,7 @@ def get_format(record):
             elif field008[24] == 'b':
                 format = 'Book'
             else:
-                logging.error("314 Trying re on field 502 for %s" % record.title())
+                #logging.error("314 Trying re on field 502 for %s" % record.title())
                 thesis_re = re.compile(r"Thesis")
                 #! Quick hack to check for "Thesis" string in 502
                 if record['502']:
@@ -223,7 +227,7 @@ def get_format(record):
             format = 'Electronic'
     # Doesn't match any of the rules
     if len(format) < 1:
-        logging.error("309 UNKNOWN FORMAT Title=%s Leader: %s" % (record.title(),leader))
+        #logging.error("309 UNKNOWN FORMAT Title=%s Leader: %s" % (record.title(),leader))
         format = 'Unknown'
 
     # Some formats are determined by location
@@ -246,10 +250,10 @@ def get_lcletter(record):
     if lc_stub_result:
         code = lc_stub_result.groups()[0]
         try:
-            lc_descriptions.append(marc_maps.LC_CALLNUMBER_MAP[code])
+            lc_descriptions.append(marc21_maps.LC_CALLNUMBER_MAP[code])
         except:
             pass
-    return lc_descriptions
+        return code,lc_descriptions
 
 def get_location(record):
     """Uses CC's location codes in Millennium to map physical
@@ -263,15 +267,15 @@ def get_location(record):
             locations_raw = row.get_subfields('a')
             for code in locations_raw:
                 code = LOCATION_RE.sub("",code)
-                output.append(tutt_maps.LOCATION_CODE_MAP[code])
-                if code in tutt_maps.SPECIAL_COLLECTIONS:
-                    output.append("Special Collections")
-                if code in tutt_maps.GOVDOCS_COLLECTIONS:
-                    output.append("Government Documents")
+                output.append((code,tutt_maps.LOCATION_CODE_MAP[code]))
+                ##if code in tutt_maps.SPECIAL_COLLECTIONS:
+                ##    output.append((code,"Special Collections"))
+                ##if code in tutt_maps.GOVDOCS_COLLECTIONS:
+                ##    output.append("Government Documents")
         except KeyError:
-            logging.info("%s Location unknown=%s" % (record.title(),locations[0].value()))
-            output.append('Unknown')
-    return set(output)
+#            logging.info("%s Location unknown=%s" % (record.title(),locations[0].value()))
+            output.append(('Unknown','Unknown'))
+    return output
 
 def get_subject_names(record):
     """

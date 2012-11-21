@@ -5,6 +5,8 @@ import redis,pymarc
 from django.test import TestCase
 from marcr_models import *
 from ingesters import MARC21toInstance,MARC21toMARCR,MARC21toPerson,MARC21toWork
+from ingesters import MARC21toFacets
+
 try:
     from aristotle.settings import TEST_REDIS
 except ImportError, e:
@@ -54,12 +56,84 @@ class AuthorityTest(TestCase):
                                         redis_key="marcr:Authority:1")
 
     def test_init(self):
-        self.assert_(self.new_base_authority.redis is not None)
+	self.assert_(self.new_base_authority.redis is not None)
         self.assertEquals(self.base_authority.redis_key,
                           "marcr:Authority:1")
 
     def tearDown(self):
         test_redis.flushdb()
+
+class MARC21toFacetsTest(TestCase):
+
+    def setUp(self):
+	self.facet_ingester = MARC21toFacets(annotation_ds=test_redis,
+			                     authority_ds=test_redis,
+					     instance_ds=test_redis,
+					     work_ds=test_redis)
+
+    def test_access_facet(self):
+	instance = Instance(redis=test_redis)
+	instance.save()
+	marc_record = pymarc.Record()
+	marc_record.add_field(pymarc.Field(tag='994',
+		                           indicators=[' ',' '],
+					   subfields=['a','ewww']))
+	self.facet_ingester.add_access_facet(instance,marc_record)
+	self.assert_(test_redis.exists("marcr:Annotation:Facet:Access:Online"))
+	self.assert_(test_redis.sismember("marcr:Annotation:Facet:Access:Online",instance.redis_key))
+
+
+    def test_format_facet(self):
+        instance = Instance(redis=test_redis,
+			    attributes={"rda:carrierTypeManifestation":"Book"})
+	instance.save()
+	self.facet_ingester.add_format_facet(instance)
+	self.assert_(test_redis.exists("marcr:Annotation:Facet:Format:Book"))
+	self.assert_(test_redis.sismember("marcr:Annotation:Facet:Format:Book",instance.redis_key))
+
+    def test_lc_facet(self):
+	work = Work(redis=test_redis)
+	work.save()
+	marc_record = pymarc.Record()
+	marc_record.add_field(pymarc.Field(tag='050',
+		                           indicators=['0','0'],
+					   subfields=['a','QA345','b','T6']))
+        self.facet_ingester.add_lc_facet(work,marc_record)
+	self.assert_(test_redis.exists("marcr:Annotation:Facet:LOCFirstLetter:QA"))
+	self.assert_(test_redis.sismember("marcr:Annotation:Facet:LOCFirstLetter:QA",work.redis_key))
+	self.assertEquals(test_redis.hget("marcr:Annotation:Facet:LOCFirstLetters","QA"),
+                          "QA - Mathematics")
+
+    def test_location_facet(self):
+	instance = Instance(redis=test_redis)
+	instance.save()
+        marc_record = pymarc.Record()
+	marc_record.add_field(pymarc.Field(tag='994',
+		                           indicators=['0','0'],
+					   subfields=['a','ewwwn']))
+	marc_record.add_field(pymarc.Field(tag='994',
+		                           indicators=['0','0'],
+					   subfields=['a','tarfc']))
+	marc_record.add_field(pymarc.Field(tag='994',
+		                           indicators=['0','0'],
+					   subfields=['a','tgr']))
+	self.facet_ingester.add_location_facet(instance,marc_record)
+	self.assert_(test_redis.exists("marcr:Annotation:Facet:Location:ewwwn"))
+	self.assert_(test_redis.exists("marcr:Annotation:Facet:Location:tarfc"))
+	self.assert_(test_redis.exists("marcr:Annotation:Facet:Location:tgr"))
+	self.assertEquals(test_redis.hget("marcr:Annotation:Facet:Locations","ewwwn"),
+			  "Online")
+	self.assertEquals(test_redis.hget("marcr:Annotation:Facet:Locations","tarfc"),
+                          "Tutt Reference")
+
+
+
+
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+
 
 class MARC21toInstanceTest(TestCase):
 
