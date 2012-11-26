@@ -1,26 +1,26 @@
 """
- :mod:`marcr_models` - Redis and other helper classes for the Bibliographic
+ :mod:`bibframe_models` - Redis and other helper classes for the Bibliographic
  Framework App
 """
 __author__ = "Jeremy Nelson"
 import redis,datetime
 try:
     import aristotle.settings as settings
-    WORK_REDIS = settings.WORK_REDIS
+    CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
     INSTANCE_REDIS = settings.INSTANCE_REDIS
     AUTHORITY_REDIS = settings.AUTHORITY_REDIS
     ANNOTATION_REDIS = settings.ANNOTATION_REDIS
     OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
 except ImportError, e:
     redis_host = '0.0.0.0'
-    WORK_REDIS = redis.StrictRedis(port=6380)
+    CREATIVE_WORK_REDIS = redis.StrictRedis(port=6380)
     INSTANCE_REDIS = redis.StrictRedis(port=6381)
     AUTHORITY_REDIS = redis.StrictRedis(port=6382)
     ANNOTATION_REDIS = redis.StrictRedis(port=6383)
     OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
 
 
-class MARCRModel(object):
+class BibFrameModel(object):
     """
     Base class for all classes of the Bibliographic Framework's High level
     models
@@ -59,29 +59,31 @@ class MARCRModel(object):
                 self.attributes['created'] = datetime.datetime.now().isoformat()
             # Iterates through attributes and save values to
             # Redis datastore
+	    redis_pipeline = self.redis.pipeline()
             for attrib_key,value in self.attributes.iteritems():
                 if type(value) is list:
-                    self.redis.lpush("{0}:{1}".format(self.redis_key,
-                                                      attrib_key),
+                    redis_pipeline.lpush("{0}:{1}".format(self.redis_key,
+                                                          attrib_key),
                                      value)
                 elif type(value) is set:
                     for member in list(value):
-                        self.redis.sadd("{0}:{1}".format(self.redis_key,
-                                                         attrib_key),
+                        redis_pipeline.sadd("{0}:{1}".format(self.redis_key,
+                                                             attrib_key),
                                     member)
                 elif type(value) is dict:
                     new_hash_key = "{0}:{1}".format(self.redis_key,
                                                     attrib_key)
                     for nk,nv in value.iteritems():
-                        self.redis.hset(new_hash_key,
-                                        nk,
-                                        nv)
+                        redis_pipeline.hset(new_hash_key,
+                                            nk,
+                                            nv)
                 else:
-                    self.redis.hset(self.redis_key,
-                                    attrib_key,
-                                    value)
+                    redis_pipeline.hset(self.redis_key,
+                                        attrib_key,
+                                        value)
+            redis_pipeline.execute()
 
-class Annotation(MARCRModel):
+class Annotation(BibFrameModel):
     """
     Annotation class is a high level model in the Bibliographic Framework. It is
     made up of attributes derived from RDA/FRBR and noted as such.
@@ -94,7 +96,7 @@ class Annotation(MARCRModel):
         if not kwargs.has_key('redis'):
             kwargs['redis'] = ANNOTATION_REDIS
 	if not kwargs.has_key('annotation_key_pattern'):
-	    self.annotation_key_pattern = "marcr:Annotation"
+	    self.annotation_key_pattern = "bibframe:Annotation"
 	else:
 	    self.annotation_key_pattern = kwargs.get('annotation_key_pattern')
         super(Annotation,self).__init__(**kwargs)
@@ -109,7 +111,7 @@ class Annotation(MARCRModel):
         super(Annotation,self).save()
 
 
-class Authority(MARCRModel):
+class Authority(BibFrameModel):
     """
     Author class is a high level model in the Bibliographic Framework. It is
     made up of attributes derived from RDA/FRBR and noted as such.
@@ -123,11 +125,42 @@ class Authority(MARCRModel):
             kwargs['authority_ds'] = AUTHORITY_REDIS
         super(Authority,self).__init__(**kwargs)
 
+
+class CreativeWork(BibFrameModel):
+    """
+    Work class is a high level model in the Bibliographic Framework. It is
+    made up of attributes derived from RDA/FRBR and noted as such.
+    """
+
+    def __init__(self,**kwargs):
+        """
+        Creates a Work object
+        """
+        if not kwargs.has_key('redis'):
+            kwargs['redis'] = WORK_REDIS
+        super(CreativeWork,self).__init__(**kwargs)
+
+    def add_annotation(self,annotation_key):
+        """
+        Function adds an annotation to the work
+        """
+        pass
+
+    def save(self):
+        """
+        Saves the Work object to the Redis datastore
+        """
+        if self.redis_key is None:
+            self.redis_key = "bibframe:CreativeWork:{0}".format(self.redis.incr("global bibframe:CreativeWork"))
+        if self.attributes.has_key('bibframe:Instances'):
+            self.attributes['bibframe:Instances'] = set(self.attributes['bibframe:Instances'])
+        super(CreativeWork,self).save()
+
 class CorporateBody(Authority):
 
     def save(self):
         if self.redis_key is None:
-            self.redis_key = "marcr:Authority:CorporateBody:{0}".format(self.redis.incr("global marcr:Authority:CorporateBody"))
+            self.redis_key = "bibframe:Authority:CorporateBody:{0}".format(self.redis.incr("global bibframe:Authority:CorporateBody"))
         super(Person,self).save()
 
 
@@ -135,14 +168,14 @@ class Person(Authority):
 
     def save(self):
         if self.redis_key is None:
-            self.redis_key = "marcr:Authority:Person:{0}".format(self.redis.incr("global marcr:Authority:Person"))
+            self.redis_key = "bibframe:Authority:Person:{0}".format(self.redis.incr("global bibframe:Authority:Person"))
         super(Person,self).save()
 
 
 
     
         
-class Instance(MARCRModel):
+class Instance(BibFrameModel):
     """
     Instance class is a high level model in the Bibliographic Framework. It is
     made up of attributes derived from RDA/FRBR and noted as such.
@@ -161,45 +194,9 @@ class Instance(MARCRModel):
         Saves the Instance object to the Redis datastore
         """
         if self.redis_key is None:
-            self.redis_key = "marcr:Instance:{0}".format(self.redis.incr("global marcr:Instance"))
+            self.redis_key = "bibframe:Instance:{0}".format(self.redis.incr("global bibframe:Instance"))
         super(Instance,self).save()
                 
-
-class Work(MARCRModel):
-    """
-    Work class is a high level model in the Bibliographic Framework. It is
-    made up of attributes derived from RDA/FRBR and noted as such.
-    """
-
-    def __init__(self,**kwargs):
-        """
-        Creates a Work object
-        """
-        if not kwargs.has_key('redis'):
-            kwargs['redis'] = WORK_REDIS
-        super(Work,self).__init__(**kwargs)
-
-    def add_annotation(self,annotation_key):
-        """
-        Function adds an annotation to the work
-        """
-        pass
-
-    def save(self):
-        """
-        Saves the Work object to the Redis datastore
-        """
-        if self.redis_key is None:
-            self.redis_key = "marcr:Work:{0}".format(self.redis.incr("global marcr:Work"))
-        if self.attributes.has_key('marcr:Instances'):
-            self.attributes['marcr:Instances'] = set(self.attributes['marcr:Instances'])
-        super(Work,self).save()
-
-
-            
-        
-        
-
     
         
 

@@ -245,7 +245,7 @@ def get_lcletter(record):
     elif record['090']: # Per CC's practice
         callnum = record['090'].value()
     else:
-        return None
+        return None,lc_descriptions
     lc_stub_result = lc_stub_search.search(callnum)
     if lc_stub_result:
         code = lc_stub_result.groups()[0]
@@ -254,6 +254,7 @@ def get_lcletter(record):
         except:
             pass
         return code,lc_descriptions
+    return None,lc_descriptions
 
 def get_location(record):
     """Uses CC's location codes in Millennium to map physical
@@ -262,6 +263,8 @@ def get_location(record):
     output = []
     if record['994']:
         locations = record.get_fields('994')
+    else:
+        locations = []
     for row in locations:
         try:
             locations_raw = row.get_subfields('a')

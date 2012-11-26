@@ -14,7 +14,7 @@ import aristotle.settings as settings
 from aristotle.views import json_view
 import redis_helpers,sys,logging
 from app_settings import APP,SEED_RECORD_ID
-import marcr.app_helpers
+import bibframe.app_helpers
 
 redis_server = settings.INSTANCE_REDIS
 

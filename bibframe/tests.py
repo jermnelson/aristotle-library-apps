@@ -1,10 +1,11 @@
 """
  :mod:`tests` - Unit tests for the Bibliographic Framework App
 """
+__author__ = "Jeremy Nelson"
 import redis,pymarc
 from django.test import TestCase
-from marcr_models import *
-from ingesters import MARC21toInstance,MARC21toMARCR,MARC21toPerson,MARC21toWork
+from bibframe_models import *
+from ingesters import MARC21toInstance,MARC21toBIBFRAME,MARC21toPerson,MARC21toCreativeWork
 from ingesters import MARC21toFacets
 
 try:
@@ -16,12 +17,12 @@ test_redis = TEST_REDIS
 
 
 
-class MARCRModelTest(TestCase):
+class BibFrameModelTest(TestCase):
 
     def setUp(self):
-        self.base_bibframe = MARCRModel(redis=test_redis,
-                                        redis_key='marcr:1')
-        self.empty_base_bibframe = MARCRModel()
+        self.base_bibframe = BibFrameModel(redis=test_redis,
+                                           redis_key='bibframe:1')
+        self.empty_base_bibframe = BibFrameModel()
         
     
     def test_init(self):
@@ -30,7 +31,7 @@ class MARCRModelTest(TestCase):
         """
         self.assert_(self.base_bibframe.redis is not None)
         self.assertEquals(self.base_bibframe.redis_key,
-                          'marcr:1')
+                          'bibframe:1')
         self.assertEquals(self.base_bibframe.attributes,{})
         self.assert_(self.empty_base_bibframe.redis is None)
         self.assert_(self.empty_base_bibframe.redis_key is None)
@@ -53,12 +54,12 @@ class AuthorityTest(TestCase):
     def setUp(self):
         self.new_base_authority = Authority(redis=test_redis)
         self.base_authority = Authority(redis=test_redis,
-                                        redis_key="marcr:Authority:1")
+                                        redis_key="bibframe:Authority:1")
 
     def test_init(self):
 	self.assert_(self.new_base_authority.redis is not None)
         self.assertEquals(self.base_authority.redis_key,
-                          "marcr:Authority:1")
+                          "bibframe:Authority:1")
 
     def tearDown(self):
         test_redis.flushdb()
@@ -66,64 +67,65 @@ class AuthorityTest(TestCase):
 class MARC21toFacetsTest(TestCase):
 
     def setUp(self):
+	self.marc_record = pymarc.Record()
+	self.marc_record.add_field(pymarc.Field(tag='994',
+	                           indicators=['0','0'],
+				   subfields=['a','ewwwn']))
+	self.marc_record.add_field(pymarc.Field(tag='994',
+	                           indicators=['0','0'],
+				   subfields=['a','tarfc']))
+	self.marc_record.add_field(pymarc.Field(tag='994',
+	                           indicators=['0','0'],
+				   subfields=['a','tgr']))
+
 	self.facet_ingester = MARC21toFacets(annotation_ds=test_redis,
 			                     authority_ds=test_redis,
 					     instance_ds=test_redis,
-					     work_ds=test_redis)
+					     creative_work_ds=test_redis,
+					     marc_record=self.marc_record)
 
     def test_access_facet(self):
 	instance = Instance(redis=test_redis)
 	instance.save()
-	marc_record = pymarc.Record()
-	marc_record.add_field(pymarc.Field(tag='994',
-		                           indicators=[' ',' '],
-					   subfields=['a','ewww']))
-	self.facet_ingester.add_access_facet(instance,marc_record)
-	self.assert_(test_redis.exists("marcr:Annotation:Facet:Access:Online"))
-	self.assert_(test_redis.sismember("marcr:Annotation:Facet:Access:Online",instance.redis_key))
+	self.facet_ingester.add_access_facet(instance=instance,
+			                     record=self.marc_record)
+	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Access:Online"))
+	self.assert_(test_redis.sismember("bibframe:Annotation:Facet:Access:Online",instance.redis_key))
 
 
     def test_format_facet(self):
         instance = Instance(redis=test_redis,
 			    attributes={"rda:carrierTypeManifestation":"Book"})
 	instance.save()
-	self.facet_ingester.add_format_facet(instance)
-	self.assert_(test_redis.exists("marcr:Annotation:Facet:Format:Book"))
-	self.assert_(test_redis.sismember("marcr:Annotation:Facet:Format:Book",instance.redis_key))
+	self.facet_ingester.add_format_facet(instance=instance)
+	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Format:Book"))
+	self.assert_(test_redis.sismember("bibframe:Annotation:Facet:Format:Book",instance.redis_key))
 
     def test_lc_facet(self):
-	work = Work(redis=test_redis)
-	work.save()
+	creative_work = CreativeWork(redis=test_redis)
+	creative_work.save()
 	marc_record = pymarc.Record()
 	marc_record.add_field(pymarc.Field(tag='050',
 		                           indicators=['0','0'],
 					   subfields=['a','QA345','b','T6']))
-        self.facet_ingester.add_lc_facet(work,marc_record)
-	self.assert_(test_redis.exists("marcr:Annotation:Facet:LOCFirstLetter:QA"))
-	self.assert_(test_redis.sismember("marcr:Annotation:Facet:LOCFirstLetter:QA",work.redis_key))
-	self.assertEquals(test_redis.hget("marcr:Annotation:Facet:LOCFirstLetters","QA"),
+        self.facet_ingester.add_lc_facet(creative_work=creative_work,
+			                 record=marc_record)
+	self.assert_(test_redis.exists("bibframe:Annotation:Facet:LOCFirstLetter:QA"))
+	self.assert_(test_redis.sismember("bibframe:Annotation:Facet:LOCFirstLetter:QA",creative_work.redis_key))
+	self.assertEquals(test_redis.hget("bibframe:Annotation:Facet:LOCFirstLetters","QA"),
                           "QA - Mathematics")
 
     def test_location_facet(self):
 	instance = Instance(redis=test_redis)
 	instance.save()
-        marc_record = pymarc.Record()
-	marc_record.add_field(pymarc.Field(tag='994',
-		                           indicators=['0','0'],
-					   subfields=['a','ewwwn']))
-	marc_record.add_field(pymarc.Field(tag='994',
-		                           indicators=['0','0'],
-					   subfields=['a','tarfc']))
-	marc_record.add_field(pymarc.Field(tag='994',
-		                           indicators=['0','0'],
-					   subfields=['a','tgr']))
-	self.facet_ingester.add_location_facet(instance,marc_record)
-	self.assert_(test_redis.exists("marcr:Annotation:Facet:Location:ewwwn"))
-	self.assert_(test_redis.exists("marcr:Annotation:Facet:Location:tarfc"))
-	self.assert_(test_redis.exists("marcr:Annotation:Facet:Location:tgr"))
-	self.assertEquals(test_redis.hget("marcr:Annotation:Facet:Locations","ewwwn"),
+	self.facet_ingester.add_locations_facet(instance=instance,
+			                        record=self.marc_record)
+	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Location:ewwwn"))
+	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Location:tarfc"))
+	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Location:tgr"))
+	self.assertEquals(test_redis.hget("bibframe:Annotation:Facet:Locations","ewwwn"),
 			  "Online")
-	self.assertEquals(test_redis.hget("marcr:Annotation:Facet:Locations","tarfc"),
+	self.assertEquals(test_redis.hget("bibframe:Annotation:Facet:Locations","tarfc"),
                           "Tutt Reference")
 
 
@@ -156,7 +158,7 @@ class MARC21toInstanceTest(TestCase):
                                                   authority_ds=test_redis,
                                                   instance_ds=test_redis,
                                                   marc_record=marc_record,
-                                                  work_ds=test_redis)
+                                                  creative_work_ds=test_redis)
         self.instance_ingester.ingest()
 
     def test_init(self):
@@ -193,7 +195,7 @@ class MARC21toInstanceTest(TestCase):
     def tearDown(self):
         test_redis.flushdb()
 
-class MARC21toMARCRTest(TestCase):
+class MARC21toBIBFRAMETest(TestCase):
 
     def setUp(self):
         marc_record = pymarc.Record()
@@ -208,23 +210,23 @@ class MARC21toMARCRTest(TestCase):
         marc_record.add_field(pymarc.Field(tag='907',
                                            indicators=[' ',' '],
                                            subfields=['a','.b1112223x']))
-        self.marc21_ingester =  MARC21toMARCR(annotation_ds=test_redis,
-                                              authority_ds=test_redis,
-                                              instance_ds=test_redis,
-                                              marc_record=marc_record,
-                                              work_ds=test_redis)
-        self.marc21_ingester.ingest()
+        self.marc21_ingester =  MARC21toBIBFRAME(annotation_ds=test_redis,
+                                                 authority_ds=test_redis,
+                                                 instance_ds=test_redis,
+                                                 marc_record=marc_record,
+                                                 creative_work_ds=test_redis)
+	self.marc21_ingester.ingest()
 
     def test_init(self):
-        self.assert_(self.marc21_ingester.marc2work.work.redis_key)
+        self.assert_(self.marc21_ingester.marc2creative_work.creative_work.redis_key)
         self.assert_(self.marc21_ingester.marc2instance.instance.redis_key)
 
     def test_instance_work(self):
-        self.assertEquals(self.marc21_ingester.marc2instance.instance.attributes['marcr:Work'],
-                          self.marc21_ingester.marc2work.work.redis_key)
+        self.assertEquals(self.marc21_ingester.marc2instance.instance.attributes['bibframe:CreativeWork'],
+                          self.marc21_ingester.marc2creative_work.creative_work.redis_key)
 
     def test_work_instance(self):
-        self.assertEquals(list(self.marc21_ingester.marc2work.work.attributes['marcr:Instances'])[0],
+        self.assertEquals(list(self.marc21_ingester.marc2creative_work.creative_work.attributes['bibframe:Instances'])[0],
                           self.marc21_ingester.marc2instance.instance.redis_key)
 
 
@@ -243,7 +245,7 @@ class MARC21toPersonTest(TestCase):
                                               authority_ds=test_redis,
                                               field=field100,
                                               instance_ds=test_redis,
-                                              work_ds=test_redis)
+                                              creative_work_ds=test_redis)
         self.person_ingester.ingest()
 
     def test_init(self):
@@ -276,7 +278,7 @@ class MARC21toPersonTest(TestCase):
         
         
 
-class MARC21toWorkTest(TestCase):
+class MARC21toCreativeWorkTest(TestCase):
 
     def setUp(self):
         marc_record = pymarc.Record()
@@ -284,30 +286,30 @@ class MARC21toWorkTest(TestCase):
                                            indicators=['1','0'],
                                            subfields=['a','Statistics:',
                                                       'b','facts or fiction.']))
-        self.work_ingester = MARC21toWork(annotation_ds=test_redis,
-                                          authority_ds=test_redis,
-                                          instance_ds=test_redis,
-                                          marc_record=marc_record,
-                                          work_ds=test_redis)
+        self.work_ingester = MARC21toCreativeWork(annotation_ds=test_redis,
+                                                  authority_ds=test_redis,
+                                                  instance_ds=test_redis,
+                                                  marc_record=marc_record,
+                                                  creative_work_ds=test_redis)
         self.work_ingester.ingest()
 
     def test_init(self):
-        self.assert_(self.work_ingester.work.redis_key)
+        self.assert_(self.work_ingester.creative_work.redis_key)
 
     def test_metaphone(self):
-        self.assertEquals(self.work_ingester.work.attributes['rda:Title']["phonetic"],
+        self.assertEquals(self.work_ingester.creative_work.attributes['rda:Title']["phonetic"],
                           "STTSTKSFKTSARFKXN")
-        self.assertEquals(self.work_ingester.work.attributes['rda:Title']["phonetic"],
-                          test_redis.hget("{0}:{1}".format(self.work_ingester.work.redis_key,
+        self.assertEquals(self.work_ingester.creative_work.attributes['rda:Title']["phonetic"],
+                          test_redis.hget("{0}:{1}".format(self.work_ingester.creative_work.redis_key,
                                                            'rda:Title'),
                                           "phonetic"))
     
 
     def test_title(self):
-        self.assertEquals(self.work_ingester.work.attributes['rda:Title']['rda:preferredTitleForTheWork'],
+        self.assertEquals(self.work_ingester.creative_work.attributes['rda:Title']['rda:preferredTitleForTheWork'],
                           'Statistics: facts or fiction.')
-        self.assertEquals(self.work_ingester.work.attributes['rda:Title']['rda:preferredTitleForTheWork'],
-                          test_redis.hget("{0}:{1}".format(self.work_ingester.work.redis_key,
+        self.assertEquals(self.work_ingester.creative_work.attributes['rda:Title']['rda:preferredTitleForTheWork'],
+                          test_redis.hget("{0}:{1}".format(self.work_ingester.creative_work.redis_key,
                                                            'rda:Title'),
                                           'rda:preferredTitleForTheWork'))
 
@@ -361,7 +363,7 @@ class PersonAuthorityTest(TestCase):
     
     def test_save(self):
         self.assertEquals(self.person.redis_key,
-                          "marcr:Authority:Person:1")
+                          "bibframe:Authority:Person:1")
 
     def tearDown(self):
         test_redis.flushdb()
@@ -369,14 +371,14 @@ class PersonAuthorityTest(TestCase):
 class InstanceTest(TestCase):
 
     def setUp(self):
-        existing_attributes = {'rda:publisher':'marcr:Authority:CorporateBody:1',
+        existing_attributes = {'rda:publisher':'bibframe:Authority:CorporateBody:1',
                                'rda:identifierForTheManifestation':{'lccn':'C1.D11',
                                                                     'local':'Video 6716'}}
-        new_attributes = {'rda:publisher':'marcr:Authority:CorporateBody:2',
+        new_attributes = {'rda:publisher':'bibframe:Authority:CorporateBody:2',
                           'rda:identifierForTheManifestation':{'ils-bib-number':'b1762075',
                                                                'sudoc':'HD1695.C7C55 2007'}}
         self.instance = Instance(redis=test_redis,
-                                 redis_key="marcr:Instance:2",
+                                 redis_key="bibframe:Instance:2",
                                  attributes=existing_attributes)        
         self.new_instance = Instance(redis=test_redis,
                                      attributes=new_attributes)
@@ -394,7 +396,7 @@ class InstanceTest(TestCase):
         self.assert_(self.new_instance.redis_key is None)
         self.assert_(self.instance.redis)
         self.assertEquals(self.instance.redis_key,
-                          "marcr:Instance:2")
+                          "bibframe:Instance:2")
 
     def test_lccn_callnumber(self):
         self.instance.save()
@@ -414,9 +416,9 @@ class InstanceTest(TestCase):
         self.new_instance.save()
         self.instance.save()
         self.assertEquals(self.new_instance.attributes['rda:publisher'],
-                          'marcr:Authority:CorporateBody:2')
+                          'bibframe:Authority:CorporateBody:2')
         self.assertEquals(self.instance.attributes['rda:publisher'],
-                          'marcr:Authority:CorporateBody:1')
+                          'bibframe:Authority:CorporateBody:1')
 
     def test_sudoc_callnumber(self):
         self.new_instance.save()
@@ -429,58 +431,58 @@ class InstanceTest(TestCase):
     def tearDown(self):
         test_redis.flushdb()
 
-class WorkTest(TestCase):
+class CreativeWorkTest(TestCase):
 
     def setUp(self):
         new_attributes = {'rda:dateOfWork':2012,
-                          'rda:isCreatedBy':'Authority:Person:1'}
+			  'rda:isCreatedBy':'bibframe:Authority:Person:1'}
         # Test work w/o Redis key (new Work)
-        self.new_work = Work(redis=test_redis,
-                             attributes=new_attributes)
+        self.new_creative_work = CreativeWork(redis=test_redis,
+                                              attributes=new_attributes)
         existing_attributes = {'rda:dateOfWork':1999,
-                               'rda:isCreatedBy':'Authority:CorporateBody:1'}
+			       'rda:isCreatedBy':'bibframe:Authority:CorporateBody:1'}
         # Tests work w/pre-existing Redis key
-        self.work = Work(redis=test_redis,
-                         redis_key="marcr:Work:2",
-                         attributes=existing_attributes)
+        self.creative_work = CreativeWork(redis=test_redis,
+                                          redis_key="bibframe:CreativeWork:2",
+                                          attributes=existing_attributes)
 
     def test_init_(self):
-        self.assert_(self.new_work.redis)
-        self.assert_(self.new_work.redis_key is None)
-        self.assert_(self.work.redis)
-        self.assertEquals(self.work.redis_key,
-                          "marcr:Work:2")
+        self.assert_(self.new_creative_work.redis)
+        self.assert_(self.new_creative_work.redis_key is None)
+        self.assert_(self.creative_work.redis)
+        self.assertEquals(self.creative_work.redis_key,
+                          "bibframe:CreativeWork:2")
 
     def test_dateOfWork(self):
-        self.new_work.save()
-        self.work.save()
-        self.assertEquals(str(self.new_work.attributes['rda:dateOfWork']),
-                          test_redis.hget(self.new_work.redis_key,
+        self.new_creative_work.save()
+        self.creative_work.save()
+        self.assertEquals(str(self.new_creative_work.attributes['rda:dateOfWork']),
+                          test_redis.hget(self.new_creative_work.redis_key,
                                           "rda:dateOfWork"))
-        self.assertEquals(str(self.work.attributes['rda:dateOfWork']),
-                          test_redis.hget(self.work.redis_key,
+        self.assertEquals(str(self.creative_work.attributes['rda:dateOfWork']),
+                          test_redis.hget(self.creative_work.redis_key,
                                           'rda:dateOfWork'))
 
     def test_isCreatedBy(self):
-        self.new_work.save()
-        self.work.save()
-        self.assertEquals(self.new_work.attributes['rda:isCreatedBy'],
-                          'Authority:Person:1')
-        self.assertEquals(self.work.attributes['rda:isCreatedBy'],
-                          'Authority:CorporateBody:1')
+        self.new_creative_work.save()
+        self.creative_work.save()
+        self.assertEquals(self.new_creative_work.attributes['rda:isCreatedBy'],
+		          'bibframe:Authority:Person:1')
+        self.assertEquals(self.creative_work.attributes['rda:isCreatedBy'],
+                          'bibframe:Authority:CorporateBody:1')
                           
 
     def test_save(self):
-        self.new_work.save()
-        self.work.save()
-        self.assertEquals(self.new_work.redis_key,"marcr:Work:1")
-        self.assert_(test_redis.hget(self.work.redis_key,
+        self.new_creative_work.save()
+        self.creative_work.save()
+        self.assertEquals(self.new_creative_work.redis_key,"bibframe:CreativeWork:1")
+        self.assert_(test_redis.hget(self.creative_work.redis_key,
                                      'created'))
         # Extracting just the year-month-day to test
-        self.assertEquals(self.new_work.attributes['created'].split(":")[0],
-                          test_redis.hget(self.work.redis_key,
+        self.assertEquals(self.new_creative_work.attributes['created'].split(":")[0],
+                          test_redis.hget(self.new_creative_work.redis_key,
                                           'created').split(":")[0])
-        self.assert_(test_redis.exists(self.work.redis_key))
+        self.assert_(test_redis.exists(self.creative_work.redis_key))
         
 
     
@@ -488,8 +490,4 @@ class WorkTest(TestCase):
 
     def tearDown(self):
         test_redis.flushdb()
-        
-        
-                                   
-        
         

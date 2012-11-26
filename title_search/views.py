@@ -14,7 +14,7 @@ import search_helpers
 
 authority_redis = settings.AUTHORITY_REDIS
 instance_redis = settings.INSTANCE_REDIS
-work_redis = settings.WORK_REDIS
+work_redis = settings.CREATIVE_WORK_REDIS
 
 def app(request):
     """

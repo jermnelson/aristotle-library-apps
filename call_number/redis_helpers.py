@@ -8,7 +8,7 @@ from app_settings import APP,SEED_RECORD_ID
 import aristotle.settings as settings
 authority_redis = settings.AUTHORITY_REDIS
 redis_server = settings.INSTANCE_REDIS
-work_redis = settings.WORK_REDIS
+creative_work_redis = settings.CREATIVE_WORK_REDIS
 
 english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
                     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
@@ -189,7 +189,7 @@ def get_record(**kwargs):
             instance_key = redis_server.hget(hash_name,call_number)
             record_info['bib_number'] = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(instance_key),
                                                           'ils-bib-number')
-            work_key = redis_server.hget(instance_key,'marcr:Work')
+            work_key = redis_server.hget(instance_key,'bibframe:Work')
             record_info['title'] = work_redis.hget("{0}:rda:Title".format(work_key),
                                                   'rda:preferredTitleForTheWork')
             creator_keys = work_redis.smembers("{0}:rda:creator".format(work_key))

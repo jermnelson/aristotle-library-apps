@@ -5,7 +5,7 @@
 __author__ = "Jeremy Nelson"
 
 import datetime,re,pymarc,sys,logging
-from marcr_models import Annotation,CorporateBody,Person,Work,Instance
+from bibframe_models import Annotation,CorporateBody,CreativeWork,Instance,Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from title_search.search_helpers import generate_title_app
@@ -15,14 +15,14 @@ import marc21_facets
 import redis,datetime,pymarc
 try:
     import aristotle.settings as settings
-    WORK_REDIS = settings.WORK_REDIS
+    CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
     INSTANCE_REDIS = settings.INSTANCE_REDIS
     AUTHORITY_REDIS = settings.AUTHORITY_REDIS
     ANNOTATION_REDIS = settings.ANNOTATION_REDIS
     OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
 except ImportError, e:
     redis_host = '0.0.0.0'
-    WORK_REDIS = redis.StrictRedis(port=6380)
+    CREATIVE_WORK_REDIS = redis.StrictRedis(port=6380)
     INSTANCE_REDIS = redis.StrictRedis(port=6381)
     AUTHORITY_REDIS = redis.StrictRedis(port=6382)
     ANNOTATION_REDIS = redis.StrictRedis(port=6383)
@@ -40,7 +40,7 @@ class Ingester(object):
         """
         Initializes Ingester
 
-        :keyword work_ds: Work Redis datastore, defaults to WORK_REDIS
+        :keyword creative_work_ds: Work Redis datastore, defaults to CREATIVE_WORK_REDIS
         :keyword instance_ds: Instance Redis datastore, defaults to
                               INSTANCE_REDIS
         :keyword authority_ds: Authority Redis datastore, default to
@@ -51,7 +51,7 @@ class Ingester(object):
         self.annotation_ds = kwargs.get('annotation_ds',ANNOTATION_REDIS)
         self.authority_ds = kwargs.get('authority_ds',AUTHORITY_REDIS)
         self.instance_ds = kwargs.get('instance_ds',INSTANCE_REDIS)
-        self.work_ds = kwargs.get('work_ds',WORK_REDIS)
+        self.creative_work_ds = kwargs.get('creative_work_ds',CREATIVE_WORK_REDIS)
 
     def ingest(self):
         pass
@@ -94,91 +94,105 @@ class MARC21toFacets(MARC21Ingester):
 
     def __init__(self,**kwargs):
         self.facets = None
+	self.creative_work = kwargs.get('creative_work')
+	self.instance = kwargs.get('instance')
 	super(MARC21toFacets,self).__init__(**kwargs)
 
 
-    def add_access_facet(self,instance,record):
+    def add_access_facet(self,**kwargs):
         """
-	Creates a marcr:Annotation:Facet:Access based on 
+	Creates a bibframe:Annotation:Facet:Access based on 
 	extracted info from the MARC21 Record
-	
-	:param instance: MARCR Instance
-	:parma record: MARC21 Record
+
+        :param instance: BIBFRAME Instance, defaults to self.instance
+	:param record: MARC21 record, defaults to self.marc_record
 	"""
+	instance = kwargs.get("instance",self.instance)
+	record = kwargs.get("record",self.record)
 	access = marc21_facets.get_access(record)
-	facet_key = "marcr:Annotation:Facet:Access:{0}".format(access)
+	facet_key = "bibframe:Annotation:Facet:Access:{0}".format(access)
 	self.annotation_ds.sadd(facet_key,instance.redis_key)
 	self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),
 			      facet_key)
 
 
-    def add_format_facet(self,instance):
+    def add_format_facet(self,**kwargs):
 	"""
-	Creates a marcr:Annotation:Facet:Format based on the 
+	Creates a bibframe:Annotation:Facet:Format based on the 
 	rda:carrierTypeManifestation property of the marcr:Instance
 
-	:param instance: MARCR Instance
+        :param instance: BIBFRAME Instance, defaults to self.instance
 	"""
 	# Extract's the Format facet value from the Instance and
 	# creates an Annotation key that the instance's redis key
 	# is either added to an existing set or creates a new 
 	# sorted set for the facet marcr:Annotation
-	facet_key = "marcr:Annotation:Facet:Format:{0}".format(instance.attributes['rda:carrierTypeManifestation'])
+	instance = kwargs.get("instance",self.instance)
+	facet_key = "bibframe:Annotation:Facet:Format:{0}".format(instance.attributes['rda:carrierTypeManifestation'])
 	self.annotation_ds.sadd(facet_key,instance.redis_key)
 	self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),facet_key)
 
 
-    def add_lc_facet(self,work,record):
+    def add_lc_facet(self,**kwargs):
         """
-	Adds marcr:Work to the marcr:Annotation:Facet:LOCLetter facet
+	Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter facet
 	based on extracted info from the MARC21 Record
 
-	:param work: MARCR Work entity
-	:param record: MARC21 record
+        :param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
+	:param record: MARC21 record, defaults to self.marc_record
 	"""
+	creative_work = kwargs.get('creative_work',self.creative_work)
+	record = kwargs.get('record',self.record)
 	lc_facet,lc_facet_desc = marc21_facets.get_lcletter(record)
 	for row in lc_facet_desc:
-	    facet_key = "marcr:Annotation:Facet:LOCFirstLetter:{0}".format(lc_facet)
-	    self.annotation_ds.sadd(facet_key,work.redis_key)
-	    self.work_ds.sadd("{0}:Annotations:facets".format(work.redis_key),facet_key)
-	    self.annotation_ds.hset("marcr:Annotation:Facet:LOCFirstLetters",lc_facet,row)
+	    facet_key = "bibframe:Annotation:Facet:LOCFirstLetter:{0}".format(lc_facet)
+	    self.annotation_ds.sadd(facet_key,creative_work.redis_key)
+	    self.creative_work_ds.sadd("{0}:Annotations:facets".format(creative_work.redis_key),facet_key)
+	    self.annotation_ds.hset("bibframe:Annotation:Facet:LOCFirstLetters",lc_facet,row)
     
-    def add_location_facet(self,instance,record):
+    def add_locations_facet(self,**kwargs):
         """
 	Method takes an instance and a MARC21 record, extracts all CC's
-	location codes from the MARC21 record, and if there is more
-	than one location, creates distinct MARCR Instances for the 
-	remaining locations
+	location (holdings) codes from the MARC21 record and adds the instance key
+	to all of the holdings facets.
 
-	:param instance: MARCR Instance
-	:param record: MARC21 record
+	:param instance: BIBFRAME Instance, defaults to self.instance
+	:param record: MARC21 record, defaults to self.marc_record
 	"""
+        instance = kwargs.get("instance",self.instance)
+	record = kwargs.get("record",self.record)
+
 	locations = marc21_facets.get_location(record)
 	if len(locations) > 0:
-	    # Associates first location with the existing Instance
-	    first_key = "marcr:Annotation:Facet:Location:{0}".format(locations[0][0])
-	    self.annotation_ds.sadd(first_key,
-			            instance.redis_key)
-	    if not self.annotation_ds.hexists("marcr:Annotation:Facet:Locations",locations[0][0]):
-	        self.annotation_ds.hset("marcr:Annotation:Facet:Locations",
-			                locations[0][0],
-			                locations[0][1])
-	    self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),first_key)
-
-	    # Now iterate through the remaining locations, creating Instances for each
-	    # location with a copy of the original MARCR Instance's attributes
-	    for location in locations[1:]:
-                new_instance = Instance(redis=instance.redis,
-				        attributes=instance.attributes)
-		new_instance.save()
-		redis_key = "marcr:Annotation:Facet:Location:{0}".format(location[0])
-		self.annotation_ds.sadd(redis_key,new_instance.redis_key)
-		if not self.annotation_ds.hexists("marcr:Annotation:Facet:Locations",location[0]):
-		    self.annotation_ds.hset("marcr:Annotation:Facet:Locations",
+	    for location in locations:
+		redis_key = "bibframe:Annotation:Facet:Location:{0}".format(location[0])
+		self.annotation_ds.sadd(redis_key,instance.redis_key)
+		if not self.annotation_ds.hexists("bibframe:Annotation:Facet:Locations",location[0]):
+		    self.annotation_ds.hset("bibframe:Annotation:Facet:Locations",
 				            location[0],
 					    location[1])
-		self.instance_ds.sadd("{0}:Annotations:facets".format(new_instance.redis_key),
+		self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),
 				      redis_key)
+
+    def ingest(self,**kwargs):
+	"""
+	Method runs all of the Facet generation methods
+
+	:param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
+	:param instance: BIBFRAME Instance, default to self.instnace
+	:param record: MARC21 record, defaults to self.marc_record
+	"""
+        creative_work = kwargs.get('creative_work',self.creative_work)
+        instance = kwargs.get("instance",self.instance)
+	record = kwargs.get('record',self.record)
+        self.add_access_facet(instance=instance,
+			      record=record)
+        self.add_format_facet(instance=instance)
+        self.add_lc_facet(creative_work=creative_work,
+			  record=record)
+	self.add_locations_facet(instance=instance,
+			         record=record)
+
 		    
 
 
@@ -187,7 +201,7 @@ class MARC21toFacets(MARC21Ingester):
 isbn_regex = re.compile(r'([0-9\-]+)')
 class MARC21toInstance(MARC21Ingester):
     """
-    MARC21toInstance ingests a MARC record into the MARCR Redis datastore
+    MARC21toInstance ingests a MARC record into the BIBFRAME Redis datastore
     """
 
     def __init__(self,**kwargs):
@@ -292,7 +306,7 @@ class MARC21toInstance(MARC21Ingester):
 
     def ingest(self):
         """
-        Ingests a MARC21 record into a MARCR Instance Redis datastore
+        Ingests a MARC21 record into a BIBFRAME Instance Redis datastore
         """
 	self.extract_carrier_type()
         self.extract_ils_bibnumber()
@@ -304,44 +318,51 @@ class MARC21toInstance(MARC21Ingester):
         self.add_instance()
         generate_call_number_app(self.instance,self.instance_ds)
 
-class MARC21toMARCR(Ingester):
+class MARC21toBIBFRAME(Ingester):
     """
-    MARC21toMARCR takes a MARC21 record and ingests into MARCR Redis
+    MARC21toBIBFRAME takes a MARC21 record and ingests into BIBFRAME Redis
     datastore
     """
 
     def __init__(self,marc_record,**kwargs):
-        super(MARC21toMARCR,self).__init__(**kwargs)
+        super(MARC21toBIBFRAME,self).__init__(**kwargs)
         self.record = marc_record
 
     def ingest(self):
-        self.marc2work = MARC21toWork(annotation_ds=self.annotation_ds,
-                                      authority_ds=self.authority_ds,
-                                      instance_ds=self.instance_ds,
-                                      marc_record=self.record,
-                                      work_ds=self.work_ds)
-        self.marc2work.ingest()
+        self.marc2creative_work = MARC21toCreativeWork(annotation_ds=self.annotation_ds,
+                                                       authority_ds=self.authority_ds,
+                                                       instance_ds=self.instance_ds,
+                                                       marc_record=self.record,
+                                                       creative_work_ds=self.creative_work_ds)
+        self.marc2creative_work.ingest()
         self.marc2instance = MARC21toInstance(annotation_ds=self.annotation_ds,
                                               authority_ds=self.authority_ds,
                                               instance_ds=self.instance_ds,
                                               marc_record=self.record,
-                                              work_ds=self.work_ds)
+                                              creative_work_ds=self.creative_work_ds)
         self.marc2instance.ingest()
-        self.marc2instance.instance.attributes["marcr:Work"] = self.marc2work.work.redis_key
+        self.marc2instance.instance.attributes["bibframe:CreativeWork"] = self.marc2creative_work.creative_work.redis_key
         self.marc2instance.instance.save()
-        if self.marc2work.work.attributes.has_key('marcr:Instances'):
-            self.marc2work.work.attributes['marcr:Instances'].append(self.marc2instance.instance.redis_key)
+        if self.marc2creative_work.creative_work.attributes.has_key('bibframe:Instances'):
+            self.marc2creative_work.creative_work.attributes['bibframe:Instances'].append(self.marc2instance.instance.redis_key)
         else:
-            self.marc2work.work.attributes['marcr:Instances'] = [self.marc2instance.instance.redis_key,]
-        self.marc2work.work.save()
-            
+            self.marc2creative_work.creative_work.attributes['bibframe:Instances'] = [self.marc2instance.instance.redis_key,]
+        self.marc2creative_work.creative_work.save()
+        self.marc2facets = MARC21toFacets(annotation_ds=self.annotation_ds,
+			                  authority_ds=self.authority_ds,
+					  creative_work_ds=self.creative_work_ds,
+					  instance_ds=self.instance_ds,
+					  marc_record=self.record,
+					  creative_work=self.marc2creative_work.creative_work,
+					  instance=self.marc2instance.instance)
+	self.marc2facets.ingest()
         
 
     
 
 class MARC21toPerson(MARC21Ingester):
     """
-    MARC21toPerson ingests a MARC record into the MARCR Redis datastore
+    MARC21toPerson ingests a MARC record into the BIBFRAME Redis datastore
     """
 
     def __init__(self,**kwargs):
@@ -398,17 +419,17 @@ class MARC21toPerson(MARC21Ingester):
             self.person = result
             self.people.append(self.person)
 
-class MARC21toWork(MARC21Ingester):
+class MARC21toCreativeWork(MARC21Ingester):
     """
-    MARC21toWork ingests a MARC record into the MARCR Redis datastore
+    MARC21toWork ingests a MARC21 record into the BIBFRAME Redis datastore
     """
 
     def __init__(self,**kwargs):
         """
         Creates a MARC21toWork Ingester
         """
-        super(MARC21toWork,self).__init__(**kwargs)
-        self.work = None
+        super(MARC21toCreativeWork,self).__init__(**kwargs)
+        self.creative_work = None
 
     def extract_creators(self):
         """
@@ -459,16 +480,16 @@ class MARC21toWork(MARC21Ingester):
         on a similarity metric, basic similarity is 100% match
         (i.e. all fields must match or a new work is created)
         """
-        if self.entity_info.has_key('marcr:Instances'):
-            self.entity_info['marcr:Instances'] = set(self.entity_info['marcr:Instances'])
-        self.work = Work(redis=self.work_ds,
-                         attributes=self.entity_info)            
-        self.work.save()
+        if self.entity_info.has_key('bibframe:Instances'):
+            self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
+        self.creative_work = CreativeWork(redis=self.creative_work_ds,
+                                          attributes=self.entity_info)            
+        self.creative_work.save()
     
 
     def ingest(self):
         """
-        Method ingests a MARC21 record into the MARCR datastore
+        Method ingests a MARC21 record into the BIBFRAME datastore
 
         :param record: MARC21 record
         """
@@ -476,20 +497,20 @@ class MARC21toWork(MARC21Ingester):
         self.extract_creators()
         self.get_or_add_work()
         # Adds work to creators
-        if self.work.attributes.has_key('rda:creator'):
-            for creator_key in self.work.attributes['rda:creator']:
+        if self.creative_work.attributes.has_key('rda:creator'):
+            for creator_key in self.creative_work.attributes['rda:creator']:
                 creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
                 self.authority_ds.sadd(creator_set_key,
-                                       self.work.redis_key)                
-        self.work.save()
-        generate_title_app(self.work,self.work_ds)
-        super(MARC21toWork,self).ingest()
+                                       self.creative_work.redis_key)                
+        self.creative_work.save()
+        generate_title_app(self.creative_work,self.creative_work_ds)
+        super(MARC21toCreativeWork,self).ingest()
 
 def ingest_marcfile(**kwargs):
     marc_filename = kwargs.get("marc_filename")
     annotation_ds = kwargs.get('annotation_redis')
     authority_ds = kwargs.get('authority_redis')
-    work_ds = kwargs.get("work_redis")
+    creative_work_ds = kwargs.get("creative_work_redis")
     instance_ds =kwargs.get("instance_redis")
     if marc_filename is not None:
         marc_file = open(marc_filename,'rb')
@@ -499,11 +520,11 @@ def ingest_marcfile(**kwargs):
         start_time = datetime.datetime.now()
         print("Starting at {0}".format(start_time.isoformat()))
         for record in marc_reader:
-            ingester = MARC21toMARCR(annotation_ds=annotation_ds,
-                                     authority_ds=authority_ds,
-                                     instance_ds=instance_ds,
-                                     marc_record=record,
-                                     work_ds=work_ds)
+            ingester = MARC21toBIBFRAME(annotation_ds=annotation_ds,
+                                        authority_ds=authority_ds,
+                                        instance_ds=instance_ds,
+                                        marc_record=record,
+                                        creative_work_ds=creative_work_ds)
             ingester.ingest()
             if count%1000:
 ##                print(count)

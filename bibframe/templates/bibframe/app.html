@@ -17,7 +17,7 @@ Title Search
  <div class="row-fluid">
   {% comment %}START search DIV{% endcomment %}
   <div class="row12">
-  {% include 'marcr/snippets/search.html' %}
+  {% include 'bibframe/snippets/search.html' %}
   {% comment %}END search DIV{% endcomment %}
   </div>
  {% comment %}END row-fluid DIV{% endcomment %}
@@ -27,9 +27,9 @@ Title Search
   {% comment %}START widget DIV{% endcomment %}
   <div class="row12">
   {% if admin %}
-  {% include 'marcr/snippets/manage.html' %}
+  {% include 'bibframe/snippets/manage.html' %}
   {% else %}
-  {% include 'marcr/snippets/widget.html' %}
+  {% include 'bibframe/snippets/widget.html' %}
   {% endif %}
   {% comment %}END widget DIV{% endcomment %}
   </div>

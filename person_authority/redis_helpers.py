@@ -2,7 +2,7 @@
  :mod:`redis_helpers` Call Number Helper Utilities
 """
 __author__ = "Jeremy Nelson"
-from marcr.marcr_models import Person
+from bibframe.bibframe_models import Person
 import aristotle.lib.metaphone as metaphone
 from title_search.search_helpers import STOPWORDS
 
@@ -11,7 +11,7 @@ def add_person(authority_redis,
                person_attributes,
                person_metaphones_keys):
     """
-    Function adds a marcr_models.Person to authority datastore
+    Function adds a bibframe_models.Person to authority datastore
 
     :param authority_redis: Authority Redis datastore
     :param person_metaphones_keys: Metaphones for Person's name
@@ -35,7 +35,7 @@ def get_person(authority_redis,
                person_redis_key,
                person_attributes):
     """
-    Function gets a marcr_models.Person to authority datastore
+    Function gets a bibframe_models.Person to authority datastore
 
     :param authority_redis: Authority Redis datastore
     :param person_metaphones_keys: Metaphones for Person's name

@@ -132,7 +132,7 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME,'hours/templates/'),
     os.path.join(PROJECT_HOME,'hours/templates/snippets/'),
     os.path.join(PROJECT_HOME,'marc_batch/templates/marc_batch/'),
-    os.path.join(PROJECT_HOME,'marcr/templates/marcr/'),
+    os.path.join(PROJECT_HOME,'bibframe/templates/bibframe/'),
     #os.path.join(PROJECT_HOME,'marc_batch/templates/snippets/'),
     os.path.join(PROJECT_HOME,'orders/templates/'),
     os.path.join(PROJECT_HOME,'orders/templates/snippets/'),
