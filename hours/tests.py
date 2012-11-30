@@ -68,6 +68,46 @@ class CalculateOffsetTest(TestCase):
     def tearDown(self):
         test_ds.flushdb()
 
+class CalculateTimeTest(TestCase):
+
+    def setUp(self):
+        self.early_morning_close_time = datetime.time(2,0)
+        self.early_morning_open_time = datetime.time(7,45)
+        self.midafternoon = datetime.time(15,15)
+        self.evening = datetime.time(20,30)
+
+    def test_early_morning_close_time(self):
+        self.assertEquals(calculate_time(8),
+                          self.early_morning_close_time)
+##        self.assertEquals(calculate_time(8,False,True),
+##                          datetime.time(2))
+##        self.assertEquals(calculate_time(8,True,True),
+##                          (self.early_morning_close_time,
+##                           datetime.time(2)))
+
+    def test_early_morning_open_time(self):
+        self.assertEquals(calculate_time(31),
+                          self.early_morning_open_time)
+##        self.assertEquals(calculate_time(31,False,True),
+##                          datetime.time(8))
+
+    def test_midafternoon(self):
+        self.assertEquals(calculate_time(61),
+                          self.midafternoon)
+
+    def test_evening(self):
+        self.assertEquals(calculate_time(82),
+                          self.evening)
+                          
+                          
+
+    def tearDown(self):
+        pass
+
+    def tearDown(self):
+        pass
+        
+
 class IsLibraryOpenTest(TestCase):
 
     def setUp(self):

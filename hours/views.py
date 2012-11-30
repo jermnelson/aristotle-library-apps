@@ -8,7 +8,7 @@ from django.views.generic.simple import direct_to_template
 from app_settings import APP
 import datetime,copy,urllib
 from django.http import HttpResponse,HttpResponseRedirect
-from redis_helpers import add_library_hours,is_library_open
+from redis_helpers import *
 from django.shortcuts import redirect
 
 
@@ -22,12 +22,15 @@ def default(request):
     today = datetime.datetime.now()
     if is_library_open(today):
         template = 'hours/open.html'
+        next_time = get_closing_time(today)
+        print("In default {0}".format(next_time))
     else:
         template = 'hours/closed.html'
+        next_time = None
     return direct_to_template(request,
                                template,
                                {'app':APP,
-                                'library_status':{'status':True}})
+                                'next_time':next_time})
 
 def open(request):
     """

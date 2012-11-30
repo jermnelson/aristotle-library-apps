@@ -33,6 +33,51 @@ def calculate_offset(at_time):
 	offset += 3
     return offset
 
+def calculate_time(offset,
+                   start=True,
+                   end=False):
+    """
+    Helper function takes an offset between 1-96 and returns the
+    time based on start and end parameters.
+
+    :param offset: Int between 1-96
+    :param start: Boolean, default to True
+    :param end: Boolean, default to False
+    :rtype: Time
+    """
+    start_time = {0:0,1:15,2:30,3:45}
+    end_time = {0:0,1:30,2:45,3:0}
+    hour = offset/4
+    remainder = offset%4
+    print("{0} {1} {2}".format(offset,hour,remainder))
+    if offset < 4:
+        hour = offset
+    if start is True and end is True:
+        return (datetime.time(hour,
+                              start_time.get(remainder)),
+                datetime.time(hour,
+                              end_time.get(remainder)))
+    elif start is True and end is False:
+        
+##        if remainder > 2:
+##            return datetime.time(hour+1,
+##                                 start)
+##        else:
+        return datetime.time(hour,
+                             start_time.get(remainder))
+                                 
+    elif start is False and end is True:
+        return datetime.time(hour,
+                             end_time.get(remainder))
+                              
+    
+    
+    
+        
+    
+    return datetime.time(hour,minute)
+    
+    
 
 def add_library_hours(open_on,
                       close_on,
@@ -70,18 +115,18 @@ def get_closing_time(question_date,redis_ds=redis_ds):
     date_key = question_date.strftime(library_key_format)
     offset = calculate_offset(question_date)
     if bool(redis_ds.getbit(date_key,96)):
+	
         next_day = datetime.datetime(question_date.year,
                                      question_date.month,
                                      question_date.day + 1)
         next_day_key = next_day.strftime(library_key_format)
-        for offset in range(0,97):
-            if not bool(redis_ds.getbit(next_day_key,offset)):
-                closed_offset = offset
-                break
+        for counter in range(1,97):
+            if not int(redis_ds.getbit(next_day_key,counter)):
+                return calculate_time(counter,False,True)
     else:
         for counter in range(offset,96):
             if not bool(redis_ds.getbit(date_key,counter)):
-                closed_offset = 
+                return calculate_time(counter-1,False,True)
                         
     
 

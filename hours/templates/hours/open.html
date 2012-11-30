@@ -5,11 +5,16 @@
 {% endblock %}
 
 {% block body %}
-
-<div class="alert alert-success">
-<h1>Tutt Library is open!</h1>
-<h2>We will close at ##:##.</h2>
+<div class="row-fluid">
+ <div class="span6 alert alert-success">
+  <h1>Tutt Library is open!</h1>
+  <h2>We will close at {{ next_time }}  {{ next_time.time|date:"h i a" }}</h2>
+ </div>
+ <div class='span4'>
+  {% include 'snippets/events.html' %}
+ </div>
 </div>
+
 
 {% endblock %}
 
