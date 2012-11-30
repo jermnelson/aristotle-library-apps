@@ -3,8 +3,11 @@ __author__ = "Jon Driscoll, Jeremy Nelson"
 from django.test import TestCase
 from redis_helpers import *
 import redis,datetime
+from aristotle.settings import TEST_REDIS
 
-test_ds = redis.StrictRedis()
+test_ds = TEST_REDIS
+
+
 
 class AddLibraryHoursTest(TestCase):
 
@@ -14,12 +17,6 @@ class AddLibraryHoursTest(TestCase):
         self.standard_close = datetime.datetime(2012,05,14,2,0) # 2:00 am
         self.last_minute = datetime.datetime(2012,05,14,23,59)
 
-    def test_wrong_order(self):
-        self.assertRaises(ValueError,
-                          add_library_hours,
-                          **{'open_on':self.standard_close,
-                             'close_on':self.midnight})
-
     def test_different_days(self):
         next_day = datetime.datetime(2012,5,15)
         self.assertRaises(ValueError,
@@ -28,60 +25,61 @@ class AddLibraryHoursTest(TestCase):
                              'close_on':next_day})
 
     def test_add_hour_range(self):
-        add_library_hours(self.midnight,
-                          self.standard_close)
-        
-        # Tests open at 1:30 am
-        self.assert_(is_library_open(datetime.datetime(2012,5,14,1,30)))
-        # Test close at 2:30 am
-        self.assertFalse(is_library_open(datetime.datetime(2012,5,14,2,30)))
         add_library_hours(self.standard_open,
-                          self.last_minute)
+                          self.standard_close,
+			  redis_ds=test_ds)
+        # Tests open at 1:30 am
+        self.assert_(is_library_open(datetime.datetime(2012,5,14,1,30),
+                                     redis_ds=test_ds))
+        # Test close at 2:30 am
+        self.assertFalse(is_library_open(datetime.datetime(2012,5,14,2,30),
+                                         redis_ds=test_ds))
+        add_library_hours(self.standard_open,
+                          self.last_minute,
+                          redis_ds=test_ds)
         # Test open at 10 am
-        self.assert_(is_library_open(datetime.datetime(2012,5,14,10,00)))
+        self.assert_(is_library_open(datetime.datetime(2012,5,14,10,00),
+                                     redis_ds=test_ds))
         # Test open at 11:45 pm
-        self.assert_(is_library_open(datetime.datetime(2012,5,14,23,45)))
+        self.assert_(is_library_open(datetime.datetime(2012,5,14,23,45),
+                                     redis_ds=test_ds))
 
     def tearDown(self):
         test_ds.flushdb()
 
-    
+   
+class CalculateOffsetTest(TestCase):
+
+    def setUp(self):
+        self.early_morning_open = datetime.datetime(2012,11,29,0,33)
+	self.early_morning_close = datetime.datetime(2012,11,29,3,5)
+	self.midmorning_open = datetime.datetime(2012,11,29,8,47)
+	self.midafternoon = datetime.datetime(2012,11,29,15,20)
+	self.evening = datetime.datetime(2012,11,29,20,35)
+
+
+    def test_times(self):
+	self.assertEquals(calculate_offset(self.early_morning_open),3)
+	self.assertEquals(calculate_offset(self.early_morning_close),12)
+	self.assertEquals(calculate_offset(self.midmorning_open),35)
+	self.assertEquals(calculate_offset(self.midafternoon),61)
+	self.assertEquals(calculate_offset(self.evening),82)
+
+    def tearDown(self):
+        test_ds.flushdb()
 
 class IsLibraryOpenTest(TestCase):
 
     def setUp(self):
         self.midnight = datetime.datetime(2012,05,14,0,0)
-        self.standard_open = datetime.datetime(2012,05,14,7,30) # 7:30 am
+        self.standard_open = datetime.datetime(2012,05,14,7,45) # 7:45 am
         self.standard_close = datetime.datetime(2012,05,14,2,0) # 2:00 am
-        self.standard_key = '%s:open' % self.standard_open.strftime(library_key_format)
-        first_range_key = "%s:%s" % (self.standard_key,
-                                     test_ds.incr('global:%s' % self.standard_key))
-        # Sets first open range from midnight to 2am
-        test_ds.zadd(first_range_key,
-                     0,
-                     self.midnight.strftime(time_format))
-        test_ds.zadd(first_range_key,
-                     0,
-                     self.standard_close.strftime(time_format))
-        # Sets second open range from 7:30am to 11:59
-        last_minute = datetime.datetime(2012,05,14,23,59)
-        second_range_key = "%s:%s" % (self.standard_key,
-                                      test_ds.incr('global:%s' % self.standard_key))
-        test_ds.zadd(second_range_key,
-                     0,
-                     self.standard_open.strftime(time_format))
-        test_ds.zadd(second_range_key,
-                     0,
-                     last_minute.strftime(time_format))
-        self.holiday_open = datetime.datetime(2012,1,20,7,34)   # 7:45 am
-        self.holiday_close = datetime.datetime(2012,1,20,17,00) # 5:00 pm
-        self.holiday_key = '%s:open:1' % self.holiday_open.strftime(library_key_format)
-        test_ds.zadd(self.holiday_key,
-                     0,
-                     self.holiday_open.strftime(time_format))
-        test_ds.zadd(self.holiday_key,
-                     0,
-                     self.holiday_close.strftime(time_format))
+	add_library_hours(self.standard_open,
+			  self.standard_close,
+			  redis_ds=test_ds)
+	add_library_hours(datetime.datetime(2012,1,20,7,45),
+                          datetime.datetime(2012,1,20,17,0),
+                          test_ds)
 
     def test_standard_day(self):
         """

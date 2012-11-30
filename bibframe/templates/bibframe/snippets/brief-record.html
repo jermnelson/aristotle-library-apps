@@ -1,0 +1,61 @@
+{% comment %}Start Brief Record View DIV{% endcomment %}
+<div class="span9">
+ {% comment %}Start Row DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}Start Main Content DIV{% endcomment %}
+  <div class="span6">
+   {% comment %}Start Status, Bib Panes Row DIV{% endcomment %}
+   <div class="row-fluid">
+    {% comment %}Start Status Pane DIV{% endcomment %}
+    <div class="span2">
+      <div style="align:center">
+       <img src="{{ STATIC_URL }}img/{{ instance.carrier_type.img }}" class="img-polaroid"> 
+      </div>
+      <p class="text-{{ instance.status }}">{{ instance.status }}</p>
+    {% comment %}End Status Pane DIV{% endcomment %}
+    </div>
+    {% comment %}Start Bib Pane DIV{% endcomment %}
+    <div class="span4">
+     <h2><a href="{% url 'bibframe.views.creative_work' creative_work.redis_key %}">{{ creative_work.title }}</a></h2>
+     <p>
+      Created by 
+      {% for creator in creative_work.creator_authorities %}
+      <a href="{% url 'bibframe.views.authority' creator.redis_key %}">{{ creator.name }}</a>
+       {% if not forloop.last %},{% else %}.{% endif %}
+      {% endfor %}
+     </p>
+     <p>
+       Published on {{ instance.published_date }} {% if instance.publisher %}by {{ instance.publisher }}{% endif %}
+     </p>
+    {% comment %}End Bib Pane DIV{% endcomment %}
+    </div>
+   {% comment %}End Status, Bib Panes Row DIV{% endcomment %}
+   </div>
+   {% comment %}Start Subject Row DIV{% endcomment %}
+   <div class="row-fluid">
+    {% comment %}Start Subject Pane DIV{% endcomment %}
+    <div class="span6">
+      <p>
+        <span class="label label-info">Subjects</span>
+	{% for subject in creative_work.subjects %}
+	 <a href="{% url 'bibframe.views.authority' subject.redis_key %}">{{ subject.name }}</a>
+         {% if not forloop.last %},{% else %}.{% endif %}
+	{% endfor %}
+      </p> 
+    </div>
+   {% comment %}End Subject Row DIV{% endcomment %}
+   </div>
+  {% comment %}End Main Content DIV{% endcomment %}
+  </div>
+  {% comment %}Start Access Annotation Pane DIV{% endcomment %}
+  <div class="span2">
+   {% if instance.cover_annotation %}
+    <a href="{% url 'bibframe.views.annotation' instance.cover_annotation.redis_key %}">
+     <img    
+
+  {% comment %}End Access Annotation Pane DIV{% endcomment %}
+  </div>
+ {% comment %}End Row DIV{% endcomment %}
+ </div>
+{% comment %}End Brief Record View DIV{% endcomment %}
+</div>

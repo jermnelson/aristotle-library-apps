@@ -1,0 +1,67 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block head-title %}
+{% if institution %}{% trans institution.name %} Library Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
+Title Search
+{% endblock %}
+
+{% block more-css %}
+{% endblock %}
+
+
+{% block body %}
+{% comment %}START content DIV{% endcomment %}
+<div class="container-fluid">
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START search DIV{% endcomment %}
+  <div class="row12">
+  {% include 'bibframe/snippets/search.html' %}
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START widget DIV{% endcomment %}
+  <div class="row12">
+  {% if admin %}
+  {% include 'bibframe/snippets/manage.html' %}
+  {% else %}
+  {% include 'bibframe/snippets/widget.html' %}
+  {% endif %}
+  {% comment %}END widget DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{% comment %}END content DIV{% endcomment %}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/jquery.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script>
+ function IngestMARC21ViewModel() {
+   var self = this;
+   self.marc21Filepath = ko.observable();
+   self.ingestResult = ko.observable(false);
+   self.ingestMARC21 = function() {
+     var data = 'type=marc21&file_location=' + self.marc21Filepath.value;
+	 $.ajax({
+	    url:'/apps/marcr/ingest',
+		data:data,
+		dataType: 'json',
+		success: function(data) {
+		  alert(data);
+		  self.ingestResult.value = data;
+		  self.ingestResult = ko.observable(true);
+		});
+   }
+  }
+ }
+ ko.applyBindings(new IngestMARC21ViewModel());
+</script>
+{% endblock %}

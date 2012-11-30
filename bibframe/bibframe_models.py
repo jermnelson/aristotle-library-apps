@@ -161,7 +161,7 @@ class CorporateBody(Authority):
     def save(self):
         if self.redis_key is None:
             self.redis_key = "bibframe:Authority:CorporateBody:{0}".format(self.redis.incr("global bibframe:Authority:CorporateBody"))
-        super(Person,self).save()
+        super(CorporateBody,self).save()
 
 
 class Person(Authority):

@@ -1,0 +1,49 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block head-title %}
+{% if institution %}{% trans institution.name %} Library Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
+ Details for {{ annotation.label }} Annotation 
+{% endblock %}
+
+{% block more-css %}
+{% endblock %}
+
+
+{% block body %}
+{% comment %}START content DIV{% endcomment %}
+<div class="container-fluid">
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START search DIV{% endcomment %}
+  <div class="row12">
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START widget DIV{% endcomment %}
+  <div class="row12">
+  {% if admin %}
+  {% include 'bibframe/snippets/manage.html' %}
+  {% endif %}
+  {% comment %}END widget DIV{% endcomment %}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{% comment %}END content DIV{% endcomment %}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/jquery.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script>
+ function AnnotationViewModel() {
+   var self = this;
+ }
+ ko.applyBindings(new AnnotationViewModel());
+</script>
+{% endblock %}
