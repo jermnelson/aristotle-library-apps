@@ -5,9 +5,9 @@ __author__ = "Jeremy Nelson"
 from app_settings import APP
 from django.views.generic.simple import direct_to_template
 from aristotle.views import json_view
-from aristotle.settings import AUTHORITY_REDIS,INSTANCE_REDIS,WORK_REDIS
+from aristotle.settings import AUTHORITY_REDIS, INSTANCE_REDIS
 from redis_helpers import process_name
-from marcr.app_helpers import get_brief
+from bibframe.app_helpers import get_brief
 
 authority_redis = AUTHORITY_REDIS
 
@@ -18,7 +18,7 @@ def app(request):
     return direct_to_template(request,
                               'person_authority/app.html',
                               {'app':APP})
-                               
+
 
 @json_view
 def search(request):
@@ -46,5 +46,5 @@ def search(request):
         brief_rec['search_prefix'] = raw_name
         output.append(brief_rec)
     return {'results':output}
-    
-    
+
+

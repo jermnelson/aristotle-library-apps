@@ -3,14 +3,16 @@
 """
 from app_settings import *
 from app_helpers import *
-from solr_helpers import SOLR_QUEUE,start_indexing
-from aristotle.settings import INSTITUTION,FEDORA_URI,FEDORA_ROOT,SOLR_URL
+from solr_helpers import SOLR_QUEUE, start_indexing
+from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
 from aristotle.views import json_view
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import redirect
 from fedora_batch.forms import *
 from fedora_batch.models import *
-import mimetypes,os,datetime
+import os
+import datetime
+
 
 def default(request):
     """
@@ -23,13 +25,13 @@ def default(request):
     object_mover_form = ObjectMovementForm()
     return direct_to_template(request,
                               'fedora_batch/app.html',
-                              {'app':APP,
-                               'ingest_form':batch_ingest_form,
-                               'institution':INSTITUTION,
-                               'message':request.session.get('msg'),
-                               'modify_form':batch_modify_form,
-                               'object_mover_form':object_mover_form,
-                               'solr_url':SOLR_URL})
+                              {'app': APP,
+                               'ingest_form': batch_ingest_form,
+                               'institution': INSTITUTION,
+                               'message': request.session.get('msg'),
+                               'modify_form': batch_modify_form,
+                               'object_mover_form': object_mover_form,
+                               'solr_url': SOLR_URL})
 
 def batch_ingest(request):
     """
@@ -46,7 +48,7 @@ def batch_ingest(request):
             request.session['msg'] = "Successfully ingested batch with the following PIDs:"
             for row in results:
                 request.session['msg'] += "<p>{0}</p>".format(row)
-            #! NEED TO LOG RESULTS 
+            #! NEED TO LOG RESULTS
             output["msg"] = results
             return redirect("/apps/fedora_batch/")
         else:
@@ -62,7 +64,7 @@ def index_solr(request):
     """
     output = {}
     if request.REQUEST.has_key('start'):
-       start_indexing() 
+       start_indexing()
        output['msg'] = 'started indexing at {0}'.format(datetime.datetime.now().isoformat())
     else:
        output['msg'] = "{0} {1}".format(datetime.datetime.now().isoformat(),
@@ -87,8 +89,8 @@ def object_mover(request):
             collection_pid_raw = mover_form.cleaned_data['collection_pid']
             collection_pid = PersisentIdentifer.objects.get_or_create(fedora_url = '{0}'.format(collection_pid_raw),
                                                                       identifier=collection_pid_raw)[0]
-            
-                                                                      
+
+
             source_pid_raw = mover_form.cleaned_data['source_pid']
             source_pid = PersisentIdentifer.objects.get_or_create(fedora_url = '{0}'.format(source_pid_raw),
                                                                   identifier=source_pid_raw)[0]
@@ -110,4 +112,4 @@ def object_mover(request):
                                'institution':INSTITUTION,
                                'modify_form':modify_form,
                                'object_mover_form':ObjectMovementForm()})
-    
+

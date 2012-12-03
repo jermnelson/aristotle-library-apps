@@ -4,7 +4,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-import datetime,re,pymarc,sys,logging
+import datetime, re, pymarc,sys,logging
 from bibframe_models import Annotation,CorporateBody,CreativeWork,Instance,Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
@@ -29,18 +29,18 @@ except ImportError, e:
     OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
 
 
-
 class Ingester(object):
     """
-     Base Ingester class for ingesting metadata and bibliographic
-     records into the MARCR Redis datastore.
+    Base Ingester class for ingesting metadata and bibliographic
+    records into the MARCR Redis datastore.
     """
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         """
         Initializes Ingester
 
-        :keyword creative_work_ds: Work Redis datastore, defaults to CREATIVE_WORK_REDIS
+        :keyword creative_work_ds: Work Redis datastore, defaults to
+                                   CREATIVE_WORK_REDIS
         :keyword instance_ds: Instance Redis datastore, defaults to
                               INSTANCE_REDIS
         :keyword authority_ds: Authority Redis datastore, default to
@@ -48,15 +48,19 @@ class Ingester(object):
         :keyword annotation_ds: Annotation Redis datastore, defaults to
                                 ANNOTATION_REDIS
         """
-        self.annotation_ds = kwargs.get('annotation_ds',ANNOTATION_REDIS)
-        self.authority_ds = kwargs.get('authority_ds',AUTHORITY_REDIS)
-        self.instance_ds = kwargs.get('instance_ds',INSTANCE_REDIS)
-        self.creative_work_ds = kwargs.get('creative_work_ds',CREATIVE_WORK_REDIS)
+        self.annotation_ds = kwargs.get('annotation_ds',
+                                        ANNOTATION_REDIS)
+        self.authority_ds = kwargs.get('authority_ds',
+                                       AUTHORITY_REDIS)
+        self.instance_ds = kwargs.get('instance_ds',
+                                      INSTANCE_REDIS)
+        self.creative_work_ds = kwargs.get('creative_work_ds',
+                                           CREATIVE_WORK_REDIS)
 
     def ingest(self):
         pass
-        
-        
+
+
 class MARC21Helpers(object):
     """
     MARC21 Helpers for MARC21 Ingester classes
@@ -67,19 +71,19 @@ class MARC21Helpers(object):
 
     def getSubfields(self,tag,*subfields):
         """
-        Extracts values from a MARC Variable Field 
-        
+        Extracts values from a MARC Variable Field
+
         :param tag: MARC21 tag
         :param subfields: one or more subfields
         """
         if self.record[tag] is not None:
             field = self.record[tag]
             return ' '.join(field.get_subfields(*subfields))
-        
-            
+
+
 class MARC21Ingester(Ingester):
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.entity_info = {}
         self.record = kwargs.get('marc_record',None)
         super(MARC21Ingester,self).__init__(**kwargs)
@@ -92,123 +96,130 @@ class MARC21toFacets(MARC21Ingester):
      either a Work or Instance.
     """
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.facets = None
-	self.creative_work = kwargs.get('creative_work')
-	self.instance = kwargs.get('instance')
-	super(MARC21toFacets,self).__init__(**kwargs)
+        self.creative_work = kwargs.get('creative_work')
+        self.instance = kwargs.get('instance')
+        super(MARC21toFacets,self).__init__(**kwargs)
 
 
-    def add_access_facet(self,**kwargs):
+    def add_access_facet(self, **kwargs):
         """
-	Creates a bibframe:Annotation:Facet:Access based on 
-	extracted info from the MARC21 Record
+        Creates a bibframe:Annotation:Facet:Access based on
+        extracted info from the MARC21 Record
 
         :param instance: BIBFRAME Instance, defaults to self.instance
-	:param record: MARC21 record, defaults to self.marc_record
-	"""
-	instance = kwargs.get("instance",self.instance)
-	record = kwargs.get("record",self.record)
-	access = marc21_facets.get_access(record)
-	facet_key = "bibframe:Annotation:Facet:Access:{0}".format(access)
-	self.annotation_ds.sadd(facet_key,instance.redis_key)
-	self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),
-			      facet_key)
+        :param record: MARC21 record, defaults to self.marc_record
+        """
+        instance = kwargs.get("instance", self.instance)
+        record = kwargs.get("record", self.record)
+        access = marc21_facets.get_access(record)
+        facet_key = "bibframe:Annotation:Facet:Access:{0}".format(access)
+        self.annotation_ds.sadd(facet_key, instance.redis_key)
+        self.instance_ds.sadd("{0}:Annotations:facets".format(
+            instance.redis_key),
+                facet_key)
 
-
-    def add_format_facet(self,**kwargs):
-	"""
-	Creates a bibframe:Annotation:Facet:Format based on the 
-	rda:carrierTypeManifestation property of the marcr:Instance
+    def add_format_facet(self, **kwargs):
+        """
+        Creates a bibframe:Annotation:Facet:Format based on the
+        rda:carrierTypeManifestation property of the marcr:Instance
 
         :param instance: BIBFRAME Instance, defaults to self.instance
-	"""
-	# Extract's the Format facet value from the Instance and
-	# creates an Annotation key that the instance's redis key
-	# is either added to an existing set or creates a new 
-	# sorted set for the facet marcr:Annotation
-	instance = kwargs.get("instance",self.instance)
-	facet_key = "bibframe:Annotation:Facet:Format:{0}".format(instance.attributes['rda:carrierTypeManifestation'])
-	self.annotation_ds.sadd(facet_key,instance.redis_key)
-	self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),facet_key)
-
-
-    def add_lc_facet(self,**kwargs):
         """
-	Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter facet
-	based on extracted info from the MARC21 Record
+        # Extract's the Format facet value from the Instance and
+        # creates an Annotation key that the instance's redis key
+        # is either added to an existing set or creates a new
+        # sorted set for the facet marcr:Annotation
+        instance = kwargs.get("instance", self.instance)
+        facet_key = "bibframe:Annotation:Facet:Format:{0}".format(
+            instance.attributes['rda:carrierTypeManifestation'])
+        self.annotation_ds.sadd(facet_key, instance.redis_key)
+        self.instance_ds.sadd("{0}:Annotations:facets".format(
+            instance.redis_key),
+                facet_key)
+
+
+    def add_lc_facet(self, **kwargs):
+        """
+        Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter facet
+        based on extracted info from the MARC21 Record
 
         :param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
-	:param record: MARC21 record, defaults to self.marc_record
-	"""
-	creative_work = kwargs.get('creative_work',self.creative_work)
-	record = kwargs.get('record',self.record)
-	lc_facet,lc_facet_desc = marc21_facets.get_lcletter(record)
-	for row in lc_facet_desc:
-	    facet_key = "bibframe:Annotation:Facet:LOCFirstLetter:{0}".format(lc_facet)
-	    self.annotation_ds.sadd(facet_key,creative_work.redis_key)
-	    self.creative_work_ds.sadd("{0}:Annotations:facets".format(creative_work.redis_key),facet_key)
-	    self.annotation_ds.hset("bibframe:Annotation:Facet:LOCFirstLetters",lc_facet,row)
-    
-    def add_locations_facet(self,**kwargs):
+        :param record: MARC21 record, defaults to self.marc_record
         """
-	Method takes an instance and a MARC21 record, extracts all CC's
-	location (holdings) codes from the MARC21 record and adds the instance key
-	to all of the holdings facets.
+        creative_work = kwargs.get('creative_work', self.creative_work)
+        record = kwargs.get('record', self.record)
+        lc_facet, lc_facet_desc = marc21_facets.get_lcletter(record)
+        for row in lc_facet_desc:
+            facet_key = "bibframe:Annotation:Facet:LOCFirstLetter:{0}".format(
+                lc_facet)
+            self.annotation_ds.sadd(facet_key,creative_work.redis_key)
+            self.creative_work_ds.sadd("{0}:Annotations:facets".format(
+                creative_work.redis_key),
+                    facet_key)
+            self.annotation_ds.hset("bibframe:Annotation:Facet:LOCFirstLetters",
+                lc_facet,row)
 
-	:param instance: BIBFRAME Instance, defaults to self.instance
-	:param record: MARC21 record, defaults to self.marc_record
-	"""
-        instance = kwargs.get("instance",self.instance)
-	record = kwargs.get("record",self.record)
+    def add_locations_facet(self, **kwargs):
+        """
+        Method takes an instance and a MARC21 record, extracts all CC's
+        location (holdings) codes from the MARC21 record and adds the instance
+        key to all of the holdings facets.
 
-	locations = marc21_facets.get_location(record)
-	if len(locations) > 0:
-	    for location in locations:
-		redis_key = "bibframe:Annotation:Facet:Location:{0}".format(location[0])
-		self.annotation_ds.sadd(redis_key,instance.redis_key)
-		if not self.annotation_ds.hexists("bibframe:Annotation:Facet:Locations",location[0]):
-		    self.annotation_ds.hset("bibframe:Annotation:Facet:Locations",
-				            location[0],
-					    location[1])
-		self.instance_ds.sadd("{0}:Annotations:facets".format(instance.redis_key),
-				      redis_key)
+        :param instance: BIBFRAME Instance, defaults to self.instance
+        :param record: MARC21 record, defaults to self.marc_record
+        """
+        instance = kwargs.get("instance", self.instance)
+        record = kwargs.get("record",self.record)
+
+        locations = marc21_facets.get_location(record)
+        if len(locations) > 0:
+            for location in locations:
+                redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
+                    location[0])
+                self.annotation_ds.sadd(redis_key, instance.redis_key)
+                if not self.annotation_ds.hexists(
+                    "bibframe:Annotation:Facet:Locations",
+                    location[0]):
+                    self.annotation_ds.hset(
+                        "bibframe:Annotation:Facet:Locations",
+                        location[0],
+                        location[1])
+                self.instance_ds.sadd("{0}:Annotations:facets".format(
+                    instance.redis_key),
+                        redis_key)
 
     def ingest(self,**kwargs):
-	"""
-	Method runs all of the Facet generation methods
+        """
+        Method runs all of the Facet generation methods
 
-	:param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
-	:param instance: BIBFRAME Instance, default to self.instnace
-	:param record: MARC21 record, defaults to self.marc_record
-	"""
-        creative_work = kwargs.get('creative_work',self.creative_work)
-        instance = kwargs.get("instance",self.instance)
-	record = kwargs.get('record',self.record)
-        self.add_access_facet(instance=instance,
-			      record=record)
+        :param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
+        :param instance: BIBFRAME Instance, default to self.instnace
+        :param record: MARC21 record, defaults to self.marc_record
+        """
+        creative_work = kwargs.get('creative_work', self.creative_work)
+        instance = kwargs.get("instance", self.instance)
+        record = kwargs.get('record', self.record)
+        self.add_access_facet(instance=instance,record=record)
         self.add_format_facet(instance=instance)
         self.add_lc_facet(creative_work=creative_work,
-			  record=record)
-	self.add_locations_facet(instance=instance,
-			         record=record)
-
-		    
+            record=record)
+        self.add_locations_facet(instance=instance,
+            record=record)
 
 
-
-        
 isbn_regex = re.compile(r'([0-9\-]+)')
+
+
 class MARC21toInstance(MARC21Ingester):
     """
     MARC21toInstance ingests a MARC record into the BIBFRAME Redis datastore
     """
-
     def __init__(self,**kwargs):
         self.instance = None
         super(MARC21toInstance,self).__init__(**kwargs)
         self.entity_info['rda:identifierForTheManifestation'] = {}
-        
 
     def add_instance(self):
         """
@@ -219,15 +230,16 @@ class MARC21toInstance(MARC21Ingester):
         self.instance.save()
 
     def extract_carrier_type(self):
-	"""
-	Extract's the RDA carrier type from a MARC21 record and
-	saves result as an Instance's rda:carrierTypeManifestation,
-	
-	NOTE: method currently using CC's MARC21 mapping, needs to
-	normalized to the controlled vocabulary of rda:carrierType
-	"""
-	self.entity_info['rda:carrierTypeManifestation'] = marc21_facets.get_format(self.record)
-                                 
+        """
+        Extract's the RDA carrier type from a MARC21 record and
+        saves result as an Instance's rda:carrierTypeManifestation,
+
+        NOTE: method currently using CC's MARC21 mapping, needs to
+        normalized to the controlled vocabulary of rda:carrierType
+        """
+        self.entity_info['rda:carrierTypeManifestation'] = \
+        marc21_facets.get_format(self.record)
+
 
     def extract_ils_bibnumber(self):
         """
@@ -244,14 +256,15 @@ class MARC21toInstance(MARC21Ingester):
     def extract_isbn(self):
         """
         Extract's ISBN  from MARC21 record and
-        saves as a rda:identifierForTheManifestation:isbn 
+        saves as a rda:identifierForTheManifestation:isbn
         """
         isbn_field = self.record['020']
         isbn_values = []
         if isbn_field is not None:
-            for subfield in isbn_field.get_subfields('a','z'):
+            for subfield in isbn_field.get_subfields('a', 'z'):
                 isbn_values.append(''.join(subfield))
-            self.entity_info['rda:identifierForTheManifestation:isbn'] = set(isbn_values)
+            self.entity_info['rda:identifierForTheManifestation:isbn'] = \
+            set(isbn_values)
 
     def extract_issn(self):
         """
@@ -265,8 +278,9 @@ class MARC21toInstance(MARC21Ingester):
                                                      'y',
                                                      'z'):
                 issn_values.append(''.join(subfield))
-            self.entity_info['rda:identifierForTheManifestation:issn'] = set(issn_values)            
-            
+            self.entity_info['rda:identifierForTheManifestation:issn'] = \
+            set(issn_values)
+
     def extract_lccn(self):
         """
         Extract's LCCN call-number from MARC21 record and
@@ -274,13 +288,14 @@ class MARC21toInstance(MARC21Ingester):
         """
         lccn_field = self.record['050']
         if lccn_field is not None:
-            self.entity_info['rda:identifierForTheManifestation']['lccn'] = lccn_field.value()
+            self.entity_info['rda:identifierForTheManifestation']['lccn'] = \
+            lccn_field.value()
         else:
             # Adds 090 value to lccn following CC standard practice
             local_090 = self.record['090']
             if local_090 is not None:
                 self.entity_info['rda:identifierForTheManifestation']['lccn'] = local_090.value()
-                
+
     def extract_local(self):
         """
         Extracts local call number MARC21 record and
@@ -293,8 +308,8 @@ class MARC21toInstance(MARC21Ingester):
             local_090 = self.record['090']
             if local_090 is not None and not self.entity_info['rda:identifierForTheManifestation'].has_key('lccn'):
                 self.entity_info['rda:identifierForTheManifestation']['local'] = local_090.value()
-        
-    
+
+
     def extract_sudoc(self):
         """
         Extracts sudoc call-number from MARC record and
@@ -308,7 +323,7 @@ class MARC21toInstance(MARC21Ingester):
         """
         Ingests a MARC21 record into a BIBFRAME Instance Redis datastore
         """
-	self.extract_carrier_type()
+        self.extract_carrier_type()
         self.extract_ils_bibnumber()
         self.extract_isbn()
         self.extract_issn()
@@ -316,7 +331,7 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_sudoc()
         self.extract_local()
         self.add_instance()
-        generate_call_number_app(self.instance,self.instance_ds)
+        generate_call_number_app(self.instance, self.instance_ds)
 
 class MARC21toBIBFRAME(Ingester):
     """
@@ -349,16 +364,16 @@ class MARC21toBIBFRAME(Ingester):
             self.marc2creative_work.creative_work.attributes['bibframe:Instances'] = [self.marc2instance.instance.redis_key,]
         self.marc2creative_work.creative_work.save()
         self.marc2facets = MARC21toFacets(annotation_ds=self.annotation_ds,
-			                  authority_ds=self.authority_ds,
-					  creative_work_ds=self.creative_work_ds,
-					  instance_ds=self.instance_ds,
-					  marc_record=self.record,
-					  creative_work=self.marc2creative_work.creative_work,
-					  instance=self.marc2instance.instance)
-	self.marc2facets.ingest()
-        
+                              authority_ds=self.authority_ds,
+                      creative_work_ds=self.creative_work_ds,
+                      instance_ds=self.instance_ds,
+                      marc_record=self.record,
+                      creative_work=self.marc2creative_work.creative_work,
+                      instance=self.marc2instance.instance)
+        self.marc2facets.ingest()
 
-    
+
+
 
 class MARC21toPerson(MARC21Ingester):
     """
@@ -391,7 +406,7 @@ class MARC21toPerson(MARC21Ingester):
             field542b = self.field.get_subfields('b')
             if len(field542b) > 0:
                 self.entity_info['rda:dateOfDeath'] = ''.join(field542b)
-                
+
 
     def extract_preferredNameForThePerson(self):
         """
@@ -403,8 +418,8 @@ class MARC21toPerson(MARC21Ingester):
                 preferred_name.extend(self.field.get_subfields('a','b'))
         if len(preferred_name) > 0:
             self.entity_info['rda:preferredNameForThePerson'] = ' '.join(preferred_name)
-                        
-                
+
+
 
     def ingest(self):
         self.extract_preferredNameForThePerson()
@@ -483,9 +498,9 @@ class MARC21toCreativeWork(MARC21Ingester):
         if self.entity_info.has_key('bibframe:Instances'):
             self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
         self.creative_work = CreativeWork(redis=self.creative_work_ds,
-                                          attributes=self.entity_info)            
+                                          attributes=self.entity_info)
         self.creative_work.save()
-    
+
 
     def ingest(self):
         """
@@ -501,7 +516,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             for creator_key in self.creative_work.attributes['rda:creator']:
                 creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
                 self.authority_ds.sadd(creator_set_key,
-                                       self.creative_work.redis_key)                
+                                       self.creative_work.redis_key)
         self.creative_work.save()
         generate_title_app(self.creative_work,self.creative_work_ds)
         super(MARC21toCreativeWork,self).ingest()
@@ -531,12 +546,12 @@ def ingest_marcfile(**kwargs):
                 sys.stderr.write(".")
             else:
                 sys.stderr.write(str(count))
-                
+
             count += 1
         end_time = datetime.datetime.now()
         print("Finished at {0}".format(end_time.isoformat()))
         print("Total time elapsed is {0} seconds".format((end_time-start_time).seconds))
-        
+
         return count
-            
-    
+
+

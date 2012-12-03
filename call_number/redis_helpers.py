@@ -200,7 +200,8 @@ def get_record(**kwargs):
                 if len(creator_keys) > 1:
                     creator += " et.al."
                 record_info['authors'] = unicode(creator,encoding="utf-8",errors='ignore')
-    return record_info
+            return record_info
+    return None
     
 
 def lccn_normalize(raw_callnumber):
