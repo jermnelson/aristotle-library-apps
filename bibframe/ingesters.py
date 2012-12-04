@@ -4,7 +4,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-import datetime, re, pymarc,sys,logging
+import datetime, re, pymarc,sys,logging, redis
 from bibframe_models import Annotation,CorporateBody,CreativeWork,Instance,Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
@@ -12,7 +12,6 @@ from title_search.search_helpers import generate_title_app
 
 import marc21_facets
 
-import redis,datetime,pymarc
 try:
     import aristotle.settings as settings
     CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
@@ -216,9 +215,9 @@ class MARC21toInstance(MARC21Ingester):
     """
     MARC21toInstance ingests a MARC record into the BIBFRAME Redis datastore
     """
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.instance = None
-        super(MARC21toInstance,self).__init__(**kwargs)
+        super(MARC21toInstance, self).__init__(**kwargs)
         self.entity_info['rda:identifierForTheManifestation'] = {}
 
     def add_instance(self):
