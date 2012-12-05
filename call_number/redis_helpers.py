@@ -6,13 +6,14 @@ import pymarc,redis,re
 import logging,sys
 from app_settings import APP,SEED_RECORD_ID
 import aristotle.settings as settings
+from aristotle.redis_helpers import generate_redis_protocal
 authority_redis = settings.AUTHORITY_REDIS
 redis_server = settings.INSTANCE_REDIS
 creative_work_redis = settings.CREATIVE_WORK_REDIS
 
-english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
-                    'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
-                    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 
+english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                    'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+                    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
                     'Y', 'Z']
 
 lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
@@ -20,48 +21,95 @@ lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
 lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\s*(?P<cutter1>[.|\w]*\d*)\s*(?P<cutter2>\w*)\s*(?P<last>\d*)")
 
 
-def generate_call_number_app(instance,redis_server):
+def generate_call_number_app(instance,
+    redis_server):
     """
-    Helper function takes a MARCR Instance with call-numbers, creates supporting
-    Redis datastructures to support the call number app
+    Helper function takes a MARCR Instance with call-numbers, creates
+    supporting Redis datastructures to support the call number app
 
     :param instance: MARCR Instance
-    :parm redis_server: Redis server
+    :param redis_server: Redis server
     """
-    identifiers = instance.attributes.get('rda:identifierForTheManifestation',None)
-    if identifiers.has_key('lccn'):
-        redis_server.hset('lccn-hash',
-                          identifiers.get('lccn'),
-                          instance.redis_key)
+    identifiers = instance.attributes.get('rda:identifierForTheManifestation',
+        None)
+    instance_protocal = open(instance.protocal_filename,'rb')
+    if 'lccn' in identifiers:
         normalized_call_number = lccn_normalize(identifiers.get('lccn'))
-        redis_server.hset('lccn-normalized-hash',
-                          normalized_call_number,
-                          instance.redis_key)
-        redis_server.zadd('lccn-sort-set',
-                          0,
-                          normalized_call_number)
+        if instance_protocal is not None:
+            instance_protocal.write(
+                generate_redis_protocal("HSET",
+                    'lccn-hash',
+                    identifiers.get('lccn'),
+                    instance.redis_key))
+            instance_protocal.write(
+                generate_redis_protocal("HSET",
+                    'lccn-normalized-hash',
+                    normalized_call_number,
+                    instance.redis_key))
+            instance_protocal.write(
+                generate_redis_protocal("ZADD",
+                    'lccn-sort-set',
+                    0,
+                              normalized_call_number))
+            instance_protocal.close()
+        else:
+            redis_server.hset('lccn-hash',
+                              identifiers.get('lccn'),
+                              instance.redis_key)
+            redis_server.hset('lccn-normalized-hash',
+                              normalized_call_number,
+                              instance.redis_key)
+            redis_server.zadd('lccn-sort-set',
+                              0,
+                              normalized_call_number)
+
         instance.attributes['rda:identifierForTheManifestation']['lccn-normalized'] = normalized_call_number
         instance.save()
-    if identifiers.has_key('sudoc'):
+    if 'sudoc' in identifiers:
         call_number = identifiers.get('sudoc')
-        redis_server.hset('sudoc-hash',
-                          call_number,
-                          instance.redis_key)
-        redis_server.zadd('sudoc-sort-set',
-                          0,
-                          call_number)
+        if instance_protocal is not None:
+            instance_protocal.write(
+                generate_redis_protocal("HSET",
+                    'sudoc-hash',
+                    call_number,
+                    instance.redis_key))
+            instance_protocal.write(
+                generate_redis_protocal("ZADD",
+                    'sudoc-sort-set',
+                    0,
+                    call_number))
+        else:
+            redis_server.hset('sudoc-hash',
+                              call_number,
+                              instance.redis_key)
+            redis_server.zadd('sudoc-sort-set',
+                              0,
+                              call_number)
     if identifiers.has_key('local'):
         call_number = identifiers.get('local')
-        redis_server.hset('local-hash',
-                          call_number,
-                          instance.redis_key)
-        redis_server.zadd('local-sort-set',
-                          0,
-                          call_number)
-        
-        
-        
-    
+        if instance_protocal is not None:
+            instance_protocal.write(
+                generate_redis_protocal("HSET",
+                    'local-hash',
+                    call_number,
+                    instance.redis_key))
+            instance_protocal.write(
+                generate_redis_protocal("ZADD",
+                    'local-sort-set',
+                    0,
+                    call_number))
+        else:
+            redis_server.hset('local-hash',
+                              call_number,
+                              instance.redis_key)
+            redis_server.zadd('local-sort-set',
+                              0,
+                              call_number)
+    instance_protocal.close()
+
+
+
+
 def get_all(call_number,slice_size=10):
     """
     Function returns a list of call numbers with the param centered between
@@ -80,13 +128,13 @@ def get_all(call_number,slice_size=10):
     if sudoc_rank is not None:
         return redis_server.zrange('sudoc-sort-set',
                                    sudoc_rank-slice_size,
-                                   sudo_rank+slice_size)
+                                   sudoc_rank+slice_size)
     local_rank = redis_server.zrank('local-sort-set',call_number)
     if local_rank is not None:
         return redis_server.zrange('local-sort-set',
                                    local_rank-slice_size,
                                    local_rank+slice_size)
-        
+
 
 
 def get_previous(call_number,
@@ -97,7 +145,7 @@ def get_previous(call_number,
 
     :param call_number: Call Number String
     :param call_number_type: Type of call number (lccn, sudoc, or local)
-    :rtype list: List of two records 
+    :rtype list: List of two records
     """
     current_rank = get_rank(call_number,
                             call_number_type=call_number_type)
@@ -115,7 +163,7 @@ def get_next(call_number,
 
     :param call_number: Call Number String
     :param call_number_type: Type of call number (lccn, sudoc, or local)
-    :rtype list: List of two records 
+    :rtype list: List of two records
     """
     current_rank = get_rank(call_number,
                             call_number_type=call_number_type)
@@ -149,7 +197,7 @@ def get_rank(call_number,
             current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
                                               entity_idents[call_number_type])
         return current_rank
-            
+
 
 def get_slice(start,stop,
               call_number_type='lccn'):
@@ -174,7 +222,7 @@ def get_slice(start,stop,
                                            number)
         call_number = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(entity_key),
                                         call_number_type)
-        
+
         record = get_record(call_number=call_number)
         entities.append(record)
     return entities
@@ -202,7 +250,7 @@ def get_record(**kwargs):
                 record_info['authors'] = unicode(creator,encoding="utf-8",errors='ignore')
             return record_info
     return None
-    
+
 
 def lccn_normalize(raw_callnumber):
     """
@@ -228,7 +276,7 @@ def lccn_normalize(raw_callnumber):
             cutter2 = cutter2.replace('.','')
             output +=  '{:<04}'.format(cutter2)
     return output
-        
+
 def lccn_set(identifiers_key,
              call_number,
              redis_server,
@@ -236,7 +284,7 @@ def lccn_set(identifiers_key,
     """
     Sets hash and sorted set for normalized and raw call numbers for
     LCCN call numbers
-    
+
     :param identifiers_key: Key to the RDA Records rdaIdentifiersForTheExpression
     :param call_number: LCCN Call number
     :param redis_server: Redis Server
@@ -256,6 +304,6 @@ def lccn_set(identifiers_key,
     redis_server.zadd('lccn-sort-set',
                       0,
                       normalized_call_number)
-    
-    
-    
+
+
+
