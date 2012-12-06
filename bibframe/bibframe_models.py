@@ -50,7 +50,7 @@ class BibFrameModel(object):
         else:
             self.redis_key = None
         if 'protocal' in kwargs:
-            self.protocal_filepath = kwargs.get('protocal')
+            self.protocal_file = kwargs.get('protocal')
         self.redis_output = None
 
     def generate_redis_protocal(self, *args):
@@ -61,7 +61,7 @@ class BibFrameModel(object):
         if self.redis_output is not None:
             self.redis_output.write(proto)
 
-    def save(self):
+    def save_protocal(self):
         """
         Creates a Redis Protocal file
         """
@@ -95,7 +95,7 @@ class BibFrameModel(object):
                         value)
         self.redis_output.close()
 
-    def old_save(self):
+    def save(self):
         """
         Method adds or saves the object to the Redis datastore,
         should be overridden by child classes save method.
@@ -149,7 +149,6 @@ class Annotation(BibFrameModel):
             self.annotation_key_pattern = "bibframe:Annotation"
         else:
             self.annotation_key_pattern = kwargs.get('annotation_key_pattern')
-        kwargs['protocal'] = 'annotation.protocal'
         super(Annotation, self).__init__(**kwargs)
 
     def save(self):
@@ -174,7 +173,6 @@ class Authority(BibFrameModel):
         """
         if not 'authority_ds' in kwargs:
             kwargs['authority_ds'] = AUTHORITY_REDIS
-        kwargs['protocal'] = 'authority.protocal'
         super(Authority, self).__init__(**kwargs)
 
 
@@ -190,7 +188,6 @@ class CreativeWork(BibFrameModel):
         """
         if not 'redis' in kwargs:
             kwargs['redis'] = CREATIVE_WORK_REDIS
-        kwargs['protocal'] = 'creative_work.protocal'
         super(CreativeWork, self).__init__(**kwargs)
 
     def add_annotation(self, annotation_key):
@@ -232,7 +229,6 @@ class Facet(Annotation):
         """
         if not 'redis' in kwargs:
             kwargs['redis'] = ANNOTATION_REDIS
-        kwargs['protocal'] = 'annotation.protocal'
         super(Facet, self).__init__()
 
 
@@ -248,7 +244,6 @@ class Instance(BibFrameModel):
         """
         if not 'redis' in kwargs:
             kwargs['redis'] = INSTANCE_REDIS
-        kwargs['protocal'] = 'instance.protocal'
         super(Instance, self).__init__(**kwargs)
 
     def save(self):
@@ -267,9 +262,4 @@ class Person(Authority):
             self.redis_key = "bibframe:Authority:Person:{0}".format(
                 self.redis.incr("global bibframe:Authority:Person"))
         super(Person, self).save()
-
-
-
-
-
 
