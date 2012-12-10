@@ -163,7 +163,10 @@ def search_title(user_input,redis_server):
     metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
 ##    metaphone_keys.append('first-term-metaphones:{0}'.format(all_metaphones[0]))
     metaphone_keys.append('first-word:{0}'.format(user_input.split(" ")[0].lower()))
-    title_keys = redis_server.sinter(metaphone_keys)
+    temp_key = "tmp:{0}".format(random.random())
+    redis_server.sinters(tmp_key,metaphone_keys)
+    title_keys = redis_server.sort(temp_key,by="*:rda:Title->rda:preferredTitleForTheWork")
+    redis_server.expire(tmp_key,15)
 ##    typeahead_keys = typeahead_search_title(user_input,redis_server)
 ##    if typeahead_keys is not None:
 ##        all_keys = list(title_keys)
