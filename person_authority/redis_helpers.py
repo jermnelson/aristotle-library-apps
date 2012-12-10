@@ -56,7 +56,7 @@ def get_or_generate_person(person_attributes,authority_redis):
     :param person_attributes: Person attributes in a dict
     :param authority_redis: MARCR Authority Redis datastore
     """
-    person_metaphones,person_keys = [],[]
+    person_metaphones,person_metaphones_keys,person_keys = [],[],[]
     dob_keys,dod_keys = [],[]
     if person_attributes.has_key("rda:preferredNameForThePerson"):
         raw_name = person_attributes.get("rda:preferredNameForThePerson")

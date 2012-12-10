@@ -27,8 +27,9 @@ class AddLibraryHoursTest(TestCase):
     def test_add_hour_range(self):
         add_library_hours(self.standard_open,
                           self.standard_close,
-			  redis_ds=test_ds)
+              redis_ds=test_ds)
         # Tests open at 1:30 am
+        #print(test_ds.getbit('library-hours:2012-05-14',6))
         self.assert_(is_library_open(datetime.datetime(2012,5,14,1,30),
                                      redis_ds=test_ds))
         # Test close at 2:30 am
@@ -44,26 +45,30 @@ class AddLibraryHoursTest(TestCase):
         self.assert_(is_library_open(datetime.datetime(2012,5,14,23,45),
                                      redis_ds=test_ds))
 
+        # Test open at 11:59 pm
+        self.assert_(is_library_open(datetime.datetime(2012,5,14,23,59),
+        redis_ds=test_ds))
+
     def tearDown(self):
         test_ds.flushdb()
 
-   
+
 class CalculateOffsetTest(TestCase):
 
     def setUp(self):
         self.early_morning_open = datetime.datetime(2012,11,29,0,33)
-	self.early_morning_close = datetime.datetime(2012,11,29,3,5)
-	self.midmorning_open = datetime.datetime(2012,11,29,8,47)
-	self.midafternoon = datetime.datetime(2012,11,29,15,20)
-	self.evening = datetime.datetime(2012,11,29,20,35)
+        self.early_morning_close = datetime.datetime(2012,11,29,3,5)
+        self.midmorning_open = datetime.datetime(2012,11,29,8,47)
+        self.midafternoon = datetime.datetime(2012,11,29,15,20)
+        self.evening = datetime.datetime(2012,11,29,20,35)
 
 
     def test_times(self):
-	self.assertEquals(calculate_offset(self.early_morning_open),3)
-	self.assertEquals(calculate_offset(self.early_morning_close),12)
-	self.assertEquals(calculate_offset(self.midmorning_open),35)
-	self.assertEquals(calculate_offset(self.midafternoon),61)
-	self.assertEquals(calculate_offset(self.evening),82)
+        self.assertEquals(calculate_offset(self.early_morning_open),3)
+        self.assertEquals(calculate_offset(self.early_morning_close),12)
+        self.assertEquals(calculate_offset(self.midmorning_open),35)
+        self.assertEquals(calculate_offset(self.midafternoon),61)
+        self.assertEquals(calculate_offset(self.evening),82)
 
     def tearDown(self):
         test_ds.flushdb()
@@ -98,15 +103,39 @@ class CalculateTimeTest(TestCase):
     def test_evening(self):
         self.assertEquals(calculate_time(82),
                           self.evening)
-                          
-                          
 
     def tearDown(self):
         pass
 
+
+class GetClosingTimeTest(TestCase):
+
+
+    def setUp(self):
+        self.standard_open1 = datetime.datetime(2012, 12, 05, 7, 45)  # 7:45 am
+        self.standard_close1 = datetime.datetime(2012, 12, 05, 2, 0)  # 2:00 am
+        self.standard_open2 = datetime.datetime(2012, 12, 06, 7, 45)  # 7:45 am
+        self.standard_close2 = datetime.datetime(2012, 12, 06, 2, 0)  # 2:00 am
+        add_library_hours(self.standard_open1,
+            self.standard_close1,
+            redis_ds=test_ds)
+        add_library_hours(self.standard_open2,
+            self.standard_close2,
+            redis_ds=test_ds)
+
+    def test_get_closing_time(self):
+        self.assertEquals(get_closing_time(datetime.datetime(2012,12,05,15,34),
+                                           redis_ds=test_ds),
+            datetime.time(2,0))
+        self.assertEquals(get_closing_time(datetime.datetime(2012,12,05,3,30),
+                                           redis_ds=test_ds),
+            datetime.time(2,0))
+
+
+
     def tearDown(self):
-        pass
-        
+        test_ds.flushdb()
+
 
 class IsLibraryOpenTest(TestCase):
 
@@ -114,10 +143,10 @@ class IsLibraryOpenTest(TestCase):
         self.midnight = datetime.datetime(2012,05,14,0,0)
         self.standard_open = datetime.datetime(2012,05,14,7,45) # 7:45 am
         self.standard_close = datetime.datetime(2012,05,14,2,0) # 2:00 am
-	add_library_hours(self.standard_open,
-			  self.standard_close,
-			  redis_ds=test_ds)
-	add_library_hours(datetime.datetime(2012,1,20,7,45),
+        add_library_hours(self.standard_open,
+              self.standard_close,
+              redis_ds=test_ds)
+        add_library_hours(datetime.datetime(2012,1,20,7,45),
                           datetime.datetime(2012,1,20,17,0),
                           test_ds)
 
@@ -141,7 +170,7 @@ class IsLibraryOpenTest(TestCase):
         self.assertFalse(is_library_open(future_test,test_ds))
         past_test = datetime.datetime(1905,9,24)
         self.assertFalse(is_library_open(past_test,test_ds))
-                     
+
 
     def test_holiday(self):
         """
@@ -152,7 +181,7 @@ class IsLibraryOpenTest(TestCase):
         test_close = datetime.datetime(2012,1,20,6,0) #  6:00 am
         test_close2 = datetime.datetime(2012,1,20,18,20) # 6:20 pm
         self.assert_(is_library_open(test_open,test_ds))
-        self.assertFalse(is_library_open(test_close,test_ds))        
+        self.assertFalse(is_library_open(test_close,test_ds))
         self.assertFalse(is_library_open(test_close2,test_ds))
 
     def tearDown(self):

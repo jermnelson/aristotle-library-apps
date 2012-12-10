@@ -5,7 +5,8 @@
 __author__ = "Jeremy Nelson"
 
 import datetime, re, pymarc,sys,logging, redis
-from bibframe_models import Annotation,CorporateBody,CreativeWork,Instance,Person
+from aristotle.redis_helpers import generate_redis_protocal
+from bibframe_models import Annotation,CreativeWork,Instance,Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from title_search.search_helpers import generate_title_app
@@ -46,6 +47,7 @@ class Ingester(object):
                                AUTHORITY_REDIS
         :keyword annotation_ds: Annotation Redis datastore, defaults to
                                 ANNOTATION_REDIS
+	:keyword protocal_file: Redis protocal file, defaults to None
         """
         self.annotation_ds = kwargs.get('annotation_ds',
                                         ANNOTATION_REDIS)
@@ -55,6 +57,7 @@ class Ingester(object):
                                       INSTANCE_REDIS)
         self.creative_work_ds = kwargs.get('creative_work_ds',
                                            CREATIVE_WORK_REDIS)
+	self.protocal_file = kwargs.get('protocal_file',None)
 
     def ingest(self):
         pass
@@ -65,10 +68,10 @@ class MARC21Helpers(object):
     MARC21 Helpers for MARC21 Ingester classes
     """
 
-    def __init__(self,marc_record):
+    def __init__(self, marc_record):
         self.record = marc_record
 
-    def getSubfields(self,tag,*subfields):
+    def getSubfields(self, tag, *subfields):
         """
         Extracts values from a MARC Variable Field
 
@@ -84,9 +87,8 @@ class MARC21Ingester(Ingester):
 
     def __init__(self, **kwargs):
         self.entity_info = {}
-        self.record = kwargs.get('marc_record',None)
-        super(MARC21Ingester,self).__init__(**kwargs)
-
+        self.record = kwargs.get('marc_record', None)
+        super(MARC21Ingester, self).__init__(**kwargs)
 
 
 class MARC21toFacets(MARC21Ingester):
@@ -99,8 +101,7 @@ class MARC21toFacets(MARC21Ingester):
         self.facets = None
         self.creative_work = kwargs.get('creative_work')
         self.instance = kwargs.get('instance')
-        super(MARC21toFacets,self).__init__(**kwargs)
-
+        super(MARC21toFacets, self).__init__(**kwargs)
 
     def add_access_facet(self, **kwargs):
         """
@@ -114,10 +115,23 @@ class MARC21toFacets(MARC21Ingester):
         record = kwargs.get("record", self.record)
         access = marc21_facets.get_access(record)
         facet_key = "bibframe:Annotation:Facet:Access:{0}".format(access)
-        self.annotation_ds.sadd(facet_key, instance.redis_key)
-        self.instance_ds.sadd("{0}:Annotations:facets".format(
-            instance.redis_key),
-                facet_key)
+	instance_facets_key = "{0}:Annotations:facets".format(instance.redis_key)
+	if self.protocal_file is not None:
+	    facet_protocal = open(self.protocal_file,'rb')
+            facet_protocal.write(
+                generate_redis_protocal("SADD",
+                facet_key,
+                instance.redis_key))
+	    instance_protocal = open(self.instance.protocal_file,'rb')
+            instance_protocal.write(
+                generate_redis_protocal("SADD",
+                 ,
+                 facet_key))
+	    facet_protocal.close()
+	    instance_protocal.close()
+	else:
+	    self.annotation_ds.sadd(facet_key,instance.redis_key)
+	    self.instance_ds.sadd(instance_facets_key)
 
     def add_format_facet(self, **kwargs):
         """
@@ -138,27 +152,38 @@ class MARC21toFacets(MARC21Ingester):
             instance.redis_key),
                 facet_key)
 
-
     def add_lc_facet(self, **kwargs):
         """
-        Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter facet
-        based on extracted info from the MARC21 Record
+        Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter
+        facet based on extracted info from the MARC21 Record
 
-        :param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
+        :param creative_work: BIBFRAME CreativeWork, defaults to
+                              self.creative_work
         :param record: MARC21 record, defaults to self.marc_record
         """
         creative_work = kwargs.get('creative_work', self.creative_work)
         record = kwargs.get('record', self.record)
         lc_facet, lc_facet_desc = marc21_facets.get_lcletter(record)
         for row in lc_facet_desc:
+	    if self.
             facet_key = "bibframe:Annotation:Facet:LOCFirstLetter:{0}".format(
                 lc_facet)
-            self.annotation_ds.sadd(facet_key,creative_work.redis_key)
-            self.creative_work_ds.sadd("{0}:Annotations:facets".format(
-                creative_work.redis_key),
+            self.annotation_protocal.write(
+                generate_redis_protocal("SADD",
+                facet_key,
+                creative_work.redis_key)
+                )
+            self.creative_work_protocal.write(
+                generate_redis_protocal("SADD",
+                    "{0}:Annotations:facets".format(creative_work.redis_key),
                     facet_key)
-            self.annotation_ds.hset("bibframe:Annotation:Facet:LOCFirstLetters",
-                lc_facet,row)
+                )
+            self.annotation_protocal.write(
+                generate_redis_protocal("HSET",
+                    "bibframe:Annotation:Facet:LOCFirstLetters",
+                    lc_facet,
+                    row)
+                )
 
     def add_locations_facet(self, **kwargs):
         """
@@ -170,42 +195,59 @@ class MARC21toFacets(MARC21Ingester):
         :param record: MARC21 record, defaults to self.marc_record
         """
         instance = kwargs.get("instance", self.instance)
-        record = kwargs.get("record",self.record)
+        record = kwargs.get("record", self.record)
 
         locations = marc21_facets.get_location(record)
         if len(locations) > 0:
             for location in locations:
                 redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
                     location[0])
-                self.annotation_ds.sadd(redis_key, instance.redis_key)
+		if self.protocal_file is not None:
+                    self.annotation_protocal.write(
+                        generate_redis_protocal("SADD",
+                            redis_key,
+                            instance.redis_key))
+		else:
+		    self.annotation_ds.sadd(redis_key,instance.redis_key)
                 if not self.annotation_ds.hexists(
-                    "bibframe:Annotation:Facet:Locations",
-                    location[0]):
-                    self.annotation_ds.hset(
-                        "bibframe:Annotation:Facet:Locations",
-                        location[0],
-                        location[1])
-                self.instance_ds.sadd("{0}:Annotations:facets".format(
-                    instance.redis_key),
-                        redis_key)
+                        "bibframe:Annotation:Facet:Locations", location[0]):
+                    self.annotation_protocal.write(
+                        generate_redis_protocal("HSET",
+                            "bibframe:Annotation:Facet:Locations",
+                            location[0],
+                            location[1]))
 
-    def ingest(self,**kwargs):
+                self.instance_protocal.write(
+                    generate_redis_protocal("SADD",
+                        "{0}:Annotations:facets".format(instance.redis_key),
+                        redis_key))
+
+    def ingest(self, **kwargs):
         """
         Method runs all of the Facet generation methods
 
-        :param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
+        :param creative_work: BIBFRAME CreativeWork, defaults to
+                              self.creative_work
         :param instance: BIBFRAME Instance, default to self.instnace
         :param record: MARC21 record, defaults to self.marc_record
         """
         creative_work = kwargs.get('creative_work', self.creative_work)
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get('record', self.record)
-        self.add_access_facet(instance=instance,record=record)
+        self.annotation_protocal = open('annotation.protocal', 'ab')
+        self.creative_work_protocal = open(creative_work.protocal_filepath, 'ab')
+        self.instance_protocal = open(instance.protocal_filepath, 'ab')
+
+        self.add_access_facet(instance=instance, record=record)
         self.add_format_facet(instance=instance)
         self.add_lc_facet(creative_work=creative_work,
             record=record)
         self.add_locations_facet(instance=instance,
             record=record)
+        self.annotation_protocal.close()
+        self.creative_work_protocal.close()
+        self.instance_protocal.close()
+
 
 
 isbn_regex = re.compile(r'([0-9\-]+)')
@@ -238,7 +280,6 @@ class MARC21toInstance(MARC21Ingester):
         """
         self.entity_info['rda:carrierTypeManifestation'] = \
         marc21_facets.get_format(self.record)
-
 
     def extract_ils_bibnumber(self):
         """
@@ -330,7 +371,9 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_sudoc()
         self.extract_local()
         self.add_instance()
-        generate_call_number_app(self.instance, self.instance_ds)
+        #generate_call_number_app(self.instance,self.instance_ds)
+
+
 
 class MARC21toBIBFRAME(Ingester):
     """
@@ -514,10 +557,14 @@ class MARC21toCreativeWork(MARC21Ingester):
         if self.creative_work.attributes.has_key('rda:creator'):
             for creator_key in self.creative_work.attributes['rda:creator']:
                 creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
-                self.authority_ds.sadd(creator_set_key,
-                                       self.creative_work.redis_key)
+                authority_protocal = open('authority.protocal','ab')
+                authority_protocal.write(
+                    generate_redis_protocal("SADD",
+                        creator_set_key,
+                        self.creative_work.redis_key))
+                authority_protocal.close()
         self.creative_work.save()
-        generate_title_app(self.creative_work,self.creative_work_ds)
+        #generate_title_app(self.creative_work,self.creative_work_ds)
         super(MARC21toCreativeWork,self).ingest()
 
 def ingest_marcfile(**kwargs):
@@ -525,9 +572,9 @@ def ingest_marcfile(**kwargs):
     annotation_ds = kwargs.get('annotation_redis')
     authority_ds = kwargs.get('authority_redis')
     creative_work_ds = kwargs.get("creative_work_redis")
-    instance_ds =kwargs.get("instance_redis")
+    instance_ds = kwargs.get("instance_redis")
     if marc_filename is not None:
-        marc_file = open(marc_filename,'rb')
+        marc_file = open(marc_filename, 'rb')
         count = 0
         marc_reader = pymarc.MARCReader(marc_file,
                                         utf8_handling='ignore')
@@ -540,8 +587,8 @@ def ingest_marcfile(**kwargs):
                                         marc_record=record,
                                         creative_work_ds=creative_work_ds)
             ingester.ingest()
-            if count%1000:
-		if not count % 100:
+            if count % 1000:
+                if not count % 100:
                     sys.stderr.write(".")
             else:
                 sys.stderr.write(str(count))
@@ -549,7 +596,8 @@ def ingest_marcfile(**kwargs):
             count += 1
         end_time = datetime.datetime.now()
         print("Finished at {0}".format(end_time.isoformat()))
-        print("Total time elapsed is {0} seconds".format((end_time-start_time).seconds))
+        print("Total time elapsed is {0} seconds".format(
+            (end_time-start_time).seconds))
 
         return count
 

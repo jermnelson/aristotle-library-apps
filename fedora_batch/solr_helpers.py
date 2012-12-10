@@ -25,7 +25,7 @@ FIELDNAMES = [
     'summary', # abstract
     'title', # title
     'topic', #subject
-    'url', # Should be the URL in the location 
+    'url', # Should be the URL in the location
 ]
 
 def get_title(mods):
@@ -33,7 +33,8 @@ def get_title(mods):
     Function takes the objects MODS and extracts and returns the text of the title.
     """
     title = mods.find("{{{0}}}titleInfo/{{{0}}}title".format(MODS_NS))
-    return title.text
+    if title is not None:
+        return title.text
 
 def get_topics(mods):
     """
@@ -61,7 +62,7 @@ def get_creators(mods):
             namePart = name.find("{{{0}}}namePart".format(MODS_NS))
             output.append(namePart.text)
     return output
-                          
+
 
 def get_description(mods):
     """
@@ -72,12 +73,13 @@ def get_description(mods):
     """
     output = []
     physical_desc = mods.find("{{{0}}}physicalDescription".format(MODS_NS))
-    extent = physical_desc.find("{{{0}}}extent".format(MODS_NS))
-    if extent is not None:
-        output.append(extent.text)
-    origin = physical_desc.find("{{{0}}}digitalOrigin".format(MODS_NS))
-    if origin is not None:
-        output.append(origin.text)
+    if physical_desc is not None:
+        extent = physical_desc.find("{{{0}}}extent".format(MODS_NS))
+        if extent is not None:
+            output.append(extent.text)
+        origin = physical_desc.find("{{{0}}}digitalOrigin".format(MODS_NS))
+        if origin is not None:
+            output.append(origin.text)
     return output
 
 
@@ -88,7 +90,8 @@ def get_format(mods):
     :param mods: Etree XML of MODS datastream
     """
     genre = mods.find("{{{0}}}genre".format(MODS_NS))
-    return genre.text.title()
+    if genre is not None:
+        return genre.text
 
 
 def get_mods(pid):
@@ -116,14 +119,16 @@ def get_notes(mods):
     """
     notes = []
     all_notes = mods.find("{{{0}}}note".format(MODS_NS))
+    if all_notes is None:
+        return notes
     for note in all_notes:
         displayLabel = note.attribt.get('displayLabel')
         if displayLabel is not None:
-            text = "{0} {1}".format(displayLabel,note.text)
+            text = "{0} {1}".format(displayLabel, note.text)
         else:
             text = note.text
-        output.append(text)
-    return output
+        notes.append(text)
+    return notes
 
 def get_publisher(mods):
     """
@@ -132,7 +137,8 @@ def get_publisher(mods):
     :param mods: Etree of the MODS datastream
     """
     publisher = mods.find("{{{0}}}originInfo/{{0}}publisher".format(MODS_NS))
-    return publisher.text
+    if publisher is not None:
+        return publisher.text
 
 def get_published_year(mods):
     """
@@ -141,7 +147,8 @@ def get_published_year(mods):
     :param mods: Etree of the MODS datastream
     """
     dateCreated = mods.find("{{{0}}}originInfo/{{0}}dateCreated".format(MODS_NS))
-    return dateCreated.text
+    if dateCreated is not None:
+        return dateCreated.text
 
 
 
@@ -150,7 +157,8 @@ def get_summary(mods):
     Function extracts abstract from MODS and returns text.
     """
     summary = mods.find("{{{0}}}abstract".format(MODS_NS))
-    return summary.text
+    if summary is not None:
+        return summary.text
 
 def get_text(solr_doc,mods):
     """
@@ -171,7 +179,28 @@ def get_url(mods):
     Function extracts URL location from MODS and returns text.
     """
     url = mods.find("{{{0}}}location/{{{0}}}url".format(MODS_NS))
-    return url.text
+    if url is not None:
+        return url.text
+
+def index_collection(**kwargs):
+    if 'collection_pid' in kwargs:
+        collection_pid = kwargs.get('collection_pid')
+    else:
+        collection_pid = 'coccc:top'
+    get_collection_sparql = '''PREFIX fedora: <info:fedora/fedora-system:def/relations-external#>
+    SELECT ?a
+    FROM <#ri>
+    WHERE
+    {
+      ?a fedora:isMemberOfCollection <info:fedora/%s>
+    }
+    ''' % collection_pid
+    csv_reader = repository.risearch.sparql_query(get_collection_sparql)
+    for row in csv_reader:
+        result = row.get('a')
+        pid = result.split("/")[1]
+        index_digital_object(pid=pid)
+
 
 def index_digital_object(**kwargs):
     pid = kwargs.get('pid')
@@ -180,10 +209,14 @@ def index_digital_object(**kwargs):
         formatOf = kwargs.get('format')
     else:
         formatOf = get_format(mods)
-         
+        if formatOf is None:
+            formatOf = 'Unknown'
+        else:
+            formatOf
+
     solr_doc = {'access':'Online',
                 'bib_num':pid,
-                'format':formatOf,
+                'format':formatOf.title(),
                 'location':'Digital Archives of Colorado College (DACC)',
                 'id':pid}
     solr_doc['author'] = get_creators(mods)
@@ -198,9 +231,10 @@ def index_digital_object(**kwargs):
     solr_doc['pubyear'] = get_published_year(mods)
     solr_doc['text'] = get_text(solr_doc,mods)
     solr_doc['url'] = get_url(mods)
-    print("Adding {0} to Solr index".format(solr_doc))
-    solr_server.add(Solr_doc)
-    solr_server.commit()               
+    print("Adding {0} with format {1} to Solr index".format(solr_doc['id'],
+    solr_doc['format']))
+    solr_server.add(solr_doc)
+    solr_server.commit()
 
 def index_manuscript(pid):
     """
@@ -210,7 +244,7 @@ def index_manuscript(pid):
 
 def index_process(dig_obj,queue):
     """
-    Function adds result of indexing fedora digital object into 
+    Function adds result of indexing fedora digital object into
     Solr index.
 
     :param dig_obj: Digital Object
@@ -221,14 +255,14 @@ def index_process(dig_obj,queue):
 
 def start_indexing(pid_prefix='coccc'):
     """
-    Function starts Solr indexing queue for all objects in 
+    Function starts Solr indexing queue for all objects in
     the repository.
 
     :param pid_prefix: PID prefix to search, defaults to CC
     """
     query = "{0}*".format(pid_prefix)
     print("Before get pid generator {0}".format(query))
-    
+
     all_pids_generator = repository.find_objects(query = "{0}*".format(pid_prefix))
     print("after get pid generator {0}".format(all_pids_generator))
     while 1:
@@ -241,5 +275,7 @@ def start_indexing(pid_prefix='coccc'):
             #process.join()
         except:
             break
+
+
 
 
