@@ -182,11 +182,17 @@ def get_url(mods):
     if url is not None:
         return url.text
 
-def index_collection(**kwargs):
-    if 'collection_pid' in kwargs:
-        collection_pid = kwargs.get('collection_pid')
-    else:
-        collection_pid = 'coccc:top'
+def index_collection(collection_pid='coccc:top',recursive=True):
+    """
+    Method indexes all child elements in a Fedora Collection, if
+    recursive is True, any collections in the children will call
+    index_collection function for that child pid.A
+
+    :param collection_pid: Collection of PID, default is top-level collection
+                           object for the repository
+    :param recursive: Boolean, if True will call the index_collection on any
+                      subcollections in the collection
+    """
     get_collection_sparql = '''PREFIX fedora: <info:fedora/fedora-system:def/relations-external#>
     SELECT ?a
     FROM <#ri>
@@ -199,6 +205,8 @@ def index_collection(**kwargs):
     for row in csv_reader:
         result = row.get('a')
         pid = result.split("/")[1]
+        relationship = etree.XML(repository.api.getRelationship(pid)[0]])
+
         index_digital_object(pid=pid)
 
 
