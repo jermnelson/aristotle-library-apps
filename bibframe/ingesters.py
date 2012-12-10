@@ -479,14 +479,16 @@ class MARC21toCreativeWork(MARC21Ingester):
             raw_title += ' {0}'.format(subfield_b)
             if raw_title.startswith("..."):
                 raw_title = raw_title.replace("...","")
-            self.entity_info['rda:Title'] = {'rda:preferredTitleForTheWork':raw_title}
+            self.entity_info['rda:Title'] = {'rda:preferredTitleForTheWork':raw_title,
+                                             'sort':raw_title.lower()}
             indicator_one = title_field.indicators[1]
             try:
                 indicator_one = int(indicator_one)
             except ValueError:
                 indicator_one = 0
             if int(indicator_one) > 0:
-                self.entity_info['rda:Title']['rda:variantTitleForTheWork:sort'] = raw_title[indicator_one:]
+                self.entity_info['rda:Title']['rda:variantTitleForTheWork'] = raw_title[indicator_one:]
+                self.entity_info['rda:Title']['sort'] = self.entity_info['rda:Title']['rda:variantTitleForTheWork'].lower()
 
     def get_or_add_work(self):
         """
