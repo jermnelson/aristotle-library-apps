@@ -205,8 +205,7 @@ def index_collection(collection_pid='coccc:top',recursive=True):
     for row in csv_reader:
         result = row.get('a')
         pid = result.split("/")[1]
-        relationship = etree.XML(repository.api.getRelationship(pid)[0]])
-
+        relationship = etree.XML(repository.api.getRelationship(pid)[0])
         index_digital_object(pid=pid)
 
 
