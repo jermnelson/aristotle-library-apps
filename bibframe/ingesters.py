@@ -88,7 +88,6 @@ class MARC21Ingester(Ingester):
         super(MARC21Ingester,self).__init__(**kwargs)
 
 
-
 class MARC21toFacets(MARC21Ingester):
     """
      MARC21toFacets creates a MARCR annotations to be associated with
@@ -99,8 +98,7 @@ class MARC21toFacets(MARC21Ingester):
         self.facets = None
         self.creative_work = kwargs.get('creative_work')
         self.instance = kwargs.get('instance')
-        super(MARC21toFacets,self).__init__(**kwargs)
-
+        super(MARC21toFacets, self).__init__(**kwargs)
 
     def add_access_facet(self, **kwargs):
         """
@@ -332,30 +330,34 @@ class MARC21toInstance(MARC21Ingester):
         self.add_instance()
         generate_call_number_app(self.instance, self.instance_ds)
 
+
 class MARC21toBIBFRAME(Ingester):
     """
     MARC21toBIBFRAME takes a MARC21 record and ingests into BIBFRAME Redis
     datastore
     """
 
-    def __init__(self,marc_record,**kwargs):
-        super(MARC21toBIBFRAME,self).__init__(**kwargs)
+    def __init__(self, marc_record, **kwargs):
+        super(MARC21toBIBFRAME, self).__init__(**kwargs)
         self.record = marc_record
 
     def ingest(self):
-        self.marc2creative_work = MARC21toCreativeWork(annotation_ds=self.annotation_ds,
-                                                       authority_ds=self.authority_ds,
-                                                       instance_ds=self.instance_ds,
-                                                       marc_record=self.record,
-                                                       creative_work_ds=self.creative_work_ds)
+        self.marc2creative_work = MARC21toCreativeWork(
+            annotation_ds=self.annotation_ds,
+            authority_ds=self.authority_ds,
+            instance_ds=self.instance_ds,
+            marc_record=self.record,
+            creative_work_ds=self.creative_work_ds)
         self.marc2creative_work.ingest()
-        self.marc2instance = MARC21toInstance(annotation_ds=self.annotation_ds,
-                                              authority_ds=self.authority_ds,
-                                              instance_ds=self.instance_ds,
-                                              marc_record=self.record,
-                                              creative_work_ds=self.creative_work_ds)
+        self.marc2instance = MARC21toInstance(
+            annotation_ds=self.annotation_ds,
+            authority_ds=self.authority_ds,
+            instance_ds=self.instance_ds,
+            marc_record=self.record,
+            creative_work_ds=self.creative_work_ds)
         self.marc2instance.ingest()
-        self.marc2instance.instance.attributes["bibframe:CreativeWork"] = self.marc2creative_work.creative_work.redis_key
+        self.marc2instance.instance.attributes["bibframe:CreativeWork"] = \
+        self.marc2creative_work.creative_work.redis_key
         self.marc2instance.instance.save()
         if self.marc2creative_work.creative_work.attributes.has_key('bibframe:Instances'):
             self.marc2creative_work.creative_work.attributes['bibframe:Instances'].append(self.marc2instance.instance.redis_key)
@@ -379,11 +381,11 @@ class MARC21toPerson(MARC21Ingester):
     MARC21toPerson ingests a MARC record into the BIBFRAME Redis datastore
     """
 
-    def __init__(self,**kwargs):
-        super(MARC21toPerson,self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(MARC21toPerson, self).__init__(**kwargs)
         self.person = None
         self.people = []
-        self.field = kwargs.get("field",None)
+        self.field = kwargs.get("field", None)
 
     def extractDates(self):
         """
@@ -433,6 +435,83 @@ class MARC21toPerson(MARC21Ingester):
             self.person = result
             self.people.append(self.person)
 
+
+class MARC21toSubjects(MARC21Ingester):
+    """
+    MARC21toWork ingests a MARC21 record into the BIBFRAME Redis datastore
+    """
+
+    def __init__(self,**kwargs):
+        """
+        Creates a MARC21toWork Ingester
+        """
+        super(MARC21toSubjects, self).__init__(**kwargs)
+        self.creative_work = kwargs.get("work", None)
+        self.field = kwargs.get("field", None)
+        self.subjects = []
+
+    def add_subdivision(self,subject_key):
+        """
+        Helper function iterates through the common 65x subdivision
+        fields to create Authority Redis keys in the Redis datastore
+
+        :param subject_key: Base subject key used to create subdivision
+                            set keys for each subdivision
+        """
+        redis_pipeline = self.authority_ds.pipeline()
+
+        def add_subdivision(subfield, type_of):
+            subdivision_key = "{0}:{1}".format(subfield)
+            redis_pipeline.sadd("{0}:{1}".format(subject_key, type_of),
+                subdivision_key)
+            self.subjects.append(subdivision_key)
+        for subfield in self.field.get_subfields('v'):
+            add_subdivision(subfield, "form")
+        for subfield in self.field.get_subfields('x'):
+            add_subdivision(subfield, "general")
+        for subfield in self.field.get_subfields('y'):
+            add_subdivision(subfield, 'chronological')
+        for subfield in self.field.get_subfields('z'):
+            add_subdivision(subfield, 'geographic')
+        redis_pipeline.execute()
+
+    def extract_genre(self):
+        """
+        Extracts Genre from the MARC21 655 field
+        """
+        if self.field.tag == '651':
+            subject_key = 'bibframe:Authority:Subject:Genre:{0}'.format(
+                ''.join(self.field.get_subfields('a')))
+            self.authority_ds.sadd(subject_key,
+                self.creative_work.redis_key)
+            self.subjects.append(subject_key)
+
+    def extract_geographic(self):
+        """
+        Extracts Geographic Subject from MARC21 651 field
+        """
+        if self.field.tag == '651':
+            subject_key = 'bibframe:Authority:Subject:Geographic:{0}'.format(
+                ''.join(self.field.get_subfields('a')))
+            self.subjects.append(subject_key)
+            self.add_subdivision(subject_key)
+
+    def extract_topical(self):
+        """
+        Extracts Topical Subject from MARC21 650 field
+        """
+        if ['650'].count(self.field.tag) > -1:
+            subject_key = 'bibframe:Authority:Subject:{0}'.format(
+                ''.join(self.field.get_subfields('a')))
+            self.subjects.append(subject_key)
+            self.add_subdivision(subject_key)
+
+    def ingest(self):
+        self.extract_geographic()
+        self.extract_genre()
+        self.extract_topical()
+
+
 class MARC21toCreativeWork(MARC21Ingester):
     """
     MARC21toWork ingests a MARC21 record into the BIBFRAME Redis datastore
@@ -447,7 +526,7 @@ class MARC21toCreativeWork(MARC21Ingester):
 
     def extract_creators(self):
         """
-        Extracts and associates marcr:Authority:Person entities creators
+        Extracts and associates bibframe:Authority:Person entities creators
         work.
         """
         people_keys = []
@@ -462,6 +541,14 @@ class MARC21toCreativeWork(MARC21Ingester):
                     people_keys.append(person.redis_key)
         if len(people_keys) > 0:
             self.entity_info['rda:creator'] = set(people_keys)
+
+    def extract_subjects(self):
+        """
+        Extracts amd associates bibframe:Authority:rda:Subjects entities
+        with the creators work.
+        """
+        subject_keys = []
+        for tag in ['650''']
 
     def extract_title(self):
         """
@@ -520,7 +607,11 @@ class MARC21toCreativeWork(MARC21Ingester):
                                        self.creative_work.redis_key)
         self.creative_work.save()
         generate_title_app(self.creative_work,self.creative_work_ds)
-        super(MARC21toCreativeWork,self).ingest()
+        super(MARC21toCreativeWork, self).ingest()
+
+
+
+
 
 def ingest_marcfile(**kwargs):
     marc_filename = kwargs.get("marc_filename")
