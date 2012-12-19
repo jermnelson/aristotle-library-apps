@@ -1,17 +1,17 @@
 """
- mod:`views` Views for MARCR App
+ mod:`views` Views for BIBFRAME App
 """
 __author__ = 'Jeremy Nelson'
 import sys,os,logging,datetime,re
 from django.views.generic.simple import direct_to_template
-from django.http import HttpResponse
-import django.utils.simplejson as json
+
 from app_settings import APP
 from aristotle.views import json_view
 from bibframe.forms import *
 from bibframe.ingesters import ingest_marcfile
-from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
-from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
+from aristotle.settings import INSTITUTION, ANNOTATION_REDIS, AUTHORITY_REDIS
+from aristotle.settings import INSTANCE_REDIS, OPERATIONAL_REDIS
+from aristotle.settings import CREATIVE_WORK_REDIS
 
 def annotation(request,redis_key):
     """
@@ -85,7 +85,7 @@ def instance(request,redis_key):
                               {'app':APP,
                                'institution':INSTITUTION,
                                'user':None})
-    
+
 
 def manage(request):
     """
@@ -111,7 +111,7 @@ def ingest(request):
         return {'error':'Not implemented'}
     else:
         return {'error':'Ingester type not found'}
-    
+
 def ingest_marc21(request):
     """
     Ingests MARC21 file into datastore
@@ -123,9 +123,9 @@ def ingest_marc21(request):
                                     instance_redis=INSTANCE_REDIS,
                                     work_redis=CREATIVE_WORK_REDIS)
     return {'total':total_records,'type':'marc21'}
-    
-                    
-    
+
+
+
 
 @json_view
 def search(request):
@@ -147,7 +147,7 @@ def search(request):
                            "msg":"{0} is not assocated as a work with {1}".format(creative_work_key,
                                                                                   instance_key)}
     else:
-        instance_keys = CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(creative_work_key)) 
+        instance_keys = CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(creative_work_key))
     output["title"] = unicode(CREATIVE_WORK_REDIS.hget("{0}:rda:Title".format(creative_work_key),
                                                       "rda:preferredTitleForTheWork"),
                               errors="ignore")
@@ -162,7 +162,7 @@ def search(request):
                                                                "rda:preferredNameForThePerson"),
                                           errors="ignore"))
     return output
-    
+
 # Helper functions
 usage_key_re = re.compile(r"(\w+)\:(\d+)")
 def add_use(redis_key,redis_ds):

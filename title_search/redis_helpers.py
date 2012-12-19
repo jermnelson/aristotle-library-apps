@@ -3,7 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-
+import random
 try:
     import aristotle.lib.metaphone as metaphone
 except ImportError:
@@ -37,6 +37,7 @@ def add_title(raw_title, title_metaphone, redis_server):
     title_pipeline.hset(title_key, "raw", raw_title)
     title_pipeline.execute()
     return title_key
+
 
 def add_metaphone_key(metaphone, title_keys, redis_server):
     metaphone_key = "all-metaphones:{0}".format(metaphone)
@@ -109,18 +110,18 @@ def process_title(raw_title):
 
     :param raw_title: Raw title
     """
-    stop_metaphones,all_metaphones = [],[]
-    raw_terms,terms = raw_title.split(" "),[]
+    stop_metaphones, all_metaphones = [], []
+    raw_terms, terms = raw_title.split(" "), []
     for term in raw_terms:
         term = term.lower()
-        first_phonetic,second_phonetic = metaphone.dm(term.decode('utf8',
+        first_phonetic, second_phonetic = metaphone.dm(term.decode('utf8',
                                                                   "ignore"))
 
         if term not in STOPWORDS:
             stop_metaphones.append(first_phonetic)
         all_metaphones.append(first_phonetic)
     title_metaphone = ''.join(all_metaphones)
-    return stop_metaphones,all_metaphones,title_metaphone
+    return stop_metaphones, all_metaphones, title_metaphone
 
 
 
@@ -159,14 +160,17 @@ def typeahead_search_title(user_input,redis_server):
 
 def search_title(user_input,redis_server):
     title_keys = []
-    metaphones,all_metaphones,title_metaphone = process_title(user_input)
+    metaphones, all_metaphones, title_metaphone = process_title(user_input)
     metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
 ##    metaphone_keys.append('first-term-metaphones:{0}'.format(all_metaphones[0]))
-    metaphone_keys.append('first-word:{0}'.format(user_input.split(" ")[0].lower()))
+    metaphone_keys.append(
+        'first-word:{0}'.format(user_input.split(" ")[0].lower()))
     temp_key = "tmp:{0}".format(random.random())
-    redis_server.sinters(tmp_key,metaphone_keys)
-    title_keys = redis_server.sort(temp_key,by="*:rda:Title->sort",alpha=True)
-    redis_server.expire(tmp_key,15)
+    redis_server.sinters(temp_key, metaphone_keys)
+    title_keys = redis_server.sort(temp_key,
+        by="*:rda:Title->sort",
+        alpha=True)
+    redis_server.expire(temp_key, 15)
 ##    typeahead_keys = typeahead_search_title(user_input,redis_server)
 ##    if typeahead_keys is not None:
 ##        all_keys = list(title_keys)

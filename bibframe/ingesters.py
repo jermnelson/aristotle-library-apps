@@ -132,17 +132,20 @@ class MARC21toFacets(MARC21Ingester):
         facet_key = "bibframe:Annotation:Facet:Format:{0}".format(
             instance.attributes['rda:carrierTypeManifestation'])
         self.annotation_ds.sadd(facet_key, instance.redis_key)
+        self.annotation_ds.zadd('bibframe:Annotation:Facet:Formats',
+            float(self.annotation_ds.scard(facet_key)),
+            facet_key)
         self.instance_ds.sadd("{0}:Annotations:facets".format(
             instance.redis_key),
                 facet_key)
 
-
     def add_lc_facet(self, **kwargs):
         """
-        Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter facet
-        based on extracted info from the MARC21 Record
+        Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter
+        facet based on extracted info from the MARC21 Record
 
-        :param creative_work: BIBFRAME CreativeWork, defaults to self.creative_work
+        :param creative_work: BIBFRAME CreativeWork, defaults to
+                              self.creative_work
         :param record: MARC21 record, defaults to self.marc_record
         """
         creative_work = kwargs.get('creative_work', self.creative_work)
@@ -151,12 +154,18 @@ class MARC21toFacets(MARC21Ingester):
         for row in lc_facet_desc:
             facet_key = "bibframe:Annotation:Facet:LOCFirstLetter:{0}".format(
                 lc_facet)
-            self.annotation_ds.sadd(facet_key,creative_work.redis_key)
+            self.annotation_ds.sadd(facet_key, creative_work.redis_key)
             self.creative_work_ds.sadd("{0}:Annotations:facets".format(
                 creative_work.redis_key),
                     facet_key)
-            self.annotation_ds.hset("bibframe:Annotation:Facet:LOCFirstLetters",
-                lc_facet,row)
+            self.annotation_ds.hset(
+                "bibframe:Annotation:Facet:LOCFirstLetters",
+                lc_facet,
+                row)
+            self.annotation_ds.zadd(
+                "bibframe:Annotation:Facet:LOCFirstLetters:sort",
+                float(self.annotation_ds.scard(facet_key)),
+                facet_key)
 
     def add_locations_facet(self, **kwargs):
         """
@@ -168,7 +177,7 @@ class MARC21toFacets(MARC21Ingester):
         :param record: MARC21 record, defaults to self.marc_record
         """
         instance = kwargs.get("instance", self.instance)
-        record = kwargs.get("record",self.record)
+        record = kwargs.get("record", self.record)
 
         locations = marc21_facets.get_location(record)
         if len(locations) > 0:
@@ -183,6 +192,10 @@ class MARC21toFacets(MARC21Ingester):
                         "bibframe:Annotation:Facet:Locations",
                         location[0],
                         location[1])
+                self.annotation_ds.zadd(
+                    "bibframe:Annotation:Facet:Locations:sort",
+                    float(self.annotation_ds.scard(redis_key)),
+                    redis_key)
                 self.instance_ds.sadd("{0}:Annotations:facets".format(
                     instance.redis_key),
                         redis_key)
@@ -548,7 +561,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         with the creators work.
         """
         subject_keys = []
-        for tag in ['650''']
+
 
     def extract_title(self):
         """

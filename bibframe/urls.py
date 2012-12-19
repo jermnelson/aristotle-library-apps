@@ -1,5 +1,5 @@
 """
- mod:`urls` MARCR  App URL rounting
+ mod:`urls` BIBFRAME  App URL rounting
 """
 __author__ = "Jeremy Nelson"
 
@@ -15,5 +15,5 @@ urlpatterns = patterns('bibframe.views',
     url(r"^instance/(P<redis_key>\w)$","annotation",name="bibframe-instance"),
     url(r"manage$","manage",name="bibframe-manage"),
     url(r"search$","search",name="bibframe-json"),
-    url(r"^work/(P<redis_key>\w)$","creative_work",name="bibframe-work"),        
+    url(r"^work/(P<redis_key>\w)$","creative_work",name="bibframe-work"),
 )

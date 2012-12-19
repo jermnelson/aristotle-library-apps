@@ -1,0 +1,50 @@
+{% load i18n %}
+<div class="facet span7 offset1" id="{{ facet.name|slugify }}-facet">
+ <div class="facet-header">
+  {% trans facet.name  %}
+  <a href="#" class="close" data-bind="click: closeFacet">&times;</a>
+ </div>
+ <div class="facet-body">
+ <ul>
+ {% for item in facet.items %}
+ <li>
+   {% if item.children %}
+   <div class="dropdown">
+    <a class="dropdown-toggle"
+       data-bind="click: displayFacet"
+       data-target="#"
+       data-toggle="dropdown"
+       href="#">
+     {% if item.icon %}
+     <img src="{{ STATIC_URL }}img/{{ item.icon }}" alt="{{ item.name }} icon">
+     {% endif %} 
+     {{ item.name }}
+     {% if item.number %}({{ item.number }}){% endif %}
+     <b class="caret"></b>
+     </a>
+     <ul class="dropdown-menu" role="menu"> 
+      {% for child in item.items %}
+      <li><a href="#" data-bind="click: displayFacet">
+	  {{ child.name }} 
+	  {% if child.count %}
+	  ({{ child.count }}) 
+	  {% endif %}
+          </a></li>
+      {% endfor %}
+     </ul>
+   </div>
+   {% else %}
+   <a href="#" data-bind="click: displayFacet">
+     {% if item.icon %}
+     <img src="{{ STATIC_URL }}img/{{ item.icon }}" alt="{{ item.name }} icon">
+     {% endif %} 
+     {{ item.name }}
+     {% if item.count %}({{ item.count }}){% endif %}
+
+     </a>
+   {% endif %}
+ </li>
+ {% endfor %}
+ </ul>
+ </div>
+</div>

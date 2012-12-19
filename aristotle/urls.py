@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^apps/book_search/', include('book_search.urls')),
     url(r'^apps/call_number/', include('call_number.urls')),
     url(r'^apps/dbfinder/', include('dbfinder.urls')),
+    url(r'^apps/discovery/', include('discovery.urls')),
     url(r'^apps/fedora_batch/', include('fedora_batch.urls')),
     url(r'^apps/hours/', include('hours.urls')),
     url(r'^apps/marc_batch/', include('marc_batch.urls')),
@@ -26,9 +27,9 @@ urlpatterns = patterns('',
 ##    url(r'^apps/reserve_search/', include('reserve_search.urls')),
     url(r'^apps/title_search/', include('title_search.urls')),
     url(r'^apps/','portfolio.views.default', name='portfolio.home'),
-    
-                       
-                       
+
+
+
     # url(r'^aristotle/', include('aristotle.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

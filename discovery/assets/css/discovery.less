@@ -1,0 +1,32 @@
+@import "app.less";
+@FacetBackground: #CDCAB4;
+@FacetBody: #FFFFFF;
+@FacetHeaderBackground: rgb(92,113,72);
+@SearchBackground: #EEE9DA; 
+
+div.facet {
+ background-color: @FacetBackground;
+ margin: 1em;
+ padding: 5px;
+ .rounded-corners;
+}
+
+div.facet-header {
+ background-color: @FacetHeaderBackground;
+ color: #FFFFFF;
+ font-size: 1.3em;
+ margin: 3px;
+ padding: 3px;
+}
+
+div.facet-body {
+ background-color: @FacetBody;
+ border: 3px inset;
+ padding: 3px;
+}
+
+div.search-pane {
+  background-color: @SearchBackground;
+  padding: .5em;
+  .rounded-corners;
+}
