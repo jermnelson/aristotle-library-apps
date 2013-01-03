@@ -8,7 +8,7 @@ import datetime, re, pymarc,sys,logging, redis
 from bibframe_models import Annotation,CorporateBody,CreativeWork,Instance,Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
-from title_search.search_helpers import generate_title_app
+from title_search.redis_helpers import generate_title_app
 
 import marc21_facets
 
@@ -474,7 +474,7 @@ class MARC21toSubjects(MARC21Ingester):
         redis_pipeline = self.authority_ds.pipeline()
 
         def add_subdivision(subfield, type_of):
-            subdivision_key = "{0}:{1}".format(subfield)
+            subdivision_key = "{0}:{1}".format(subfield[0],subfield[1])
             redis_pipeline.sadd("{0}:{1}".format(subject_key, type_of),
                 subdivision_key)
             self.subjects.append(subdivision_key)

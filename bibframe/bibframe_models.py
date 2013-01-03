@@ -257,6 +257,7 @@ class Instance(BibFrameModel):
 
 class Person(Authority):
 
+
     def save(self):
         if self.redis_key is None:
             self.redis_key = "bibframe:Authority:Person:{0}".format(

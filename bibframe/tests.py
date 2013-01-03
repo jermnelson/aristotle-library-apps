@@ -6,7 +6,7 @@ import redis,pymarc
 from django.test import TestCase
 from bibframe_models import *
 from ingesters import MARC21toInstance,MARC21toBIBFRAME,MARC21toPerson,MARC21toCreativeWork
-from ingesters import MARC21toFacets
+from ingesters import MARC21toFacets,MARC21toSubjects
 
 try:
     from aristotle.settings import TEST_REDIS
@@ -127,10 +127,6 @@ class MARC21toFacetsTest(TestCase):
 			  "Online")
 	self.assertEquals(test_redis.hget("bibframe:Annotation:Facet:Locations","tarfc"),
                           "Tutt Reference")
-
-
-
-
 
     def tearDown(self):
         test_redis.flushdb()
@@ -282,8 +278,7 @@ class MARC21toSubjectTest(TestCase):
     def setUp(self):
         field650 = pymarc.Field(tag='650',
             indicators=['', '0'],
-            subfields=['a', 'Orphans',
-                'x', 'Fiction']))
+            subfields=['a', 'Orphans', 'x', 'Fiction'])
         self.subjects_ingester = MARC21toSubjects(
             annotation_ds=test_redis,
             authority_ds=test_redis,
@@ -294,7 +289,7 @@ class MARC21toSubjectTest(TestCase):
         field650_2 = pymarc.Field(tag='650',
             indicators=['', '0'],
             subfields=['a', 'Criminals',
-                'x', 'Fiction']))
+                'x', 'Fiction'])
         self.subjects_ingester2 = MARC21toSubjects(
             annotation_ds=test_redis,
             authority_ds=test_redis,
@@ -476,6 +471,7 @@ class InstanceTest(TestCase):
     def tearDown(self):
         test_redis.flushdb()
 
+
 class CreativeWorkTest(TestCase):
 
     def setUp(self):
@@ -529,10 +525,5 @@ class CreativeWorkTest(TestCase):
                                           'created').split(":")[0])
         self.assert_(test_redis.exists(self.creative_work.redis_key))
 
-
-
-
-
     def tearDown(self):
         test_redis.flushdb()
-

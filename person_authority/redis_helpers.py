@@ -4,7 +4,7 @@
 __author__ = "Jeremy Nelson"
 from bibframe.bibframe_models import Person
 import aristotle.lib.metaphone as metaphone
-from title_search.search_helpers import STOPWORDS
+from title_search.redis_helpers import STOPWORDS
 
 
 def add_person(authority_redis,
@@ -21,8 +21,9 @@ def add_person(authority_redis,
     new_person.save()
     for metaphone in person_metaphones_keys:
         authority_redis.sadd(metaphone,new_person.redis_key)
+    
     if new_person.attributes.has_key('rda:dateOfBirth'):
-        raw_dob = person_attributes.get('rda:dateOfDeath')
+        raw_dob = person_attributes.get('rda:dateOfBirth')
         authority_redis.sadd('person-dob:{0}'.format(raw_dob),
                              new_person.redis_key)
     if new_person.attributes.has_key('rda:dateOfDeath'):
@@ -68,8 +69,8 @@ def get_or_generate_person(person_attributes,authority_redis):
         dob_keys = authority_redis.smembers('person-dob:{0}'.format(raw_dob))
     if person_attributes.has_key("rda:dateOfDeath"):
         raw_dod = person_attributes.get('rda:dateOfDeath')
-        dod_keys = authority_redis.smembers('person-dod:{0}'.format(raw_dob))
-    # No match on names, assume Person is not in the datastore and add to datastore    
+        dod_keys = authority_redis.smembers('person-dod:{0}'.format(raw_dod))
+    # No match on names, assume Person is not in the datastore and add to datastore
     if len(person_keys) <= 0:
         return add_person(authority_redis,
                           person_attributes,
@@ -80,10 +81,8 @@ def get_or_generate_person(person_attributes,authority_redis):
     if len(person_metaphones_keys) > 0 and\
        len(dob_keys) > 0 and\
        len(dod_keys) > 0:
-        
-        found_persons = [get_person(redis_key) for redis_key in list(set(person_metaphones_keys).intersection(set(dob_keys),
-                                                                                                              set(dod_keys)))]
-        
+        found_persons = [get_person(redis_key) for redis_key in list(person_keys.intersection(dob_keys,dod_keys))]
+        print(found_persons) 
         
     # Matches on person_metaphones_keys and dob_keys (for creators that
     # are still living)
