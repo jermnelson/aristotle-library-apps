@@ -47,6 +47,8 @@ class BibFrameModel(object):
             self.redis = None
         if 'redis_key' in kwargs:
             self.redis_key = kwargs.get('redis_key')
+            # Loads any attributes from redis_key hash
+            
         else:
             self.redis_key = None
         if 'protocal' in kwargs:
@@ -110,15 +112,14 @@ class BibFrameModel(object):
             # Redis datastore
             redis_pipeline = self.redis.pipeline()
             for attrib_key, value in self.attributes.iteritems():
+                new_redis_key = "{0}:{1}".format(self.redis_key,attrib_key)
+                redis_pipeline.sadd("{0}:keys".format(self.redis_key),
+                                    new_redis_key)
                 if type(value) is list:
-                    redis_pipeline.lpush("{0}:{1}".format(self.redis_key,
-                                                          attrib_key),
-                                     value)
+                    redis_pipeline.lpush(new_redis_key,value)
                 elif type(value) is set:
                     for member in list(value):
-                        redis_pipeline.sadd("{0}:{1}".format(self.redis_key,
-                                                             attrib_key),
-                                    member)
+                        redis_pipeline.sadd(new_redis_key,member)
                 elif type(value) is dict:
                     new_hash_key = "{0}:{1}".format(self.redis_key,
                                                     attrib_key)
@@ -257,6 +258,14 @@ class Instance(BibFrameModel):
 
 class Person(Authority):
 
+    def __init__(self, **kwargs):
+        """
+        Creates a Person object
+        """
+        if "redis_key" in kwargs and "redis" in kwargs:
+            kwargs['attributes'] = kwargs['redis'].hgetall(kwargs['redis_key'])
+        super(Person, self).__init__(**kwargs)
+    
 
     def save(self):
         if self.redis_key is None:

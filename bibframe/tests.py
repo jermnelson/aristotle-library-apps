@@ -2,16 +2,18 @@
  :mod:`tests` - Unit tests for the Bibliographic Framework App
 """
 __author__ = "Jeremy Nelson"
-import redis,pymarc
+import redis,pymarc,os
 from django.test import TestCase
 from bibframe_models import *
 from ingesters import MARC21toInstance,MARC21toBIBFRAME,MARC21toPerson,MARC21toCreativeWork
 from ingesters import MARC21toFacets,MARC21toSubjects
+from aristotle.settings import PROJECT_HOME
 
 try:
     from aristotle.settings import TEST_REDIS
 except ImportError, e:
-    TEST_REDIS = redis.StrictRedis(host="192.168.64.143",port=6385)
+    TEST_REDIS = redis.StrictRedis(host="192.168.64.143",
+                                   port=6385)
 
 test_redis = TEST_REDIS
 
@@ -63,6 +65,7 @@ class AuthorityTest(TestCase):
 
     def tearDown(self):
         test_redis.flushdb()
+
 
 class MARC21toFacetsTest(TestCase):
 
@@ -398,12 +401,38 @@ class PersonAuthorityTest(TestCase):
                           test_redis.hget(self.person.redis_key,
                                           'rda:preferredNameForThePerson'))
 
-
-
-
     def test_save(self):
         self.assertEquals(self.person.redis_key,
                           "bibframe:Authority:Person:1")
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+class PrideAndPrejudiceMARC21toBIBFRAMETest(TestCase):
+
+    def setUp(self):
+        marc_reader = pymarc.MARCReader(open(os.path.join(PROJECT_HOME,
+                                                          'bibframe',
+                                                          'fixures',
+                                                          'pride-and-prejudice.mrc'),
+                                             'rb'))
+        for record in marc_reader:
+            ingester = MARC21toBIBFRAME(annotation_ds=test_redis,
+                                        authority_ds=test_redis,
+                                        instance_ds=test_redis,
+                                        marc_record=record,
+                                        creative_work_ds=test_redis)
+            ingester.ingest()
+              
+
+    def test_authors(self):
+        """
+        Tests total number of expected creators from the MARC21 records
+        for Pride and Prejudice
+        """   
+        print(test_redis.smembers("bibframe:CreativeWork:1:keys"))
+        print(test_redis.type('bibframe:CreativeWork:1:created'))
+
 
     def tearDown(self):
         test_redis.flushdb()
