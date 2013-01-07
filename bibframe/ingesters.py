@@ -8,7 +8,7 @@ import datetime, re, pymarc,sys,logging, redis
 from bibframe_models import Annotation,CorporateBody,CreativeWork,Instance,Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
-from title_search.redis_helpers import generate_title_app
+from title_search.redis_helpers import generate_title_app,search_title
 
 import marc21_facets
 
@@ -105,8 +105,8 @@ class MARC21toFacets(MARC21Ingester):
         Creates a bibframe:Annotation:Facet:Access based on
         extracted info from the MARC21 Record
 
-        :param instance: BIBFRAME Instance, defaults to self.instance
-        :param record: MARC21 record, defaults to self.marc_record
+        :keyword instance: BIBFRAME Instance, defaults to self.instance
+        :keyword record: MARC21 record, defaults to self.marc_record
         """
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get("record", self.record)
@@ -122,7 +122,7 @@ class MARC21toFacets(MARC21Ingester):
         Creates a bibframe:Annotation:Facet:Format based on the
         rda:carrierTypeManifestation property of the marcr:Instance
 
-        :param instance: BIBFRAME Instance, defaults to self.instance
+        :keyword instance: BIBFRAME Instance, defaults to self.instance
         """
         # Extract's the Format facet value from the Instance and
         # creates an Annotation key that the instance's redis key
@@ -144,9 +144,9 @@ class MARC21toFacets(MARC21Ingester):
         Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter
         facet based on extracted info from the MARC21 Record
 
-        :param creative_work: BIBFRAME CreativeWork, defaults to
-                              self.creative_work
-        :param record: MARC21 record, defaults to self.marc_record
+        :keyword creative_work: BIBFRAME CreativeWork, defaults to
+                                self.creative_work
+        :keyword record: MARC21 record, defaults to self.marc_record
         """
         creative_work = kwargs.get('creative_work', self.creative_work)
         record = kwargs.get('record', self.record)
@@ -431,17 +431,18 @@ class MARC21toPerson(MARC21Ingester):
             if ['0','1'].count(self.field.indicators[0]) > -1:
                 preferred_name.extend(self.field.get_subfields('a','b'))
         if len(preferred_name) > 0:
-            self.entity_info['rda:preferredNameForThePerson'] = ' '.join(preferred_name)
+            raw_name = ' '.join(preferred_name)
+            if raw_name[-1] == ',':
+                raw_name = raw_name[:-1]
+            self.entity_info['rda:preferredNameForThePerson'] = raw_name  
 
 
 
     def ingest(self):
         self.extract_preferredNameForThePerson()
         self.extractDates()
-        #print("In ingest after extracting info {0}".format(self.entity_info))
         result = get_or_generate_person(self.entity_info,
                                         self.authority_ds)
-        #print("Redis key is {0}".format(self.people))
         if type(result) == list:
             self.people = result
         else:
@@ -456,7 +457,7 @@ class MARC21toSubjects(MARC21Ingester):
 
     def __init__(self,**kwargs):
         """
-        Creates a MARC21toWork Ingester
+        Creates a MARC21toSubject Ingester
         """
         super(MARC21toSubjects, self).__init__(**kwargs)
         self.creative_work = kwargs.get("work", None)
@@ -598,8 +599,20 @@ class MARC21toCreativeWork(MARC21Ingester):
         """
         if self.entity_info.has_key('bibframe:Instances'):
             self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
-        self.creative_work = CreativeWork(redis=self.creative_work_ds,
-                                          attributes=self.entity_info)
+        # If the title matches an existing Work's title and the creative work's creators, 
+        # assumes that the Creative Work is the same.
+        cw_title_keys = search_title(self.entity_info['rda:Title']['rda:preferredTitleForTheWork'],
+                                     self.creative_work_ds)
+        for creative_wrk_key in cw_title_keys:
+            creator_keys = self.creative_work_ds.smembers("{0}:rda:creator".format(creative_wrk_key))
+            existing_keys = creator_keys.intersection(self.entity_info['rda:creator'])
+            if len(existing_keys) == 1:
+                self.creative_work = CreativeWork(redis=self.creative_work_ds,
+                                                  redis_key=list(existing_keys)[0])
+        if not self.creative_work:
+            self.creative_work = CreativeWork(redis=self.creative_work_ds,
+                                              attributes=self.entity_info)
+
         self.creative_work.save()
 
 

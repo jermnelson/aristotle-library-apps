@@ -113,18 +113,18 @@ class BibFrameModel(object):
             redis_pipeline = self.redis.pipeline()
             for attrib_key, value in self.attributes.iteritems():
                 new_redis_key = "{0}:{1}".format(self.redis_key,attrib_key)
-                redis_pipeline.sadd("{0}:keys".format(self.redis_key),
-                                    new_redis_key)
+                all_keys_key = "{0}:keys".format(self.redis_key)
                 if type(value) is list:
+                    redis_pipeline.sadd(all_keys_key,new_redis_key)
                     redis_pipeline.lpush(new_redis_key,value)
                 elif type(value) is set:
+                    redis_pipeline.sadd(all_keys_key,new_redis_key)
                     for member in list(value):
                         redis_pipeline.sadd(new_redis_key,member)
                 elif type(value) is dict:
-                    new_hash_key = "{0}:{1}".format(self.redis_key,
-                                                    attrib_key)
+                    redis_pipeline.sadd(all_keys_key,new_redis_key)
                     for nk, nv in value.iteritems():
-                        redis_pipeline.hset(new_hash_key,
+                        redis_pipeline.hset(new_redis_key,
                                             nk,
                                             nv)
                 else:
@@ -187,6 +187,12 @@ class CreativeWork(BibFrameModel):
         """
         Creates a Work object
         """
+        if "redis_key" in kwargs and "redis" in kwargs:
+            existing_redis_key = kwargs['redis_key']
+            redis_ds = kwargs['redis']
+            kwargs['attributes'] = redis_ds.hgetall(existing_redis_key)
+            print("{0}: {1}".format(existing_redis_key,redis_ds.hgetall(existing_redis_key)))
+            #print(redis_ds.keys("{0}*".format(existing_redis_key)))
         if not 'redis' in kwargs:
             kwargs['redis'] = CREATIVE_WORK_REDIS
         super(CreativeWork, self).__init__(**kwargs)

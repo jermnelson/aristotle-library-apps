@@ -17,7 +17,6 @@ class AddOrGetTitleTest(TestCase):
     def setUp(self):
         self.old_man_keys = add_or_get_title('The Old Man in the Sea',
             test_ds)
-        print(test_ds.keys("*"))
 
     def test_old_man_in_sea(self):
         for key in self.old_man_keys:

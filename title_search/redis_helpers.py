@@ -73,8 +73,8 @@ def generate_title_app(work, redis_server):
     :parm redis_server: Redis server
     """
     if not 'rda:Title' in work.attributes:
-        print('''Work w/ redis-key={0} w/o a title.
-                 Values:{1}'''.format(work.redis_key, work.attributes))
+        #print('''Work w/ redis-key={0} w/o a title.
+        #         Values:{1}'''.format(work.redis_key, work.attributes))
         return
     raw_title = work.attributes['rda:Title']['rda:preferredTitleForTheWork']
     stop_metaphones, all_metaphones, title_metaphone = process_title(raw_title)
@@ -166,7 +166,7 @@ def search_title(user_input,redis_server):
     metaphone_keys.append(
         'first-word:{0}'.format(user_input.split(" ")[0].lower()))
     temp_key = "tmp:{0}".format(random.random())
-    redis_server.sinters(temp_key, metaphone_keys)
+    redis_server.sinterstore(temp_key, metaphone_keys)
     title_keys = redis_server.sort(temp_key,
         by="*:rda:Title->sort",
         alpha=True)

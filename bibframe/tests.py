@@ -429,10 +429,11 @@ class PrideAndPrejudiceMARC21toBIBFRAMETest(TestCase):
         """
         Tests total number of expected creators from the MARC21 records
         for Pride and Prejudice
-        """   
-        print(test_redis.smembers("bibframe:CreativeWork:1:keys"))
-        print(test_redis.type('bibframe:CreativeWork:1:created'))
-
+        """
+        for i in range(1,15):
+            author_key = "bibframe:Authority:Person:{0}".format(i)
+            #print(test_redis.keys("{0}:*".format(author_key)))
+            #print(test_redis.smembers("{0}:rda:isCreatorPersonOf".format(author_key))) 
 
     def tearDown(self):
         test_redis.flushdb()
