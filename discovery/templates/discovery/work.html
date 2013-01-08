@@ -1,0 +1,59 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block head-title %}
+{% if institution %}{% trans institution.name %} Library Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
+Discovery Work View
+{% endblock %}
+
+{% block more-css %}
+<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}css/discovery.less">
+{% endblock %}
+
+
+{% block body %}
+{% comment %}START content DIV{% endcomment %}
+<div class="container-fluid">
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {% comment %}START search DIV{% endcomment %}
+  <div class="row6">
+  {% include 'discovery/snippets/search.html' %}
+  {% comment %}END search DIV{% endcomment %}
+  </div>
+  {# START pinned-corner DIV #}
+  <div class="span4 offset1">
+   {% include 'discovery/snippets/pinned.html' %}
+  {# END pinned-corner DIV #}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+  {# START facets DIV{% endcomment #}
+  <div class="span4">
+   <h3>{{ creative_work.redis_key }}</h3>
+   {% for key,value in creative_work.attributes.items %}
+   <p>Attribute: {{ key }} value: {{ value }}</p>
+   {% endfor %}
+
+  {# END facets DIV{% endcomment #}
+  </div>
+  {# START work-canvas display DIV #}
+  <div class="span8">
+  {# include 'discovery/snippets/work-canvas.html' #}
+  {# END work-canvas display DIV #}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{% comment %}END content DIV{% endcomment %}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/jquery.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script src="{{ STATIC_URL }}js/d3.js"></script>
+<script src="{{ STATIC_URL }}js/discovery.js"></script>
+{% endblock %}

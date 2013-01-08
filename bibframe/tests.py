@@ -409,6 +409,16 @@ class PersonAuthorityTest(TestCase):
         test_redis.flushdb()
 
 class PrideAndPrejudiceMARC21toBIBFRAMETest(TestCase):
+    """
+    The `PrideAndPrejudiceMARC21toBIBFRAMETest`_ uses the 
+    /bibframe/fixures/pride-prejudice.mrc MARC21 record set that includes the following 
+    information about the MARC Records
+
+    Total Records: 19
+    Total Creative Works: 7
+    Total Instances: 19
+    Total Creators: 12
+    """
 
     def setUp(self):
         marc_reader = pymarc.MARCReader(open(os.path.join(PROJECT_HOME,
@@ -427,13 +437,60 @@ class PrideAndPrejudiceMARC21toBIBFRAMETest(TestCase):
 
     def test_authors(self):
         """
-        Tests total number of expected creators from the MARC21 records
+        Tests total number of expected creators from the MARC21 record set
         for Pride and Prejudice
         """
-        for i in range(1,15):
+	self.assertEquals(int(test_redis.get('global bibframe:Authority:Person')),
+	                  12)
+	self.assertEquals(test_redis.hget('bibframe:Authority:Person:3',
+		                          'rda:preferredNameForThePerson'),
+			  'Austen, Jane')
+        for i in range(1,13):
             author_key = "bibframe:Authority:Person:{0}".format(i)
-            #print(test_redis.keys("{0}:*".format(author_key)))
-            #print(test_redis.smembers("{0}:rda:isCreatorPersonOf".format(author_key))) 
+            #print(test_redis.hget(author_key,'rda:preferredNameForThePerson'))
+
+	    #print(test_redis.hgetall(author_key))
+            #print(test_redis.smembers("{0}:rda:isCreatorPersonOf".format(author_key)))
+
+    def test_instances(self):
+        """
+	Tests total number of instances from the MARC21 record set for 
+	Pride and Prejudice
+	"""
+	self.assertEquals(int(test_redis.get('global bibframe:Instance')),
+			  19)
+        self.assertEquals(test_redis.hget('bibframe:Instance:1',
+		                          'rda:carrierTypeManifestation'),
+                          'DVD Video')
+        self.assertEquals(test_redis.hget('bibframe:Instance:3',
+		                          'rda:carrierTypeManifestation'),
+                          'Book')
+	for instance_key in list(test_redis.smembers("bibframe:CreativeWork:3:bibframe:Instances")):
+	    pass
+            #self.assertEquals(test_redis.hget(instance_key,
+            #                                  'rda:carrierTypeManifestation'),
+            #                  'book')
+
+    def test_works(self):
+        """
+	Tests total number of works from the MARC21 record set
+        for Pride and Prejudice
+	"""
+	self.assertEquals(int(test_redis.get("global bibframe:CreativeWork")),
+			  7)
+	# bibframe:CreativeWork:3 is the traditional Pride and Prejudice Work 
+	# from Jane Austen
+	self.assertEquals(test_redis.scard("bibframe:CreativeWork:3:bibframe:Instances"),
+			  13)
+	self.assert_(test_redis.sismember("bibframe:CreativeWork:3:rda:creator",
+		                          "bibframe:Authority:Person:3"))
+	for i in range(1,8):
+            cw_key = "bibframe:CreativeWork:{0}".format(i)
+	    #print(test_redis.smembers("{0}:bibframe:Instances".format(cw_key)))
+            #print(test_redis.hgetall("{0}:rda:Title".format(cw_key)))
+
+
+
 
     def tearDown(self):
         test_redis.flushdb()
@@ -510,12 +567,14 @@ class CreativeWorkTest(TestCase):
         # Test work w/o Redis key (new Work)
         self.new_creative_work = CreativeWork(redis=test_redis,
                                               attributes=new_attributes)
-        existing_attributes = {'rda:dateOfWork':1999,
-			       'rda:isCreatedBy':'bibframe:Authority:CorporateBody:1'}
-        # Tests work w/pre-existing Redis key
+        # Tests work w/pre-existing Redis 
+	self.existing_key = 'bibframe:CreativeWork:2'
+        test_redis.hset(self.existing_key,'created','2013-01-07')
+        test_redis.hset(self.existing_key,'rda:dateOfWork',1999)
+	test_redis.hset(self.existing_key,'rda:isCreatedBy','bibframe:Authority:CorporateBody:1')
         self.creative_work = CreativeWork(redis=test_redis,
-                                          redis_key="bibframe:CreativeWork:2",
-                                          attributes=existing_attributes)
+                                          redis_key=self.existing_key)
+
 
     def test_init_(self):
         self.assert_(self.new_creative_work.redis)

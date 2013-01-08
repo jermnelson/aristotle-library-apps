@@ -190,9 +190,21 @@ class CreativeWork(BibFrameModel):
         if "redis_key" in kwargs and "redis" in kwargs:
             existing_redis_key = kwargs['redis_key']
             redis_ds = kwargs['redis']
+	    if not redis_ds.exists(existing_redis_key):
+	        raise ValueError("CreativeWork with redis-key of {0} doesn't exist in datastore".format(existing_redis_key))
             kwargs['attributes'] = redis_ds.hgetall(existing_redis_key)
-            print("{0}: {1}".format(existing_redis_key,redis_ds.hgetall(existing_redis_key)))
-            #print(redis_ds.keys("{0}*".format(existing_redis_key)))
+	    if redis_ds.exists("{0}:keys".format(existing_redis_key)):
+                 creative_wrk_keys = redis_ds.smembers("{0}:keys".format(existing_redis_key))
+		 for key in list(creative_wrk_keys):
+		     key_type = redis_ds.type(key)
+		     attrib_key = key.replace("{0}:".format(existing_redis_key),'')
+		     if key_type == 'hash':
+                         kwargs['attributes'][attrib_key] = {}
+			 hash_values = redis_ds.hgetall(key)
+                         for k,v in hash_values.iteritems():
+                             kwargs['attributes'][attrib_key][k] = v
+                     elif key_type == 'set':
+                         kwargs['attributes'][attrib_key] = redis_ds.smembers(key)
         if not 'redis' in kwargs:
             kwargs['redis'] = CREATIVE_WORK_REDIS
         super(CreativeWork, self).__init__(**kwargs)

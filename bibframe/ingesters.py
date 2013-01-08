@@ -373,7 +373,7 @@ class MARC21toBIBFRAME(Ingester):
         self.marc2creative_work.creative_work.redis_key
         self.marc2instance.instance.save()
         if self.marc2creative_work.creative_work.attributes.has_key('bibframe:Instances'):
-            self.marc2creative_work.creative_work.attributes['bibframe:Instances'].append(self.marc2instance.instance.redis_key)
+            self.marc2creative_work.creative_work.attributes['bibframe:Instances'].add(self.marc2instance.instance.redis_key)
         else:
             self.marc2creative_work.creative_work.attributes['bibframe:Instances'] = [self.marc2instance.instance.redis_key,]
         self.marc2creative_work.creative_work.save()
@@ -605,10 +605,11 @@ class MARC21toCreativeWork(MARC21Ingester):
                                      self.creative_work_ds)
         for creative_wrk_key in cw_title_keys:
             creator_keys = self.creative_work_ds.smembers("{0}:rda:creator".format(creative_wrk_key))
-            existing_keys = creator_keys.intersection(self.entity_info['rda:creator'])
-            if len(existing_keys) == 1:
-                self.creative_work = CreativeWork(redis=self.creative_work_ds,
-                                                  redis_key=list(existing_keys)[0])
+	    if self.entity_info.has_key('rda:creator'):
+                existing_keys = creator_keys.intersection(self.entity_info['rda:creator'])
+                if len(existing_keys) == 1:
+                    self.creative_work = CreativeWork(redis=self.creative_work_ds,
+                                                      redis_key=creative_wrk_key)
         if not self.creative_work:
             self.creative_work = CreativeWork(redis=self.creative_work_ds,
                                               attributes=self.entity_info)
