@@ -42,6 +42,8 @@
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script src="{{ STATIC_URL }}call_number/js/call_number.js"></script>
 <script>
- ko.applyBindings(new CallNumberAppViewModel());
+ var view_model = new CallNumberAppViewModel();
+ ko.applyBindings(view_model);
+ view_model.loadCallNumber('{{ current.call_number }}','lccn');
 </script>
 {% endblock %}

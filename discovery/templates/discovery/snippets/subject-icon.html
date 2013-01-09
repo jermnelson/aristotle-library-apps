@@ -1,0 +1,5 @@
+{% load static %}
+<div class="alert alert-warning">
+	<img src="{% get_static_prefix %}img/{% if graphic %}{{ graphic }}{% else %}square_48x48.png{% endif %}" />
+{{ name }}
+</div>

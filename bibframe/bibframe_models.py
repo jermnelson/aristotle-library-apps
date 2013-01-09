@@ -48,7 +48,9 @@ class BibFrameModel(object):
         if 'redis_key' in kwargs:
             self.redis_key = kwargs.get('redis_key')
             # Loads any attributes from redis_key hash
-            
+	    if self.redis is not None:
+                pass
+                #self.attributes = self.redis.hgetall(self.redis_key)
         else:
             self.redis_key = None
         if 'protocal' in kwargs:

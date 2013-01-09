@@ -79,8 +79,8 @@ function CallNumberAppViewModel() {
   }
 
   self.callNumberTypes = [
-    { name: "LCCN Call Number", number_type: "lccn" },
-    { name: "SuDoc Call Number", number_type: "sudoc" },
+    { name: "LOC Call Number", number_type: "lccn" },
+    { name: "Government Call Number", number_type: "sudoc" },
     { name: "Local Call Number", number_type: "local" },
     { name: "ISBN", number_type: "isbn" },
     { name: "ISSN", number_type: "issn" }]; 
@@ -94,8 +94,9 @@ function CallNumberAppViewModel() {
   self.nextItems = ko.observableArray([]);
   self.previousItems = ko.observableArray([]);
 
-  self.searchCallNumber = function() {
-    var data = 'q=' + ko.toJS(self.newSearchQuery()) + "&type=" + self.chosenNumberType()["number_type"];
+
+  self.loadCallNumber = function(call_number,num_type) {
+   var data = 'q=' + call_number + "&type=" + num_type;
     $.ajax({
       data: data,
       dataType: 'json',	    
@@ -105,6 +106,11 @@ function CallNumberAppViewModel() {
       }
     });
   }
+
+  self.searchCallNumber = function() {
+    self.loadCallNumber(ko.toJS(self.newSearchQuery()),self.chosenNumberType()["number_type"]);
+  }
+
 
  self.updateWidget = function(data) {
    self.nextItems.removeAll();

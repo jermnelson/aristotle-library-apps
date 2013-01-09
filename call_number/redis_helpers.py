@@ -174,7 +174,6 @@ def get_slice(start,stop,
                                            number)
         call_number = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(entity_key),
                                         call_number_type)
-        
         record = get_record(call_number=call_number)
         entities.append(record)
     return entities
@@ -189,7 +188,7 @@ def get_record(**kwargs):
             instance_key = redis_server.hget(hash_name,call_number)
             record_info['bib_number'] = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(instance_key),
                                                           'ils-bib-number')
-            work_key = redis_server.hget(instance_key,'bibframe:Work')
+            work_key = redis_server.hget(instance_key,'bibframe:CreativeWork')
             record_info['title'] = creative_work_redis.hget("{0}:rda:Title".format(work_key),
                                                   'rda:preferredTitleForTheWork')
             creator_keys = creative_work_redis.smembers("{0}:rda:creator".format(work_key))

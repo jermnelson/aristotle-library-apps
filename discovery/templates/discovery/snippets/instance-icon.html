@@ -1,0 +1,6 @@
+{% load static %}
+<div class="alert alert-success" style="width:40%">
+<img src="{% get_static_prefix %}img/{{ graphic }}" />
+<br/>
+<a href="/apps/discovery/instance/{{ redis_id }}/">{{ name }}</a><br/>
+</div>

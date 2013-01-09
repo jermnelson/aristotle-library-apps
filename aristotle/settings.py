@@ -77,6 +77,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT,'assets'),
     os.path.join(PROJECT_HOME,'article_search/assets'),
+    os.path.join(PROJECT_HOME,'bibframe/assets'),
     os.path.join(PROJECT_HOME,'book_search/assets'),
     os.path.join(PROJECT_HOME,'call_number/assets'),
     os.path.join(PROJECT_HOME,'reserve_search/assets'),

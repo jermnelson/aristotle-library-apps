@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load discovery_extras %}
+<div class="work-detail">
+ <a class="close" href="#">&times;</a>
+ <h2>{{ creative_work|get_title }}</h2>
+ {# START Creative Work Details Row #}
+ <div class="row">
+   <div class="span2 offset1 well well-small">
+   <h4>Subjects</h4>
+     {{ creative_work|get_subjects }}
+   </div>
+   <div class="span4">
+    <h4>Creators</h4>
+    {{ creative_work|get_creators }}
+   </div>
+ {# END Creative Work Details Row #}
+ </div>
+ {# START Creative Work's Instances Row #}
+ <div class="row">
+   <div class="span5 offset2">
+     <div class="well well-small">
+     <h4>Instances of this Work</h4>
+       {{ creative_work|get_instances }} 
+     </div>
+   </div>
+ {# END Creative Work's Instances Row #}
+ </div>
+</div>
