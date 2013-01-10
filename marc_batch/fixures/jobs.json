@@ -48,6 +48,27 @@
     },
     "model":"marc_batch.Job",
     "pk":5
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"eai-help",
+        "name": "Early American Imprints First Series (Evans)",
+        "python_module":"eai_evans"
+    },
+    "model":"marc_batch.Job",
+    "pk":6
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"eai-help",
+        "name": "Early American Imprints First Series (Shaw)",
+        "python_module":"eai_shaw"
+    },
+    "model":"marc_batch.Job",
+    "pk":7
   }
+ 
 ]
         

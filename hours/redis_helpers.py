@@ -22,18 +22,35 @@ def calculate_offset(at_time):
     :rtype: int
     """
     offset = at_time.hour * 4
-    if offset is 0:
-        offset = 1
+    #if offset is 0:
+    #    offset = 1
     minute = at_time.minute
+    if minute < 15:
+        offset += 1 
     if minute > 14 and minute < 30:
-        offset += 1
-    elif minute > 29 and minute < 45:
         offset += 2
-    elif minute > 44:
+    elif minute > 29 and minute < 45:
         offset += 3
+    elif minute > 44:
+        offset += 4
     return offset
 
-def calculate_time(offset,
+
+def calculate_time(offset,start=None,end=None):
+    """
+    Helper function takes an offset between 1-96 and returns the
+    time
+
+    :param offset: Int between 1-96
+    """
+    minute_lookup = {-1:45,0:0,1:15,2:30}
+    hour = offset/4
+    return datetime.time(hour,
+		         minute_lookup[offset%4 -1])
+
+
+
+def old_calculate_time(offset,
                    start=True,
                    end=False):
     """
@@ -102,10 +119,10 @@ def add_library_hours(open_on,
     # in that time-span.
     for counter in range(1,97):
         bit_value = 0
-        if counter >= start_offset and counter <= end_offset:
+        if counter >= start_offset and counter < end_offset:
             bit_value = 1
         if end_offset < start_offset:
-            if counter > end_offset and counter < start_offset:
+            if counter >= end_offset and counter < start_offset:
                 bit_value = 0
             else:
                 bit_value = 1
@@ -125,11 +142,11 @@ def get_closing_time(question_date, redis_ds=redis_ds):
 
         for counter in range(1,97):
             if not bool(redis_ds.getbit(next_day_key,counter)):
-                return calculate_time(counter-1,False,True)
+                return calculate_time(counter,False,True)
     else:
         for counter in range(offset,96):
             if not bool(redis_ds.getbit(date_key,counter)):
-                return calculate_time(counter-1,False,True)
+                return calculate_time(counter,False,True)
 
 
 

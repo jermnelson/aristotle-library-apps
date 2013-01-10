@@ -13,7 +13,7 @@ class AddLibraryHoursTest(TestCase):
 
     def setUp(self):
         self.midnight = datetime.datetime(2012,05,14,0,0)
-        self.standard_open = datetime.datetime(2012,05,14,7,30) # 7:30 am
+        self.standard_open = datetime.datetime(2012,05,14,7,45) # 7:45 am
         self.standard_close = datetime.datetime(2012,05,14,2,0) # 2:00 am
         self.last_minute = datetime.datetime(2012,05,14,23,59)
 
@@ -65,10 +65,10 @@ class CalculateOffsetTest(TestCase):
 
     def test_times(self):
         self.assertEquals(calculate_offset(self.early_morning_open),3)
-        self.assertEquals(calculate_offset(self.early_morning_close),12)
-        self.assertEquals(calculate_offset(self.midmorning_open),35)
-        self.assertEquals(calculate_offset(self.midafternoon),61)
-        self.assertEquals(calculate_offset(self.evening),82)
+        self.assertEquals(calculate_offset(self.early_morning_close),13)
+	self.assertEquals(calculate_offset(self.midmorning_open),36)
+        self.assertEquals(calculate_offset(self.midafternoon),62)
+        self.assertEquals(calculate_offset(self.evening),83)
 
     def tearDown(self):
         test_ds.flushdb()
@@ -82,7 +82,7 @@ class CalculateTimeTest(TestCase):
         self.evening = datetime.time(20,30)
 
     def test_early_morning_close_time(self):
-        self.assertEquals(calculate_time(8),
+        self.assertEquals(calculate_time(9),
                           self.early_morning_close_time)
 ##        self.assertEquals(calculate_time(8,False,True),
 ##                          datetime.time(2))
@@ -91,7 +91,7 @@ class CalculateTimeTest(TestCase):
 ##                           datetime.time(2)))
 
     def test_early_morning_open_time(self):
-        self.assertEquals(calculate_time(31),
+        self.assertEquals(calculate_time(32),
                           self.early_morning_open_time)
 ##        self.assertEquals(calculate_time(31,False,True),
 ##                          datetime.time(8))
@@ -101,7 +101,7 @@ class CalculateTimeTest(TestCase):
                           self.midafternoon)
 
     def test_evening(self):
-        self.assertEquals(calculate_time(82),
+        self.assertEquals(calculate_time(83),
                           self.evening)
 
     def tearDown(self):

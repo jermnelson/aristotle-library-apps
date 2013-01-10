@@ -81,13 +81,14 @@ def save(request):
                                            "%m-%d-%Y %I:%M%p")
        closetime=datetime.datetime.strptime("%s %s" % (begins.strftime("%m-%d-%Y"),request.POST[cgiclose]),
                                            "%m-%d-%Y %I:%M%p")
-       if opentime>closetime:
-          midnight=datetime.datetime(begins.year,begins.month,begins.day,0,0)
-          add_library_hours(midnight,closetime)
-          lastminute=datetime.datetime(begins.year,begins.month,begins.day,23,59)
-          add_library_hours(begins,lastminute)
-       else: 
-          add_library_hours(opentime,closetime)
+       add_library_hours(opentime,closetime)
+#       if opentime>closetime:
+#          midnight=datetime.datetime(begins.year,begins.month,begins.day,0,0)
+#          add_library_hours(midnight,closetime)
+#          lastminute=datetime.datetime(begins.year,begins.month,begins.day,23,59)
+#          add_library_hours(begins,lastminute)
+#       else: 
+#          add_library_hours(opentime,closetime)
        begins += delta
     message="Hours for %s to %s have been set in Redis!" % (starts.strftime("%m-%d-%Y"),ends.strftime("%m-%d-%Y"))
     return HttpResponseRedirect("/apps/hours/manage?message=%s" % urllib.quote(message))
