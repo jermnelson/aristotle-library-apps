@@ -1,0 +1,33 @@
+{% load i18n %}
+{% load discovery_extras %}
+{# START Person Details #}
+<div class="work-detail">
+ {# START Person row #}
+ <div class="row">
+   <div class="span8 offset1">
+    <img src="{{ STATIC_URL }}img/{% if person.image %}person.image{% else %}admin_48x48.png{% endif %}" style="float:left" />
+    <h2>{{ person|get_name }}</h2>
+   </div>
+ {# END Person row #}
+ </div>
+{# START Person row 2 #}
+ <div class="row">
+  <div class="span2 offset1">
+   <dl class="dl-horizontal">
+    <dt>Date of Birth:</td>
+    <dd>{{ person|get_date:"birth" }}</dd>
+    <dt>Date of Death:</dt>
+    <dd>{{ person|get_date:"death" }}</dd>
+   </dl>
+  </div>
+ {# END Person row 2 #}
+ </div>
+ {# START Person row 3 #}
+ <div class="row">
+ <div class="span8 offset1">
+    {{ person|get_creator_works }}
+  </div>
+ {# END Person row 3 #}
+ </div>
+{# END Person Details #}
+</div>

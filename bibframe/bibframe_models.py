@@ -49,8 +49,23 @@ class BibFrameModel(object):
             self.redis_key = kwargs.get('redis_key')
             # Loads any attributes from redis_key hash
 	    if self.redis is not None:
-                pass
-                #self.attributes = self.redis.hgetall(self.redis_key)
+                if not self.redis.exists(self.redis_key):
+	            raise ValueError("Redis-key of {0} doesn't exist in datastore".format(self.redis_key))
+	        for key,value in self.redis.hgetall(self.redis_key).iteritems():
+                    self.attributes[key] = value
+                if self.redis.exists("{0}:keys".format(self.redis_key)):
+                    bibframe_keys = self.redis.smembers("{0}:keys".format(self.redis_key))
+		    for key in list(bibframe_keys):
+		        key_type = self.redis.type(key)
+		        attrib_key = key.replace("{0}:".format(self.redis_key),'')
+		        if key_type == 'hash':
+                            self.attributes[attrib_key] = {}
+			    hash_values = self.redis.hgetall(key)
+                            for k,v in hash_values.iteritems():
+                                self.attributes[attrib_key][k] = v
+                        elif key_type == 'set':
+                            self.attributes[attrib_key] = self.redis.smembers(key)
+
         else:
             self.redis_key = None
         if 'protocal' in kwargs:
@@ -174,8 +189,8 @@ class Authority(BibFrameModel):
         """
         Creates an Annotation object
         """
-        if not 'authority_ds' in kwargs:
-            kwargs['authority_ds'] = AUTHORITY_REDIS
+        if not 'redis' in kwargs:
+            kwargs['redis'] = AUTHORITY_REDIS
         super(Authority, self).__init__(**kwargs)
 
 
@@ -189,25 +204,7 @@ class CreativeWork(BibFrameModel):
         """
         Creates a Work object
         """
-        if "redis_key" in kwargs and "redis" in kwargs:
-            existing_redis_key = kwargs['redis_key']
-            redis_ds = kwargs['redis']
-	    if not redis_ds.exists(existing_redis_key):
-	        raise ValueError("CreativeWork with redis-key of {0} doesn't exist in datastore".format(existing_redis_key))
-            kwargs['attributes'] = redis_ds.hgetall(existing_redis_key)
-	    if redis_ds.exists("{0}:keys".format(existing_redis_key)):
-                 creative_wrk_keys = redis_ds.smembers("{0}:keys".format(existing_redis_key))
-		 for key in list(creative_wrk_keys):
-		     key_type = redis_ds.type(key)
-		     attrib_key = key.replace("{0}:".format(existing_redis_key),'')
-		     if key_type == 'hash':
-                         kwargs['attributes'][attrib_key] = {}
-			 hash_values = redis_ds.hgetall(key)
-                         for k,v in hash_values.iteritems():
-                             kwargs['attributes'][attrib_key][k] = v
-                     elif key_type == 'set':
-                         kwargs['attributes'][attrib_key] = redis_ds.smembers(key)
-        if not 'redis' in kwargs:
+    	if not 'redis' in kwargs:
             kwargs['redis'] = CREATIVE_WORK_REDIS
         super(CreativeWork, self).__init__(**kwargs)
 
@@ -282,8 +279,6 @@ class Person(Authority):
         """
         Creates a Person object
         """
-        if "redis_key" in kwargs and "redis" in kwargs:
-            kwargs['attributes'] = kwargs['redis'].hgetall(kwargs['redis_key'])
         super(Person, self).__init__(**kwargs)
     
 

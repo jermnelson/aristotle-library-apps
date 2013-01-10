@@ -1,0 +1,36 @@
+{% load i18n %}
+{% load discovery_extras %}
+{# START Instance Details #}
+<div class="work-detail">
+ <a href="#" class="close">&times;</a>
+ {# START Instance row #}
+ <div class="row">
+  <div class="span1 offset1">
+   <img src="{{ STATIC_URL }}img/{{ instance|get_image }}" />
+  </div>
+  <div class="span8" >
+   <h2>{{ instance|get_title }}</h2>
+  </div>
+ {# END Instance row #}
+ </div>
+ {# START Instance row 2 #}
+ <div class="row">
+  <div class="span6 well well-small">
+    <h4>About</h3>
+    <dl class="dl-horizontal">
+     {{ instance|about_instance }}
+    </dl>
+  </div>
+  <div class="span4">
+   <div class="btn-grp">
+     <a href="#" class="btn">
+	     Location<br/>
+     <img src="{{ STATIC_URL }}img/maps_48x48.png" />
+     <br/>
+      {{ instance|get_location }}</a>
+   </div>
+  </div>
+ {# END Instance row 2 #}
+ </div>
+{# END Instance Details #}
+</div>

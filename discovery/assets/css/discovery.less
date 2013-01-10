@@ -3,6 +3,28 @@
 @FacetBody: #FFFFFF;
 @FacetHeaderBackground: rgb(92,113,72);
 @SearchBackground: #EEE9DA; 
+@WorkBackground: #E6E4DC;
+
+.icon {
+ border-radius: 3px; 
+ -webkit-border-radius: 3px;
+ -moz-border-radius: 3px;
+ padding: 3px;
+ text-align: center;
+ width: 40%;
+}
+
+div.creator-icon {
+ background-color: #CDBCCC;
+ border: 1px solid #796F78;
+ .icon;
+}
+
+div.instance-icon {
+ background-color: #FFFFFF;
+ border: 1px solid #DFF0D8;
+ .icon;
+}
 
 div.facet {
  background-color: @FacetBackground;
@@ -32,7 +54,7 @@ div.search-pane {
 }
 
 div.work-detail {
-  background-color: @FacetBackground;
+  background-color: @WorkBackground;
   margin-top: .5em;
   padding: .5em;
   width: 75%;

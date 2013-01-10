@@ -9,7 +9,7 @@ from django.http import Http404
 from aristotle.views import json_view
 
 from app_settings import APP
-from bibframe.bibframe_models import CreativeWork
+from bibframe.bibframe_models import CreativeWork,Instance,Person
 
 from discovery.forms import SearchForm
 from discovery.redis_helpers import get_facets
@@ -53,4 +53,47 @@ def creative_work(request,redis_id):
 			       'institution': INSTITUTION,
 			       'search_form': SearchForm(),
 			       'user':None})
-			       
+
+def instance(request,redis_id):
+    """
+    Instance view for the discovery app
+
+    :param request: HTTP Request
+    :param redis_id": Redis integer for the Instance
+    """
+    redis_key = "bibframe:Instance:{0}".format(redis_id)
+    if INSTANCE_REDIS.exists(redis_key):
+        instance = Instance(redis=INSTANCE_REDIS,
+			    redis_key=redis_key)
+    else:
+        raise Http404
+    return direct_to_template(request,
+		              'discovery/instance.html',
+			      {'app': APP,
+			       'instance':instance,
+			       'institution': INSTITUTION,
+			       'search_form': SearchForm(),
+			       'user':None})
+
+
+def person(request,redis_id):
+    """
+    Person view for the discovery app
+
+    :param request: HTTP Request
+    :param redis_id": Redis integer for the Person
+    """
+    redis_key = "bibframe:Authority:Person:{0}".format(redis_id)
+    if AUTHORITY_REDIS.exists(redis_key):
+        person = Person(redis=AUTHORITY_REDIS,
+			redis_key=redis_key)
+    else:
+        raise Http404
+    return direct_to_template(request,
+		              'discovery/person.html',
+			      {'app': APP,
+			       'institution': INSTITUTION,
+			       'person':person,
+			       'search_form': SearchForm(),
+			       'user':None})
+

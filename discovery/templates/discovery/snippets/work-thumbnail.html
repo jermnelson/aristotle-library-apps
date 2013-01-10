@@ -1,0 +1,18 @@
+{% load static %}
+{% load discovery_extras %}
+<div class="media">
+ <a class="pull-left" href="#">
+  <img src="{% get_static_prefix %}img/{{ image }}" />
+ </a>
+ <div class="media-body">
+  <h4 class="media-heading"><a href="/apps/discovery/work/{{ redis_id }}/">{{ title }} </a></h4>
+  <p>
+   {% for instance in instances %}
+    <a href="/apps/discovery/instance/{{ instance.redis_id }}/" class="btn btn-small">
+     <img src="{% get_static_prefix %}img/{{ instance.graphic }}" style="width:36px;height:36px">
+     {{ instance.carrier_type }}</a>
+   {% endfor %}
+  </p>
+ </div>
+</div>
+<hr/>

@@ -8,5 +8,8 @@ import discovery.views
 
 urlpatterns = patterns('discovery.views',
     url(r"$^", "app", name="discovery-default"),
+    url(r"^authority/person/(\d+)/$", "person", name="discovery-person"),
+    url(r"^instance/(\d+)/$", "instance", name="discovery-instance"),
     url(r"^work/(\d+)/$", "creative_work", name="discovery-work"),
+
 )

@@ -3,16 +3,14 @@
 {% load discovery_extras %}
 
 {% block head-title %}
-{% if institution %}{% trans institution.name %} Library Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
-Discovery Work View
+{% if institution %}{% trans institution.name %} {% trans "Library Apps" %}{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
+{% trans "Discovery Person View" %}
 {% endblock %}
 
 {% block more-css %}
 <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}css/discovery.less">
 {% endblock %}
 
-
-{% block action-view-subtitle %} Work{% endblock %}
 
 {% block body %}
 {# START content DIV #}
@@ -35,14 +33,12 @@ Discovery Work View
  <div class="row-fluid">
   {# START facets DIV{% endcomment #}
   <div class="span2">
-    <h3>Related Works</h3>
-
     <p><a href="#"><img src="{{ STATIC_URL }}img/redis-small.png" /></a></p>
   {# END facets DIV{% endcomment #}
   </div>
   {# START work-canvas display DIV #}
   <div class="span10">
-  {% include 'discovery/snippets/work-detail.html' %}
+  {% include 'discovery/snippets/person-detail.html' %}
   {# END work-canvas display DIV #}
   </div>
  {% comment %}END row-fluid DIV{% endcomment %}
