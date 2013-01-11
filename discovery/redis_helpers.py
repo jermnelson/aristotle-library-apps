@@ -1,6 +1,9 @@
 """
 `mod`: redis_helpers - Redis Helpers for Discovery App
 """
+import person_authority.redis_helpers as person_authority_app
+import title_search.redis_helpers as title_app
+
 __author__ = "Jeremy Nelson"
 
 class Facet(object):
@@ -121,6 +124,27 @@ class LocationFacet(Facet):
         super(LocationFacet, self).__init__(**kwargs)
 
 
+class BIBFRAMESearch(object):
+
+    def __init__(self,**kwargs):
+        self.query = kwargs.get('q')
+	self.authority_ds =kwargs.get('authority_ds')
+	self.creative_wrk_ds = kwargs.get('creative_wrk_ds')
+	self.creative_work_keys = []
+
+    def run(self):
+	# Search using Title App and Person Authority App
+	found_titles = title_app.search_title(self.query,self.creative_wrk_ds)
+	found_creators = person_authority_app.person_search(self.query,
+			                                    authority_redis=self.authority_ds)
+	# Get the intersection of the sets to deduplicate results
+	self.creative_work_keys.extend(found_titles)
+	self.creative_work_keys.extend(list(found_creators))
+	self.creative_work_keys = set(self.creative_work_keys)
+
+
+
+
 
 def get_facets(annotation_ds):
     """
@@ -135,4 +159,15 @@ def get_facets(annotation_ds):
     facets.append(LCFirstLetterFacet(redis=annotation_ds))
 
     return facets
+
+def get_result_facets(work_keys):
+    """
+    Helper function takes a list of Creative Works keys and returns
+    all of the facets associated with those entities.
+
+    :param work_keys: Work keys
+    """
+    facets = []
+    return facets
+
 

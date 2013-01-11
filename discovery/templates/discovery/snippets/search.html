@@ -1,7 +1,8 @@
 {% load i18n %}
-<div class="search-pane span4">
-<form class="form-search">
- <input type="text" class="input-medium search-query">
+<div class="search-pane span4" draggable="true">
+<form class="form-search" method="POST" action="/apps/discovery/">
+ {% csrf_token %}
+ <input type="text" class="input-medium search-query" name="q">
  <button type="submit" class="btn">{% trans "Search" %}</button>
  <a href='#more-options' class="btn btn-info btn-small">{% trans "More" %} &raquo;</a>
 </form>

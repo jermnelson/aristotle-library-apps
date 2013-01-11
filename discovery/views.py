@@ -12,7 +12,7 @@ from app_settings import APP
 from bibframe.bibframe_models import CreativeWork,Instance,Person
 
 from discovery.forms import SearchForm
-from discovery.redis_helpers import get_facets
+from discovery.redis_helpers import get_facets,get_result_facets,BIBFRAMESearch
 
 from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
 from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
@@ -24,13 +24,29 @@ def app(request):
 
     :param request: HTTP Request
     """
-    facet_list = get_facets(ANNOTATION_REDIS)
+    results,search_query = [],None
+    if request.method == 'POST':
+        bibframe_search = BIBFRAMESearch(q=request.POST.get('q'),
+			              authority_ds=AUTHORITY_REDIS,
+				      creative_wrk_ds=CREATIVE_WORK_REDIS)
+	bibframe_search.run()
+	search_query = bibframe_search.query
+	for key in bibframe_search.creative_work_keys:
+            result = {'work': CreativeWork(redis_key=key,
+		                                redis=CREATIVE_WORK_REDIS)
+	    
+	    results.append()
+	facet_list = get_result_facets(bibframe_search.creative_work_keys)
+    else:
+        facet_list = get_facets(ANNOTATION_REDIS)
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
                                'institution': INSTITUTION,
                                'facet_list': facet_list,
+			       'results':results,
                                'search_form': SearchForm(),
+			       'search_query':search_query,
                                'user': None})
 
 def creative_work(request,redis_id):

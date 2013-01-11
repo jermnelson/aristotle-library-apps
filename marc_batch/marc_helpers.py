@@ -38,7 +38,6 @@ class MARCModifier(object):
         for record in self.marc_reader:
             if record is None:
                 break
-	    print("BEFORE base load LDR={0}".format(record.leader))
             raw_record = self.processRecord(record)
             # Removes 009, 509, and 648 fields if they exist
             raw_record = self.remove009(raw_record)
@@ -46,7 +45,6 @@ class MARCModifier(object):
             raw_record = self.remove648(raw_record)
             raw_record.fields = sorted(raw_record.fields,key=lambda x: x.tag)
             self.records.append(raw_record)
-	    print("AFTER base load LDR={0}".format(raw_record.leader))
             self.stats['records'] += 1
         
         

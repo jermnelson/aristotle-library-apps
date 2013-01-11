@@ -10,7 +10,8 @@ class EarlyAmericanImprintsEvansJob(EarlyAmericanImprintsJob):
         """
         Creates instance of `EarlyAmericanImprintsEvansJob`
         """
-        kwargs['field250_stmt'] = 'Evans digital ed.'
+        kwargs['field500_stmt'] = 'Evans digital edition'
+	kwargs['field730_series'] = 'First series'
         super(EarlyAmericanImprintsEvansJob,self).__init__(marc_file,**kwargs)
         
 

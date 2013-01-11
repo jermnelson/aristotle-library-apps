@@ -23,7 +23,7 @@ class EarlyAmericanImprintsJob(MARCModifier):
 
         '''
         MARCModifier.__init__(self,marc_file)
-	self.field250_stmt = kwargs.get('field250_stmt')
+	self.field500_stmt = kwargs.get('field500_stmt')
 
     def processLeader(self,marc_leader):
         ''' 
@@ -44,11 +44,11 @@ class EarlyAmericanImprintsJob(MARCModifier):
         marc_record.leader = self.processLeader(marc_record.leader) 
         marc_record = self.validate001(marc_record) 
         marc_record = self.validate006(marc_record) 
+        marc_record = self.validate008(marc_record) 
         marc_record = self.validate049(marc_record)
 	marc_record = self.validate245(marc_record)
-	marc_record = self.validate250(marc_record)
         marc_record = self.validate300(marc_record)
-        marc_record = self.validate4xx(marc_record)
+	marc_record = self.validate500(marc_record)
         marc_record = self.validate506(marc_record)
         marc_record = self.validate530(marc_record)
         marc_record = self.validate533(marc_record)
@@ -84,9 +84,26 @@ class EarlyAmericanImprintsJob(MARCModifier):
         :param marc_record: MARC record 
         '''
         field006 = Field(tag='006',indicators=None)
-        field006.data = r'm        d        '
+        field006.data = r'm     o  d        '
         marc_record.add_field(field006)
         return marc_record
+
+    def validate008(self,marc_record):
+        """ 
+        Method checks/sets 006 fixed length data elements in MARC
+        record.
+
+        :param marc_record: MARC record 
+        """
+	field008 = marc_record.get_fields('008')[0]
+	marc_record.__remove_field__('008')
+	field_data_list = []
+	for i in field008.data:
+            field_data_list.append(i)
+	field_data_list[23] = 'o'
+	field008.data = ''.join(field_data_list)
+	marc_record.add_field(field008)
+	return marc_record
 
 
     def validate049(self,marc_record):
@@ -101,19 +118,6 @@ class EarlyAmericanImprintsJob(MARCModifier):
             marc_record.remove_field(field)
         return marc_record
 
-    def validate250(self,marc_record):
-	"""
-	Method adds a 250 field to the MARC record
-
-	:param marc_record: MARC21 record
-	"""
-        new250 = Field(tag='250',
-                       indicators=[' ',' '],
-                       subfields=['a',self.field250_stmt])
-	marc_record.add_field(new250)
-	return marc_record
-
-
     def validate4xx(self,marc_record):
         ''' 
         Method removes the 440/490 MARC fields from the MARC
@@ -126,16 +130,31 @@ class EarlyAmericanImprintsJob(MARCModifier):
             marc_record.remove_field(field)
         return marc_record
 
+    def validate500(self,marc_record):
+	"""
+	Method adds a 500 field to the MARC record
+
+	:param marc_record: MARC21 record
+	"""
+	new500 = Field(tag='500',
+                       indicators=[' ',' '],
+                       subfields=['a',self.field500_stmt])
+	marc_record.add_field(new500)
+	return marc_record
+
+
     def validate530(self,marc_record):
 	"""
 	Method adds a 530 field to the MARC record
 
 	:param marc_record: MARC21 record
 	"""
-	new530 = Field(tag='530',
-                       indicators=[' ',' '],
-                       subfields=['a','Microform version available in the Readex Early American Imprints series.'])
-	marc_record.add_field(new530)
+	existing_530s = marc_record.get_fields('530')
+	if len(existing_530s) < 1:
+	    new530 = Field(tag='530',
+                           indicators=[' ',' '],
+                           subfields=['a','Microform version available in the Readex Early American Imprints series.'])
+	    marc_record.add_field(new530)
 	return marc_record
 
     def validate533(self,marc_record):
@@ -159,7 +178,7 @@ class EarlyAmericanImprintsJob(MARCModifier):
 	"""
         new710 = Field(tag='710',
                        indicators=['2',' '],
-                       subfields=['a','Readex Microprint Corporation'])
+                       subfields=['a','Readex Microprint Corporation.'])
 	marc_record.add_field(new710)
 	return marc_record
 
@@ -172,8 +191,8 @@ class EarlyAmericanImprintsJob(MARCModifier):
 	"""
         new730 = Field(tag='730',
                        indicators=['0',' '],
-                       subfields=['a','Early American imprints',
-			          'n','First Series'])
+                       subfields=['a','Early American imprints.',
+			          'n',self.series_statement])
 	marc_record.add_field(new730)
 	return marc_record
 

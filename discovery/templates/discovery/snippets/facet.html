@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="facet span7 offset1" id="{{ facet.name|slugify }}-facet">
+<div class="facet span7 offset1" id="{{ facet.name|slugify }}-facet" draggable="true">
  <div class="facet-header">
   {% trans facet.name  %}
   <a href="#" class="close" data-bind="click: closeFacet">&times;</a>

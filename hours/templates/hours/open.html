@@ -7,10 +7,11 @@
 {% block body %}
 <div class="row-fluid">
  <div class="span6 alert alert-success">
-  <h1>Tutt Library is open!</h1>
+  <h1> Tutt Library is open!</h1>
   <h2>We will close at {{ next_time }}  {{ next_time.time|date:"h i a" }}</h2>
  </div>
  <div class='span4'>
+  <img src="{{ STATIC_URL }}img/clock.png" />
   {% include 'snippets/events.html' %}
  </div>
 </div>

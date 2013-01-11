@@ -1,0 +1,22 @@
+{% load discovery_extras %}
+<ul class="media-list">
+ {% for result in results %}
+ <li class="media">
+  <a class="pull-left" href="#">
+   <img class="media-object" data-src="{{ STATIC_URL }}img/{{ result.image }}">
+  </a>
+  <div class="media-body">
+   <h4 class="media-heading">{{ result.work|get_title }}</h4>
+   <p>{{ result.work|get_creators }}</p>
+   <div class="btn-group">
+    {% for instance in result.work.instances %}
+    <a href="/apps/discovery/instance/" class="btn">
+      <img src="{{ STATIC_URL }}img/{{ instance|get_image }}" style="width:32;height:32" />
+    </a>
+    {% endfor %}
+   </div>
+  </div>
+  <hr/>
+  </li>
+  {% endfor %}
+ </ul>

@@ -26,7 +26,6 @@ def about_instance(instance):
     work_key = instance.attributes.get('bibframe:CreativeWork')
     info.append(('Creative Work',
 	         '''<a href="/apps/discovery/work/{0}/">Link <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1])))
-    print("INFO is {0}".format(info))
     info.append(('Format',instance.attributes.get('rda:carrierTypeManifestation')))
     creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:creator".format(work_key))
     creator_dd = ''

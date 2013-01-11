@@ -3,9 +3,11 @@
 """
 __author__ = "Jeremy Nelson"
 from bibframe.bibframe_models import Person
-import aristotle.lib.metaphone as metaphone
-from title_search.redis_helpers import STOPWORDS
 
+import aristotle.lib.metaphone as metaphone
+from bibframe.redis_helpers import get_brief
+from title_search.redis_helpers import STOPWORDS
+from aristotle.settings import AUTHORITY_REDIS, CREATIVE_WORK_REDIS, INSTANCE_REDIS
 
 def add_person(authority_redis,
                person_attributes,
@@ -95,6 +97,27 @@ def get_or_generate_person(person_attributes,authority_redis):
         return add_person(authority_redis,
                           person_attributes,
                           person_metaphones_keys)
+
+def person_search(raw_name,
+		  authority_redis=AUTHORITY_REDIS,
+		  join_operation='AND'):
+    """
+    Function takes a user supplied name and searches person metaphones
+    and returns any matching bibframe:Authority:Person's CreativeWork keys.
+
+    :param raw_name: Name of person
+    :param join_operation: "AND","OR" stings, default is an "AND" search
+    """
+    person_keys = []
+    person_metaphones = process_name(raw_name)
+    metaphone_keys = ["person-metaphones:{0}".format(x) for x in person_metaphones]
+    if join_operation == "OR":
+        person_keys = authority_redis.sunion(metaphone_keys)
+    else: # Default is an AND search
+        person_keys = authority_redis.sinter(metaphone_keys)
+    all_work_keys = authority_redis.sunion(["{0}:rda:isCreatorPersonOf".format(x) for x in person_keys])
+    return all_work_keys
+    
      
 def process_name(raw_name):
     person_metaphones = []

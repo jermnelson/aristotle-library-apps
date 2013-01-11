@@ -1,0 +1,20 @@
+<div id="discovery-results">
+<ul class="media-list" data-bind="foreach: searchResults">
+ <li class="media">
+  <a class="pull-left" href="#">
+    <img class="media-object" data-src="">
+  </a>
+  <div class="media-body">
+   <h4 class="media-heading" data-bind="text: $workTitle">Work Title</h4>
+   <p data-bind="text: $workDesc">Work Description</p>
+   <div class="btn-group">
+   <!-- ko foreach: $instances -->
+    <a href="#" data-bind="text: $instanceLabel" class="btn">
+      <img data-bind="src: $instanceImage" />
+    </a>
+   <!-- /ko -->
+   </div>
+  </div>
+ </li>
+</ul>
+</div>
