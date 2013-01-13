@@ -211,10 +211,10 @@ class CreativeWork(BibFrameModel):
             self.redis_key = kwargs.get('redis_key')
 	    if self.redis is not None:
                 self.instances = []
-		instances = self.redis.smembers('{0}:bibframe:Instances'.format(self.redis_key))
-		for instance_key in instances:
-                    self.instances.append(Instance(redis=INSTANCE_REDIS,
-			                           redis_key=instance_kye))
+		#instances = self.redis.smembers('{0}:bibframe:Instances'.format(self.redis_key))
+		#for instance_key in instances:
+                #    self.instances.append(Instance(redis=INSTANCE_REDIS,
+		#	                           redis_key=instance_key))
 
         
     def add_annotation(self, annotation_key):
