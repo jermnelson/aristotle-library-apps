@@ -33,9 +33,9 @@ def app(request):
 	search_query = bibframe_search.query
 	for key in bibframe_search.creative_work_keys:
             result = {'work': CreativeWork(redis_key=key,
-		                                redis=CREATIVE_WORK_REDIS)
+	                                   redis=CREATIVE_WORK_REDIS)}
 	    
-	    results.append()
+	    results.append(result)
 	facet_list = get_result_facets(bibframe_search.creative_work_keys)
     else:
         facet_list = get_facets(ANNOTATION_REDIS)
