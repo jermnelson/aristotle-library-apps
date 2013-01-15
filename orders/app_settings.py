@@ -6,7 +6,7 @@ except ImportError:
 ##    REDIS_HOST = '172.25.1.108'
 ##    REDIS_PORT = 6379
 ##    REDIS_PASSWORD = None
-    REDIS_HOST = '127.0.0.1'
+    REDIS_HOST = '192.168.189.128'
     REDIS_PORT = 6379
     REDIS_PASSWORD = None
     

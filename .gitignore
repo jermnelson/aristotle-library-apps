@@ -4,5 +4,6 @@
 *.class
 local_settings.*
 aristotle/static*
+bibframe/errors*
 modified/*
 uploads/*

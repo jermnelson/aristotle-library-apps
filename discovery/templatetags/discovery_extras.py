@@ -60,7 +60,7 @@ def about_instance(instance):
     if identifiers.has_key('local'):
         info.append(('Local Call Number',identifiers.get('local')))
     if identifiers.has_key('sudoc'):
-        info.append(('Government Call Number',identifers.get('sudoc')))
+        info.append(('Government Call Number',identifiers.get('sudoc')))
     if identifiers.has_key('ils-bib-number'):
         info.append(('Legacy ILS number',identifiers.get('ils-bib-number')))
     info = sorted(info)

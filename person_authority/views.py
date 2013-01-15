@@ -6,8 +6,7 @@ from app_settings import APP
 from django.views.generic.simple import direct_to_template
 from aristotle.views import json_view
 from aristotle.settings import AUTHORITY_REDIS, INSTANCE_REDIS
-from person_authority import person_search
-from redis_helpers import process_name
+from redis_helpers import person_search, process_name
 from bibframe.redis_helpers import get_brief
 
 authority_redis = AUTHORITY_REDIS

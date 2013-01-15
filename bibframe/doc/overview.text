@@ -1,0 +1,7 @@
+Aristotle BIBFRAME App Overview
+===============================
+The Aristotle BIBFRAME App is a Django application that provides a toolset for
+maninpulating BIBFRAME entities in a Redis datastore. 
+
+
+

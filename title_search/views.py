@@ -10,7 +10,7 @@ from django.template import Context,Template,loader
 import aristotle.settings as settings
 from aristotle.views import json_view
 import json,sys,logging
-import search_helpers
+import title_search.redis_helpers as redis_helpers
 
 authority_redis = settings.AUTHORITY_REDIS
 instance_redis = settings.INSTANCE_REDIS
@@ -42,7 +42,7 @@ def search(request):
     results = []
     raw_title = request.REQUEST.get('q')
     if raw_title is not None:
-        search_results = search_helpers.search_title(raw_title,work_redis)
+        search_results = redis_helpers.search_title(raw_title,work_redis)
         if len(search_results) > 0:
             for work_key in search_results:
                 raw_results = work_redis.hgetall(work_key)

@@ -37,6 +37,8 @@ def default(request):
    :param request: Web request
    """
    entity_key = redis_helpers.redis_server.zrange('orders',-1,-1)
+   if entity_key is None:
+       return Http404  
    entity_type = entity_key[0].split(":")[0].upper()
    entity = redis_helpers.get_entity(redis_key=entity_key[0])
    return direct_to_template(request,

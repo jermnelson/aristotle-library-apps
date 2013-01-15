@@ -24,6 +24,7 @@ class EarlyAmericanImprintsJob(MARCModifier):
         '''
         MARCModifier.__init__(self,marc_file)
 	self.field500_stmt = kwargs.get('field500_stmt')
+        self.field730_series = kwargs.get('field730_series')
 
     def processLeader(self,marc_leader):
         ''' 
@@ -96,7 +97,7 @@ class EarlyAmericanImprintsJob(MARCModifier):
         :param marc_record: MARC record 
         """
 	field008 = marc_record.get_fields('008')[0]
-	marc_record.__remove_field__('008')
+	marc_record = self.__remove_field__(marc_record=marc_record,tag='008')
 	field_data_list = []
 	for i in field008.data:
             field_data_list.append(i)
@@ -192,7 +193,7 @@ class EarlyAmericanImprintsJob(MARCModifier):
         new730 = Field(tag='730',
                        indicators=['0',' '],
                        subfields=['a','Early American imprints.',
-			          'n',self.series_statement])
+			          'n',self.field730_series])
 	marc_record.add_field(new730)
 	return marc_record
 
