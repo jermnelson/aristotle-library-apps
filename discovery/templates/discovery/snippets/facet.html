@@ -39,7 +39,7 @@
      <img src="{{ STATIC_URL }}img/{{ item.icon }}" alt="{{ item.name }} icon">
      {% endif %} 
      {{ item.name }}
-     {% if item.count %}({{ item.count }}){% endif %}
+     {% if item.count %}({{ item.count|floatformat }}){% endif %}
 
      </a>
    {% endif %}

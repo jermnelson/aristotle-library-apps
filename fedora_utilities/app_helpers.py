@@ -14,7 +14,7 @@ repository = Repository(root=settings.FEDORA_ROOT,
                         password=settings.FEDORA_PASSWORD)
 
 RELS_EXT = open(os.path.join(settings.PROJECT_HOME,
-                "fedora_batch",
+                "fedora_utilities",
                 "fixures",
                 "rels-ext.xml"),"rb").read()
 

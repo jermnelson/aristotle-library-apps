@@ -6,6 +6,7 @@ __author__ = "Gautam Webb"
 from django.views.generic.simple import direct_to_template
 from app_settings import APP
 from aristotle.settings import INSTITUTION
+from aristotle.forms import FeedbackForm
 
 def default(request):
     """
@@ -16,6 +17,8 @@ def default(request):
     return direct_to_template(request,
                               'article_search/app.html',
                               {'app':APP,
+                               'feedback_form':FeedbackForm({'subject':'Article Search App'}),
+			       'feedback_context':request.get_full_path,
                                'institution':INSTITUTION})
 
 def widget(request):

@@ -6,10 +6,11 @@ from app_helpers import *
 from solr_helpers import SOLR_QUEUE, start_indexing
 from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
 from aristotle.views import json_view
+from aristotle.forms import FeedbackForm
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import redirect
-from fedora_batch.forms import *
-from fedora_batch.models import *
+from fedora_utilities.forms import *
+from fedora_utilities.models import *
 import os
 import datetime
 
@@ -24,8 +25,10 @@ def default(request):
     batch_modify_form = BatchModifyMetadataForm()
     object_mover_form = ObjectMovementForm()
     return direct_to_template(request,
-                              'fedora_batch/app.html',
+                              'fedora_utilities/app.html',
                               {'app': APP,
+			       'feedback_form':FeedbackForm({'subject':'Fedora Utilities App'}),
+			       'feedback_context':request.get_full_path(),
                                'ingest_form': batch_ingest_form,
                                'institution': INSTITUTION,
                                'message': request.session.get('msg'),
@@ -105,7 +108,7 @@ def object_mover(request):
     else:
         mover_form = ObjectMovementForm()
     return direct_to_template(request,
-                              'fedora_batch/app.html',
+                              'fedora_utilities/app.html',
                               {'history': RepositoryMovementLog.objects.all(),
                                'message':message,
                                'ingest_form':ingest_form,

@@ -1,5 +1,5 @@
 from django import forms
-from fedora_batch.models import *
+from fedora_utilities.models import *
 from eulfedora.server import Repository
 from eulfedora.util import RequestFailed
 

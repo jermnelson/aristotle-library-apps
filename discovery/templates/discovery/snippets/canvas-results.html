@@ -1,3 +1,13 @@
 <div id="discovery-results">
+{% if results %}
  {% include "search-results.html" %}
+{% else %}
+   <div class="alert"><strong>Note:</strong> This Discovery App is currently a "Minimum 
+    Viable Product" (MVP) for demonstrating a native BIBFRAME user interface 
+    in the Redis Library Services Platform. Please send any comments, suggestions,
+    criticism using 
+    <a href="#" class="btn btn-mini" onclick="$('#feedback_app_dlg').modal('show')"><i class="icon-envelope"></i> Comment</a>
+    or by emailing <a href="mailto:jeremy.nelson@coloradocollege.edu">jeremy.nelson@coloradocollege.edu</a> 
+</div>
+{% endif %}
 </div>

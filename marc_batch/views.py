@@ -10,6 +10,7 @@ from django.core.files.base import ContentFile
 from django.core.servers.basehttp import FileWrapper
 from django.http import Http404,HttpResponse,HttpResponseRedirect
 from aristotle.settings import INSTITUTION
+from aristotle.forms import FeedbackForm
 from app_settings import APP
 from marc_batch.fixures import help_loader
 from models import Job,JobLog,ILSJobLog,job_types
@@ -35,6 +36,8 @@ def default(request):
                               'marc-batch-app.html',
                               {'app':APP,
                                'current_job': None,
+			       'feedback_form':FeedbackForm({'subject':'MARC Batch App'}),
+			       'feedback_context':request.get_full_path(),
                                'ils_jobs':ils_jobs,
                                'institution':INSTITUTION,
                                'redis_jobs':redis_jobs,

@@ -17,8 +17,8 @@ except:
     FEDORA_NAMESPACE = 'fedora'
     
 
-APP = {'current_view': {'title':'Fedora Batch'},
-       'description': 'The Fedora Batch App provides a batch utilties for a Fedora Commons Repository. Please select the utility on the left.',
+APP = {'current_view': {'title':'Fedora Utilities'},
+       'description': 'The Fedora Utilities App contains helper functions for assiting in the management of a Fedora Commons Repository.',
        'icon_url':'fedora-commons.png',
        'productivity':True,
        'url':'fedora_batch/'}

@@ -7,6 +7,7 @@ from django.views.generic.simple import direct_to_template
 from app_settings import APP
 from article_search.app_settings import APP as article_app
 from aristotle.settings import INSTITUTION
+from aristotle.forms import FeedbackForm
 
 def default(request):
     """
@@ -17,6 +18,8 @@ def default(request):
     return direct_to_template(request,
                               'book_search/app.html',
                               {'app':APP,
+			       'feedback_form':FeedbackForm({'subject':'Book Search App'}),
+			       'feedback_context':request.get_full_path(),
                                'institution':INSTITUTION})
 def widget(request):
     """

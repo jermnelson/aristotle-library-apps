@@ -9,6 +9,7 @@ from app_settings import APP
 from aristotle.views import json_view
 from bibframe.forms import *
 from bibframe.ingesters import ingest_marcfile
+from aristotle.forms import FeedbackForm
 from aristotle.settings import INSTITUTION, ANNOTATION_REDIS, AUTHORITY_REDIS
 from aristotle.settings import INSTANCE_REDIS, OPERATIONAL_REDIS
 from aristotle.settings import CREATIVE_WORK_REDIS
@@ -37,6 +38,8 @@ def app(request):
     return direct_to_template(request,
                               'bibframe/app.html',
                               {'app':APP,
+			       'feedback_form':FeedbackForm({'subject':'BIBFRAME App'}),
+			       'feedback_context':request.get_full_path(),
                                'institution':INSTITUTION,
                                'search_form':MARCRSearchForm(),
                                'user':None})

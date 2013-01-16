@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load markup %}
+<div class="modal hide fade" id="feedback_app_dlg">
+ <div class="modal-header">
+   <a class="close" data-dismiss="modal">×</a>
+   <h2>Help us improve the {{ app.current_view.title }}</h2>
+ </div>
+ <form id="feedback-form" name="feedback-form" class="form-horizontal"
+       action="/aristotle/feedback" method="POST">
+   {% csrf_token %}
+ <div class="modal-body">
+  <img src="{{ STATIC_URL }}img/{{ app.icon_url }}" style="float:left">
+  <p>{{ app.current_view.title }} is a new resource and you can help us improve
+     it. If you include your e-mail address, we will get back in touch with you.
+     Thanks!</p>
+  <p>{{ app.description }}</p>
+  <input type="hidden" name="context" value="{{ feedback_context }}" />
+  <div class="control-group">
+    <label class="control-label" for="id_subject">{{ feedback_form.subject.label }}</label>
+    <div class="controls">
+      {{ feedback_form.subject }}
+    </div>
+  </div> 
+   <div class="control-group">
+   <label class="control-label" for="id_comment">{{ feedback_form.comment.label }}</label>
+   <div class="controls">
+     {{ feedback_form.comment }}
+   </div>
+  </div>
+   <div class="control-group">
+    <label class="control-label" for="id_sender">{{ feedback_form.sender.label }} (optional) </label>
+    <div class="controls">
+     {{ feedback_form.sender }}
+    </div>
+   </div>
+   <div class="control-group">
+    <div class="controls">
+     <input type='submit' class="btn" value="Send" />
+    </div>
+  </form>
+ </div>
+ <div class="modal-footer">
+    <a href="#" onclick="$('#feedback_app_dlg').modal('hide')" class="btn btn-primary">{% trans 'Close' %}</a>
+ </div>
+ </form>
+</div>

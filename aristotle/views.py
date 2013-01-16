@@ -3,11 +3,15 @@
 """
 __author__ = 'Jeremy Nelson'
 
-import logging,sys
-from django.http import HttpResponse
+import logging,sys, datetime
+from django.http import HttpResponse, Http404
 from django.views.generic.simple import direct_to_template
+from django.contrib.auth import authenticate, login 
+from django.contrib.auth.forms import AuthenticationForm
 import django.utils.simplejson as json
+from django.shortcuts import redirect
 from fixures import json_loader,rst_loader
+from aristotle.settings import OPERATIONAL_REDIS as ops_redis
 
 def background(request):
     """
@@ -42,6 +46,45 @@ def default(request):
                                'portfolio':app_listing,
                                'vision':rst_loader.get('vision-for-aristotle-library-apps'),
                                'user':None})
+
+def app_login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    next_page = request.REQUEST['next']
+    user = authenticate(username=username,
+		        password=password)
+    if user is not None:
+        if user.is_active:
+            login(request,user)
+	    return redirect(next_page)
+	else:
+            raise Http404
+    else:
+	raise Http404
+
+def feedback(request):
+    """
+    Feedback view for the Aristotle Library Apps Project
+
+    :param request: Web request from client
+    """
+    if request.method != 'POST':
+        return Http404
+    today = datetime.datetime.utcnow()
+    feedback_id = ops_redis.incr("global feedback:{0}:{1}".format(today.year,today.month))
+    feedback_key = "feedback:{0}:{1}:{2}".format(today.year, 
+		                                 today.month, 
+						 feedback_id)
+    ops_redis.hset(feedback_key, "created", today.isoformat())
+    ops_redis.hset(feedback_key, "comment", request.POST.get('comment'))
+    ops_redis.hset(feedback_key, "context", request.POST.get('context'))
+    if request.POST.has_key('sender'):
+        ops_redis.hset(feedback_key, "sender", request.POST.get('sender'))
+    
+    return redirect(ops_redis.hget(feedback_key,"context"))
+    
+    
+
 
 def starting(request):
     """

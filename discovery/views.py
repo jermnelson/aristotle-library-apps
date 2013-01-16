@@ -7,6 +7,7 @@ __author__ = "Jeremy Nelson"
 from django.views.generic.simple import direct_to_template
 from django.http import Http404
 from aristotle.views import json_view
+from aristotle.forms import FeedbackForm
 
 from app_settings import APP
 from bibframe.bibframe_models import CreativeWork,Instance,Person
@@ -26,26 +27,32 @@ def app(request):
     """
     results,search_query = [],None
     if request.method == 'POST':
-        bibframe_search = BIBFRAMESearch(q=request.POST.get('q'),
-			              authority_ds=AUTHORITY_REDIS,
-				      creative_wrk_ds=CREATIVE_WORK_REDIS)
-	bibframe_search.run()
-	search_query = bibframe_search.query
-	for key in bibframe_search.creative_work_keys:
-            result = {'work': CreativeWork(redis_key=key,
-	                                   redis=CREATIVE_WORK_REDIS)}
+	query = request.POST.get('q')
+	if len(query) > 0:
+            bibframe_search = BIBFRAMESearch(q=request.POST.get('q'),
+	     		                     authority_ds=AUTHORITY_REDIS,
+				             creative_wrk_ds=CREATIVE_WORK_REDIS)
+	    bibframe_search.run()
+	    search_query = bibframe_search.query
+	    for key in bibframe_search.creative_work_keys:
+                result = {'work': CreativeWork(redis_key=key,
+	                                       redis=CREATIVE_WORK_REDIS)}
 	    
 	    results.append(result)
-	facet_list = get_result_facets(bibframe_search.creative_work_keys)
+	    facet_list = get_result_facets(bibframe_search.creative_work_keys)
+	else:
+            facet_list = get_facets(ANNOTATION_REDIS)
     else:
         facet_list = get_facets(ANNOTATION_REDIS)
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
+			       'feedback_form':FeedbackForm({'subject':'Discovery App Home'}),
+			       'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,
                                'facet_list': facet_list,
 			       'results':results,
-                               'search_form': SearchForm(),
+			       'search_form': SearchForm(),
 			       'search_query':search_query,
                                'user': None})
 
@@ -66,6 +73,8 @@ def creative_work(request,redis_id):
 		              'discovery/work.html',
 			      {'app': APP,
 			       'creative_work':creative_work,
+			       'feedback_form':FeedbackForm({'subject':'Discovery App Creative Work'}),
+			       'feedback_context':request.get_full_path(),
 			       'institution': INSTITUTION,
 			       'search_form': SearchForm(),
 			       'user':None})
@@ -86,6 +95,8 @@ def instance(request,redis_id):
     return direct_to_template(request,
 		              'discovery/instance.html',
 			      {'app': APP,
+			       'feedback_form':FeedbackForm({'subject':'Discovery App Instance'}),
+			       'feedback_context':request.get_full_path(),
 			       'instance':instance,
 			       'institution': INSTITUTION,
 			       'search_form': SearchForm(),
@@ -108,6 +119,8 @@ def person(request,redis_id):
     return direct_to_template(request,
 		              'discovery/person.html',
 			      {'app': APP,
+			       'feedback_form':FeedbackForm({'subject':'Discovery App Person'}),
+			       'feedback_context':request.get_full_path(),
 			       'institution': INSTITUTION,
 			       'person':person,
 			       'search_form': SearchForm(),

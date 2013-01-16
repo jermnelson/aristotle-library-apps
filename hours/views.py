@@ -8,9 +8,10 @@ from django.views.generic.simple import direct_to_template
 from app_settings import APP
 import datetime,copy,urllib
 from django.http import HttpResponse,HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from redis_helpers import *
 from django.shortcuts import redirect
-
+from aristotle.forms import FeedbackForm
 
 
 def default(request):
@@ -23,13 +24,14 @@ def default(request):
     if is_library_open(today):
         template = 'hours/open.html'
         next_time = get_closing_time(today)
-        print("In default {0}".format(next_time))
     else:
         template = 'hours/closed.html'
         next_time = None
     return direct_to_template(request,
                                template,
                                {'app':APP,
+				'feedback_context':'{0}'.format(request.get_full_path()),
+				'feedback_form':FeedbackForm({'subject':'Hours App Feedback'}),
                                 'next_time':next_time})
 
 def open(request):
@@ -52,6 +54,7 @@ def closed(request):
                                'hours/closed.html',
                                {'app':APP,})
 
+@login_required
 def manage(request,message):
     """
     manage is the admin view for the Hours app
@@ -64,8 +67,11 @@ def manage(request,message):
     return direct_to_template(request,
                                'hours/app.html',
                                {'app':APP,
+                                'feedback_context':'{0} default view'.format(request.get_full_path()),
+				'feedback_form':FeedbackForm({'subject':'Hours App Feedback'}),
                                 'library_status':{'status':True},
-                                'message':message})
+                                'message':message,
+				'user':request.user})
 
 def save(request):
     raw_begins=request.POST["begin"]

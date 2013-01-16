@@ -12,6 +12,7 @@ import django.utils.simplejson as json
 from django.utils.translation import ugettext
 import aristotle.settings as settings
 from aristotle.views import json_view
+from aristotle.forms import FeedbackForm
 import redis_helpers,sys,logging
 from app_settings import APP,SEED_RECORD_ID
 
@@ -49,6 +50,8 @@ def app(request):
                              {'app':APP,
                               'aristotle_url':settings.DISCOVERY_RECORD_URL,
                               'current':current,
+			      'feedback_context':request.get_full_path(),
+			      'feedback_form':FeedbackForm({'subject':'Call Number App'}),
                               'institution':settings.INSTITUTION,
                               'next':next_recs,
                               'previous':previous_recs,

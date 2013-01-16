@@ -3,10 +3,10 @@
 """
 __author__ = "Jeremy Nelson"
 
-import fedora_batch.views
+import fedora_utilities.views
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('fedora_batch.views',
+urlpatterns = patterns('fedora_utilities.views',
     url(r"$^","default",name="fedora-batch-default"),
     url(r"mover$","object_mover",name="pid-mover"),
     url(r"index$","index_solr"),

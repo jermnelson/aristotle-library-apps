@@ -7,6 +7,7 @@ import imp,os
 from django.views.generic.simple import direct_to_template
 import django.utils.simplejson as json
 from aristotle.settings import PROJECT_HOME,PROJECT_ROOT,INSTITUTION,INSTALLED_APPS
+from aristotle.forms import FeedbackForm
 from app_settings import APP
 
 
@@ -47,6 +48,8 @@ def default(request):
     return direct_to_template(request,
                               'portfolio/app.html',
                               {'app':APP,
+                               'feedback_form':FeedbackForm({'subject':'Library App Portfolio'}),
+			       'feedback_context':request.get_full_path(),
                                'institution':INSTITUTION,
                                'portfolio':app_listing,
                                'user':None})
