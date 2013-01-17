@@ -38,7 +38,7 @@ def app(request):
                 result = {'work': CreativeWork(redis_key=key,
 	                                       redis=CREATIVE_WORK_REDIS)}
 	    
-	    results.append(result)
+	        results.append(result)
 	    facet_list = get_result_facets(bibframe_search.creative_work_keys)
 	else:
             facet_list = get_facets(ANNOTATION_REDIS)

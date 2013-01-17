@@ -654,13 +654,14 @@ class MARC21toCreativeWork(MARC21Ingester):
         self.extract_creators()
         self.get_or_add_work()
         # Adds work to creators
-        if self.creative_work.attributes.has_key('rda:creator'):
-            for creator_key in self.creative_work.attributes['rda:creator']:
-                creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
-                self.authority_ds.sadd(creator_set_key,
-                                       self.creative_work.redis_key)
-        self.creative_work.save()
-        generate_title_app(self.creative_work,self.creative_work_ds)
+	if self.creative_work is not None:
+            if self.creative_work.attributes.has_key('rda:creator'):
+                for creator_key in self.creative_work.attributes['rda:creator']:
+                    creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
+                    self.authority_ds.sadd(creator_set_key,
+                                           self.creative_work.redis_key)
+            self.creative_work.save()
+            generate_title_app(self.creative_work,self.creative_work_ds)
         super(MARC21toCreativeWork, self).ingest()
 
 

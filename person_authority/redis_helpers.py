@@ -1,5 +1,5 @@
 """
- :mod:`redis_helpers` Call Number Helper Utilities
+ :mod:`redis_helpers` Person Authority Helper Utilities
 """
 __author__ = "Jeremy Nelson"
 from bibframe.bibframe_models import Person
@@ -108,14 +108,15 @@ def person_search(raw_name,
     :param raw_name: Name of person
     :param join_operation: "AND","OR" stings, default is an "AND" search
     """
-    person_keys = []
+    all_work_keys,person_keys = [],[]
     person_metaphones = process_name(raw_name)
     metaphone_keys = ["person-metaphones:{0}".format(x) for x in person_metaphones]
     if join_operation == "OR":
         person_keys = authority_redis.sunion(metaphone_keys)
     else: # Default is an AND search
         person_keys = authority_redis.sinter(metaphone_keys)
-    all_work_keys = authority_redis.sunion(["{0}:rda:isCreatorPersonOf".format(x) for x in person_keys])
+    if len(person_keys) > 0:
+        all_work_keys = authority_redis.sunion(["{0}:rda:isCreatorPersonOf".format(x) for x in person_keys])
     return all_work_keys
     
      

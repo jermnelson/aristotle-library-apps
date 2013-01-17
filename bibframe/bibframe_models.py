@@ -236,13 +236,18 @@ class CreativeWork(BibFrameModel):
         super(CreativeWork, self).save()
 
 
-class CorporateBody(Authority):
+class Organization(Authority):
+    """
+    This class represents different types of human organizations including
+    government bodies, non-profit, schools, universities, corporations,
+    and any other formalized organized bodies of human beings
+    """
 
     def save(self):
         if self.redis_key is None:
-            self.redis_key = "bibframe:Authority:CorporateBody:{0}".format(
-                self.redis.incr("global bibframe:Authority:CorporateBody"))
-        super(CorporateBody, self).save()
+            self.redis_key = "bibframe:Authority:Organization:{0}".format(
+                self.redis.incr("global bibframe:Authority:Organization"))
+        super(Organization, self).save()
 
 class Facet(Annotation):
     """

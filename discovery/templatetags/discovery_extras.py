@@ -45,7 +45,6 @@ def about_instance(instance):
     else:
         label = 'Creator'
     info.append((label,creator_dd))
-    print("After creator: {0}".format(info))
     facets = INSTANCE_REDIS.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
         if key.startswith('bibframe:Annotation:Facet:Access'):
@@ -64,6 +63,9 @@ def about_instance(instance):
     if identifiers.has_key('ils-bib-number'):
         info.append(('Legacy ILS number',identifiers.get('ils-bib-number')))
     info = sorted(info)
+    # Publishing Information
+    if 'rda:dateOfPublicationManifestation' in instance.attributes:
+        info.append(('Published',instance.attributes['rda:dateOfPublicationManifestation']))
     html_output = ''
     for row in info:
         html_output += '<dt>{0}</dt><dd>{1}</dd>'.format(row[0],row[1])
