@@ -1,4 +1,4 @@
-<div id="discovery-results">
+<div id="discovery-results" class="inset3">
 {% if results %}
  {% include "search-results.html" %}
 {% else %}
@@ -8,6 +8,15 @@
     criticism using 
     <a href="#" class="btn btn-mini" onclick="$('#feedback_app_dlg').modal('show')"><i class="icon-envelope"></i> Comment</a>
     or by emailing <a href="mailto:jeremy.nelson@coloradocollege.edu">jeremy.nelson@coloradocollege.edu</a> 
-</div>
+   </div>
+   <div class="alert alert-info">
+    You can access BIBFRAME Creative Works or Instances by the id number. The following examples are
+    picked randomlly from this App's Redis Datastores. {{ example }}
+    <dl class="dl-horizontal">
+     <dt>BIBFRAME Creative Work</dt>
+     <dd><a href="{{ example.work_path }}">{{ example }}</a></dd>
+     <dt>BIBFRAME Instance</dt>
+ 
+   </div>
 {% endif %}
 </div>

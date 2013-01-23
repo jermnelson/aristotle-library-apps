@@ -5,7 +5,7 @@
 __author__ = "Jeremy Nelson"
 
 import datetime, re, pymarc, os, sys,logging, redis, time
-from bibframe_models import Annotation,CorporateBody,CreativeWork,Instance,Person
+from bibframe_models import Annotation,Organization,CreativeWork,Instance,Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME

@@ -4,6 +4,8 @@
 
 __author__ = "Jeremy Nelson"
 
+import os,random
+
 from django.views.generic.simple import direct_to_template
 from django.http import Http404
 from aristotle.views import json_view
@@ -44,9 +46,15 @@ def app(request):
             facet_list = get_facets(ANNOTATION_REDIS)
     else:
         facet_list = get_facets(ANNOTATION_REDIS)
+#    example = {'work_path': os.path.join("apps",
+#	                                 "discovery",
+#			                 "work",
+#	                                 string(random.randint(0,
+#							       int(CREATIVE_WORK_REDIS.get('global bibframe:CreativeWork'))))}
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
+                               'example':{},
 			       'feedback_form':FeedbackForm({'subject':'Discovery App Home'}),
 			       'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,
