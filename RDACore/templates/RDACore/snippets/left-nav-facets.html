@@ -1,9 +1,0 @@
-{% load i18n %}
-{% load rda_core_extras %}
-{% comment %}START left-col-facets accordion DIV{% endcomment %}
-<div class="accordion" id="left-col-facets">
-{% for facet in facets %}
-  {{ facet|display_facet }}
-{% endfor %}
-{% comment %}END left-col-facets accordion DIV{% endcomment %}
-</div>
