@@ -5,7 +5,9 @@ naming conventions ideally provide semantic meaning in the construction of
 the key and related keys. 
 
 
-## Creative Work Redis Instance
+## Creative Work Redis instance 
+The table below displays the naming pattern used on a typical Creative Work
+Redis instance that is usually running on port 6380.
 
 <table>
  <thead>
