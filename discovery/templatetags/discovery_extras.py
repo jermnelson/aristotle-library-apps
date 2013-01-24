@@ -46,6 +46,12 @@ def about_instance(instance):
         label = 'Creator'
     if len(creator_dd) > 0:
         info.append((label,creator_dd))
+    for type_of in ['issn','isbn']:
+	number_key = '{0}:rda:identifierForTheManifestation:{1}'.format(instance.redis_key,
+			                                                type_of)
+	if INSTANCE_REDIS.exists(number_key):
+	    number_ids = list(INSTANCE_REDIS.smembers(number_key))
+            info.append((type_of.upper(),' '.join(number_ids)))
     facets = INSTANCE_REDIS.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
         if key.startswith('bibframe:Annotation:Facet:Access'):

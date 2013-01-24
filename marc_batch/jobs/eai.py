@@ -60,6 +60,7 @@ class EarlyAmericanImprintsJob(MARCModifier):
         marc_record = self.validate710(marc_record)
         marc_record = self.validate730(marc_record)
         marc_record = self.validate830(marc_record)
+	marc_record = self.validate949(marc_record)
         return marc_record 
  
     def validate001(self,marc_record): 
@@ -208,4 +209,14 @@ class EarlyAmericanImprintsJob(MARCModifier):
         """
 	return self.__remove_field__(marc_record=marc_record,
 			             tag='830')
+
+    def validate949(self,marc_record):
+        """ 
+        Method removes the 830 MARC fields from the MARC
+        record.
+
+        :param marc_record: MARC record 
+        """
+	return self.__remove_field__(marc_record=marc_record,
+			             tag='949')
 
