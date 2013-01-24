@@ -45,6 +45,7 @@ class MARCModifier(object):
             raw_record = self.remove648(raw_record)
             raw_record.fields = sorted(raw_record.fields,key=lambda x: x.tag)
             self.records.append(raw_record)
+	    print("Raw Record Leader={0}".format(self.records[-1].leader))
             self.stats['records'] += 1
         
         

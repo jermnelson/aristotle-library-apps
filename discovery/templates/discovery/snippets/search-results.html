@@ -6,7 +6,7 @@
    <img class="media-object" data-src="{{ STATIC_URL }}img/{{ result.image }}">
   </a>
   <div class="media-body">
-   <h4 class="media-heading">{{ result.work|get_title }}</h4>
+   {{ result.work|get_brief_heading }}
    <p>{{ result.work|get_creators }}</p>
    <div class="btn-group">
     {% for instance in result.work.instances %}

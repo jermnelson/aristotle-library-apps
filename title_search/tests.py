@@ -12,10 +12,10 @@ import bibframe.bibframe_models as models
 test_ds = TEST_REDIS
 
 
-class AddOrGetTitleTest(TestCase):
+class AddOrGetMetaphoneTitleTest(TestCase):
 
     def setUp(self):
-        self.old_man_keys = add_or_get_title('The Old Man in the Sea',
+        self.old_man_keys = add_or_get_metaphone_title('The Old Man in the Sea',
             test_ds)
 
     def test_old_man_in_sea(self):
@@ -32,11 +32,25 @@ class AddOrGetTitleTest(TestCase):
     def tearDown(self):
         test_ds.flushdb()
 
-
-class AddTitleTest(TestCase):
+class AddOrGetNaiveteTitleTest(TestCase):
 
     def setUp(self):
-        self.colorado_metaphones = process_title('Colorado')[2]
+        self.old_man_keys = add_or_get_title('The Old Man in the Sea',
+            test_ds)
+
+    def test_old_man_in_sea(self):
+	for key in self.old_man_keys:
+	    self.assert_(test_ds.exists(key))
+
+    def tearDown(self):
+        test_ds.flushdb()
+
+
+
+class AddTitleMetaphoneTest(TestCase):
+
+    def setUp(self):
+        self.colorado_metaphones = process_metaphone_title('Colorado')[2]
         self.colorado_key = add_title('Colorado',
             self.colorado_metaphones,
             test_ds)
@@ -52,11 +66,18 @@ class AddTitleTest(TestCase):
         test_ds.flushdb()
 
 
-class GenerateTitleApp(TestCase):
+class GenerateTitleAppTest(TestCase):
 
     def setUp(self):
         self.creative_work = models.CreativeWork()
 
+class ProcessTitleTest(TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        test_ds.flushdb()
 
 
 
