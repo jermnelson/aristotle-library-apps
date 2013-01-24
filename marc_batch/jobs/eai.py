@@ -42,7 +42,9 @@ class EarlyAmericanImprintsJob(MARCModifier):
 
         :param marc_record: MARC record 
         ''' 
-        marc_record.leader = self.processLeader(marc_record.leader) 
+        #new_leader = self.processLeader(marc_record.leader) 
+	#marc_record.leader = None
+	#marc_record.leader = new_leader
         marc_record = self.validate001(marc_record) 
         marc_record = self.validate006(marc_record) 
         marc_record = self.validate008(marc_record) 

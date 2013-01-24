@@ -44,7 +44,8 @@ def about_instance(instance):
         label = 'Creators'
     else:
         label = 'Creator'
-    info.append((label,creator_dd))
+    if len(creator_dd) > 0:
+        info.append((label,creator_dd))
     facets = INSTANCE_REDIS.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
         if key.startswith('bibframe:Annotation:Facet:Access'):
@@ -70,6 +71,22 @@ def about_instance(instance):
     for row in info:
         html_output += '<dt>{0}</dt><dd>{1}</dd>'.format(row[0],row[1])
     return mark_safe(html_output)
+
+def get_brief_heading(work):
+    """
+    Returns generated h4 for brief record view
+    
+    :param work: Creative Work
+    :rtype: HTML or 0-length string
+    """
+    output = ''
+    new_h4 = etree.Element('h4',attrib={'class':'media-heading'})
+    new_a = etree.SubElement(new_h4,
+		             'a',
+		             attrib={'href':'/apps/discovery/work/{0}/'.format(work.redis_key.split(":")[-1])})
+    new_a.text = get_title(work)
+    output = etree.tostring(new_h4)
+    return mark_safe(output)
 
 def get_creators(bibframe_entity):
     """
@@ -258,6 +275,7 @@ def get_title(bibframe_entity):
         return ''
 
 register.filter('about_instance',about_instance)
+register.filter('get_brief_heading',get_brief_heading)
 register.filter('get_creators',get_creators)
 register.filter('get_creator_works',get_creator_works)
 register.filter('get_date',get_date)

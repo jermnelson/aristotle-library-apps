@@ -6,6 +6,7 @@ __author__ = "Jon Driscoll and Jeremy Nelson"
 
 from django.views.generic.simple import direct_to_template
 from app_settings import APP
+from aristotle.settings import INSTITUTION
 import datetime,copy,urllib
 from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -32,6 +33,7 @@ def default(request):
                                {'app':APP,
 				'feedback_context':'{0}'.format(request.get_full_path()),
 				'feedback_form':FeedbackForm({'subject':'Hours App Feedback'}),
+				'institution':INSTITUTION,
                                 'next_time':next_time})
 
 def open(request):

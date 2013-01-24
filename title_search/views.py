@@ -25,7 +25,8 @@ def app(request):
     return direct_to_template(request,
                               'title_search/app.html',
                               {'app':APP,
-                               'aristotle_url':settings.DISCOVERY_RECORD_URL})
+                               'aristotle_url':settings.DISCOVERY_RECORD_URL,
+			       'institution':settings.INSTITUTION})
 
 
 
@@ -50,9 +51,13 @@ def search(request):
                     raw_results[k] = v.encode('utf8','replace')
                 raw_results["bibframe_work"] = work_key
                 raw_results['search_prefix'] = raw_title
-                raw_results['title'] = unicode(work_redis.hget("{0}:rda:Title".format(work_key),
+		preferred_title = unicode(work_redis.hget("{0}:rda:Title".format(work_key),
                                                                'rda:preferredTitleForTheWork'),
                                                errors="replace")
+		for word in raw_title.split(" "):
+		    if preferred_title.count(word) > 0:
+                        preferred_title = preferred_title.replace(word,'''<span style="background-color:yellow">{0}</span>'''.format(word))                       
+		raw_results['title'] = preferred_title
                 raw_results['ils-bib-numbers'] = []
                 for instance_key in list(work_redis.smembers("{0}:bibframe:Instances".format(work_key))):
                      raw_results['ils-bib-numbers'].append(instance_redis.hget("{0}:rda:identifierForTheManifestation".format(instance_key),

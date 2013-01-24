@@ -38,6 +38,11 @@ def add_title(raw_title, title_metaphone, redis_server):
     title_pipeline.execute()
     return title_key
 
+#def add_title(raw_title,redis_server):
+#    title_pipeline = redis_server.pipeline()
+#    title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
+
+
 
 def add_metaphone_key(metaphone, title_keys, redis_server):
     metaphone_key = "all-metaphones:{0}".format(metaphone)
@@ -47,8 +52,8 @@ def add_metaphone_key(metaphone, title_keys, redis_server):
     title_pipeline.execute()
 
 
-def add_or_get_title(raw_title, redis_server):
-    stop_metaphones, all_metaphones, title_metaphone = process_title(raw_title)
+def add_or_get_metaphone_title(raw_title, redis_server):
+    stop_metaphones, all_metaphones, title_metaphone = process_metaphone_title(raw_title)
     title_metaphone_key = 'title-metaphones:{0}'.format(title_metaphone)
     title_key = add_title(raw_title,
                           title_metaphone,
@@ -65,6 +70,33 @@ def add_or_get_title(raw_title, redis_server):
 
 
 def generate_title_app(work, redis_server):
+    """
+    Helper function takes a BIBFRAME CreativeWork with a title, creates
+    supporting Redis datastructures for the title app
+
+    :param work: BIBFRAME Work
+    :parm redis_server: Redis server
+    """
+    if not 'rda:Title' in work.attributes:
+        return
+    raw_title = work.attributes['rda:Title']['rda:preferredTitleForTheWork']
+    terms, normed_title = process_title(raw_title)
+    title_key = 'title-normed:{0}'.format(normed_title)
+    work.attributes['rda:Title']['normed'] = normed_title
+    title_pipeline = redis_server.pipeline()
+    title_pipeline.sadd(title_key,work.redis_key)
+    for term in terms:
+        title_pipeline.sadd('title-normed:{0}'.format(term),
+			    work.redis_key)
+    title_pipeline.zadd('z-titles-alpha',
+		        0,
+			normed_title)
+    title_pipeline.execute()
+    work.save()
+
+
+
+def generate_title_app_metaphone(work, redis_server):
     """
     Helper function takes a BIBFRAME CreativeWork with a title, creates
     supporting Redis datastructures for the title app
@@ -102,6 +134,25 @@ def generate_title_app(work, redis_server):
 
 
 def process_title(raw_title):
+    """
+    Function takes a raw title, removes stopwords and punctuation, converts
+    all terms into uppercase utf8 encoded strings and associates each
+    Creative Work Redis key with the term's set.
+
+    :param raw_title: Raw title
+    """
+    raw_terms, terms = raw_title.split(" "), []
+    for term in raw_terms:
+        if term.lower() not in STOPWORDS: 
+	    for punc in [",",".",";",":","'",'"']:
+	        term = term.replace(punc,"")
+            terms.append(term.upper())
+    title_key = ''.join(terms)
+    return terms, title_key
+
+    
+
+def process_metaphone_title(raw_title):
     """
     Function takes a raw_title, removes any stopwords from the beginning,
     extracts the metaphone for the terms in the title and returns
@@ -159,8 +210,20 @@ def typeahead_search_title(user_input,redis_server):
     return list(all_keys)
 
 def search_title(user_input,redis_server):
+    work_keys = []
+    terms, normed_title = process_title(user_input)
+    # Exact match on normed title, return work keys
+    # associated with normed title key
+    #if redis_server.exists("title-normed:{0}".format(normed_title)):
+    #    return list(redis_server.smembers("title-normed:{0}".format(normed_title)))
+    title_keys = ["title-normed:{0}".format(x) for x in terms]
+    for work_key in redis_server.sinter(title_keys):
+        work_keys.append(work_key)
+    return work_keys
+
+def search_title_metaphone(user_input,redis_server):
     title_keys = []
-    metaphones, all_metaphones, title_metaphone = process_title(user_input)
+    metaphones, all_metaphones, title_metaphone = process_metaphone_title(user_input)
     metaphone_keys = ["all-metaphones:{0}".format(x) for x in all_metaphones]
 ##    metaphone_keys.append('first-term-metaphones:{0}'.format(all_metaphones[0]))
     metaphone_keys.append(
