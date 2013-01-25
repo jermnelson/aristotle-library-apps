@@ -69,7 +69,7 @@
    <div class="well well-small" data-bind="visible: batchIngest">
        <a name="ingest"></a>
        <h2>Batch Ingest</h2>
-	<form method="POST" action="{% url fedora_batch.views.batch_ingest %}" id="ingest_form" enctype="multipart/form-data" >
+	<form method="POST" action="{% url fedora_utilities.views.batch_ingest %}" id="ingest_form" enctype="multipart/form-data" >
 	  {% csrf_token %}
 	 {{ ingest_form.as_p }}
          <div class="btn-group">
@@ -150,7 +150,7 @@
      $.ajax({
        type: "POST",
        data: { csrfmiddlewaretoken: "{{ csrf_token }}"},
-       url: "{% url fedora_batch.views.index_solr %}"
+       url: "{% url fedora_utilities.views.index_solr %}"
      }).done(function (json_response) {
        alert("In Done of $ajax call");
        if(json_response['result'] == 'error') {
@@ -203,7 +203,7 @@
      $.ajax({
        type: "POST",
        data: { start: "start", csrfmiddlewaretoken: "{{ csrf_token }}"},
-       url: "{% url fedora_batch.views.index_solr %}"
+       url: "{% url fedora_utilities.views.index_solr %}"
      }).done(function(json_response) {
        view_model.indexProgress(true);
        view_model.indexMessages.push(json_response['msg']);
