@@ -31,6 +31,14 @@ server.
 
       **pip install redis**
 
+      **pip install eulfedora**
+
+      **pip install docutils**
+
+      **pip install beautifulsoup4**
+
+      **pip install flup**
+
 2. Clone Aristotle Library Apps project from GitHub at (https://github.com/jermnelson/aristotle-library-apps)
 
 3. Create or modify a local_settings.py file in the aristotle app directory.
