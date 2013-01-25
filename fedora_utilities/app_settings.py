@@ -3,7 +3,7 @@
 """
 import sys,os
 import aristotle.settings as settings
-from eulfedora.server import Repository
+#from eulfedora.server import Repository
 #print(os.path.join(settings.PROJECT_HOME,"aristotle/lib/"))
 #sys.path.append(os.path.join(settings.PROJECT_HOME,"aristotle/lib/"))
 
@@ -21,12 +21,12 @@ APP = {'current_view': {'title':'Fedora Utilities'},
        'description': 'The Fedora Utilities App contains helper functions for assiting in the management of a Fedora Commons Repository.',
        'icon_url':'fedora-commons.png',
        'productivity':True,
-       'url':'fedora_batch/'}
+       'url':'fedora_utilities/'}
 
 ##fedora_repo = FCRepoRestAPI(repository_url=FEDORA_URL,
 ##                            namespace= FEDORA_NAMESPACE,
 ##                            username=FEDORA_USERNAME,
 ##                            password=FEDORA_PASSWORD)
                             
-fedora_repo = Repository()
-
+#fedora_repo = Repository()
+fedora_repo = None
