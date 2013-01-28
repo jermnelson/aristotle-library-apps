@@ -680,7 +680,7 @@ def ingest_marcfile(**kwargs):
         marc_reader = pymarc.MARCReader(marc_file,
                                         utf8_handling='ignore')
         start_time = datetime.datetime.now()
-        print("Starting at {0}".format(start_time.isoformat()))
+        sys.stderr.write("Starting at {0}\n".format(start_time.isoformat()))
         for record in marc_reader:
             ingester = MARC21toBIBFRAME(annotation_ds=annotation_ds,
                                         authority_ds=authority_ds,
@@ -696,8 +696,8 @@ def ingest_marcfile(**kwargs):
 
             count += 1
         end_time = datetime.datetime.now()
-        print("Finished at {0}".format(end_time.isoformat()))
-        print("Total time elapsed is {0} seconds".format((end_time-start_time).seconds))
+        sys.stderr.write("\nFinished at {0}\n".format(end_time.isoformat()))
+        sys.stderr.write("Total time elapsed is {0} seconds\n".format((end_time-start_time).seconds))
 
         return count
 

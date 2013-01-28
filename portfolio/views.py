@@ -21,7 +21,8 @@ def get_apps(is_authenticated):
     """
     output = []
     for row in INSTALLED_APPS:
-        if not row.startswith('django') and not row == 'portfolio':
+        if not row.startswith('django') and ['aristotle',
+                                             'portfolio'].count(row) < 1:
             settings_file = os.path.join(PROJECT_HOME,
                                          row,
                                          "app_settings.py")
