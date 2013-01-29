@@ -17,6 +17,42 @@ except ImportError, e:
 
 test_redis = TEST_REDIS
 
+class ProcessKeyTest(TestCase):
+
+    def setUp(self):
+	self.timestamp = datetime.datetime.utcnow().isoformat()
+        test_redis.hset('bibframe:CreativeWork:1',
+			'created_on',
+			self.timestamp)
+
+
+    def test_process_key(self):
+	self.assertEquals(process_key('bibframe:CreativeWork:1', test_redis)['created_on'],
+			              self.timestamp)
+
+	
+    def test_process_key_exception(self):
+        self.assertRaises(ValueError,process_key,'bibframe:CreativeWork:2', test_redis)
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+
+class RedisBibframeInterfaceTest(TestCase):
+
+    def setUp(self):
+        self.minimal_instance = RedisBibframeInterface()
+
+    def test_init(self):
+        self.assert_(not self.minimal_instance.primary_redis)
+	self.assert_(not self.minimal_instance.redis_key)
+
+    def test_save_execeptions(self):
+	self.assertRaises(ValueError,self.minimal_instance.save)
+
+    def tearDown(self):
+        test_redis.flushdb()
+
 class ResourceTest(TestCase):
 
     def setUp(self):
@@ -33,18 +69,24 @@ class AuthorityTest(TestCase):
 
     def setUp(self):
         self.new_base_authority = Authority(primary_redis=test_redis)
+	self.created_on = datetime.datetime.utcnow().isoformat()
+	test_redis.hset('bibframe:Authority:1','created_on',self.created_on)
         self.base_authority = Authority(primary_redis=test_redis,
                                         redis_key="bibframe:Authority:1",
                                         hasAnnotation=set('bibframe:Annotation:1'))
+	self.base_authority.save()
 
     def test_init(self):
 	self.assert_(self.new_base_authority.primary_redis is not None)
+	self.assert_(test_redis.exists(self.base_authority.redis_key))
         self.assertEquals(self.base_authority.redis_key,
                           "bibframe:Authority:1")
 
     def test_hasAnnotation(self):
         self.assertEquals(self.base_authority.hasAnnotation,
                           set('bibframe:Annotation:1'))
+	self.assertEquals(test_redis.smembers('bibframe:Authority:1:hasAnnotation'),
+			  set('bibframe:Annotation:1'))
 
     def tearDown(self):
         test_redis.flushdb()
@@ -61,12 +103,12 @@ class PersonAuthorityTest(TestCase):
                              label="David Foster Wallace",
                              hasAnnotation=set('bibframe:Annotation:1'),
                              isni='0000 0001 1768 6131')
-        #self.person.save()
+        self.person.save()
 
-##    def test_dateOfBirth(self):
-##        self.assertEquals(self.person.attributes['rda:dateOfBirth'],
-##                          test_redis.hget(self.person.redis_key,
-##                                          'rda:dateOfBirth'))
+    def test_dateOfBirth(self):
+       self.assertEquals(self.person.attributes['rda:dateOfBirth'],
+                         test_redis.hget(self.person.redis_key,
+                                         'rda:dateOfBirth'))
 ##
 ##    def test_dateOfDeath(self):
 ##        self.assertEquals(self.person.attributes['rda:dateOfDeath'],
