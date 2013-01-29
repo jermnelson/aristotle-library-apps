@@ -1,0 +1,87 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://bibframe.org/vocab/Review">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Review Annotation</ns0:label>
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Review Annotation</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/Annotation">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource that decorates other BIBFRAME resources with additional information.</ns0:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Annotation</ns0:label>
+    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+      <rdf:Description rdf:about="http://bibframe.org/vocab/annotationBody">
+        <rdfs:label>Annotation itself</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+      <rdf:Description rdf:about="http://bibframe.org/vocab/annotationAssertedBy">
+        <rdfs:label>Annotation asserted by</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+      <rdf:Description rdf:about="http://bibframe.org/vocab/annotates">
+        <rdfs:label>Target of Annotation</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource that decorates other BIBFRAME resources with additional information.</ns0:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Annotation</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/CoverArt">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Cover Art Annotation</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/Holding">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Holding</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/Resource">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Resource</ns0:label>
+    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+      <rdf:Description rdf:about="http://bibframe.org/vocab/description">
+        <rdfs:label>Description of resource</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+      <rdf:Description rdf:about="http://bibframe.org/vocab/authorizedAccessPoint">
+        <rdfs:label>Authorized access point</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+      <rdf:Description rdf:about="http://bibframe.org/vocab/identifier">
+        <rdfs:label>identifier</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+      <rdf:Description rdf:about="http://bibframe.org/vocab/label">
+        <rdfs:label>Label for resource</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/Work">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting a conceptual essence of the cataloging resource.</ns0:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Work</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/Authority">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</ns0:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Authority</ns0:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/Instance">
+    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting an individual, material embodiment of the Work.</ns0:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Instance</ns0:label>
+  </rdf:Description>
+</rdf:RDF>
