@@ -106,14 +106,14 @@ class PersonAuthorityTest(TestCase):
         self.person.save()
 
     def test_dateOfBirth(self):
-       self.assertEquals(self.person.attributes['rda:dateOfBirth'],
-                         test_redis.hget(self.person.redis_key,
-                                         'rda:dateOfBirth'))
-##
-##    def test_dateOfDeath(self):
-##        self.assertEquals(self.person.attributes['rda:dateOfDeath'],
-##                          test_redis.hget(self.person.redis_key,
-##                                          'rda:dateOfDeath'))
+        self.assertEquals(self.person.attributes['rda:dateOfBirth'],
+                          test_redis.hget(self.person.redis_key,
+                                          'rda:dateOfBirth'))
+
+    def test_dateOfDeath(self):
+        self.assertEquals(self.person.attributes['rda:dateOfDeath'],
+                          test_redis.hget(self.person.redis_key,
+                                          'rda:dateOfDeath'))
     def test_hasAnnotation(self):
         self.assertEquals(self.person.hasAnnotation,
                           set('bibframe:Annotation:1'))
@@ -126,29 +126,29 @@ class PersonAuthorityTest(TestCase):
                           '0000 0001 1768 6131')
 
 
-##    def test_gender(self):
-##        self.assertEquals(self.person.attributes['rda:gender'],
-##                          test_redis.hget(self.person.redis_key,
-##                                          'rda:gender'))
+    def test_gender(self):
+        self.assertEquals(self.person.attributes['rda:gender'],
+                          test_redis.hget(self.person.redis_key,
+                                          'rda:gender'))
 
     def test_label(self):
         self.assertEquals(self.person.label,
                           "David Foster Wallace")
 
-##    def test_loc_id(self):
-##        self.assertEquals(self.person.attributes['rda:identifierFor']['loc'],
-##                          test_redis.hget("{0}:{1}".format(self.person.redis_key,
-##                                                           'rda:identifierFor'),
-##                                          'loc'))
-##
-##    def test_name(self):
-##        self.assertEquals(self.person.attributes['rda:preferredNameForThePerson'],
-##                          test_redis.hget(self.person.redis_key,
-##                                          'rda:preferredNameForThePerson'))
-##
-##    def test_save(self):
-##        self.assertEquals(self.person.redis_key,
-##                          "bibframe:Authority:Person:1")
+    def test_loc_id(self):
+        self.assertEquals(self.person.attributes['rda:identifierFor']['loc'],
+                          test_redis.hget("{0}:{1}".format(self.person.redis_key,
+                                                           'rda:identifierFor'),
+                                          'loc'))
+
+    def test_name(self):
+        self.assertEquals(self.person.attributes['rda:preferredNameForThePerson'],
+                          test_redis.hget(self.person.redis_key,
+                                          'rda:preferredNameForThePerson'))
+
+    def test_save(self):
+        self.assertEquals(self.person.redis_key,
+                          "bibframe:Person:1")
 
     def tearDown(self):
         test_redis.flushdb()
@@ -535,124 +535,129 @@ class PersonAuthorityTest(TestCase):
 ##    def tearDown(self):
 ##        test_redis.flushdb()
 ##
-##class InstanceTest(TestCase):
-##
-##    def setUp(self):
-##        existing_attributes = {'rda:publisher':'bibframe:Authority:CorporateBody:1',
-##                               'rda:identifierForTheManifestation':{'lccn':'C1.D11',
-##                                                                    'local':'Video 6716'}}
-##        new_attributes = {'rda:publisher':'bibframe:Authority:CorporateBody:2',
-##                          'rda:identifierForTheManifestation':{'ils-bib-number':'b1762075',
-##                                                               'sudoc':'HD1695.C7C55 2007'}}
-##        self.instance = Instance(redis=test_redis,
-##                                 redis_key="bibframe:Instance:2",
-##                                 attributes=existing_attributes)
-##        self.new_instance = Instance(redis=test_redis,
-##                                     attributes=new_attributes)
-##
-##
-##    def test_ils_bib_number(self):
-##        self.new_instance.save()
-##        self.assertEquals(self.new_instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
-##                          test_redis.hget("{0}:{1}".format(self.new_instance.redis_key,
-##                                                           'rda:identifierForTheManifestation'),
-##                                          "ils-bib-number"))
-##
-##    def test_init(self):
-##        self.assert_(self.new_instance.redis)
-##        self.assert_(self.new_instance.redis_key is None)
-##        self.assert_(self.instance.redis)
-##        self.assertEquals(self.instance.redis_key,
-##                          "bibframe:Instance:2")
-##
-##    def test_lccn_callnumber(self):
-##        self.instance.save()
-##        self.assertEquals(self.instance.attributes['rda:identifierForTheManifestation']['lccn'],
-##                          test_redis.hget("{0}:{1}".format(self.instance.redis_key,
-##                                                           'rda:identifierForTheManifestation'),
-##                                          "lccn"))
-##
-##    def test_local_callnumber(self):
-##        self.instance.save()
-##        self.assertEquals(self.instance.attributes['rda:identifierForTheManifestation']['local'],
-##                          test_redis.hget("{0}:{1}".format(self.instance.redis_key,
-##                                                           'rda:identifierForTheManifestation'),
-##                                          "local"))
-##
-##    def test_publisher(self):
-##        self.new_instance.save()
-##        self.instance.save()
-##        self.assertEquals(self.new_instance.attributes['rda:publisher'],
-##                          'bibframe:Authority:CorporateBody:2')
-##        self.assertEquals(self.instance.attributes['rda:publisher'],
-##                          'bibframe:Authority:CorporateBody:1')
-##
-##    def test_sudoc_callnumber(self):
-##        self.new_instance.save()
-##        self.assertEquals(self.new_instance.attributes['rda:identifierForTheManifestation']['sudoc'],
-##                          test_redis.hget("{0}:{1}".format(self.new_instance.redis_key,
-##                                                           'rda:identifierForTheManifestation'),
-##                                          "sudoc"))
-##
-##
-##    def tearDown(self):
-##        test_redis.flushdb()
-##
-##
-##class CreativeWorkTest(TestCase):
-##
-##    def setUp(self):
-##        new_attributes = {'rda:dateOfWork':2012,
-##			  'rda:isCreatedBy':'bibframe:Authority:Person:1'}
-##        # Test work w/o Redis key (new Work)
-##        self.new_creative_work = CreativeWork(redis=test_redis,
-##                                              attributes=new_attributes)
-##        # Tests work w/pre-existing Redis 
-##	self.existing_key = 'bibframe:CreativeWork:2'
-##        test_redis.hset(self.existing_key,'created','2013-01-07')
-##        test_redis.hset(self.existing_key,'rda:dateOfWork',1999)
-##	test_redis.hset(self.existing_key,'rda:isCreatedBy','bibframe:Authority:CorporateBody:1')
-##        self.creative_work = CreativeWork(redis=test_redis,
-##                                          redis_key=self.existing_key)
-##
-##
-##    def test_init_(self):
-##        self.assert_(self.new_creative_work.redis)
-##        self.assert_(self.new_creative_work.redis_key is None)
-##        self.assert_(self.creative_work.redis)
-##        self.assertEquals(self.creative_work.redis_key,
-##                          "bibframe:CreativeWork:2")
-##
-##    def test_dateOfWork(self):
-##        self.new_creative_work.save()
-##        self.creative_work.save()
-##        self.assertEquals(str(self.new_creative_work.attributes['rda:dateOfWork']),
-##                          test_redis.hget(self.new_creative_work.redis_key,
-##                                          "rda:dateOfWork"))
-##        self.assertEquals(str(self.creative_work.attributes['rda:dateOfWork']),
-##                          test_redis.hget(self.creative_work.redis_key,
-##                                          'rda:dateOfWork'))
-##
-##    def test_isCreatedBy(self):
-##        self.new_creative_work.save()
-##        self.creative_work.save()
-##        self.assertEquals(self.new_creative_work.attributes['rda:isCreatedBy'],
-##		          'bibframe:Authority:Person:1')
-##        self.assertEquals(self.creative_work.attributes['rda:isCreatedBy'],
-##                          'bibframe:Authority:CorporateBody:1')
-##
-##
-##    def test_save(self):
-##        self.new_creative_work.save()
-##        self.creative_work.save()
-##        self.assertEquals(self.new_creative_work.redis_key,"bibframe:CreativeWork:1")
-##        self.assert_(test_redis.hget(self.creative_work.redis_key,
-##                                     'created'))
-##        # Extracting just the year-month-day to test
-##        self.assertEquals(self.new_creative_work.attributes['created'].split(":")[0],
-##                          test_redis.hget(self.new_creative_work.redis_key,
-##                                          'created').split(":")[0])
-##        self.assert_(test_redis.exists(self.creative_work.redis_key))
-##
-##    def tearDown(self):
-##        test_redis.flushdb()
+class InstanceTest(TestCase):
+
+    def setUp(self):
+        self.holding = Holding(primary_redis=test_redis,
+                               annotates=set(["bibframe:Instance:1"]),
+                               attributes={'callno-local':'Video 6716'})
+        setattr(self.holding,'callno-lcc','C1.D11')
+        self.holding.save()
+        self.existing_redis_key = "bibframe:Instance:{0}".format(test_redis.incr('global bibframe:Instance'))
+        test_redis.hset(self.existing_redis_key,
+                        'created_on',
+                        datetime.datetime.utcnow().isoformat())
+        self.instance = Instance(primary_redis=test_redis,
+                                 redis_key=self.existing_redis_key,
+                                 associatedAgent={'rda:publisher':set(['bibframe:Organization:1'])},
+                                 hasAnnotation=set([self.holding.redis_key,]),
+                                 instanceOf="bibframe:Work:1")
+        self.new_holding = Holding(primary_redis=test_redis,
+                                   attributes={"callno-sudoc": 'HD1695.C7C55 2007'})
+        self.new_holding.save()
+        self.new_instance = Instance(primary_redis=test_redis,
+                                     associatedAgent={'rda:publisher':set(['bibframe:Organization:2'])},
+                                     hasAnnotation=set([self.new_holding.redis_key,]),
+                                     instanceOf="bibframe:Work:2")
+        setattr(self.new_instance,'system-number','b1762075')
+        self.new_instance.save()
+        setattr(self.new_holding,'annotates',set([self.new_instance.redis_key,]))
+        self.new_holding.save()
+
+    def test_ils_bib_number(self):
+        self.assertEquals(getattr(self.new_instance,'system-number'),
+                          test_redis.hget(self.new_instance.redis_key,
+                                          "system-number"))
+
+    def test_init(self):
+        self.assert_(self.new_instance.primary_redis)
+        self.assertEquals(self.new_instance.redis_key,
+                          'bibframe:Instance:2')
+        self.assert_(self.instance.primary_redis)
+        self.assertEquals(self.instance.redis_key,
+                          "bibframe:Instance:1")
+
+    def test_lccn_callnumber(self):
+        self.assertEquals(list(self.instance.hasAnnotation)[0],
+                          self.holding.redis_key)
+        self.assertEquals(getattr(self.holding,'callno-lcc'),
+                          test_redis.hget(self.holding.redis_key,
+                                          'callno-lcc'))
+        self.assertEquals(test_redis.hget(list(self.instance.hasAnnotation)[0],
+                                          'callno-lcc'),
+                          "C1.D11")
+        
+
+    def test_local_callnumber(self):
+        self.assertEquals(self.holding.attributes.get('callno-local'),
+                          "Video 6716")
+        self.assertEquals(self.holding.attributes.get('callno-local'),
+                          test_redis.hget(self.holding.redis_key,
+                                          'callno-local'))
+        self.assertEquals(self.holding.redis_key,
+                          list(self.instance.hasAnnotation)[0])
+                          
+
+    def test_publisher(self):
+        self.assertEquals(list(self.new_instance.associatedAgent['rda:publisher'])[0],
+                          'bibframe:Organization:2')
+        self.assertEquals(list(self.instance.associatedAgent['rda:publisher'])[0],
+                          'bibframe:Organization:1')
+
+    def test_sudoc_callnumber(self):
+        self.assertEquals(list(self.new_instance.hasAnnotation)[0],
+                          self.new_holding.redis_key)
+        self.assertEquals(self.new_holding.attributes.get("callno-sudoc"),
+                          test_redis.hget(self.new_holding.redis_key,
+                                          "callno-sudoc"))
+        
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+class CreativeWorkTest(TestCase):
+
+    def setUp(self):
+        new_attributes = {'rda:dateOfWork':2012}
+        # Test work w/o Redis key (new Work)
+        self.new_creative_work = Work(primary_redis=test_redis,
+                                      associatedAgent={'rda:isCreatedBy':set(["bibframe:Person:1"])},
+                                      languageOfWork="eng",
+                                      note=["This is a note for a new creative work",],
+                                      attributes=new_attributes)
+        self.new_creative_work.save()
+        # Tests work w/pre-existing Redis 
+	self.existing_key = 'bibframe:Work:2'
+        test_redis.hset(self.existing_key,'created','2013-01-07')
+        test_redis.hset(self.existing_key,'rda:dateOfWork',1999)
+        self.creative_work = Work(primary_redis=test_redis,
+                                  redis_key=self.existing_key,
+                                  associatedAgent={'rda:isCreatedBy':set(["bibframe:Organization:1"])})
+        self.creative_work.save()
+
+
+    def test_init_(self):
+        self.assert_(self.new_creative_work.primary_redis)
+        self.assertEquals(self.new_creative_work.redis_key,
+                          'bibframe:Work:1')
+        self.assert_(self.creative_work.primary_redis)
+        self.assertEquals(self.creative_work.redis_key,
+                          "bibframe:Work:2")
+
+    def test_dateOfWork(self):
+        self.assertEquals(str(self.new_creative_work.attributes['rda:dateOfWork']),
+                          test_redis.hget(self.new_creative_work.redis_key,
+                                          "rda:dateOfWork"))
+        self.assertEquals(str(self.creative_work.attributes['rda:dateOfWork']),
+                          test_redis.hget(self.creative_work.redis_key,
+                                          'rda:dateOfWork'))
+
+    def test_isCreatedBy(self):
+        self.assertEquals(list(self.new_creative_work.associatedAgent['rda:isCreatedBy'])[0],
+		          'bibframe:Person:1')
+        self.assertEquals(list(self.creative_work.associatedAgent['rda:isCreatedBy'])[0],
+                          'bibframe:Organization:1')
+
+
+    def tearDown(self):
+        test_redis.flushdb()

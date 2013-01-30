@@ -5,7 +5,7 @@
 __author__ = "Jeremy Nelson"
 
 import datetime, re, pymarc, os, sys,logging, redis, time
-from bibframe_models import Annotation,Organization,CreativeWork,Instance,Person
+from bibframe.models import Annotation, Organization, Work, Instance, Person
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
@@ -28,6 +28,7 @@ except ImportError, e:
     ANNOTATION_REDIS = redis.StrictRedis(port=6383)
     OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
 
+MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
 
 class Ingester(object):
     """

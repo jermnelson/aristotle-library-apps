@@ -82,7 +82,7 @@ def save_keys(entity_key,name,value,redis_object):
     if not redis_object.sismember(all_keys_key, new_redis_key):
         redis_object.sadd(all_keys_key,new_redis_key)
     if type(value) is list:
-        redis_object.lpush(new_redis_key, prop_value)
+        redis_object.lpush(new_redis_key, value)
     elif type(value) is set:
         redis_object.sadd(all_keys_key,new_redis_key)
         for member in list(value):
@@ -91,8 +91,8 @@ def save_keys(entity_key,name,value,redis_object):
         redis_object.sadd(all_keys_key,new_redis_key)
         for nk, nv in value.iteritems():
             redis_object.hset(new_redis_key,
-			      nk,
-		              nv)
+                              nk,
+                              nv)
     else:
         redis_object.hset(entity_key,name,value)
 	# Remove new_redis_key from all_keys_key as new_redis_key
@@ -118,21 +118,26 @@ class RedisBibframeInterface(object):
 
         :param primary_redis: Redis instance used for primary 
         """
-        self.attributes = {}
+        self.attributes = kwargs.get('attributes',{})
         self.primary_redis = primary_redis
-	self.redis_key = redis_key
+        self.redis_key = redis_key
         self.__load__(kwargs)
         
 	
     def __load__(self,kwargs):
         """
-	    
+	Internal method either sets instance's properties or sets new
+	attribute values from passed kwargs in __init__ or upon a
+	refresh from the Redis server.
         """
+
         if self.redis_key is not None:
             kwargs.update(process_key(self.redis_key,
                                       self.primary_redis))
-	for key,value in kwargs.iteritems():
-            if hasattr(self,key):
+        for key,value in kwargs.iteritems():
+            if key == 'attributes':
+                pass
+            elif hasattr(self,key):
                 setattr(self,key,value)
             else:
                 self.attributes[key] = value
@@ -147,7 +152,8 @@ class RedisBibframeInterface(object):
         if self.primary_redis is None:
             raise ValueError("Cannot save, no primary_redis")
         if self.redis_key is None:
-            self.redis_key = self.primary_redis.incr("global bibframe:{0}".format(self.name))
+            self.redis_key = "bibframe:{0}:{1}".format(self.name,
+	    		                          self.primary_redis.incr("global bibframe:{0}".format(self.name)))
             self.primary_redis.hset(self.redis_key,
                                     'created_on',
                                     datetime.datetime.utcnow().isoformat())
@@ -166,18 +172,32 @@ class RedisBibframeInterface(object):
                     continue
                 elif property == 'primary_redis' or property == 'redis_key':
                     continue
-		else:
-		    prop_value = getattr(self,property)
-		    save_keys(self.redis_key,property,prop_value,redis_pipeline)
+                elif property == 'attributes':
+                    for attrib_key,attrib_value in self.attributes.iteritems():
+                        save_keys(self.redis_key,
+                                  attrib_key,
+                                  attrib_value,redis_pipeline)
+                else:
+		            prop_value = getattr(self,property)
+		            save_keys(self.redis_key,property,prop_value,redis_pipeline)
             redis_pipeline.execute()
-	else:
-            if hasattr(self,property_name) or hasattr(self.attributes,property_name):
-	        prop_value = getattr(self,property_name)
-		save_keys(self.redis_key, property_name, prop_value, self.primary_redis)
+        # Specific redis key structure to save instead of entire object, checks
+        # both the instance and the instance's attributes dictionary
+        else:
+            if hasattr(self,property_name): 
+	            prop_value = getattr(self,property_name)
+            elif hasattr(self.attributes,property_name):
+                prop_value = getattr(self.attributes,property_name)
             else:
-                raise ValueError("Cannot save, {0} with Redis Key of {1} does not have {2}".format(self.attributes.name,
-			                                                                           self.redis_key,
-												   property_name))
-        
+                err_msg = '''Cannot save {0}, 
+                Redis Key of {1} does not have {2}'''.format(self.attributes.name,
+			                                                 self.redis_key,
+												             property_name)
+                raise ValueError(err_msg)
+            save_keys(self.redis_key, 
+                      property_name, 
+                      prop_value, 
+                      self.primary_redis)
+       
 
 load_rdf() 
