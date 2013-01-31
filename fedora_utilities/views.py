@@ -104,7 +104,7 @@ def object_mover(request):
             message = "{0} succesfully transfered to {1}".format(source_pid.identifier,
                                                                  collection_pid.identifier)
             request.session['msg'] = message
-            return redirect("/apps/fedora_batch/")
+            return redirect("/apps/fedora_utilities/")
     else:
         mover_form = ObjectMovementForm()
     return direct_to_template(request,
