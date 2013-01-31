@@ -10,8 +10,19 @@ from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
 from title_search.redis_helpers import generate_title_app,search_title
-
 import marc21_facets
+from lxml import etree
+from rdflib import RDF,RDFS,Namespace
+import json
+
+STD_SOURCE_CODES = json.load(open(os.path.join(PROJECT_HOME,
+                                               'bibframe',
+                                               'fixures',
+                                               'standard-id-src-codes.json'),
+                                  'rb'))
+
+BF = Namespace('http://bibframe.org/model-abstract/')
+
 
 try:
     import aristotle.settings as settings
@@ -28,7 +39,9 @@ except ImportError, e:
     ANNOTATION_REDIS = redis.StrictRedis(port=6383)
     OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
 
-MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
+
+
+
 
 class Ingester(object):
     """
@@ -61,14 +74,36 @@ class Ingester(object):
     def ingest(self):
         pass
 
-
+#MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
 class MARC21Helpers(object):
     """
     MARC21 Helpers for MARC21 Ingester classes
     """
+    marc_fld_re = re.compile(r"(\d+)(--)*([//].+)*[,]*")
 
     def __init__(self,marc_record):
         self.record = marc_record
+
+##    def getMARCValuebyRDF(self,marcField):
+##        """
+##  Extracts rule from the text of a bibframe.org/vocab/ rdf file
+##  and applies the rule to the marc_record, and returns the 
+##  value. This should be developed further as grammer of
+##  RDF bfabstract:marcField becomes known.
+##
+##  :param marcField: etree marcField element
+##  """
+##        output = None
+##  rule_txt = marcField.text
+##  if marc_fld_re.search(rule_txt):
+##            output = []
+##            rules = marc_fld_re.findall(rule_txt)
+##            for rule in rules:
+##                marc_field,indicators,subfields = rule[0],rule[1],rule[2]
+                
+            
+            
+        
 
     def getSubfields(self,tag,*subfields):
         """
@@ -80,6 +115,7 @@ class MARC21Helpers(object):
         if self.record[tag] is not None:
             field = self.record[tag]
             return ' '.join(field.get_subfields(*subfields))
+
 
 
 class MARC21Ingester(Ingester):
@@ -323,15 +359,15 @@ class MARC21toInstance(MARC21Ingester):
 
     def extract_date_of_publication(self):
         """
-	Extracts the date of publication and saves as a
-	rda:dateOfPublicationManifestation
-	"""
-	field008 = self.record['008']
-	pub_date = None
-	pub_date = field008.data[7:11]
-	# Need to check for the following fields if pub_date is absent
-	# 008[1:15], 260c, 542i
-	self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
+    Extracts the date of publication and saves as a
+    rda:dateOfPublicationManifestation
+    """
+    field008 = self.record['008']
+    pub_date = None
+    pub_date = field008.data[7:11]
+    # Need to check for the following fields if pub_date is absent
+    # 008[1:15], 260c, 542i
+    self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
 
 
     def extract_sudoc(self):
@@ -553,6 +589,117 @@ class MARC21toCreativeWork(MARC21Ingester):
         super(MARC21toCreativeWork,self).__init__(**kwargs)
         self.creative_work = None
 
+    def extract_classification(self):
+        """
+        Extracts classification from MARC
+        """
+        class_vals = []
+        fields = self.record.get_fields('084','086')
+        for field in fields:
+            if field.tag == '084':
+                class_vals.append(field.value())
+            if field.tag == '086':
+                class_vals.append(field['a'])
+        if len(class_vals) > 1:
+            self.entity_info['classification'] = set(class_vals)
+        elif len(class_vals) == 1:
+            self.entity_info['classification'] = class_vals[0]
+
+    def extract_class_ddc(self):
+        """
+        Extracts Dewey Decimal Classification from MARC record
+        """
+        ddc_vals = []
+        fields = self.record.get_fields('082','083')
+        for field in fields:
+            if field.tag == '083':
+                ddc_vals.append('-'.join(field.get_subfields('a','c')))
+            if field.tag == '082':
+                ddc_vals.append(''.join(field.get_subfields('a')))
+        if len(ddc_vals) > 0:
+            self.entity_info['class-ddc'] = set(ddc_vals)
+
+    def extract_class_lcc(self):
+        """
+        Extracts Library of Congress Classification from MARC record
+        """
+        lcc_vals = []
+        fields = self.record.get_fields('050','051','055','060','061','070','071')
+        for field in fields:
+            if field['a'] is not None:
+                lcc_vals.append(field['a'])
+        if len(lcc_vals) > 0:
+            self.entity_info['class-lcc'] = set(lcc_vals)
+
+    def extract_class_udc(self):
+        """
+        Extracts Universal Decimal Classification Number
+        """
+        udc_values = []
+        fields = self.record.get_fields('080')
+        for field in fields:
+            udc_values.append(field.value())
+        if len(udc_values) > 0:
+            self.entity_info['class-udc'] = set(udc_values)
+
+    def extract_contentCoverage(self):
+        """
+        Extracts Nature of Content
+        """
+        coverages = []
+        fields = self.record.get_fields('518','513','522')
+        for field in fields:
+            if field.tag == '518':
+                if field['a'] is not None:
+                    coverages.append(field['a'])
+            if field.tag == '513':
+                if field['b'] is not None:
+                    coverages.append(field['b'])
+            if field.tag == '522':
+                if field['a'] is not None:
+                    coverages.append(field['a'])
+        if len(fields) > 0:
+            self.entity_info['contentCoverage'] = set(fields)
+
+
+
+    def extract_contentNature(self):
+        """
+        Extracts Nature of Content
+        """
+        content_natures = []
+        fields = self.record.get_fields('245','513','008','336')
+        for field in fields:
+            if field.tag == '245':
+                if field['k'] is not None:
+                    content_natures.append(field['k'])
+            if field.tag == '513':
+                if field['a'] is not None:
+                    content_natures.append(field['a'])
+            if field.tag == '008':
+                pass #! TODO need a look-up on 008 BK and CR
+            if field.tag == '336':
+                if field['a'] is not None:
+                    content_natures.append("{0}(term)".format(field['a']))
+                if field['b'] is not None:
+                    content_natures.append("{0}(code)".format(field['b']))
+        if len(content_natures) > 0:
+            self.entity_info['contentNature'] = set(content_natures)
+                                            
+            
+
+        
+    def extract_creditNotes(self):
+        """
+        Extracts creditNotes from MARC
+        """
+        credit_notes = []
+        fields = self.record.get_fields('508')
+        for field in fields:
+            credit_notes.append("Credits: {0}".format(field['a']))
+        if len(credit_notes) > 0:
+            self.entity_info['creditNote'] = set(credit_notes)
+
     def extract_creators(self):
         """
         Extracts and associates bibframe:Authority:Person entities creators
@@ -570,6 +717,120 @@ class MARC21toCreativeWork(MARC21Ingester):
                     people_keys.append(person.redis_key)
         if len(people_keys) > 0:
             self.entity_info['rda:creator'] = set(people_keys)
+
+    def __extract_other_std_id__(self,
+                                 tag,
+                                 source_code):
+        """
+        Helper function for isan, istc and other standard fields 
+
+        :param tag: Required MARC field number
+        :param indicator1: Value of indicator, defaults to 7
+        """
+        output = []
+        fields = self.record.get_fields(tag)
+        for field in fields:    
+            if field.indicator1 == '7':
+                extracted_code = field['2']
+                if extracted_code == source_code:
+                    for subfield in field.get_subfields('a','z'):
+                        output.append(subfield)
+        return output
+                                      
+    def extract_intendedAudience(self):
+        """
+        Extracts intendedAudience
+        """
+        audiences = []
+        fields = self.record.get_fields('008','521')
+        for field in fields:
+            if field.tag == '008':
+                pass #! TODO extract type and do look up for value
+            if field.tag == '521':
+                subfield_a_lst = field.get_subfields('a')
+                for subfield in subfield_a_lst:
+                    if field.indicator1 == '0':
+                        audiences.append("Reading grade level {0}".format(subfield))
+                    elif field.indicator1 == '1':
+                        audiences.append("Interest age level {0}".format(subfield))
+                    elif field.indicator1 == '2':
+                        audiences.append("Interest grade level {0}".format(subfield))
+                    elif field.indicator1 == '3':
+                        audiences.append("Special audiences {0}".format(subfield))
+                    elif field.indicator1 == '4':
+                        audiences.append("Motivation/interest level {0}".format(subfield))
+        if len(audiences) > 0:
+            self.entity_info['intendedAudience'] = set(audiences)
+                    
+                
+
+    def extract_isan(self):
+        """
+        Extracts International Standard Audiovisual Number (isan)
+        """
+        isan_vals = self.__extract_other_std_id__('024','isan')
+        if len(isan_vals) > 1:
+            self.entity_info["isan"] = set(isan_vals)
+        elif len(isan_vals) == 1:
+            self.entity_info["isan"] = isan_vals[0]
+        
+
+    def extract_istc(self):
+        """
+        Extracts International Standard Text code (istc)
+        """
+        isan_vals = self.__extract_other_std_id__('024','istc')
+        if len(isan_vals) > 1:
+            self.entity_info["istc"] = set(isan_vals)
+        elif len(isan_vals) == 1:
+            self.entity_info["istc"] = isan_vals[0]
+
+    def extract_iswc(self):
+        """
+        Extracts International Standard Mustic Work Code (iswc)
+        """
+        isan_vals = self.__extract_other_std_id__('024','iswc')
+        if len(isan_vals) > 1:
+            self.entity_info["iswc"] = set(isan_vals)
+        elif len(isan_vals) == 1:
+            self.entity_info["iswc"] = isan_vals[0]
+    
+    def extract_issnl(self):
+        """
+        Extracts linking International Standard Serial Number
+        """
+        issnl_nums = []
+        fields = self.record.get_fields('022')
+        for field in fields:
+            for subfield in field.get_subfields('1','m'):
+                issnl_nums.append(subfield)
+        if len(issnl_nums) > 0:
+            self.entity_info["issn-l"] = set(issnl_nums)
+                                           
+    def extract_note(self):
+        """
+        Extracts the note for the work
+        """
+        notes = []
+        fields = self.record.get_fields('500')
+        for field in fields:
+            subfield3 = field['3']
+            if subfield3 is not None:
+                notes.append("{0} {1}".format(subfield3,
+                                              ''.join(field.get_subfields('a'))))
+        if len(notes) > 0:
+            self.entity_info["note"] = set(notes)
+            
+    def extract_performerNote(self):
+        """
+        Extracts performerNote
+        """
+        notes = []
+        fields = self.record.get_fields('511')
+        for field in fields:
+            notes.append("Cast: {0}".format(''.join(field.get_subfields('a'))))
+        if len(notes) > 0:
+            self.entity_info["performerNote"] = set(notes)
 
     def extract_subjects(self):
         """
@@ -606,6 +867,8 @@ class MARC21toCreativeWork(MARC21Ingester):
                 self.entity_info['rda:Title']['rda:variantTitleForTheWork'] = raw_title[indicator_one:]
                 self.entity_info['rda:Title']['sort'] = self.entity_info['rda:Title']['rda:variantTitleForTheWork'].lower()
 
+              
+
     def get_or_add_work(self):
         """
         Method either returns a new Work or an existing work based
@@ -616,32 +879,32 @@ class MARC21toCreativeWork(MARC21Ingester):
             self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
         # If the title matches an existing Work's title and the creative work's creators, 
         # assumes that the Creative Work is the same.
-	if self.entity_info.has_key('rda:Title'):
+    if self.entity_info.has_key('rda:Title'):
             cw_title_keys = search_title(self.entity_info['rda:Title']['rda:preferredTitleForTheWork'],
                                          self.creative_work_ds)
             for creative_wrk_key in cw_title_keys:
                 creator_keys = self.creative_work_ds.smembers("{0}:rda:creator".format(creative_wrk_key))
-	        if self.entity_info.has_key('rda:creator'):
+            if self.entity_info.has_key('rda:creator'):
                     existing_keys = creator_keys.intersection(self.entity_info['rda:creator'])
                     if len(existing_keys) == 1:
-                        self.creative_work = CreativeWork(redis=self.creative_work_ds,
-                                                          redis_key=creative_wrk_key)
+                        self.creative_work = Work(primary_redis=self.creative_work_ds,
+                                                  redis_key=creative_wrk_key)
             if not self.creative_work:
-                self.creative_work = CreativeWork(redis=self.creative_work_ds,
-                                                  attributes=self.entity_info)
+                self.creative_work = Work(primary_redis=self.creative_work_ds,
+                                          attributes=self.entity_info)
 
             self.creative_work.save()
-	else:
-	    # Work does not have a Title, this should be manditory but requires human
-	    # investigation.
-	    error_mrc_file = open(os.path.join(PROJECT_HOME,
-		                               "bibframe",
-		                               "errors",
-					       "missing-title-{0}.mrc".format(time.mktime(time.gmtime()))),
-				  "wb")
-	    error_writer = pymarc.MARCWriter(error_mrc_file)
-	    error_writer.write(self.record)
-	    error_mrc_file.close()
+    else:
+        # Work does not have a Title, this should be manditory but requires human
+        # investigation.
+        error_mrc_file = open(os.path.join(PROJECT_HOME,
+                                       "bibframe",
+                                       "errors",
+                           "missing-title-{0}.mrc".format(time.mktime(time.gmtime()))),
+                  "wb")
+        error_writer = pymarc.MARCWriter(error_mrc_file)
+        error_writer.write(self.record)
+        error_mrc_file.close()
 
 
 
@@ -655,7 +918,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         self.extract_creators()
         self.get_or_add_work()
         # Adds work to creators
-	if self.creative_work is not None:
+        if self.creative_work is not None:
             if self.creative_work.attributes.has_key('rda:creator'):
                 for creator_key in self.creative_work.attributes['rda:creator']:
                     creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
@@ -690,7 +953,7 @@ def ingest_marcfile(**kwargs):
                                         creative_work_ds=creative_work_ds)
             ingester.ingest()
             if count%1000:
-		if not count % 100:
+                if not count % 100:
                     sys.stderr.write(".")
             else:
                 sys.stderr.write(str(count))

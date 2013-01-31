@@ -402,24 +402,24 @@ class PersonAuthorityTest(TestCase):
 ##    def test_topical_subjects(self):
 ##        self.assert_(self.subjects_ingester.subjects[0])
 ##
-##class MARC21toCreativeWorkTest(TestCase):
-##
-##    def setUp(self):
-##        marc_record = pymarc.Record()
-##        marc_record.add_field(
-##            pymarc.Field(tag='245',
-##                indicators=['1', '0'],
-##                subfields=['a', 'Statistics:',
-##                    'b', 'facts or fiction.']))
-##        self.work_ingester = MARC21toCreativeWork(annotation_ds=test_redis,
-##                                                  authority_ds=test_redis,
-##                                                  instance_ds=test_redis,
-##                                                  marc_record=marc_record,
-##                                                  creative_work_ds=test_redis)
-##        self.work_ingester.ingest()
-##
-##    def test_init(self):
-##        self.assert_(self.work_ingester.creative_work.redis_key)
+class MARC21toCreativeWorkTest(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(
+            pymarc.Field(tag='245',
+                indicators=['1', '0'],
+                subfields=['a', 'Statistics:',
+                           'b', 'facts or fiction.']))
+        self.work_ingester = MARC21toCreativeWork(annotation_ds=test_redis,
+                                                  authority_ds=test_redis,
+                                                  instance_ds=test_redis,
+                                                  marc_record=marc_record,
+                                                  creative_work_ds=test_redis)
+        self.work_ingester.ingest()
+
+    def test_init(self):
+        self.assert_(self.work_ingester.creative_work.redis_key)
 ##
 ##    def test_metaphone(self):
 ##        self.assertEquals(
