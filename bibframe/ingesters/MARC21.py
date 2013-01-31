@@ -6,6 +6,7 @@ __author__ = "Jeremy Nelson"
 
 import datetime, re, pymarc, os, sys,logging, redis, time
 from bibframe.models import Annotation, Organization, Work, Instance, Person
+from bibframe.ingesters.Ingester import Ingester
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
@@ -14,15 +15,6 @@ import marc21_facets
 from lxml import etree
 from rdflib import RDF,RDFS,Namespace
 import json
-
-STD_SOURCE_CODES = json.load(open(os.path.join(PROJECT_HOME,
-                                               'bibframe',
-                                               'fixures',
-                                               'standard-id-src-codes.json'),
-                                  'rb'))
-
-BF = Namespace('http://bibframe.org/model-abstract/')
-
 
 try:
     import aristotle.settings as settings
@@ -43,38 +35,7 @@ except ImportError, e:
 
 
 
-class Ingester(object):
-    """
-    Base Ingester class for ingesting metadata and bibliographic
-    records into the MARCR Redis datastore.
-    """
-
-    def __init__(self, **kwargs):
-        """
-        Initializes Ingester
-
-        :keyword creative_work_ds: Work Redis datastore, defaults to
-                                   CREATIVE_WORK_REDIS
-        :keyword instance_ds: Instance Redis datastore, defaults to
-                              INSTANCE_REDIS
-        :keyword authority_ds: Authority Redis datastore, default to
-                               AUTHORITY_REDIS
-        :keyword annotation_ds: Annotation Redis datastore, defaults to
-                                ANNOTATION_REDIS
-        """
-        self.annotation_ds = kwargs.get('annotation_ds',
-                                        ANNOTATION_REDIS)
-        self.authority_ds = kwargs.get('authority_ds',
-                                       AUTHORITY_REDIS)
-        self.instance_ds = kwargs.get('instance_ds',
-                                      INSTANCE_REDIS)
-        self.creative_work_ds = kwargs.get('creative_work_ds',
-                                           CREATIVE_WORK_REDIS)
-
-    def ingest(self):
-        pass
-
-#MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
+MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
 class MARC21Helpers(object):
     """
     MARC21 Helpers for MARC21 Ingester classes
@@ -121,10 +82,10 @@ class MARC21Helpers(object):
 class MARC21Ingester(Ingester):
 
     def __init__(self, **kwargs):
+        super(MARC21Ingester,self).__init__(**kwargs)
         self.entity_info = {}
         self.record = kwargs.get('marc_record',None)
-        super(MARC21Ingester,self).__init__(**kwargs)
-
+        
 
 class MARC21toFacets(MARC21Ingester):
     """
@@ -359,15 +320,15 @@ class MARC21toInstance(MARC21Ingester):
 
     def extract_date_of_publication(self):
         """
-    Extracts the date of publication and saves as a
-    rda:dateOfPublicationManifestation
-    """
-    field008 = self.record['008']
-    pub_date = None
-    pub_date = field008.data[7:11]
-    # Need to check for the following fields if pub_date is absent
-    # 008[1:15], 260c, 542i
-    self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
+        Extracts the date of publication and saves as a
+        rda:dateOfPublicationManifestation
+        """
+        field008 = self.record['008']
+        pub_date = None
+        pub_date = field008.data[7:11]
+        # Need to check for the following fields if pub_date is absent
+        # 008[1:15], 260c, 542i
+        self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
 
 
     def extract_sudoc(self):
@@ -706,8 +667,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         work.
         """
         people_keys = []
-        for tag in ['100','700','800']:
-            field = self.record[tag]
+        for field in self.record.get_fields('100','700','800'):
             if field is not None:
                 people_ingester = MARC21toPerson(redis=self.authority_ds,
                                                  authority_ds=self.authority_ds,
@@ -716,7 +676,10 @@ class MARC21toCreativeWork(MARC21Ingester):
                 for person in people_ingester.people:
                     people_keys.append(person.redis_key)
         if len(people_keys) > 0:
-            self.entity_info['rda:creator'] = set(people_keys)
+            if self.entity_info.has_key('associatedAgent'):
+                self.entity_info['associatedAgent']['rda:creator'] = set(people_keys)
+            else:
+                self.entity_info['associatedAgent'] = {'rda:creator': set(people_keys)}
 
     def __extract_other_std_id__(self,
                                  tag,
@@ -879,7 +842,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
         # If the title matches an existing Work's title and the creative work's creators, 
         # assumes that the Creative Work is the same.
-    if self.entity_info.has_key('rda:Title'):
+        if self.entity_info.has_key('rda:Title'):
             cw_title_keys = search_title(self.entity_info['rda:Title']['rda:preferredTitleForTheWork'],
                                          self.creative_work_ds)
             for creative_wrk_key in cw_title_keys:
@@ -890,21 +853,23 @@ class MARC21toCreativeWork(MARC21Ingester):
                         self.creative_work = Work(primary_redis=self.creative_work_ds,
                                                   redis_key=creative_wrk_key)
             if not self.creative_work:
-                self.creative_work = Work(primary_redis=self.creative_work_ds,
-                                          attributes=self.entity_info)
+                self.creative_work = Work(primary_redis=self.creative_work_ds)
+                for key, value in self.entity_info.iteritems():
+                    setattr(self.creative_work,key,value)
+                                    
 
             self.creative_work.save()
-    else:
-        # Work does not have a Title, this should be manditory but requires human
-        # investigation.
-        error_mrc_file = open(os.path.join(PROJECT_HOME,
-                                       "bibframe",
-                                       "errors",
-                           "missing-title-{0}.mrc".format(time.mktime(time.gmtime()))),
-                  "wb")
-        error_writer = pymarc.MARCWriter(error_mrc_file)
-        error_writer.write(self.record)
-        error_mrc_file.close()
+        else:
+            # Work does not have a Title, this should be manditory but requires human
+            # investigation.
+            error_mrc_file = open(os.path.join(PROJECT_HOME,
+                                               "bibframe",
+                                               "errors",
+                                               "missing-title-{0}.mrc".format(time.mktime(time.gmtime()))),
+                                  "wb")
+            error_writer = pymarc.MARCWriter(error_mrc_file)
+            error_writer.write(self.record)
+            error_mrc_file.close()
 
 
 
@@ -914,13 +879,17 @@ class MARC21toCreativeWork(MARC21Ingester):
 
         :param record: MARC21 record
         """
+        self.extract_classification()
+        self.extract_class_udc()
         self.extract_title()
         self.extract_creators()
+        self.extract_note()
+        self.extract_performerNote()
         self.get_or_add_work()
         # Adds work to creators
         if self.creative_work is not None:
-            if self.creative_work.attributes.has_key('rda:creator'):
-                for creator_key in self.creative_work.attributes['rda:creator']:
+            if self.creative_work.associatedAgent is not None:
+                for creator_key in list(self.creative_work.associatedAgent):
                     creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
                     self.authority_ds.sadd(creator_set_key,
                                            self.creative_work.redis_key)

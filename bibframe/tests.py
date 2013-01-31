@@ -5,8 +5,9 @@ __author__ = "Jeremy Nelson"
 import redis,pymarc,os
 from django.test import TestCase
 from bibframe.models import *
-from ingesters import MARC21toInstance,MARC21toBIBFRAME,MARC21toPerson,MARC21toCreativeWork
-from ingesters import MARC21toFacets,MARC21toSubjects
+from bibframe.ingesters.MARC21 import *
+from ingesters.MARC21 import MARC21toInstance,MARC21toBIBFRAME,MARC21toPerson,MARC21toCreativeWork
+from ingesters.MARC21 import MARC21toFacets,MARC21toSubjects
 from aristotle.settings import PROJECT_HOME
 
 try:
@@ -95,23 +96,25 @@ class PersonAuthorityTest(TestCase):
 
     def setUp(self):
         self.person = Person(primary_redis=test_redis,
-                             attributes={'rda:dateOfBirth':'1962-04-21',
-                                         'rda:dateOfDeath':'2008-09-12',
-                                         'rda:gender':'male',
-                                         'rda:preferredNameForThePerson':'Wallace, David Foster',
-                                         'rda:identifierFor':{'loc':'http://id.loc.gov/authorities/names/n86001949'}},
+                             identifier={'loc':'http://id.loc.gov/authorities/names/n86001949'},
                              label="David Foster Wallace",
                              hasAnnotation=set('bibframe:Annotation:1'),
                              isni='0000 0001 1768 6131')
+        setattr(self.person,'rda:dateOfBirth','1962-04-21')
+        setattr(self.person,'rda:dateOfDeath','2008-09-12')
+        setattr(self.person,'rda:gender','male')
+        setattr(self.person,'foaf:familyName','Wallace')
+        setattr(self.person,'foaf:givenName','David')
+        setattr(self.person,'rda:preferredNameForThePerson','Wallace, David Foster')
         self.person.save()
 
     def test_dateOfBirth(self):
-        self.assertEquals(self.person.attributes['rda:dateOfBirth'],
+        self.assertEquals(getattr(self.person,'rda:dateOfBirth'),
                           test_redis.hget(self.person.redis_key,
                                           'rda:dateOfBirth'))
 
     def test_dateOfDeath(self):
-        self.assertEquals(self.person.attributes['rda:dateOfDeath'],
+        self.assertEquals(getattr(self.person,'rda:dateOfDeath'),
                           test_redis.hget(self.person.redis_key,
                                           'rda:dateOfDeath'))
     def test_hasAnnotation(self):
@@ -125,9 +128,21 @@ class PersonAuthorityTest(TestCase):
         self.assertEquals(self.person.isni,
                           '0000 0001 1768 6131')
 
+    def test_foaf(self):
+        self.assertEquals(getattr(self.person,'foaf:givenName'),
+                          'David')
+        self.assertEquals(getattr(self.person,'foaf:givenName'),
+                          test_redis.hget(self.person.redis_key,
+                                          'foaf:givenName'))
+        self.assertEquals(getattr(self.person,'foaf:familyName'),
+                          'Wallace')
+        self.assertEquals(getattr(self.person,'foaf:familyName'),
+                          test_redis.hget(self.person.redis_key,
+                                          'foaf:familyName'))
+      
 
     def test_gender(self):
-        self.assertEquals(self.person.attributes['rda:gender'],
+        self.assertEquals(getattr(self.person,'rda:gender'),
                           test_redis.hget(self.person.redis_key,
                                           'rda:gender'))
 
@@ -136,13 +151,13 @@ class PersonAuthorityTest(TestCase):
                           "David Foster Wallace")
 
     def test_loc_id(self):
-        self.assertEquals(self.person.attributes['rda:identifierFor']['loc'],
+        self.assertEquals(self.person.identifier.get('loc'),
                           test_redis.hget("{0}:{1}".format(self.person.redis_key,
-                                                           'rda:identifierFor'),
+                                                           'identifier'),
                                           'loc'))
 
     def test_name(self):
-        self.assertEquals(self.person.attributes['rda:preferredNameForThePerson'],
+        self.assertEquals(getattr(self.person,'rda:preferredNameForThePerson'),
                           test_redis.hget(self.person.redis_key,
                                           'rda:preferredNameForThePerson'))
 
@@ -411,6 +426,15 @@ class MARC21toCreativeWorkTest(TestCase):
                 indicators=['1', '0'],
                 subfields=['a', 'Statistics:',
                            'b', 'facts or fiction.']))
+        marc_record.add_field(
+            pymarc.Field(tag='500',
+                indicators=[' ',' '],
+                subfields=['a', 'Three-dimensional',
+                           '3', 'Films, DVDs, and streaming']))
+        marc_record.add_field(
+            pymarc.Field(tag='511',
+                indicators=[' ',' '],
+                subfields=['a','Pareto, Vilfredo']))
         self.work_ingester = MARC21toCreativeWork(annotation_ds=test_redis,
                                                   authority_ds=test_redis,
                                                   instance_ds=test_redis,
@@ -420,6 +444,20 @@ class MARC21toCreativeWorkTest(TestCase):
 
     def test_init(self):
         self.assert_(self.work_ingester.creative_work.redis_key)
+
+    def test_extract_note(self):
+        self.assertEquals(list(self.work_ingester.creative_work.note)[0],
+                          'Films, DVDs, and streaming Three-dimensional')
+        self.assertEquals(list(self.work_ingester.creative_work.note)[0],
+                          list(test_redis.smembers('{0}:note'.format(self.work_ingester.creative_work.redis_key)))[0])
+
+
+    def test_extract_performerNote(self):
+        print("In test perfomerNote={0}".format(dir(self.work_ingester.creative_work)))
+        self.assertEquals(list(self.work_ingester.creative_work.performerNote)[0],
+                          'Cast: Pareto, Vilfredo')
+        self.assertEquals(list(self.work_ingester.creative_work.performerNote)[0],
+                          list(test_redis.smembers('{0}:performerNote'.format(self.work_ingester.creative_work.redis_key)))[0])
 ##
 ##    def test_metaphone(self):
 ##        self.assertEquals(
@@ -539,8 +577,8 @@ class InstanceTest(TestCase):
 
     def setUp(self):
         self.holding = Holding(primary_redis=test_redis,
-                               annotates=set(["bibframe:Instance:1"]),
-                               attributes={'callno-local':'Video 6716'})
+                               annotates=set(["bibframe:Instance:1"]))
+        setattr(self.holding,'callno-local','Video 6716')
         setattr(self.holding,'callno-lcc','C1.D11')
         self.holding.save()
         self.existing_redis_key = "bibframe:Instance:{0}".format(test_redis.incr('global bibframe:Instance'))
@@ -552,8 +590,8 @@ class InstanceTest(TestCase):
                                  associatedAgent={'rda:publisher':set(['bibframe:Organization:1'])},
                                  hasAnnotation=set([self.holding.redis_key,]),
                                  instanceOf="bibframe:Work:1")
-        self.new_holding = Holding(primary_redis=test_redis,
-                                   attributes={"callno-sudoc": 'HD1695.C7C55 2007'})
+        self.new_holding = Holding(primary_redis=test_redis)
+        setattr(self.new_holding,"callno-sudoc",'HD1695.C7C55 2007')
         self.new_holding.save()
         self.new_instance = Instance(primary_redis=test_redis,
                                      associatedAgent={'rda:publisher':set(['bibframe:Organization:2'])},
@@ -589,9 +627,9 @@ class InstanceTest(TestCase):
         
 
     def test_local_callnumber(self):
-        self.assertEquals(self.holding.attributes.get('callno-local'),
+        self.assertEquals(getattr(self.holding,'callno-local'),
                           "Video 6716")
-        self.assertEquals(self.holding.attributes.get('callno-local'),
+        self.assertEquals(getattr(self.holding,'callno-local'),
                           test_redis.hget(self.holding.redis_key,
                                           'callno-local'))
         self.assertEquals(self.holding.redis_key,
@@ -607,7 +645,7 @@ class InstanceTest(TestCase):
     def test_sudoc_callnumber(self):
         self.assertEquals(list(self.new_instance.hasAnnotation)[0],
                           self.new_holding.redis_key)
-        self.assertEquals(self.new_holding.attributes.get("callno-sudoc"),
+        self.assertEquals(getattr(self.new_holding,"callno-sudoc"),
                           test_redis.hget(self.new_holding.redis_key,
                                           "callno-sudoc"))
         
@@ -618,13 +656,13 @@ class InstanceTest(TestCase):
 class CreativeWorkTest(TestCase):
 
     def setUp(self):
-        new_attributes = {'rda:dateOfWork':2012}
         # Test work w/o Redis key (new Work)
         self.new_creative_work = Work(primary_redis=test_redis,
                                       associatedAgent={'rda:isCreatedBy':set(["bibframe:Person:1"])},
                                       languageOfWork="eng",
-                                      note=["This is a note for a new creative work",],
-                                      attributes=new_attributes)
+                                      note=["This is a note for a new creative work",])
+        setattr(self.new_creative_work,'rda:dateOfWork',2012)
+
         self.new_creative_work.save()
         # Tests work w/pre-existing Redis 
 	self.existing_key = 'bibframe:Work:2'
@@ -645,10 +683,10 @@ class CreativeWorkTest(TestCase):
                           "bibframe:Work:2")
 
     def test_dateOfWork(self):
-        self.assertEquals(str(self.new_creative_work.attributes['rda:dateOfWork']),
+        self.assertEquals(str(getattr(self.new_creative_work,'rda:dateOfWork')),
                           test_redis.hget(self.new_creative_work.redis_key,
                                           "rda:dateOfWork"))
-        self.assertEquals(str(self.creative_work.attributes['rda:dateOfWork']),
+        self.assertEquals(getattr(self.creative_work,'rda:dateOfWork'),
                           test_redis.hget(self.creative_work.redis_key,
                                           'rda:dateOfWork'))
 

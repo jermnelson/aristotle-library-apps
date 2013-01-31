@@ -5,14 +5,14 @@ __author__ = "Jeremy Nelson"
 from lxml import etree
 from django.template import Context,Template
 import aristotle.settings as settings
-#from eulfedora.server import Repository
+from eulfedora.server import Repository
 import os,mimetypes,shutil
 
 MODS_NS = 'http://www.loc.gov/mods/v3'
-#repository = Repository(root=settings.FEDORA_ROOT,
-#                        username=settings.FEDORA_USER,
-#                        password=settings.FEDORA_PASSWORD)
-#
+repository = Repository(root=settings.FEDORA_ROOT,
+                        username=settings.FEDORA_USER,
+                        password=settings.FEDORA_PASSWORD)
+
 repository = None
 RELS_EXT = open(os.path.join(settings.PROJECT_HOME,
                 "fedora_utilities",
