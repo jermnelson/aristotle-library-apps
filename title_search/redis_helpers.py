@@ -77,12 +77,12 @@ def generate_title_app(work, redis_server):
     :param work: BIBFRAME Work
     :parm redis_server: Redis server
     """
-    if not 'rda:Title' in work.attributes:
+    if not getattr(work,'title') or work.title is None:
         return
-    raw_title = work.attributes['rda:Title']['rda:preferredTitleForTheWork']
+    raw_title = work.title.get('rda:preferredTitleForTheWork')
     terms, normed_title = process_title(raw_title)
     title_key = 'title-normed:{0}'.format(normed_title)
-    work.attributes['rda:Title']['normed'] = normed_title
+    work.title['normed'] = normed_title
     title_pipeline = redis_server.pipeline()
     title_pipeline.sadd(title_key,work.redis_key)
     for term in terms:

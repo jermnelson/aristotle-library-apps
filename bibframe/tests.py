@@ -422,6 +422,22 @@ class MARC21toCreativeWorkTest(TestCase):
     def setUp(self):
         marc_record = pymarc.Record()
         marc_record.add_field(
+            pymarc.Field(tag='082',
+                indicators=['0',' '],
+                subfields=['a','388/.0919']))
+        marc_record.add_field(
+            pymarc.Field(tag='083',
+                indicators=['0',' '],
+                subfields=['a','388.13','c','389']))
+        marc_record.add_field(
+            pymarc.Field(tag='084',
+                indicators=[' ',' '],
+                subfields=['a','016','a','014']))
+        marc_record.add_field(
+            pymarc.Field(tag='086',
+                indicators=['0',' '],
+                subfields=['a', 'A 13.28:F 61/2/981']))
+        marc_record.add_field(
             pymarc.Field(tag='245',
                 indicators=['1', '0'],
                 subfields=['a', 'Statistics:',
@@ -445,6 +461,21 @@ class MARC21toCreativeWorkTest(TestCase):
     def test_init(self):
         self.assert_(self.work_ingester.creative_work.redis_key)
 
+    def test_extract_classification(self):
+        self.assertEquals(list(self.work_ingester.creative_work.classification)[1],
+                          '016 014')
+        self.assertEquals(list(self.work_ingester.creative_work.classification)[0],
+                          'A 13.28:F 61/2/981')
+
+    def test_extract_class_ddc(self):
+        self.assertEquals(list(getattr(self.work_ingester.creative_work,'class-ddc'))[1],
+                          "388/.0919")
+        self.assertEquals(list(getattr(self.work_ingester.creative_work,'class-ddc'))[0],
+                          "388.13-389")
+
+
+                         
+
     def test_extract_note(self):
         self.assertEquals(list(self.work_ingester.creative_work.note)[0],
                           'Films, DVDs, and streaming Three-dimensional')
@@ -453,7 +484,6 @@ class MARC21toCreativeWorkTest(TestCase):
 
 
     def test_extract_performerNote(self):
-        print("In test perfomerNote={0}".format(dir(self.work_ingester.creative_work)))
         self.assertEquals(list(self.work_ingester.creative_work.performerNote)[0],
                           'Cast: Pareto, Vilfredo')
         self.assertEquals(list(self.work_ingester.creative_work.performerNote)[0],

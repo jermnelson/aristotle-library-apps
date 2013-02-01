@@ -677,9 +677,9 @@ class MARC21toCreativeWork(MARC21Ingester):
                     people_keys.append(person.redis_key)
         if len(people_keys) > 0:
             if self.entity_info.has_key('associatedAgent'):
-                self.entity_info['associatedAgent']['rda:creator'] = set(people_keys)
+                self.entity_info['associatedAgent']['rda:isCreatedBy'] = set(people_keys)
             else:
-                self.entity_info['associatedAgent'] = {'rda:creator': set(people_keys)}
+                self.entity_info['associatedAgent'] = {'rda:isCreatedBy': set(people_keys)}
 
     def __extract_other_std_id__(self,
                                  tag,
@@ -819,16 +819,16 @@ class MARC21toCreativeWork(MARC21Ingester):
             raw_title += ' {0}'.format(subfield_b)
             if raw_title.startswith("..."):
                 raw_title = raw_title.replace("...","")
-            self.entity_info['rda:Title'] = {'rda:preferredTitleForTheWork':raw_title,
-                                             'sort':raw_title.lower()}
+            self.entity_info['title'] = {'rda:preferredTitleForTheWork':raw_title,
+			'sort':raw_title.lower()}
             indicator_one = title_field.indicators[1]
             try:
                 indicator_one = int(indicator_one)
             except ValueError:
                 indicator_one = 0
             if int(indicator_one) > 0:
-                self.entity_info['rda:Title']['rda:variantTitleForTheWork'] = raw_title[indicator_one:]
-                self.entity_info['rda:Title']['sort'] = self.entity_info['rda:Title']['rda:variantTitleForTheWork'].lower()
+                self.entity_info['variantTitle'] = raw_title[indicator_one:]
+                self.entity_info['title']['sort'] = self.entity_info['varientTitle']
 
               
 
@@ -837,18 +837,22 @@ class MARC21toCreativeWork(MARC21Ingester):
         Method either returns a new Work or an existing work based
         on a similarity metric, basic similarity is 100% match
         (i.e. all fields must match or a new work is created)
+
+        This method could use other Machine Learning techniques to improve
+        the existing match with mutliple and complex rule sets. 
         """
         if self.entity_info.has_key('bibframe:Instances'):
             self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
         # If the title matches an existing Work's title and the creative work's creators, 
         # assumes that the Creative Work is the same.
-        if self.entity_info.has_key('rda:Title'):
-            cw_title_keys = search_title(self.entity_info['rda:Title']['rda:preferredTitleForTheWork'],
+        if self.entity_info.has_key('title'):
+            cw_title_keys = search_title(self.entity_info['title']['rda:preferredTitleForTheWork'],
                                          self.creative_work_ds)
             for creative_wrk_key in cw_title_keys:
-                creator_keys = self.creative_work_ds.smembers("{0}:rda:creator".format(creative_wrk_key))
-            if self.entity_info.has_key('rda:creator'):
-                    existing_keys = creator_keys.intersection(self.entity_info['rda:creator'])
+                creator_keys = self.creative_work_ds.smembers(
+                    "{0}:associatedAgent".format(creative_wrk_key))
+            if self.entity_info.has_key('rda:isCreatedBy'):
+                    existing_keys = creator_keys.intersection(self.entity_info['rda:isCreatedBy'])
                     if len(existing_keys) == 1:
                         self.creative_work = Work(primary_redis=self.creative_work_ds,
                                                   redis_key=creative_wrk_key)
@@ -880,7 +884,17 @@ class MARC21toCreativeWork(MARC21Ingester):
         :param record: MARC21 record
         """
         self.extract_classification()
+        self.extract_class_ddc()
+        self.extract_class_lcc()
         self.extract_class_udc()
+        self.extract_contentCoverage()
+        self.extract_contentNature()
+        self.extract_creditNotes()
+        self.extract_intendedAudience()
+        self.extract_isan()
+        self.extract_istc()
+        self.extract_iswc()
+        self.extract_issnl()
         self.extract_title()
         self.extract_creators()
         self.extract_note()
