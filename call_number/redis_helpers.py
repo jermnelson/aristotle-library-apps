@@ -28,7 +28,7 @@ def generate_call_number_app(instance,redis_server):
     :param instance: MARCR Instance
     :parm redis_server: Redis server
     """
-    identifiers = instance.attributes.get('rda:identifierForTheManifestation',None)
+    identifiers = getattr(instance,'rda:identifierForTheManifestation',{})
     if identifiers.has_key('lccn'):
         redis_server.hset('lccn-hash',
                           identifiers.get('lccn'),

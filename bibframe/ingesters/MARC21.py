@@ -230,12 +230,16 @@ class MARC21toInstance(MARC21Ingester):
         super(MARC21toInstance, self).__init__(**kwargs)
         self.entity_info['rda:identifierForTheManifestation'] = {}
 
+
+   
+
     def add_instance(self):
         """
         Method creates an marcr:Instance based on values for the entity
         """
-        self.instance = Instance(redis=self.instance_ds,
-                                 attributes=self.entity_info)
+        self.instance = Instance(primary_redis=self.instance_ds)
+        for key,value in self.entity_info.iteritems():
+            setattr(self.instance,key,value)
         self.instance.save()
 
     def extract_carrier_type(self):
@@ -249,6 +253,21 @@ class MARC21toInstance(MARC21Ingester):
         self.entity_info['rda:carrierTypeManifestation'] = \
         marc21_facets.get_format(self.record)
 
+    def extract_coden(self):
+        """
+        Extracts CODEN from MARC record field 030, if the the field /z
+        exists, adds value to set of invalid CODEN values
+        """
+        output = []
+        all030s = self.record.get_fields('030')
+        for field in all030s:
+            for subfield in field.get_subfields('a'):
+                output.append(subfield)
+            for subfield in field.get_subfields('z'):
+                output.append(subfield)
+                self.instance_ds.sadd('identifiers:CODEN:invalid',subfield)
+        if len(output) > 0:
+            self.entity_info['coden'] = set(output)
 
     def extract_ils_bibnumber(self):
         """
@@ -330,6 +349,32 @@ class MARC21toInstance(MARC21Ingester):
         # 008[1:15], 260c, 542i
         self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
 
+    def extract_stock_number(self):
+        """
+        Extracts stock number for the acquisition 
+        """
+        output = []
+        all037s = self.record.get_fields('037')
+        for field in all037s:
+            output.append(field['a'])
+        if len(output) > 0:
+            self.entity_info['stock-number'] = set(output)
+
+    def extract_videorecording_number(self):
+        """
+        Extracts videorecording number from the MARC21 record
+        """
+        output = []
+        all028s = self.record.get_fields('028')
+        for field in all028s:
+            if field.indicator1 == '4':
+                output.append(field['a'])
+        if len(output) > 0:
+            self.entity_info['videorecording-identifier']
+
+    
+        
+
 
     def extract_sudoc(self):
         """
@@ -345,10 +390,12 @@ class MARC21toInstance(MARC21Ingester):
         Ingests a MARC21 record into a BIBFRAME Instance Redis datastore
         """
         self.extract_carrier_type()
+        self.extract_coden()
         self.extract_ils_bibnumber()
         self.extract_isbn()
         self.extract_issn()
         self.extract_lccn()
+        self.extract_stock_number()
         self.extract_sudoc()
         self.extract_date_of_publication()
         self.extract_local()

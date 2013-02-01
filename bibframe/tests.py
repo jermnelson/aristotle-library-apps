@@ -238,10 +238,25 @@ class PersonAuthorityTest(TestCase):
 ##
 ##
 ##
-##class MARC21toInstanceTest(TestCase):
-##
-##    def setUp(self):
-##        marc_record = pymarc.Record()
+class MARC21toInstanceTest(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(pymarc.Field(tag='008',
+                                           data='011003s2001        enk300  g                   vleng  d'))
+        marc_record.add_field(pymarc.Field(tag='028',
+                                           indicators=['4',' '],
+                                           subfields=['a','VM600167']))
+        marc_record.add_field(pymarc.Field(tag='030',
+                                           indicators=[' ',' '],
+                                           subfields=['a','ASIRAF',
+                                                      'z','ASITAF']))
+        marc_record.add_field(pymarc.Field(tag='037',
+                                           indicators=[' ',' '],
+                                           subfields=['a','240-951/147']))
+                                                      
+
+
 ##        marc_record.add_field(pymarc.Field(tag='050',
 ##                                           indicators=['0','0'],
 ##                                           subfields=['a','QC861.2',
@@ -255,16 +270,31 @@ class PersonAuthorityTest(TestCase):
 ##        marc_record.add_field(pymarc.Field(tag='907',
 ##                                           indicators=[' ',' '],
 ##                                           subfields=['a','.b1112223x']))
-##        self.instance_ingester = MARC21toInstance(annotation_ds=test_redis,
-##                                                  authority_ds=test_redis,
-##                                                  instance_ds=test_redis,
-##                                                  marc_record=marc_record,
-##                                                  creative_work_ds=test_redis)
-##        self.instance_ingester.ingest()
-##
-##    def test_init(self):
-##        self.assert_(self.instance_ingester.instance.redis_key)
-##
+        self.instance_ingester = MARC21toInstance(annotation_ds=test_redis,
+                                                  authority_ds=test_redis,
+                                                  instance_ds=test_redis,
+                                                  marc_record=marc_record,
+                                                  creative_work_ds=test_redis)
+        self.instance_ingester.ingest()
+
+
+    def test_init(self):
+        self.assert_(self.instance_ingester.instance.redis_key)
+
+    def test_extract_coden(self):
+        self.assertEquals(list(self.instance_ingester.instance.coden)[0],
+                          'ASITAF')
+        self.assertEquals(list(self.instance_ingester.instance.coden)[1],
+                          'ASIRAF')
+        self.assert_(test_redis.sismember('identifiers:CODEN:invalid',
+                                          list(self.instance_ingester.instance.coden)[0]))
+
+    def test_extract_stock_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
+                          '240-951/147')
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
+                          list(test_redis.smembers("{0}:stock-number".format(self.instance_ingester.instance.redis_key)))[0])
+   
 ##    def test_lccn(self):
 ##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['lccn'],
 ##                          'QC861.2 .B36')
@@ -293,9 +323,15 @@ class PersonAuthorityTest(TestCase):
 ##                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
 ##                                          "sudoc"))
 ##
-##    def tearDown(self):
-##        test_redis.flushdb()
-##
+    def extract_videorecording_identifier(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,
+                                       'videorecording-identifier'))[0],
+                          'VM600167')
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+
 ##class MARC21toBIBFRAMETest(TestCase):
 ##
 ##    def setUp(self):
@@ -417,6 +453,7 @@ class PersonAuthorityTest(TestCase):
 ##    def test_topical_subjects(self):
 ##        self.assert_(self.subjects_ingester.subjects[0])
 ##
+
 class MARC21toCreativeWorkTest(TestCase):
 
     def setUp(self):
