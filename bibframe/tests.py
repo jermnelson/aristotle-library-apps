@@ -244,6 +244,19 @@ class MARC21toInstanceTest(TestCase):
         marc_record = pymarc.Record()
         marc_record.add_field(pymarc.Field(tag='008',
                                            data='011003s2001        enk300  g                   vleng  d'))
+        marc_record.add_field(pymarc.Field(tag='015',
+                                           indicators=[' ',' '],
+                                           subfields=['a','B67-25185']))
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['1',' '],
+                                           subfields=['a','7822183031']))
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['4',' '],
+                                           subfields=['a','8756-2324(198603/04)65:2L.4:QTP:1-P']))
+
+        marc_record.add_field(pymarc.Field(tag='025',
+                                           indicators=[' ',' '],
+                                           subfields=['a','ET-E-123']))
         marc_record.add_field(pymarc.Field(tag='028',
                                            indicators=['4',' '],
                                            subfields=['a','VM600167']))
@@ -267,6 +280,15 @@ class MARC21toInstanceTest(TestCase):
 ##        marc_record.add_field(pymarc.Field(tag='099',
 ##                                           indicators=[' ',' '],
 ##                                           subfields=['a','Video 6716']))
+        marc_record.add_field(pymarc.Field(tag='504',
+                                           indicators=[' ',' '],
+                                           subfields=['a','Literature cited: p. 67-68.',
+                                                      'b','19']))
+        marc_record.add_field(pymarc.Field(tag='525',
+                                           indicators=[' ',' '],
+                                           subfields=['a','Has numerous supplements']))
+
+
 ##        marc_record.add_field(pymarc.Field(tag='907',
 ##                                           indicators=[' ',' '],
 ##                                           subfields=['a','.b1112223x']))
@@ -289,12 +311,7 @@ class MARC21toInstanceTest(TestCase):
         self.assert_(test_redis.sismember('identifiers:CODEN:invalid',
                                           list(self.instance_ingester.instance.coden)[0]))
 
-    def test_extract_stock_number(self):
-        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
-                          '240-951/147')
-        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
-                          list(test_redis.smembers("{0}:stock-number".format(self.instance_ingester.instance.redis_key)))[0])
-   
+  
 ##    def test_lccn(self):
 ##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['lccn'],
 ##                          'QC861.2 .B36')
@@ -323,10 +340,43 @@ class MARC21toInstanceTest(TestCase):
 ##                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
 ##                                          "sudoc"))
 ##
-    def extract_videorecording_identifier(self):
+    def test_extract_lc_overseas_acq(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'lc-overseas-acq'))[0],
+                          list(test_redis.smembers('{0}:lc-overseas-acq'.format(self.instance_ingester.instance.redis_key)))[0])
+
+    def test_nbn(self):
+        self.assertEquals(list(self.instance_ingester.instance.nbn)[0],
+                          'B67-25185')
+
+    def test_sici(self):
+        self.assertEquals(list(self.instance_ingester.instance.sici)[0],
+                          '8756-2324(198603/04)65:2L.4:QTP:1-P')
+
+    def test_extract_stock_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
+                          '240-951/147')
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
+                          list(test_redis.smembers("{0}:stock-number".format(self.instance_ingester.instance.redis_key)))[0])
+ 
+
+    def test_extract_supplementaryContentNote(self):
+        print(self.instance_ingester.instance.supplementaryContentNote)
+        self.assertEquals(list(self.instance_ingester.instance.supplementaryContentNote)[0],
+                          'Literature cited: p. 67-68. References: 19')
+        self.assertEquals(list(test_redis.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[0],
+                          'Has numerous supplements')
+
+    def test_upc(self):
+        self.assertEquals(list(self.instance_ingester.instance.upc)[0],
+                          '7822183031')
+
+
+    def test_extract_videorecording_identifier(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,
                                        'videorecording-identifier'))[0],
                           'VM600167')
+
+
 
     def tearDown(self):
         test_redis.flushdb()

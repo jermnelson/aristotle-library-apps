@@ -324,6 +324,17 @@ class MARC21toInstance(MARC21Ingester):
             if local_090 is not None:
                 self.entity_info['rda:identifierForTheManifestation']['lccn'] = local_090.value()
 
+    def extract_lc_overseas_acq(self):
+        """
+        Extract's Library of Congress Overseas Acquisition Program number
+        """
+        output = []
+        all025s = self.record.get_fields('025')
+        for field in all025s:
+            output.append(field['a'])
+        if len(output) > 0:
+            self.entity_info['lc-overseas-acq'] = set(output)
+
     def extract_local(self):
         """
         Extracts local call number MARC21 record and
@@ -349,6 +360,58 @@ class MARC21toInstance(MARC21Ingester):
         # 008[1:15], 260c, 542i
         self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
 
+    def extract_nbn(self):
+        """
+        Extracts the National Bibliography Number
+        """
+        output = []
+        fields = self.record.get_fields('015')
+        for field in fields:
+            for subfield in field.get_subfields('a'):
+                output.append(subfield)
+            for subfield in field.get_subfields('z'):
+                output.append(subfield)
+                self.instance_ds.sadd("identifers:nbn:invalid",subfield)
+        if len(output) > 0:
+            self.entity_info['nbn'] = set(output)
+ 
+
+
+    def extract_sici(self):
+        """
+        Extracts Serial Item and Contribution Identifier
+        """
+        output = []
+        all024s = self.record.get_fields('024')
+        for field in all024s:
+            if field.indicator1 == '4':
+                 for subfield in field.get_subfields('a'):
+                     output.append(subfield)
+            for subfield in field.get_subfields('z'):
+                output.append(subfield)
+                self.instance_ds.sadd("identifers:sici:invalid",subfield)
+        if len(output) > 0:
+            self.entity_info['sici'] = set(output)
+
+    def extract_supplementaryContentNote(self):
+        """
+        Extract Supplementary content note
+        """
+        output = []
+        fields = self.record.get_fields('504','525')
+        for field in fields:
+            if tag == '504':
+                note = field['a']
+                if field['b'] is not None:
+                    note = '{0} References: {1}'.format(note,
+                                                        field['b'])
+                output.append(note)
+            elif tag == '525':
+                output.append(field['a'])
+        if len(output) > 0:
+            self.entity_info['supplementaryContentNote']
+                   
+
     def extract_stock_number(self):
         """
         Extracts stock number for the acquisition 
@@ -360,6 +423,25 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['stock-number'] = set(output)
 
+
+    def extract_upc(self):
+        """
+        Extracts Universal Product Code
+        """
+        output = []
+        all024s = self.record.get_fields('024')
+        for field in all024s:
+            if field.indicator1 == '1':
+               for subfield in field.get_subfields('a'):
+                   output.append(subfield) 
+               for subfield in field.get_subfields('z'):
+                   output.append(subfield) 
+                   self.instance_ds.sadd("identifiers:upc:invalid",subfield)
+        if len(output) > 0:
+            self.entity_info['upc'] = set(output)
+
+
+
     def extract_videorecording_number(self):
         """
         Extracts videorecording number from the MARC21 record
@@ -370,10 +452,7 @@ class MARC21toInstance(MARC21Ingester):
             if field.indicator1 == '4':
                 output.append(field['a'])
         if len(output) > 0:
-            self.entity_info['videorecording-identifier']
-
-    
-        
+            self.entity_info['videorecording-identifier'] = set(output)
 
 
     def extract_sudoc(self):
@@ -394,9 +473,14 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_ils_bibnumber()
         self.extract_isbn()
         self.extract_issn()
+        self.extract_lc_overseas_acq()
         self.extract_lccn()
+        self.extract_nbn()
+        self.extract_sici()
         self.extract_stock_number()
         self.extract_sudoc()
+        self.extract_upc()
+        self.extract_videorecording_number()
         self.extract_date_of_publication()
         self.extract_local()
         self.add_instance()
