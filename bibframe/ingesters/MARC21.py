@@ -231,8 +231,6 @@ class MARC21toInstance(MARC21Ingester):
         self.entity_info['rda:identifierForTheManifestation'] = {}
 
 
-   
-
     def add_instance(self):
         """
         Method creates an marcr:Instance based on values for the entity
@@ -241,6 +239,89 @@ class MARC21toInstance(MARC21Ingester):
         for key,value in self.entity_info.iteritems():
             setattr(self.instance,key,value)
         self.instance.save()
+
+    def extract_024(self):
+        """
+        Extracts all 024 fields values and assigns to Instance
+        """
+        names = ['doi','iso','sici','upc','urn']
+        fields = self.record.get_fields('024')
+        for field in fields:
+            a_subfields = field.get_subfields('a')
+            z_subfields = field.get_subfields('z')
+            if field.indicator1 == '1':
+                source_code = 'upc'
+            if field.indicator1 == '2':
+                print("IN 024 ISO")
+                source_code = 'iso'
+            if field.indicator1 == '4':
+                source_code = 'sici'
+            if field.indicator1 == '7':
+                source_code = field['2']
+            if not self.entity_info.has_key(source_code):
+                self.entity_info[source_code] = []
+            for subfield in a_subfields:
+                self.entity_info[source_code].append(subfield)
+            for subfield in z_subfields:
+                self.entity_info[source_code].append(subfield)
+                self.instance_ds.sadd('identifiers:{0}:invalid'.format(source_code),
+                                       subfield)
+        for name in names:
+             if self.entity_info.has_key(name):
+                 self.entity_info[name] = set(self.entity_info[name])             
+                      
+
+    def extract_028(self):
+        """
+        Extracts all 028 fields values and assigns to Instance  
+        properties
+        """
+        fields = self.record.get_fields('028')
+        for field in fields:
+            a_subfield = field['a']
+            if field.indicator1 == '2' and a_subfield is not None:
+                if self.entity_info.has_key('music-plate'):
+                    self.entity_info['music-plate'].append(a_subfield)
+                else:
+                    self.entity_info['music-plate'] = [a_subfield,]
+           
+            if field.indicator1 == '4' and a_subfield is not None:
+                if self.entity_info.has_key('videorecording-identifier'):
+                    self.entity_info['videorecording-identifier'].append(a_subfield)
+                else:
+                    self.entity_info['videorecording-identifier'] = [a_subfield,]
+            if field.indicator1 == '5' and a_subfield is not None:
+                if self.entity_info.has_key('publisher-number'):
+                    self.entity_info['publisher-number'].append(a_subfield)
+                else:
+                    self.entity_info['publisher-number'] = [a_subfield,]
+        for prop_name in ['music-plate',
+                          'publisher-number'
+                          'videorecording-identifier']:
+            if self.entity_info.has_key(prop_name):
+                self.entity_info[prop_name] = set(self.entity_info[prop_name])
+            
+
+    def extract_856(self):
+        """
+        Extracts all 856 fields values and assign to various Instance
+        properties
+        """
+        fields = self.record.get_fields('856')
+        for field in fields:
+            u_subfields = field.get_subfields('u')
+            if u_subfields is not None:
+                for subfield in u_subfields:
+                    for name in ['doi','hdl']:
+                        if subfield.count(name) > 0:
+                            if self.entity_info.has_key(name):
+                                self.entity_info[name].append(subfield)
+                            else:
+                                self.entity_info[name] = [subfield,]
+        for name in ['doi','hdl']:
+            if self.entity_info.has_key(name):
+                self.entity_info[name] = set(self.entity_info[name])
+
 
     def extract_award_note(self):
         """
@@ -283,6 +364,8 @@ class MARC21toInstance(MARC21Ingester):
                 self.instance_ds.sadd('identifiers:CODEN:invalid',subfield)
         if len(output) > 0:
             self.entity_info['coden'] = set(output)
+
+
 
     def extract_ils_bibnumber(self):
         """
@@ -327,17 +410,20 @@ class MARC21toInstance(MARC21Ingester):
     def extract_lccn(self):
         """
         Extract's LCCN call-number from MARC21 record and
-        saves as a rda:identifierForTheManifestation
         """
-        lccn_field = self.record['050']
+        lccn_field = self.record['010']
         if lccn_field is not None:
-            self.entity_info['rda:identifierForTheManifestation']['lccn'] = \
-            lccn_field.value()
-        else:
-            # Adds 090 value to lccn following CC standard practice
-            local_090 = self.record['090']
-            if local_090 is not None:
-                self.entity_info['rda:identifierForTheManifestation']['lccn'] = local_090.value()
+            subfield_a = lccn_field['a']
+            subfield_z = lccn_field['z']
+            if subfield_a is not None and subfield_z is not None:
+                self.entity_info['lccn'] = set([subfield_a, subfield_z])
+            elif subfield_a is not None and subfield_z is None:
+                self.entity_info['lccn'] = subfield_a
+            elif subfield_a is None and subfield_z is not None:
+                self.entity_info['lccn'] = subfield_z
+            if subfield_z is not None:
+                self.instance_ds.sadd('identifiers:lccn:invalid',subfield_z)
+
 
     def extract_lc_overseas_acq(self):
         """
@@ -375,6 +461,25 @@ class MARC21toInstance(MARC21Ingester):
         # 008[1:15], 260c, 542i
         self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
 
+
+    def extract_nban(self):
+        """
+        Extracts National bibliography agency control number
+        """
+        output = []
+        fields = self.record.get_fields('016')
+        for field in fields:
+            subfields = field.get_subfields('a')
+            for subfield in subfields:
+                output.append(subfield)
+            subfields = field.get_subfields('z')
+            for subfield in subfields:
+                output.append(subfield)
+                self.instance_ds.sadd('identifiers:nban:invalid',subfield)
+        if len(output) > 0:
+            self.entity_info['nban'] = set(output)
+
+
     def extract_nbn(self):
         """
         Extracts the National Bibliography Number
@@ -390,34 +495,27 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['nbn'] = set(output)
  
-    def extract_publisher_number(self):
-        """
-        Extracts the publisher number
-        """
-        output = []
-        fields = self.record.get_fields('028')
-        for field in fields:
-            if field.indicator1 == '5':
-                if field['a'] is not None:
-                    output.append(field['a'])
-        if len(output) > 0:
-            self.entity_info['publisher-number'] = set(output)
 
-    def extract_sici(self):
+    def extract_report_number(self):
         """
-        Extracts Serial Item and Contribution Identifier
-        """
+        Extracts report-number 
+        """ 
         output = []
-        all024s = self.record.get_fields('024')
-        for field in all024s:
-            if field.indicator1 == '4':
-                 for subfield in field.get_subfields('a'):
-                     output.append(subfield)
-            for subfield in field.get_subfields('z'):
+        fields = self.record.get_fields('088')
+        for field in fields:
+            subfields = field.get_subfields('a')
+            for subfield in subfields:
                 output.append(subfield)
-                self.instance_ds.sadd("identifers:sici:invalid",subfield)
+            invalid_subfields = field.get_subfields('z')
+            for subfield in invalid_subfields:
+                output.append(subfield)
+                self.instance_ds.sadd("identifiers:report-number:invalid",
+                                      subfield)
         if len(output) > 0:
-            self.entity_info['sici'] = set(output)
+            self.entity_info['report-number'] = set(output)
+
+
+            
 
     def extract_supplementaryContentNote(self):
         """
@@ -459,35 +557,6 @@ class MARC21toInstance(MARC21Ingester):
             if field036['a'] is not None:
                 self.entity_info['study-number'] = field036['a']
 
-    def extract_upc(self):
-        """
-        Extracts Universal Product Code
-        """
-        output = []
-        all024s = self.record.get_fields('024')
-        for field in all024s:
-            if field.indicator1 == '1':
-               for subfield in field.get_subfields('a'):
-                   output.append(subfield) 
-               for subfield in field.get_subfields('z'):
-                   output.append(subfield) 
-                   self.instance_ds.sadd("identifiers:upc:invalid",subfield)
-        if len(output) > 0:
-            self.entity_info['upc'] = set(output)
-
-
-
-    def extract_videorecording_number(self):
-        """
-        Extracts videorecording number from the MARC21 record
-        """
-        output = []
-        all028s = self.record.get_fields('028')
-        for field in all028s:
-            if field.indicator1 == '4':
-                output.append(field['a'])
-        if len(output) > 0:
-            self.entity_info['videorecording-identifier'] = set(output)
 
 
     def extract_sudoc(self):
@@ -503,6 +572,9 @@ class MARC21toInstance(MARC21Ingester):
         """
         Ingests a MARC21 record into a BIBFRAME Instance Redis datastore
         """
+        self.extract_024()
+        self.extract_028()
+        self.extract_856()
         self.extract_award_note()
         self.extract_carrier_type()
         self.extract_coden()
@@ -511,14 +583,13 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_issn()
         self.extract_lc_overseas_acq()
         self.extract_lccn()
+        self.extract_nban()
         self.extract_nbn()
-        self.extract_sici()
+        self.extract_report_number()
         self.extract_stock_number()
         self.extract_study_number()
         self.extract_sudoc()
         self.extract_supplementaryContentNote()
-        self.extract_upc()
-        self.extract_videorecording_number()
         self.extract_date_of_publication()
         self.extract_local()
         self.add_instance()

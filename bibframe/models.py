@@ -100,7 +100,7 @@ def save_keys(entity_key,name,value,redis_object):
             redis_object.hset(new_redis_key,
                               nk,
                               nv)
-    else:
+    elif value is not None:
         redis_object.hset(entity_key,name,value)
     # Remove new_redis_key from all_keys_key as new_redis_key
     # is not a distinct Redis key
