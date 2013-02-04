@@ -242,6 +242,21 @@ class MARC21toInstance(MARC21Ingester):
             setattr(self.instance,key,value)
         self.instance.save()
 
+    def extract_award_note(self):
+        """
+        Extract's Award Note from MARC21 record
+        """
+        output = []
+        fields = self.record.get_fields('586')
+        for field in fields:
+            note = ''
+            if field['3'] is not None:
+                note = '{0} '.format(field['3'])
+            note += field['a']
+            output.append(note)
+        if len(output) > 0:
+            self.entity_info['awardNote'] = set(output) 
+
     def extract_carrier_type(self):
         """
         Extract's the RDA carrier type from a MARC21 record and
@@ -375,7 +390,18 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['nbn'] = set(output)
  
-
+    def extract_publisher_number(self):
+        """
+        Extracts the publisher number
+        """
+        output = []
+        fields = self.record.get_fields('028')
+        for field in fields:
+            if field.indicator1 == '5':
+                if field['a'] is not None:
+                    output.append(field['a'])
+        if len(output) > 0:
+            self.entity_info['publisher-number'] = set(output)
 
     def extract_sici(self):
         """
@@ -400,16 +426,16 @@ class MARC21toInstance(MARC21Ingester):
         output = []
         fields = self.record.get_fields('504','525')
         for field in fields:
-            if tag == '504':
+            if field.tag == '504':
                 note = field['a']
                 if field['b'] is not None:
                     note = '{0} References: {1}'.format(note,
                                                         field['b'])
                 output.append(note)
-            elif tag == '525':
+            elif field.tag == '525':
                 output.append(field['a'])
         if len(output) > 0:
-            self.entity_info['supplementaryContentNote']
+            self.entity_info['supplementaryContentNote'] = set(output)
                    
 
     def extract_stock_number(self):
@@ -423,6 +449,15 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['stock-number'] = set(output)
 
+
+    def extract_study_number(self):
+        """
+        Extracts study number
+        """
+        field036 = self.record['036']
+        if field036 is not None:
+            if field036['a'] is not None:
+                self.entity_info['study-number'] = field036['a']
 
     def extract_upc(self):
         """
@@ -468,6 +503,7 @@ class MARC21toInstance(MARC21Ingester):
         """
         Ingests a MARC21 record into a BIBFRAME Instance Redis datastore
         """
+        self.extract_award_note()
         self.extract_carrier_type()
         self.extract_coden()
         self.extract_ils_bibnumber()
@@ -478,7 +514,9 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_nbn()
         self.extract_sici()
         self.extract_stock_number()
+        self.extract_study_number()
         self.extract_sudoc()
+        self.extract_supplementaryContentNote()
         self.extract_upc()
         self.extract_videorecording_number()
         self.extract_date_of_publication()

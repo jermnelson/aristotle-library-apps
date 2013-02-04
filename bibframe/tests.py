@@ -264,6 +264,10 @@ class MARC21toInstanceTest(TestCase):
                                            indicators=[' ',' '],
                                            subfields=['a','ASIRAF',
                                                       'z','ASITAF']))
+        marc_record.add_field(pymarc.Field(tag='036',
+                                           indicators=[' ',' '],
+                                           subfields=['a','CPS 495441']))
+  
         marc_record.add_field(pymarc.Field(tag='037',
                                            indicators=[' ',' '],
                                            subfields=['a','240-951/147']))
@@ -287,7 +291,10 @@ class MARC21toInstanceTest(TestCase):
         marc_record.add_field(pymarc.Field(tag='525',
                                            indicators=[' ',' '],
                                            subfields=['a','Has numerous supplements']))
-
+        marc_record.add_field(pymarc.Field(tag='586',
+                                           indicators=[' ',' '],
+                                           subfields=['a','Book of the Year',
+                                                      '3','Certificate']))
 
 ##        marc_record.add_field(pymarc.Field(tag='907',
 ##                                           indicators=[' ',' '],
@@ -302,6 +309,10 @@ class MARC21toInstanceTest(TestCase):
 
     def test_init(self):
         self.assert_(self.instance_ingester.instance.redis_key)
+
+    def text_award_note(self):
+        self.assertEquals(list(self.instance_ingester.instance.awardNote)[0],
+                          'Certificate Book of the Year')
 
     def test_extract_coden(self):
         self.assertEquals(list(self.instance_ingester.instance.coden)[0],
@@ -358,12 +369,15 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
                           list(test_redis.smembers("{0}:stock-number".format(self.instance_ingester.instance.redis_key)))[0])
  
+    def test_study_number(self):
+        self.assertEquals(getattr(self.instance_ingester.instance,'study-number'),
+                          'CPS 495441') 
+
 
     def test_extract_supplementaryContentNote(self):
-        print(self.instance_ingester.instance.supplementaryContentNote)
         self.assertEquals(list(self.instance_ingester.instance.supplementaryContentNote)[0],
                           'Literature cited: p. 67-68. References: 19')
-        self.assertEquals(list(test_redis.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[0],
+        self.assertEquals(list(test_redis.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[1],
                           'Has numerous supplements')
 
     def test_upc(self):

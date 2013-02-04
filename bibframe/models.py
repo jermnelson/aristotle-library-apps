@@ -88,9 +88,12 @@ def save_keys(entity_key,name,value,redis_object):
     if type(value) is list:
         redis_object.lpush(new_redis_key, value)
     elif type(value) is set:
-        redis_object.sadd(all_keys_key,new_redis_key)
-        for member in list(value):
-            redis_object.sadd(new_redis_key,member)
+        if len(value) == 1:
+            redis_object.hset(entity_key,name,list(value)[0])
+        else:  
+            redis_object.sadd(all_keys_key,new_redis_key)
+            for member in list(value):
+                redis_object.sadd(new_redis_key,member)
     elif type(value) is dict:
         redis_object.sadd(all_keys_key,new_redis_key)
         for nk, nv in value.iteritems():
