@@ -332,6 +332,19 @@ class MARC21toInstance(MARC21Ingester):
             if self.entity_info.has_key(name):
                 self.entity_info[name] = set(self.entity_info[name])
 
+    def extract_aspect_ratio(self):
+        """
+        Extracts Aspect Ratio from MARC21 record
+        """
+        output = []
+        fields = self.record.get_fields('007')
+        for field in fields:
+            if field.data[0] == 'm':
+                if field.data[4] is not None:
+                    output.append(field007_lkup['m']['4'][field.data[4]])
+        if len(output) > 0:
+            self.entity_info['aspectRatio'] = set(output)
+
 
     def extract_award_note(self):
         """
@@ -413,6 +426,19 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['ean'] = set(output)
 
+    def extract_fingerprint(self):
+        """
+        Extract's unparsed fingerprint
+        """
+        output = []
+        fields = self.record.get_fields('026')
+        for field in fields:
+            subfield_e = field['e']
+            if subfield_e is not None:
+                output.append(subfield_e)
+        if len(output) > 0:
+            self.entity_info['fingerprint'] = set(output)
+
     def extract_illustrative_content_note(self):
         """
         Extract Illustrative Content Note
@@ -483,15 +509,16 @@ class MARC21toInstance(MARC21Ingester):
         Extract's ISSN  from MARC21 record and
         saves as a rda:identifierForTheManifestation:issn
         """
-        issn_field = self.record['022']
+        issn_fields= self.record.get_fields('022')
         issn_values = []
-        if issn_field is not None:
-            for subfield in issn_field.get_subfields('a',
-                                                     'y',
-                                                     'z'):
-                issn_values.append(''.join(subfield))
-            self.entity_info['rda:identifierForTheManifestation:issn'] = \
-            set(issn_values)
+        for field in issn_fields:
+            for subfield in field.get_subfields('a','y'):
+                issn_values.append(subfield)
+            for subfield in field.get_subfields('z'):
+                issn_values.append(subfield)
+                self.instance_ds.sadd("identifiers:issn:invalid",subfield)
+        if len(issn_values) > 0:
+            self.entity_info['issn'] = set(issn_values)
 
     def extract_lccn(self):
         """
@@ -564,7 +591,18 @@ class MARC21toInstance(MARC21Ingester):
         # 008[1:15], 260c, 542i
         self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
 
-        
+
+    def extract_medium_of_music(self):
+        """
+        Extracts mediumOfMusic
+        """
+        output = []
+        fields = self.record.get_fields('382')
+        for field in fields:
+            for subfield in field.get_subfields('a'):
+                output.append(subfield)
+        if len(output) > 0:
+            self.entity_info['mediumOfMusic'] = set(output)
 
     def extract_nban(self):
         """
@@ -633,6 +671,19 @@ class MARC21toInstance(MARC21Ingester):
                 self.entity_info['organizationSystem'] = set(output)
  
 
+    def extract_performers_note(self):
+        """
+        Extracts Performers Note
+        """
+        output = []
+        fields = self.record.get_fields('511')
+        for field in fields:
+            subfields = field.get_subfields('a')
+            for subfield in subfields:
+                output.append('Cast: {0}'.format(subfield))
+        if len(output) > 0:
+            self.entity_info['performerNote'] = set(output)
+
     def extract_report_number(self):
         """
         Extracts report-number 
@@ -660,8 +711,12 @@ class MARC21toInstance(MARC21Ingester):
         for field in fields:
             type_of = field.data[0]
             if field007_lkup.has_key(type_of):
-                code5 = field.data[5]
-                code6 = field.data[6]
+                code5 = field.data[5].strip()
+                if len(code5) < 1:
+                    code5 = None
+                code6 = field.data[6].strip()
+                if len(code6) < 1:
+                    code6 = None
                 if type_of == "c":
                     if code5 is not None: 
                         output.append(field007_lkup[type_of]["5"][code5])
@@ -725,6 +780,21 @@ class MARC21toInstance(MARC21Ingester):
         if sudoc_field is not None:
             self.entity_info['rda:identifierForTheManifestation']['sudoc'] = sudoc_field.value()
 
+    def extract_system_number(self):
+        """
+        Extracts system control number
+        """
+        output = []
+        fields = self.record.get_fields('035')
+        for field in fields:
+            for subfield in field.get_subfields('a'):
+                output.append(subfield)
+            for subfiedl in field.get_subfields('z'):
+                output.append(subfield)
+                self.instance_ds.sadd("identifiers:system-number:invalid",subfield)
+        if len(output) > 0:
+            self.entity_info['system-number'] = set(output)
+
     def ingest(self):
         """
         Ingests a MARC21 record into a BIBFRAME Instance Redis datastore
@@ -732,6 +802,7 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_024()
         self.extract_028()
         self.extract_856()
+        self.extract_aspect_ratio()
         self.extract_award_note()
         self.extract_carrier_type()
         self.extract_color_content()
@@ -739,21 +810,26 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_illustrative_content_note()
         self.extract_intended_audience()
         self.extract_ean()
+        self.extract_fingerprint()
         self.extract_sound_content()
         self.extract_ils_bibnumber()
         self.extract_isbn()
         self.extract_issn()
+        #self.extract_issnl()
         self.extract_lc_overseas_acq()
         self.extract_lccn()
         self.extract_legal_deposit()
+        self.extract_medium_of_music()
         self.extract_nban()
         self.extract_nbn()
         self.extract_organization_system()
+        self.extract_performers_note()
         self.extract_report_number()
         self.extract_stock_number()
         self.extract_study_number()
         self.extract_sudoc()
         self.extract_supplementaryContentNote()
+        self.extract_system_number()
         self.extract_date_of_publication()
         self.extract_local()
         self.add_instance()

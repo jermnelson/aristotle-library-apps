@@ -78,6 +78,15 @@
     "name":"Nonprojected Graphic"
   },
   "m": {
+     "4":{
+         "a":"Standard sound aperture (reduced frame)",
+         "b":"Nonanamorphic (wide-screen)",
+         "c":"3D",
+         "d":"Anamorphic (wide-screen)",
+         "e":"Other wide-screen format",
+         "f":"Standard silent aperture (full frame)",
+         "u":"Unknown",
+         "z":"Other"},
      "5": {"#": "No sound (silent)",
            "a": "Sound on medium",
            "b": "Sound separate from medium",

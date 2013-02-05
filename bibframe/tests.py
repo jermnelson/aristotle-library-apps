@@ -266,6 +266,8 @@ class MARC21toInstanceTest(TestCase):
         marc_record = pymarc.Record()
         marc_record.add_field(pymarc.Field(tag='007',
                                            data='c  g a    '))
+        marc_record.add_field(pymarc.Field(tag='007',
+                                           data='m   a     '))
         marc_record.add_field(pymarc.Field(tag='008',
                                            data='011003s2001        enk300  g                   vleng  d'))
         marc_record.add_field(pymarc.Field(tag='010',
@@ -282,8 +284,9 @@ class MARC21toInstanceTest(TestCase):
                                            indicators=[' ',' '],
                                            subfields=['a','DL 80-0-1524',
                                                       'z','M444120-2006']))
-
-        
+        marc_record.add_field(pymarc.Field(tag='022',
+                                           indicators=[' ',' '],
+                                           subfields=['a','0264-2875']))
         marc_record.add_field(pymarc.Field(tag='024',
                                            indicators=['0',' '],
                                            subfields=['a','NLC018413261',
@@ -327,6 +330,10 @@ class MARC21toInstanceTest(TestCase):
         marc_record.add_field(pymarc.Field(tag='025',
                                            indicators=[' ',' '],
                                            subfields=['a','ET-E-123']))
+
+        marc_record.add_field(pymarc.Field(tag='026',
+                                           indicators=[' ',' '],
+                                           subfields=['e','dete nkck vess lodo 3 Anno Domini MDCXXXVI 3']))
         marc_record.add_field(pymarc.Field(tag='028',
                                            indicators=['2',' '],
                                            subfields=['a','B. & H. 8797']))
@@ -343,6 +350,10 @@ class MARC21toInstanceTest(TestCase):
                                            indicators=[' ',' '],
                                            subfields=['a','ASIRAF',
                                                       'z','ASITAF']))
+        marc_record.add_field(pymarc.Field(tag='035',
+                                           indicators=[' ',' '],
+                                           subfields=['a','(COCC)S30545600'])) 
+
         marc_record.add_field(pymarc.Field(tag='036',
                                            indicators=[' ',' '],
                                            subfields=['a','CPS 495441']))
@@ -383,6 +394,13 @@ class MARC21toInstanceTest(TestCase):
                                                       'b','Arranged by office of origin',
                                                       'c','Series',
                                                       '3','Records']))
+        marc_record.add_field(pymarc.Field(tag='382',
+                                           indicators=[' ',' '],
+                                           subfields=['a','mixed voices']))
+        marc_record.add_field(pymarc.Field(tag='511',
+                                           indicators=[' ',' '],
+                                           subfields=['a','Cate Blanchett']))
+
         marc_record.add_field(pymarc.Field(tag='586',
                                            indicators=[' ',' '],
                                            subfields=['a','Book of the Year',
@@ -409,7 +427,11 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(self.instance_ingester.instance.ansi)[0],
                           'stdNumber-1224')
 
-    def text_award_note(self):
+    def test_aspect_ratio(self):
+        self.assertEquals(list(self.instance_ingester.instance.aspectRatio)[0],
+                          'Standard sound aperture (reduced frame)')
+
+    def test_award_note(self):
         self.assertEquals(list(self.instance_ingester.instance.awardNote)[0],
                           'Certificate Book of the Year')
 
@@ -429,6 +451,10 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(self.instance_ingester.instance.ean)[0],
                           '9780838934326-9000')
 
+
+    def test_fingerprint(self):
+        self.assertEquals(list(self.instance_ingester.instance.fingerprint)[0],
+                          'dete nkck vess lodo 3 Anno Domini MDCXXXVI 3')
 
     def test_extract_hdl(self):
         self.assertEquals(list(self.instance_ingester.instance.hdl)[0],
@@ -489,6 +515,10 @@ class MARC21toInstanceTest(TestCase):
                           test_redis.hget(self.instance_ingester.instance.redis_key,
                                           'ismn'))
 
+    def test_issn(self):
+        self.assertEquals(list(self.instance_ingester.instance.issn)[0],
+                         '0264-2875')
+
     def test_iso(self):
         self.assertEquals(list(self.instance_ingester.instance.iso)[0],
                           '19200 Baud')
@@ -500,6 +530,10 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(test_redis.sinter("identifiers:isrc:invalid",
                                                  "{0}:isrc".format(self.instance_ingester.instance.redis_key)))[0],
                           "NLC018403261")
+
+    def test_medium_of_music(self):
+        self.assertEquals(list(self.instance_ingester.instance.mediumOfMusic)[0],
+                          'mixed voices')
 
     def test_music_plate(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'music-plate'))[0],
@@ -524,6 +558,10 @@ class MARC21toInstanceTest(TestCase):
     def test_organization_system(self):
         self.assertEquals(list(self.instance_ingester.instance.organizationSystem)[0],
                           'Records Organized into four subgroups Arranged by office of origin=Series')
+
+    def test_performer_note(self):
+        self.assertEquals(list(self.instance_ingester.instance.performerNote)[0],
+                          'Cast: Cate Blanchett')
 
     def test_publisher_number(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,
@@ -556,6 +594,10 @@ class MARC21toInstanceTest(TestCase):
                           'Literature cited: p. 67-68. References: 19')
         self.assertEquals(list(test_redis.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[1],
                           'Has numerous supplements')
+
+    def test_system_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'system-number'))[0],
+                          '(COCC)S30545600')
 
     def test_upc(self):
         self.assertEquals(list(self.instance_ingester.instance.upc)[0],
