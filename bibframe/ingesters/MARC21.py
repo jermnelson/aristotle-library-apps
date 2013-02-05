@@ -32,7 +32,12 @@ except ImportError, e:
     OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
 
 
+field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
+                                            "bibframe",
+                                            "fixures",
+                                            "marc21-007.json"),
 
+                                "rb"))
 
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
@@ -244,16 +249,28 @@ class MARC21toInstance(MARC21Ingester):
         """
         Extracts all 024 fields values and assigns to Instance
         """
-        names = ['doi','iso','sici','upc','urn']
+        names = ['ansi',
+                 'doi',
+                 'ismn',
+                 'iso',
+                 'isrc',
+                 'local',
+                 'sici',
+                 'upc',
+                 'uri',
+                 'urn']
         fields = self.record.get_fields('024')
         for field in fields:
             a_subfields = field.get_subfields('a')
             z_subfields = field.get_subfields('z')
+            if field.indicator1 == '0':
+                source_code = 'isrc'
             if field.indicator1 == '1':
                 source_code = 'upc'
             if field.indicator1 == '2':
-                print("IN 024 ISO")
-                source_code = 'iso'
+                source_code = 'ismn'
+            if field.indicator1 == '3':
+                continue # Additional formating necessary for EAN
             if field.indicator1 == '4':
                 source_code = 'sici'
             if field.indicator1 == '7':
@@ -277,29 +294,22 @@ class MARC21toInstance(MARC21Ingester):
         properties
         """
         fields = self.record.get_fields('028')
+        names = {'1':'matrix-number',
+                 '2':'music-plate',
+                 '3':'music-publisher',
+                 '4':'videorecording-identifier',
+                 '5':'publisher-number'}
         for field in fields:
             a_subfield = field['a']
-            if field.indicator1 == '2' and a_subfield is not None:
-                if self.entity_info.has_key('music-plate'):
-                    self.entity_info['music-plate'].append(a_subfield)
+            if a_subfield is not None:
+                prop_name = names[field.indicator1]
+                if self.entity_info.has_key(prop_name):
+                    self.entity_info[prop_name].append(a_subfield)
                 else:
-                    self.entity_info['music-plate'] = [a_subfield,]
-           
-            if field.indicator1 == '4' and a_subfield is not None:
-                if self.entity_info.has_key('videorecording-identifier'):
-                    self.entity_info['videorecording-identifier'].append(a_subfield)
-                else:
-                    self.entity_info['videorecording-identifier'] = [a_subfield,]
-            if field.indicator1 == '5' and a_subfield is not None:
-                if self.entity_info.has_key('publisher-number'):
-                    self.entity_info['publisher-number'].append(a_subfield)
-                else:
-                    self.entity_info['publisher-number'] = [a_subfield,]
-        for prop_name in ['music-plate',
-                          'publisher-number'
-                          'videorecording-identifier']:
-            if self.entity_info.has_key(prop_name):
-                self.entity_info[prop_name] = set(self.entity_info[prop_name])
+                    self.entity_info[prop_name] = [a_subfield,]
+        for name in names.values():
+            if self.entity_info.has_key(name):
+                self.entity_info[name] = set(self.entity_info[name])
             
 
     def extract_856(self):
@@ -349,6 +359,22 @@ class MARC21toInstance(MARC21Ingester):
         self.entity_info['rda:carrierTypeManifestation'] = \
         marc21_facets.get_format(self.record)
 
+    def extract_color_content(self):
+        """
+        Extract colorContent from MARC record
+        """
+        output = []
+        fields = self.record.get_fields('007')
+        for field in fields:
+            type_of = field.data[0]
+            if field007_lkup.has_key(type_of):
+                if ["a","c","d","g","k","c","v"].count(type_of) > 0:
+                    output.append(field007_lkup[type_of]["3"][field.data[3]])
+                elif type_of == "h":
+                    output.append(field007_lkup[type_of]["9"][field.data[9]])
+        if len(output) > 0:
+            self.entity_info['colorContent'] = set(output) 
+
     def extract_coden(self):
         """
         Extracts CODEN from MARC record field 030, if the the field /z
@@ -366,6 +392,39 @@ class MARC21toInstance(MARC21Ingester):
             self.entity_info['coden'] = set(output)
 
 
+    def extract_ean(self):
+        """
+        Extracts International Article Identifier (EAN)
+        """
+        output = []
+        fields = self.record.get_fields('024')
+        for field in fields:
+            if field.indicator1 == '3':
+                a_subfield = field['a']
+                z_subfield = field['z']
+                d_subfield = field['d']
+                ean = a_subfield
+                if z_subfield is not None:
+                    ean = '{0}-{1}'.format(ean,z_subfield)
+                    self.instance_ds.sadd('identifiers:ean:invalid',z_subfield)
+                if d_subfield is not None:
+                    ean = '{0}-{1}'.format(ean,d_subfield)
+                output.append(ean)
+        if len(output) > 0:
+            self.entity_info['ean'] = set(output)
+
+    def extract_illustrative_content_note(self):
+        """
+        Extract Illustrative Content Note
+        """
+        output = []
+        # Need to check 008
+        fields = self.record.get_fields('300')
+        for field in fields:
+            if field['b'] is not None:
+                output.append(field['b'])
+        if len(output) > 0:
+            self.entity_info['illustrativeContentNote'] = set(output)
 
     def extract_ils_bibnumber(self):
         """
@@ -378,6 +437,33 @@ class MARC21toInstance(MARC21Ingester):
             # Extract III specific bib number
             bib_number = raw_bib_id[1:-1]
             self.entity_info['rda:identifierForTheManifestation']['ils-bib-number'] = bib_number
+
+    def extract_intended_audience(self):
+        """
+        Exracts Intended Audience
+        """
+        output = []
+        field521_lkup = {
+            "0": "Reading grade level", 
+            "1": "Interest age level", 
+            "2": "Interest grade level", 
+            "3": "Special audience characteristics", 
+            "4": "Motivation/interest level", 
+            "8": "No display constant generated"}
+        #! Need to Process 008
+        fields = self.record.get_fields('521')
+        for field in fields:
+            prefix = field521_lkup.get(field.indicator1,None)
+            for subfield in field.get_subfields('a'):
+                if prefix is not None:
+                    output.append("{0} {1}".format(prefix,subfield))
+                else:
+                    output.append(subfield)
+        if len(output) > 0:
+            self.entity_info['intendedAudience'] = set(output)
+                                                    
+            
+
 
     def extract_isbn(self):
         """
@@ -436,6 +522,23 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['lc-overseas-acq'] = set(output)
 
+    def extract_legal_deposit(self):
+        """
+        copyright or legal deposit number
+        """
+        output = []
+        fields = self.record.get_fields('017')
+        for field in fields:
+            a_subfields = field.get_subfields('a')
+            z_subfields = field.get_subfields('z')
+            for subfield in a_subfields:
+                output.append(subfield)
+            for subfield in z_subfields:
+                output.append(subfield)
+                self.instance_ds.sadd("identifiers:legal-deposit:invalid",subfield)
+        if len(output) > 0:
+           self.entity_info['legal-deposit'] = set(output)
+
     def extract_local(self):
         """
         Extracts local call number MARC21 record and
@@ -461,6 +564,7 @@ class MARC21toInstance(MARC21Ingester):
         # 008[1:15], 260c, 542i
         self.entity_info['rda:dateOfPublicationManifestation'] = pub_date
 
+        
 
     def extract_nban(self):
         """
@@ -496,6 +600,39 @@ class MARC21toInstance(MARC21Ingester):
             self.entity_info['nbn'] = set(output)
  
 
+    def extract_organization_system(self):
+        """
+        Extracts Organization System
+        """
+        output = []
+        fields = self.record.get_fields("351")
+        for field in fields:
+            org_system = ''
+            subfield3 = field["3"]
+            subfieldc = field["c"]
+            a_subfields = field.get_subfields('a')
+            b_subfields = field.get_subfields('b')
+            if subfield3 is not None:
+                org_system = "{0}".format(subfield3)
+            for subfield_a in a_subfields:
+                org = "{0} {1}".format(org_system,subfield_a)
+                for subfield_b in b_subfields:
+                    arrang = "{0} {1}".format(org,subfield_b)
+                    if subfieldc is not None:
+                        output.append("{0}={1}".format(arrang,subfieldc))
+                    else:
+                        output.append(arrang)
+            if len(b_subfields) > 0 and len(a_subfields) < 1:
+                for subfield_b in b_subfields:
+                    arrang = "{0} {1}".format(org_system,subfield_b)
+                    if subfieldc is not None:
+                        output.append("{0}={1}".format(arrang,subfieldc))
+                    else:
+                        output.append(arrang)
+            if len(output) > 0:
+                self.entity_info['organizationSystem'] = set(output)
+ 
+
     def extract_report_number(self):
         """
         Extracts report-number 
@@ -514,8 +651,28 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['report-number'] = set(output)
 
-
-            
+    def extract_sound_content(self):
+        """
+        Extract sound content 
+        """
+        output = []
+        fields = self.record.get_fields('007')
+        for field in fields:
+            type_of = field.data[0]
+            if field007_lkup.has_key(type_of):
+                code5 = field.data[5]
+                code6 = field.data[6]
+                if type_of == "c":
+                    if code5 is not None: 
+                        output.append(field007_lkup[type_of]["5"][code5])
+                elif ["g","m","v"].count(type_of) > 0:
+                    if code5 is not None:
+                         output.append(field007_lkup[type_of]["5"][code5])
+                    if code5 is not None:
+                         output.append(field007_lkup[type_of]["6"][code6])
+        if len(output) > 0:
+             self.entity_info['soundContent'] = set(output)
+         
 
     def extract_supplementaryContentNote(self):
         """
@@ -577,14 +734,21 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_856()
         self.extract_award_note()
         self.extract_carrier_type()
+        self.extract_color_content()
         self.extract_coden()
+        self.extract_illustrative_content_note()
+        self.extract_intended_audience()
+        self.extract_ean()
+        self.extract_sound_content()
         self.extract_ils_bibnumber()
         self.extract_isbn()
         self.extract_issn()
         self.extract_lc_overseas_acq()
         self.extract_lccn()
+        self.extract_legal_deposit()
         self.extract_nban()
         self.extract_nbn()
+        self.extract_organization_system()
         self.extract_report_number()
         self.extract_stock_number()
         self.extract_study_number()

@@ -1,0 +1,128 @@
+{
+  "a": {
+   "3": {"a": "One color", 
+         "c": "Multicolored"},
+   "name":"Map"
+  },
+  "c": {
+     "name": "Electronic Resource",
+     "3":
+         {
+          "a": "One color", 
+          "b": "Black-and-white", 
+          "c": "Multicolored", 
+          "g": "Gray scale", 
+          "m": "Mixed", 
+          "n": "Not applicable", 
+          "u": "Unknown", 
+          "z": "Other"
+     },
+     "5":
+         {"a": "Sound", 
+          "u": "Unknown"}
+  },
+  "d": {
+    "3":{"a": "One color", 
+         "c": "Multicolored"},
+    "name":"Globe"
+  }, 
+  "g": {
+    "3":
+        {
+          "a": "One color", 
+          "b": "Black-and-white", 
+          "c": "Multicolored", 
+          "h": "Hand colored", 
+          "m": "Mixed", 
+          "n": "Not applicable", 
+          "u": "Unknown", 
+          "z": "Other"
+    },
+    "5": {"#": "No sound (silent)",
+          "a": "Sound on medium",
+          "b": "Sound separate from medium",
+          "u": "Unknown"},
+    "6": {"#": "No sound (silent)",
+          "a": "Optical sound track on motion picture film",
+          "b": "Magnetic sound track on motion picture film",
+          "c": "Magnetic audio tape in cartridge",
+          "d": "Sound disc",
+          "e": "Magnetic audio tape on reel",
+          "f": "Magnetic audio tape in cassette",
+          "g": "Optical and magnetic sound track on motion picture film",
+          "h": "Videotape",
+          "i": "Videodisc",
+          "u": "Unknown",
+          "z": "Other"},
+    "name":"Projected graphic"
+  },
+  "h": {
+    "3":{
+      "b": "Black-and-white", 
+      "c": "Multicolored", 
+      "m": "Mixed", 
+      "u": "Unknown", 
+      "z": "Other"
+    }
+  },
+  "k": {
+    "3":{
+         "a": "One color", 
+         "b": "Black-and-white", 
+         "c": "Multicolored", 
+         "h": "Hand colored", 
+         "m": "Mixed", 
+         "u": "Unknown", 
+         "z": "Other"
+    },
+    "name":"Nonprojected Graphic"
+  },
+  "m": {
+     "5": {"#": "No sound (silent)",
+           "a": "Sound on medium",
+           "b": "Sound separate from medium",
+           "u": "Unknown"},
+     "6": {"#": "No sound (silent)",
+           "a": "Optical sound track on motion picture film",
+           "b": "Magnetic sound track on motion picture film",
+           "c": "Magnetic audio tape in cartridge",
+           "d": "Sound disc",
+           "e": "Magnetic audio tape on reel",
+           "f": "Magnetic audio tape in cassette",
+           "g": "Optical and magnetic sound track on motion picture film",
+           "h": "Videotape",
+           "i": "Videodisc",
+           "u": "Unknown",
+           "z": "Other"},
+     "name": "Motion Picture"
+ },
+ "v": {
+   "3": 
+    {
+      "a": "One color", 
+      "b": "Black-and-white", 
+      "c": "Multicolored", 
+      "m": "Mixed", 
+      "n": "Not applicable", 
+      "u": "Unknown", 
+      "z": "Other"
+   },
+   "5":{"#": "No sound (silent)",
+        "a": "Sound on medium",
+        "b": "Sound separate from medium",
+        "u": "Unknown"},
+   "6":{"#": "No sound (silent)",
+        "a": "Optical sound track on motion picture film",
+        "b": "Magnetic sound track on motion picture film",
+        "c": "Magnetic audio tape in cartridge",
+        "d": "Sound disc",
+        "e": "Magnetic audio tape on reel",
+        "f": "Magnetic audio tape in cassette",
+        "g": "Optical and magnetic sound track on motion picture film",
+        "h": "Videotape",
+        "i": "Videodisc",
+        "u": "Unknown",
+        "z": "Other"}, 
+   "name":"Videorecording"
+ }
+}

@@ -264,6 +264,8 @@ class MARC21toInstanceTest(TestCase):
 
     def setUp(self):
         marc_record = pymarc.Record()
+        marc_record.add_field(pymarc.Field(tag='007',
+                                           data='c  g a    '))
         marc_record.add_field(pymarc.Field(tag='008',
                                            data='011003s2001        enk300  g                   vleng  d'))
         marc_record.add_field(pymarc.Field(tag='010',
@@ -276,17 +278,48 @@ class MARC21toInstanceTest(TestCase):
         marc_record.add_field(pymarc.Field(tag='016',
                                            indicators=[' ',' '],
                                            subfields=['a','890000298']))
+        marc_record.add_field(pymarc.Field(tag='017',
+                                           indicators=[' ',' '],
+                                           subfields=['a','DL 80-0-1524',
+                                                      'z','M444120-2006']))
+
+        
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['0',' '],
+                                           subfields=['a','NLC018413261',
+                                                      'z','NLC018403261' ]))
         marc_record.add_field(pymarc.Field(tag='024',
                                            indicators=['1',' '],
                                            subfields=['a','7822183031']))
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['2',' '],
+                                           subfields=['a','979-0-2600-0043-8']))
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['3',' '],
+                                           subfields=['a','9780838934326',
+                                                      'd','9000']))
+
         marc_record.add_field(pymarc.Field(tag='024',
                                            indicators=['4',' '],
                                            subfields=['a','8756-2324(198603/04)65:2L.4:QTP:1-P']))
         marc_record.add_field(pymarc.Field(tag='024',
                                            indicators=['7',' '],
+                                           subfields=['a','stdNumber-1224',
+                                                      '2','ansi']))
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['7',' '],
+                                           subfields=['a','b45647',
+                                                      '2','local']))
+
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['7',' '],
                                            subfields=['a','19200 Baud',
                                                       'z','2400 Baud',
                                                       '2','iso']))
+        marc_record.add_field(pymarc.Field(tag='024',
+                                           indicators=['7',' '],
+                                           subfields=['a','http://www.test.edu/',
+                                                      '2','uri']))
         marc_record.add_field(pymarc.Field(tag='024',
                                            indicators=['7',' '],
                                            subfields=['a','56789',
@@ -297,6 +330,9 @@ class MARC21toInstanceTest(TestCase):
         marc_record.add_field(pymarc.Field(tag='028',
                                            indicators=['2',' '],
                                            subfields=['a','B. & H. 8797']))
+        marc_record.add_field(pymarc.Field(tag='028',
+                                           indicators=['3',' '],
+                                           subfields=['a','L27410X']))
         marc_record.add_field(pymarc.Field(tag='028',
                                            indicators=['4',' '],
                                            subfields=['a','VM600167']))
@@ -324,13 +360,29 @@ class MARC21toInstanceTest(TestCase):
 ##        marc_record.add_field(pymarc.Field(tag='099',
 ##                                           indicators=[' ',' '],
 ##                                           subfields=['a','Video 6716']))
+        marc_record.add_field(pymarc.Field(tag='300',
+                                           indicators=[' ',' '],
+                                           subfields=['a','11 v.',
+                                                      'b','ill.']))
+
+
         marc_record.add_field(pymarc.Field(tag='504',
                                            indicators=[' ',' '],
                                            subfields=['a','Literature cited: p. 67-68.',
                                                       'b','19']))
+        marc_record.add_field(pymarc.Field(tag='521',
+                                           indicators=['2',' '],
+                                           subfields=['a','7 & up']))
+
         marc_record.add_field(pymarc.Field(tag='525',
                                            indicators=[' ',' '],
                                            subfields=['a','Has numerous supplements']))
+        marc_record.add_field(pymarc.Field(tag='351',
+                                           indicators=[' ',' '],
+                                           subfields=['a','Organized into four subgroups',
+                                                      'b','Arranged by office of origin',
+                                                      'c','Series',
+                                                      '3','Records']))
         marc_record.add_field(pymarc.Field(tag='586',
                                            indicators=[' ',' '],
                                            subfields=['a','Book of the Year',
@@ -353,6 +405,10 @@ class MARC21toInstanceTest(TestCase):
     def test_init(self):
         self.assert_(self.instance_ingester.instance.redis_key)
 
+    def test_extract_ansi(self):
+        self.assertEquals(list(self.instance_ingester.instance.ansi)[0],
+                          'stdNumber-1224')
+
     def text_award_note(self):
         self.assertEquals(list(self.instance_ingester.instance.awardNote)[0],
                           'Certificate Book of the Year')
@@ -365,10 +421,26 @@ class MARC21toInstanceTest(TestCase):
         self.assert_(test_redis.sismember('identifiers:CODEN:invalid',
                                           list(self.instance_ingester.instance.coden)[0]))
 
+    def test_extract_color_content(self):
+        self.assertEquals(list(self.instance_ingester.instance.colorContent)[0],
+                          'Gray scale')
+
+    def test_extract_ean(self):
+        self.assertEquals(list(self.instance_ingester.instance.ean)[0],
+                          '9780838934326-9000')
+
 
     def test_extract_hdl(self):
         self.assertEquals(list(self.instance_ingester.instance.hdl)[0],
                           'http://hdl.handle.net/10176/coccc:6854')
+
+    def test_extract_illustrative_content_note(self):
+        self.assertEquals(list(self.instance_ingester.instance.illustrativeContentNote)[0], 
+                          'ill.')
+
+    def test_intended_audience(self):
+        self.assertEquals(list(self.instance_ingester.instance.intendedAudience)[0],
+                          "Interest grade level 7 & up")
   
     def test_extract_lccn(self):
         self.assertEquals(list(self.instance_ingester.instance.lccn)[0],
@@ -376,13 +448,20 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(self.instance_ingester.instance.lccn)[1],
                           '95030619x')
         self.assert_(test_redis.sismember('identifiers:lccn:invalid','95030619x'))
-##
-##    def test_local(self):
-##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['local'],
-##                          'Video 6716')
-##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['local'],
-##                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
-##                                          "local"))
+ 
+    def test_extract_legal_deposit(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'legal-deposit'))[0],
+                          'DL 80-0-1524')
+        self.assert_(test_redis.sismember("identifiers:legal-deposit:invalid",
+                                          "M444120-2006"))
+
+
+    def test_local(self):
+        self.assertEquals(list(self.instance_ingester.instance.local)[0],
+                          'b45647')
+        self.assertEquals(list(self.instance_ingester.instance.local)[0],
+                          test_redis.hget(self.instance_ingester.instance.redis_key,
+                                          "local"))
 ##
 ##    def test_ils_bib_number(self):
 ##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
@@ -403,17 +482,35 @@ class MARC21toInstanceTest(TestCase):
                           test_redis.hget(self.instance_ingester.instance.redis_key,
                                          'lc-overseas-acq'))
 
+    def test_extract_ismn(self):
+        self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
+                          '979-0-2600-0043-8')
+        self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
+                          test_redis.hget(self.instance_ingester.instance.redis_key,
+                                          'ismn'))
+
     def test_iso(self):
         self.assertEquals(list(self.instance_ingester.instance.iso)[0],
                           '19200 Baud')
         self.assert_(test_redis.sismember('identifiers:iso:invalid','2400 Baud'))
 
-    def test_music_place(self):
+    def test_isrc(self):
+        self.assertEquals(list(self.instance_ingester.instance.isrc)[0],
+                          'NLC018413261')
+        self.assertEquals(list(test_redis.sinter("identifiers:isrc:invalid",
+                                                 "{0}:isrc".format(self.instance_ingester.instance.redis_key)))[0],
+                          "NLC018403261")
+
+    def test_music_plate(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'music-plate'))[0],
                           'B. & H. 8797')
         self.assertEquals(test_redis.hget(self.instance_ingester.instance.redis_key,
                                           'music-plate'),
                          'B. & H. 8797')
+
+    def test_music_publisher(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'music-publisher'))[0],
+                          'L27410X')
 
 
     def test_nban(self):
@@ -424,15 +521,23 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(self.instance_ingester.instance.nbn)[0],
                           'B67-25185')
 
+    def test_organization_system(self):
+        self.assertEquals(list(self.instance_ingester.instance.organizationSystem)[0],
+                          'Records Organized into four subgroups Arranged by office of origin=Series')
 
     def test_publisher_number(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,
                                        'publisher-number'))[0],
                           'VA4567')
 
+
     def test_sici(self):
         self.assertEquals(list(self.instance_ingester.instance.sici)[0],
                           '8756-2324(198603/04)65:2L.4:QTP:1-P')
+
+    def test_sound_content(self):
+        self.assertEquals(list(self.instance_ingester.instance.soundContent)[0],
+                          'Sound')
 
     def test_extract_stock_number(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
@@ -461,6 +566,11 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(getattr(self.instance_ingester.instance,
                                        'videorecording-identifier'))[0],
                           'VM600167')
+
+    def test_extract_uri(self):
+        self.assertEquals(list(self.instance_ingester.instance.uri)[0],
+                          'http://www.test.edu/')
+
 
 
 
