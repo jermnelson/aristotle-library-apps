@@ -142,6 +142,19 @@ class RedisBibframeInterface(object):
                                       self.primary_redis))
         for key,value in kwargs.iteritems():
             setattr(self,key,value)
+
+    def feature(self,
+                name):
+        """
+        Method returns a feature of the class.
+
+        :param name: Name of feature
+        """
+        if hasattr(self,name):
+            if name.startswith("redis") or name.startswith("__"):
+                return None
+            else:
+                return getattr(name)
                
     def save(self,
              property_name=None):
