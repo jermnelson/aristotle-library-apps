@@ -294,7 +294,8 @@ class MARC21toInstance(MARC21Ingester):
         properties
         """
         fields = self.record.get_fields('028')
-        names = {'1':'matrix-number',
+        names = {'0':'issue-number',
+                 '1':'matrix-number',
                  '2':'music-plate',
                  '3':'music-publisher',
                  '4':'videorecording-identifier',
@@ -404,6 +405,18 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['coden'] = set(output)
 
+
+    def extract_duration(self):
+        """
+        Extracts duration 
+        """
+        output = []
+        field = self.record['306']
+        if field is not None:
+            for subfield in field.get_subfields('a'):
+                output.append(subfield)
+        if len(output) > 0:
+            self.entity_info['duration'] = set(output)
 
     def extract_ean(self):
         """
@@ -519,6 +532,18 @@ class MARC21toInstance(MARC21Ingester):
                 self.instance_ds.sadd("identifiers:issn:invalid",subfield)
         if len(issn_values) > 0:
             self.entity_info['issn'] = set(issn_values)
+
+    def extract_language(self):
+        """
+        Extract language
+        """
+        output = []
+        fields = self.record.get_fields('008')
+        for field in fields:
+            if field.tag == '008':
+                output.append(field.data[35:38])
+        if len(output) > 0:
+            self.entity_info['language'] = set(output)
 
     def extract_lccn(self):
         """
@@ -728,6 +753,21 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
              self.entity_info['soundContent'] = set(output)
          
+    def extract_strn(self):
+        """
+        Extract Standard Technical Report Number
+        """
+        output = []
+        fields = self.record.get_fields('027')
+        for field in fields:
+            for subfield in field.get_subfields('a'):
+                output.append(subfield)
+            for subfield in field.get_subfields('z'):
+                output.append(subfield)
+                self.instance_ds.sadd("identifiers:strn:invalid",subfield)
+        if len(output) > 0:
+            self.entity_info['strn'] = set(output)
+
 
     def extract_supplementaryContentNote(self):
         """
@@ -807,6 +847,7 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_carrier_type()
         self.extract_color_content()
         self.extract_coden()
+        self.extract_duration()
         self.extract_illustrative_content_note()
         self.extract_intended_audience()
         self.extract_ean()
@@ -816,6 +857,7 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_isbn()
         self.extract_issn()
         #self.extract_issnl()
+        self.extract_language()
         self.extract_lc_overseas_acq()
         self.extract_lccn()
         self.extract_legal_deposit()
@@ -826,6 +868,7 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_performers_note()
         self.extract_report_number()
         self.extract_stock_number()
+        self.extract_strn()
         self.extract_study_number()
         self.extract_sudoc()
         self.extract_supplementaryContentNote()

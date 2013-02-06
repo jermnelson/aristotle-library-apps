@@ -269,7 +269,7 @@ class MARC21toInstanceTest(TestCase):
         marc_record.add_field(pymarc.Field(tag='007',
                                            data='m   a     '))
         marc_record.add_field(pymarc.Field(tag='008',
-                                           data='011003s2001        enk300  g                   vleng  d'))
+                                           data='011003s2001        enk300  g       eng         vleng  d'))
         marc_record.add_field(pymarc.Field(tag='010',
                                            indicators=[' ',' '],
                                            subfields=['a','95030619',
@@ -334,6 +334,13 @@ class MARC21toInstanceTest(TestCase):
         marc_record.add_field(pymarc.Field(tag='026',
                                            indicators=[' ',' '],
                                            subfields=['e','dete nkck vess lodo 3 Anno Domini MDCXXXVI 3']))
+        marc_record.add_field(pymarc.Field(tag='027',
+                                           indicators=[' ',' '],
+                                           subfields=['a','FOA--89-40265/C--SE']))
+        marc_record.add_field(pymarc.Field(tag='028',
+                                           indicators=['0',' '],
+                                           subfields=['a','STMA 8007']))
+
         marc_record.add_field(pymarc.Field(tag='028',
                                            indicators=['2',' '],
                                            subfields=['a','B. & H. 8797']))
@@ -368,14 +375,17 @@ class MARC21toInstanceTest(TestCase):
 ##        marc_record.add_field(pymarc.Field(tag='086',
 ##                                           indicators=['0',' '],
 ##                                           subfields=['a','HE 20.6209:13/45']))
-##        marc_record.add_field(pymarc.Field(tag='099',
+##        marc_record.add_field(pymarc.Field(t	ag='099',
 ##                                           indicators=[' ',' '],
 ##                                           subfields=['a','Video 6716']))
         marc_record.add_field(pymarc.Field(tag='300',
                                            indicators=[' ',' '],
                                            subfields=['a','11 v.',
                                                       'b','ill.']))
-
+        marc_record.add_field(pymarc.Field(tag='306',
+                                           indicators=[' ',' '],
+                                           subfields=['a','014500']))
+       
 
         marc_record.add_field(pymarc.Field(tag='504',
                                            indicators=[' ',' '],
@@ -447,6 +457,10 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(self.instance_ingester.instance.colorContent)[0],
                           'Gray scale')
 
+    def test_extract_duration(self):
+        self.assertEquals(list(self.instance_ingester.instance.duration)[0],
+                          '014500')
+
     def test_extract_ean(self):
         self.assertEquals(list(self.instance_ingester.instance.ean)[0],
                           '9780838934326-9000')
@@ -475,6 +489,14 @@ class MARC21toInstanceTest(TestCase):
                           '95030619x')
         self.assert_(test_redis.sismember('identifiers:lccn:invalid','95030619x'))
  
+    def test_extract_issue_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'issue-number'))[0],
+                          'STMA 8007')
+
+    def test_language(self):
+        self.assertEquals(list(self.instance_ingester.instance.language)[0],
+                          'eng')
+
     def test_extract_legal_deposit(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'legal-deposit'))[0],
                           'DL 80-0-1524')
@@ -583,6 +605,10 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
                           test_redis.hget(self.instance_ingester.instance.redis_key,
                                           "stock-number"))
+
+    def test_extract_strn(self):
+        self.assertEquals(list(self.instance_ingester.instance.strn)[0],
+                          'FOA--89-40265/C--SE')
  
     def test_study_number(self):
         self.assertEquals(getattr(self.instance_ingester.instance,'study-number'),
