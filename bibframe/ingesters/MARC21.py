@@ -179,7 +179,6 @@ class MARC21toFacets(MARC21Ingester):
             float(self.annotation_ds.scard(facet_key)),
             facet_key)
         instance_annotation_key = "{0}:hasAnnotation".format(instance.redis_key)
-        print(self.instance_ds.type(instance_annotation_key))
         self.instance_ds.sadd("{0}:hasAnnotation".format(
             instance.redis_key),
                 facet_key)
@@ -784,12 +783,12 @@ class MARC21toInstance(MARC21Ingester):
                 if len(code6) < 1:
                     code6 = None
                 if type_of == "c":
-                    if code5 is not None: 
+                    if code5 is not None and code5 != '|': 
                         output.append(field007_lkup[type_of]["5"][code5])
                 elif ["g","m","v"].count(type_of) > 0:
-                    if code5 is not None:
+                    if code5 is not None and code5 != '|':
                          output.append(field007_lkup[type_of]["5"][code5])
-                    if code5 is not None:
+                    if code5 is not None and code5 != '|':
                          output.append(field007_lkup[type_of]["6"][code6])
         if len(output) > 0:
              self.entity_info['soundContent'] = set(output)
@@ -1434,11 +1433,13 @@ class MARC21toCreativeWork(MARC21Ingester):
                 people_ingester.ingest()
                 for person in people_ingester.people:
                     people_keys.append(person.redis_key)
-        if len(people_keys) > 0:
-            if self.entity_info.has_key('associatedAgent'):
-                self.entity_info['associatedAgent']['rda:isCreatedBy'] = set(people_keys)
-            else:
-                self.entity_info['associatedAgent'] = {'rda:isCreatedBy': set(people_keys)}
+        for person_key in people_keys:
+            if not self.entity_info.has_key('associatedAgent'):
+                self.entity_info['associatedAgent'] = set()
+            self.entity_info['associatedAgent'].add(person_key)
+            if not self.entity_info.has_key('rda:isCreatedBy'):
+                self.entity_info['rda:isCreatedBy'] = set()
+            self.entity_info['rda:isCreatedBy'].add(person_key)
 
     def __extract_other_std_id__(self,
                                  tag,
@@ -1610,7 +1611,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             for creative_wrk_key in cw_title_keys:
                 creator_keys = self.creative_work_ds.smembers(
                     "{0}:associatedAgent".format(creative_wrk_key))
-            if self.entity_info.has_key('rda:isCreatedBy'):
+                if self.entity_info.has_key('rda:isCreatedBy'):
                     existing_keys = creator_keys.intersection(self.entity_info['rda:isCreatedBy'])
                     if len(existing_keys) == 1:
                         self.creative_work = Work(primary_redis=self.creative_work_ds,

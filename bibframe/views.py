@@ -62,11 +62,12 @@ def authority(request,redis_key):
 
 def creative_work(request,redis_key):
     """
-    Displays a generic view of a BIBFRAME Authority
+    Displays a generic view of a BIBFRAME Creative Work
 
     :param request: HTTP Request
-    :param redis_key: Redis key of the Authority
+    :param redis_key: Redis key of the Creative Work 
     """
+    print("IN CREATIVE WORK {0}".format(redis_key))
     # Tracks usage of the creative work by the hour
     add_use(redis_key,CREATIVE_WORK_REDIS)
     return direct_to_template(request,

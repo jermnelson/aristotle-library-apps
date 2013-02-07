@@ -71,7 +71,7 @@ def creative_work(request,redis_id):
     :param request: HTTP Request
     :param redis_id: Redis integer for the Creative Work
     """
-    redis_key = "bibframe:CreativeWork:{0}".format(redis_id)
+    redis_key = "bibframe:Work:{0}".format(redis_id)
     if CREATIVE_WORK_REDIS.exists(redis_key):
         creative_work = CreativeWork(redis=CREATIVE_WORK_REDIS,
 	     	                     redis_key=redis_key)

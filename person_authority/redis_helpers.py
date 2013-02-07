@@ -44,7 +44,7 @@ def get_person(person_redis_key,
     :param person_redis_key: Person Redis Key
     :param authority_redis: Authority Redis datastore
     """
-    existing_person = Person(redis=authority_redis,
+    existing_person = Person(primary_redis=authority_redis,
                              redis_key=person_redis_key)
     return existing_person
                              
