@@ -45,7 +45,6 @@ class MARCModifier(object):
             raw_record = self.remove648(raw_record)
             raw_record.fields = sorted(raw_record.fields,key=lambda x: x.tag)
             self.records.append(raw_record)
-	    print("Raw Record Leader={0}".format(self.records[-1].leader))
             self.stats['records'] += 1
         
         
@@ -241,7 +240,7 @@ class MARCModifier(object):
             if len(a_subfields) > 0:
                 subfield_a = a_subfields[0]
                 if len(subfield_a) > 0:
-                    if subfield_a[-1] == '/': 
+                    if ['.','\\'].count(subfield_a[-1]) > 0: 
                         subfield_a = subfield_a[:-1].strip()
             new245 = Field(tag='245',
                            indicators=[indicator1,indicator2],

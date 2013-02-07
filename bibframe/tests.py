@@ -7,7 +7,7 @@ from django.test import TestCase
 from bibframe.models import *
 from bibframe.ingesters.MARC21 import *
 from ingesters.MARC21 import MARC21toInstance,MARC21toBIBFRAME,MARC21toPerson,MARC21toCreativeWork
-from ingesters.MARC21 import MARC21toFacets,MARC21toSubjects
+from ingesters.MARC21 import MARC21toFacets,MARC21toLibraryHolding,MARC21toSubjects
 from aristotle.settings import PROJECT_HOME
 
 try:
@@ -687,46 +687,54 @@ class MARC21toInstanceTest(TestCase):
 ##        test_redis.flushdb()
 ##
 ##
-##class MARC21toPersonTest(TestCase):
-##
-##    def setUp(self):
-##        field100 = pymarc.Field(tag='100',
-##                                indicators=['1','0'],
-##                                subfields=['a','Austen, Jane',
-##                                           'd','1775-1817'])
-##        self.person_ingester = MARC21toPerson(annotation_ds=test_redis,
-##                                              authority_ds=test_redis,
-##                                              field=field100,
-##                                              instance_ds=test_redis,
-##                                              creative_work_ds=test_redis)
-##        self.person_ingester.ingest()
-##
-##    def test_init(self):
-##        self.assert_(self.person_ingester.person.redis_key)
-##
-##    def test_dob(self):
-##        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfBirth'],
-##                          '1775')
-##        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfBirth'],
-##                          test_redis.hget(self.person_ingester.person.redis_key,
-##                                          'rda:dateOfBirth'))
-##
-##    def test_dod(self):
-##        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfDeath'],
-##                          '1817')
-##        self.assertEquals(self.person_ingester.person.attributes['rda:dateOfDeath'],
-##                          test_redis.hget(self.person_ingester.person.redis_key,
-##                                          'rda:dateOfDeath'))
-##
-##    def test_preferred_name(self):
-##        self.assertEquals(self.person_ingester.person.attributes['rda:preferredNameForThePerson'],
-##                          'Austen, Jane')
-##        self.assertEquals(self.person_ingester.person.attributes['rda:preferredNameForThePerson'],
-##                          test_redis.hget(self.person_ingester.person.redis_key,
-##                                          'rda:preferredNameForThePerson'))
-##
-##    def tearDown(self):
-##        test_redis.flushdb()
+class MARC21toPersonTest(TestCase):
+
+    def setUp(self):
+        field100 = pymarc.Field(tag='100',
+                                indicators=['1','0'],
+                                subfields=['a','Austen, Jane',
+                                           'd','1775-1817'])
+        self.person_ingester = MARC21toPerson(annotation_ds=test_redis,
+                                              authority_ds=test_redis,
+                                              field=field100,
+                                              instance_ds=test_redis,
+                                              creative_work_ds=test_redis)
+        self.person_ingester.ingest()
+
+    def test_init(self):
+        self.assert_(self.person_ingester.person.redis_key)
+
+    def test_dob(self):
+        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfBirth'),
+                          '1775')
+        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfBirth'),
+                          test_redis.hget(self.person_ingester.person.redis_key,
+                                          'rda:dateOfBirth'))
+
+    def test_dod(self):
+        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfDeath'),
+                          '1817')
+        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfDeath'),
+                          test_redis.hget(self.person_ingester.person.redis_key,
+                                          'rda:dateOfDeath'))
+
+    def test_foaf_givenName(self):
+        self.assertEquals(getattr(self.person_ingester.person,'foaf:givenName'),
+                          'Jane')
+        self.assertEquals(getattr(self.person_ingester.person,'foaf:givenName'),
+                          test_redis.hget(self.person_ingester.person.redis_key,
+                                          'foaf:givenName'))
+        
+
+    def test_preferred_name(self):
+        self.assertEquals(self.person_ingester.person.feature('rda:preferredNameForThePerson'),
+                          'Austen, Jane')
+        self.assertEquals(self.person_ingester.person.feature('rda:preferredNameForThePerson'),
+                          test_redis.hget(self.person_ingester.person.redis_key,
+                                          'rda:preferredNameForThePerson'))
+
+    def tearDown(self):
+        test_redis.flushdb()
 ##
 ##class MARC21toSubjectTest(TestCase):
 ##
@@ -961,6 +969,59 @@ class MARC21toCreativeWorkTest(TestCase):
 ##    def tearDown(self):
 ##        test_redis.flushdb()
 ##
+
+class MARC21toLibraryHoldingTest(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(pymarc.Field(tag='050',
+                                           indicators=[' ',' '],
+                                           subfields=['a','PS3602.E267',
+                                                      'b','M38 2008']))
+        marc_record.add_field(pymarc.Field(tag='082',
+                                           indicators=[' ',' '],
+                                           subfields = ['a','C848/.5407/05',
+                                                        'b','20']))
+        marc_record.add_field(pymarc.Field(tag='080',
+                                           indicators=[' ',' '],
+                                           subfields=['a','631.321:631.411.3']))
+        marc_record.add_field(pymarc.Field(tag='086',
+                                           indicators=[' ',' '],
+                                           subfields=['a','A 1.1:',
+                                                      'z','A 1.1/3:984']))
+
+        self.lib_holding_ingester = MARC21toLibraryHolding(annotation_ds=test_redis,
+                                                           authority_ds=test_redis,
+                                                           instance_ds=test_redis,
+                                                           marc_record=marc_record,
+                                                           creative_work_ds=test_redis)
+        self.lib_holding_ingester.ingest()
+
+
+    def test_init_(self):
+        self.assert_(self.lib_holding_ingester.holding.redis_key is not None)
+
+    def test_extract_ddc(self):
+        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-ddc'),
+                         'C848/.5407/05 20')
+
+    def test_extract_govdoc(self):
+        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-govdoc'),
+                          'A 1.1:')
+
+    def test_extract_lcc(self):
+        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-lcc'),
+                          'PS3602.E267 M38 2008') 
+
+    def test_extract_udc(self):
+        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-udc'),
+                          '631.321:631.411.3') 
+
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+
 class InstanceTest(TestCase):
 
     def setUp(self):
@@ -1083,6 +1144,41 @@ class CreativeWorkTest(TestCase):
 		          'bibframe:Person:1')
         self.assertEquals(list(self.creative_work.associatedAgent['rda:isCreatedBy'])[0],
                           'bibframe:Organization:1')
+
+
+    def tearDown(self):
+        test_redis.flushdb()
+
+
+class LibraryHoldingTest(TestCase):
+
+    def setUp(self):
+        self.new_holding = Holding(primary_redis=test_redis,
+                                   annotates='bibframe:Instance:1')
+        setattr(self.new_holding,'callno-lcc','PS3602.E267 M38 2008')
+        setattr(self.new_holding,'callno-udc','631.321:631.411.3')
+        setattr(self.new_holding,'callno-ddc','388/.0919')
+        self.new_holding.save()
+
+    def test_init(self):
+        self.assert_(self.new_holding.redis_key is not None)
+
+    def test_annotates(self):
+        self.assertEquals(self.new_holding.annotates,
+                          'bibframe:Instance:1')
+  
+    def test_callno_ddc(self):
+        self.assertEquals(self.new_holding.feature('callno-ddc'),
+                          '388/.0919')
+
+    def test_callno_lcc(self):
+        self.assertEquals(self.new_holding.feature('callno-lcc'),
+                          'PS3602.E267 M38 2008')
+
+    def test_udc(self):
+        self.assertEquals(self.new_holding.feature('callno-udc'),
+                          '631.321:631.411.3')
+
 
 
     def tearDown(self):

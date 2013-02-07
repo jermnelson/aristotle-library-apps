@@ -2,7 +2,7 @@
  :mod:`redis_helpers` Person Authority Helper Utilities
 """
 __author__ = "Jeremy Nelson"
-from bibframe.bibframe_models import Person
+from bibframe.models import Person
 
 import aristotle.lib.metaphone as metaphone
 from bibframe.redis_helpers import get_brief
@@ -18,17 +18,18 @@ def add_person(authority_redis,
     :param authority_redis: Authority Redis datastore
     :param person_metaphones_keys: Metaphones for Person's name
     """
-    new_person = Person(redis=authority_redis,
-                        attributes=person_attributes)
+    new_person = Person(primary_redis=authority_redis)
+    for key, value in person_attributes.iteritems():
+        setattr(new_person,key,value)
     new_person.save()
     for metaphone in person_metaphones_keys:
         authority_redis.sadd(metaphone,new_person.redis_key)
     
-    if new_person.attributes.has_key('rda:dateOfBirth'):
+    if hasattr(new_person,'rda:dateOfBirth'):
         raw_dob = person_attributes.get('rda:dateOfBirth')
         authority_redis.sadd('person-dob:{0}'.format(raw_dob),
                              new_person.redis_key)
-    if new_person.attributes.has_key('rda:dateOfDeath'):
+    if hasattr(new_person,'rda:dateOfDeath'):
         raw_dod = person_attributes.get('rda:dateOfDeath')
         authority_redis.sadd('person-dod:{0}'.format(raw_dod),
                              new_person.redis_key)

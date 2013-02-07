@@ -6,7 +6,7 @@
 __author__ = "Jeremy Nelson"
 
 import redis,datetime,json,urllib2
-import os,sys
+import os,sys, inspect
 from lxml import etree
 from rdflib import RDF,RDFS
 from django.db import models
@@ -144,7 +144,7 @@ class RedisBibframeInterface(object):
             setattr(self,key,value)
 
     def feature(self,
-                name):
+                name=None):
         """
         Method returns a feature of the class.
 
@@ -154,7 +154,21 @@ class RedisBibframeInterface(object):
             if name.startswith("redis") or name.startswith("__"):
                 return None
             else:
-                return getattr(name)
+                return getattr(self,name)
+        # Returns a dict of all features for the class
+        output = {}
+        if name is None:
+            for row in dir(self):
+                if row.startswith("redis") or row.startswith("__"):
+                    continue
+                else:
+                    output[row] = getattr(self,row)
+        return output
+   
+
+    
+     
+
                
     def save(self,
              property_name=None):
@@ -185,6 +199,8 @@ class RedisBibframeInterface(object):
                 if property.startswith("__"):
                     continue
                 elif property == 'primary_redis' or property == 'redis_key':
+                    continue
+                elif inspect.ismethod(getattr(self,property)):
                     continue
                 else:
                     prop_value = getattr(self,property)

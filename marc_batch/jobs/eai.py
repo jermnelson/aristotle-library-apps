@@ -50,13 +50,14 @@ class EarlyAmericanImprintsJob(MARCModifier):
         marc_record = self.validate008(marc_record) 
         marc_record = self.validate049(marc_record)
 	marc_record = self.validate245(marc_record)
+        marc_record = self.validate260(marc_record)
         marc_record = self.validate300(marc_record)
 	marc_record = self.validate500(marc_record)
         marc_record = self.validate506(marc_record)
         marc_record = self.validate530(marc_record)
         marc_record = self.validate533(marc_record)
 	marc_record = self.processURLs(marc_record,
-			               '')
+			               '0-opac.newsbank.com.tiger.coloradocollege.edu')
         marc_record = self.validate710(marc_record)
         marc_record = self.validate730(marc_record)
         marc_record = self.validate830(marc_record)
@@ -121,6 +122,34 @@ class EarlyAmericanImprintsJob(MARCModifier):
 	for field in all_049s:
             marc_record.remove_field(field)
         return marc_record
+
+    def validate260(self,marc_record):
+        """
+        Method checks for multiple instances of colons and
+        removes all but one.
+
+        :param marc_record: MARC record 
+        """
+        all260s = marc_record.get_fields('260')
+        for field in all260s:
+            for subfield in field.get_subfields('a'):
+                field.delete_subfield('a')
+                if subfield.count(":") > 1:
+                    subfield = subfield.replace(":","")
+                    subfield = "{0}:".format(subfield)
+                field.add_subfield('a',subfield) 
+        mixed_subfields = field.subfields
+        bracketed_subfields = []
+        field.subfields = []
+        for i in range(0,len(mixed_subfields)):
+            if not i%2:
+                bracketed_subfields.append([mixed_subfields[i],
+                                            mixed_subfields[i+1]])
+        for row in sorted(bracketed_subfields):
+            for i in row:
+                field.subfields.append(i)        
+        return marc_record    
+   
 
     def validate4xx(self,marc_record):
         ''' 

@@ -5,7 +5,7 @@
 __author__ = "Jeremy Nelson"
 
 import datetime, re, pymarc, os, sys,logging, redis, time
-from bibframe.models import Annotation, Organization, Work, Instance, Person
+from bibframe.models import Annotation, Organization, Work, Holding, Instance, Person
 from bibframe.ingesters.Ingester import Ingester
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
@@ -82,6 +82,13 @@ class MARC21Helpers(object):
             field = self.record[tag]
             return ' '.join(field.get_subfields(*subfields))
 
+class MARC21IngesterException(Exception):
+
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return "MARC21IngesterException Error={0}".format(self.value)
 
 
 class MARC21Ingester(Ingester):
@@ -90,7 +97,39 @@ class MARC21Ingester(Ingester):
         super(MARC21Ingester,self).__init__(**kwargs)
         self.entity_info = {}
         self.record = kwargs.get('marc_record',None)
-        
+
+    def __extract__(self,**kwargs):
+        """
+        Helper function takes a tag and list of rules and returns 
+        either a set or a string of values 
+
+        :kwarg tags: A list of MARC21 tags
+        :kwarg indict1: A rule for indicator 1
+        :kwarg indict2: A rule for indicator 2
+        :kwarg subfields: A list of subfields
+        """
+        output = []
+        tags = kwargs.get('tags',None)
+        if tags is None:
+            raise MARC21IngesterException("__extract__ helper function requires at least one MARC21 field tag")
+        indicator1_rule = kwargs.get('indict1',None)
+        indicator2_rule = kwargs.get('indict2',None)
+        subfields = kwargs.get('subfields',None)
+        fields = self.record.get_fields(tags)
+        for field in fields:
+            if indicator1_rule is not None:
+                if not eval(indicator1_rule,field.indicator1):
+                   continue
+            if indicator2_rule is not None:
+                if not eval(indicator2_rule,field.indicator2):
+                    continue 
+            for subfield in field.get_subfields(subfields):
+                output.append(subfield)
+        if len(output) == 1:
+            return output[0]
+        elif len(output) > 1:
+            return set(output)
+
 
 class MARC21toFacets(MARC21Ingester):
     """
@@ -134,12 +173,14 @@ class MARC21toFacets(MARC21Ingester):
         # sorted set for the facet marcr:Annotation
         instance = kwargs.get("instance", self.instance)
         facet_key = "bibframe:Annotation:Facet:Format:{0}".format(
-            instance.attributes['rda:carrierTypeManifestation'])
+            getattr(instance,'rda:carrierTypeManifestation'))
         self.annotation_ds.sadd(facet_key, instance.redis_key)
         self.annotation_ds.zadd('bibframe:Annotation:Facet:Formats',
             float(self.annotation_ds.scard(facet_key)),
             facet_key)
-        self.instance_ds.sadd("{0}:Annotations:facets".format(
+        instance_annotation_key = "{0}:hasAnnotation".format(instance.redis_key)
+        print(self.instance_ds.type(instance_annotation_key))
+        self.instance_ds.sadd("{0}:hasAnnotation".format(
             instance.redis_key),
                 facet_key)
 
@@ -159,9 +200,9 @@ class MARC21toFacets(MARC21Ingester):
             facet_key = "bibframe:Annotation:Facet:LOCFirstLetter:{0}".format(
                 lc_facet)
             self.annotation_ds.sadd(facet_key, creative_work.redis_key)
-            self.creative_work_ds.sadd("{0}:Annotations:facets".format(
+            self.creative_work_ds.sadd("{0}:hasAnnotation".format(
                 creative_work.redis_key),
-                    facet_key)
+                facet_key)
             self.annotation_ds.hset(
                 "bibframe:Annotation:Facet:LOCFirstLetters",
                 lc_facet,
@@ -904,25 +945,143 @@ class MARC21toBIBFRAME(Ingester):
             marc_record=self.record,
             creative_work_ds=self.creative_work_ds)
         self.marc2instance.ingest()
-        self.marc2instance.instance.attributes["bibframe:CreativeWork"] = \
-        self.marc2creative_work.creative_work.redis_key
+        self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
         self.marc2instance.instance.save()
-        if self.marc2creative_work.creative_work.attributes.has_key('bibframe:Instances'):
-            self.marc2creative_work.creative_work.attributes['bibframe:Instances'].add(self.marc2instance.instance.redis_key)
+        if hasattr(self.marc2creative_work.creative_work,'bibframe:Instances'):
+            getattr(self.marc2creative_work.creative_work,
+                    'bibframe:Instances').add(self.marc2instance.instance.redis_key)
         else:
-            self.marc2creative_work.creative_work.attributes['bibframe:Instances'] = [self.marc2instance.instance.redis_key,]
+            setattr(self.marc2creative_work.creative_work,
+                    'bibframe:Instances',
+                    [self.marc2instance.instance.redis_key,])
         self.marc2creative_work.creative_work.save()
+        self.marc2library_holdings = MARC21toLibraryHolding(annotation_ds=self.annotation_ds,
+                                                            authority_ds=self.authority_ds,
+                                                            creative_work_ds=self.creative_work_ds,
+                                                            instance_ds=self.instance_ds,
+                                                            marc_record=self.record,
+                                                            instance=self.marc2instance.instance)
+        self.marc2library_holdings.ingest()
+        if self.instance_ds.hexists(self.marc2instance.instance.redis_key,
+                                    'hasAnnotation'):
+            annotation = self.marc2instance.instance.hasAnnotation
+            self.instance_ds.hdel(self.marc2instance.instance.redis_key,
+                                  'hasAnnotation')
+            self.instance_ds.sadd("{0}:hasAnnotation".format(self.marc2instance.instance.redis_key),
+                                  annotation)
         self.marc2facets = MARC21toFacets(annotation_ds=self.annotation_ds,
-                              authority_ds=self.authority_ds,
-                      creative_work_ds=self.creative_work_ds,
-                      instance_ds=self.instance_ds,
-                      marc_record=self.record,
-                      creative_work=self.marc2creative_work.creative_work,
-                      instance=self.marc2instance.instance)
+                                          authority_ds=self.authority_ds,
+                                          creative_work_ds=self.creative_work_ds,
+                                          instance_ds=self.instance_ds,
+                                          marc_record=self.record,
+                                          creative_work=self.marc2creative_work.creative_work,
+                                          instance=self.marc2instance.instance)
         self.marc2facets.ingest()
 
 
 
+class MARC21toLibraryHolding(MARC21Ingester):
+    """
+    MARC21toLibraryHolding ingests a MARC record into the BIBFRAME Redis datastore
+    """
+
+    def __init__(self,**kwargs):
+        super(MARC21toLibraryHolding,self).__init__(**kwargs)
+        self.holding = None
+        self.instance = kwargs.get('instance',None)
+
+
+    def add_holding(self):
+        """
+        Creates a Library Holdings based on values in the entity
+        """
+        self.holding = Holding(primary_redis=self.annotation_ds)
+        for key,value in self.entity_info.iteritems():
+            setattr(self.holding,key,value)
+        if self.instance is not None:
+            self.holding.annotates = self.instance.redis_key
+            self.holding.save()
+            if self.instance.hasAnnotation is not None:
+                self.instance.hasAnnotation.add(self.holding.redis_key)
+            else:
+                 self.instance.hasAnnotation = set([self.holding.redis_key,])
+            self.instance.save()
+        else:
+            self.holding.save()
+
+
+    def ingest(self):
+        """
+        Ingests a MARC21 record and creates a Library Holding resource that 
+        annotates a Creative Work or Instance.
+        """
+        self.extract_ddc()
+        self.extract_govdoc()
+        self.extract_lcc()
+        self.extract_udc()
+        self.add_holding()
+
+    def __extract_callnumber__(self,tags):
+        """
+        Helper function extracts a call number from a resource
+
+        :param tags: One or more MARC21 field tags
+        """
+        output = []
+        fields = self.record.get_fields(*tags)
+        for field in fields:
+            subfield_b = field['b']
+            for subfield in field.get_subfields('a'):
+                if subfield_b is not None:
+                    output.append("{0} {1}".format(subfield,subfield_b).strip())
+                else:
+                    output.append(subfield)
+        if len(output) == 1:
+            return output[0]
+        elif len(output) > 1:
+            return set(output)
+        else:
+            return output
+
+    def extract_ddc(self):
+        """
+        Extracts LCC Dewey Decimal call number from a resource
+        """
+        ddc_values = self.__extract_callnumber__(['082',])
+        if len(ddc_values) > 0:
+            self.entity_info['callno-ddc'] = ddc_values
+
+    def extract_govdoc(self):
+        """
+        Extracts Govdoc call number from a resource
+        """
+        govdocs_values = self.__extract_callnumber__(['086',])
+        if len(govdocs_values):
+            self.entity_info['callno-govdoc'] = govdocs_values
+
+    def extract_lcc(self):
+        """
+        Extracts LCC call number from a MARC21 record
+        """
+        lcc_values = self.__extract_callnumber__(['050',
+                                                  '051',
+                                                  '055',
+                                                  '060',
+                                                  '061',
+                                                  '070',
+                                                  '071'])
+        if len(lcc_values) > 0:
+            self.entity_info['callno-lcc'] = lcc_values
+
+    def extract_udc(self):
+        """
+        Extracts Universal Decimal Classification Number
+        """
+        udc_values = self.__extract_callnumber__(['080',])
+        if len(udc_values) > 0:
+            self.entity_info['callno-udc'] = udc_values
+         
+ 
 
 class MARC21toPerson(MARC21Ingester):
     """
@@ -934,6 +1093,33 @@ class MARC21toPerson(MARC21Ingester):
         self.person = None
         self.people = []
         self.field = kwargs.get("field", None)
+
+    def __extract_identifier__(self,source_code,feature):
+        """
+        Helper function extracts all identifiers from 024 MARC21 fields,
+        tests if source_code is equal $2 value and assigns to feature
+
+        :param source_code: Source code to be tested
+        :param feature: Name of the feature
+        """
+        output = []
+        if self.record is None:
+            return
+        fields = self.record.get_fields('024')
+        for field in fields:
+            if field.indicator1 == '7':
+                if field['2'] == source_code:
+                    if field['a'] is not None:
+                        output.append(field['a'])
+                    for subfield in field.get_subfields('z'):
+                        output.append(subfield)
+                        self.authority_ds.sadd("identifiers:{0}:invalid".format(feature)) 
+        if len(output) > 0:
+            if len(output) == 1:
+                self.entity_info[feature] = output[0]
+            else:
+                self.entity_info[feature] = set(output)
+    
 
     def extractDates(self):
         """
@@ -957,6 +1143,47 @@ class MARC21toPerson(MARC21Ingester):
                 self.entity_info['rda:dateOfDeath'] = ''.join(field542b)
 
 
+    def extract_features(self):
+        """
+        Extracts features of the Person based on MARC21 fields
+        """
+        if self.field is not None and ['100','400','600','700','800'].count(self.field.tag) > -1:
+            for name in self.field.get_subfields('a'):
+                raw_names = [r.strip() for r in name.split(',')]
+                if self.field.indicator1 == '0':
+		    self.entity_info['foaf:givenName'] = raw_names[0]
+                elif self.field.indicator1 == '1':
+                    self.entity_info['foaf:familyName'] = raw_names.pop(0)
+                    # Assigns the next raw_name to givenName 
+                    for raw_name in raw_names:
+                        tokens = raw_name.split(' ')
+                        if len(tokens[0]) > 0:
+                            if [".",",","/"].count(tokens[0][-1]) > 0:
+                                tokens[0] = tokens[0][:-1]
+                            self.entity_info['foaf:givenName'] = tokens[0]
+            for title in self.field.get_subfields('b'):
+                 if self.entity_info.has_key('foaf:title'):
+                     if type(self.entity_info['foaf:title']) == list:
+                         self.entity_info['foaf:title'].append(title)
+                     else:
+                         self.entity_info['foaf:title'] = list(self.entity_info['foaf:title'])
+                 else:
+                     self.entity_info['foaf:title'] = title
+
+    def extract_isni(self):
+        """
+        Extracts the ISNIInternational Standard Name Identifier
+        """
+        self.__extract_identifier__("isni","isni")
+    
+                            
+    def extract_orcid(self):
+        """
+        Extracts the Open Researcher and Contributor Identifier
+        """
+        self.__extract_identifier__("orcid","orcid")
+
+
     def extract_preferredNameForThePerson(self):
         """
         Extracts RDA's preferredNameForThePerson from MARC21 record
@@ -971,10 +1198,19 @@ class MARC21toPerson(MARC21Ingester):
                 raw_name = raw_name[:-1]
             self.entity_info['rda:preferredNameForThePerson'] = raw_name  
 
+    def extract_viaf(self):
+        """
+        Extracts the Virtual International Authority File number
+        """
+        self.__extract_identifier__("via,zf","viaf")
 
 
     def ingest(self):
+        self.extract_features()
         self.extract_preferredNameForThePerson()
+        self.extract_isni()
+        self.extract_orcid()
+        self.extract_viaf()
         self.extractDates()
         result = get_or_generate_person(self.entity_info,
                                         self.authority_ds)
@@ -1351,7 +1587,7 @@ class MARC21toCreativeWork(MARC21Ingester):
                 indicator_one = 0
             if int(indicator_one) > 0:
                 self.entity_info['variantTitle'] = raw_title[indicator_one:]
-                self.entity_info['title']['sort'] = self.entity_info['varientTitle']
+                self.entity_info['title']['sort'] = self.entity_info['variantTitle']
 
               
 
