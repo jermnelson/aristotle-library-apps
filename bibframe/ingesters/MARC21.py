@@ -156,9 +156,8 @@ class MARC21toFacets(MARC21Ingester):
         access = marc21_facets.get_access(record)
         facet_key = "bibframe:Annotation:Facet:Access:{0}".format(access)
         self.annotation_ds.sadd(facet_key, instance.redis_key)
-        self.instance_ds.sadd("{0}:Annotations:facets".format(
-            instance.redis_key),
-                facet_key)
+        self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
+                              facet_key)
 
     def add_format_facet(self, **kwargs):
         """
@@ -240,9 +239,8 @@ class MARC21toFacets(MARC21Ingester):
                     "bibframe:Annotation:Facet:Locations:sort",
                     float(self.annotation_ds.scard(redis_key)),
                     redis_key)
-                self.instance_ds.sadd("{0}:Annotations:facets".format(
-                    instance.redis_key),
-                        redis_key)
+                self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
+                                      redis_key)
 
     def ingest(self,**kwargs):
         """
@@ -381,7 +379,7 @@ class MARC21toInstance(MARC21Ingester):
         fields = self.record.get_fields('007')
         for field in fields:
             if field.data[0] == 'm':
-                if field.data[4] is not None:
+                if field007_lkup['m']['4'].has_key(field.data[4]):
                     output.append(field007_lkup['m']['4'][field.data[4]])
         if len(output) > 0:
             self.entity_info['aspectRatio'] = set(output)
@@ -423,9 +421,12 @@ class MARC21toInstance(MARC21Ingester):
             type_of = field.data[0]
             if field007_lkup.has_key(type_of):
                 if ["a","c","d","g","k","c","v"].count(type_of) > 0:
-                    output.append(field007_lkup[type_of]["3"][field.data[3]])
+                    if field007_lkup[type_of]["3"].has_key(field.data[3]):
+                        output.append(field007_lkup[type_of]["3"][field.data[3]])
                 elif type_of == "h":
-                    output.append(field007_lkup[type_of]["9"][field.data[9]])
+                    if len(field.data) > 10:
+                        if field007_lkup[type_of]["9"].has_key(field.data[9]):
+                            output.append(field007_lkup[type_of]["9"][field.data[9]])
         if len(output) > 0:
             self.entity_info['colorContent'] = set(output) 
 
@@ -776,6 +777,8 @@ class MARC21toInstance(MARC21Ingester):
         for field in fields:
             type_of = field.data[0]
             if field007_lkup.has_key(type_of):
+                if len(field.data) < 7:
+                    continue
                 code5 = field.data[5].strip()
                 if len(code5) < 1:
                     code5 = None
@@ -783,12 +786,12 @@ class MARC21toInstance(MARC21Ingester):
                 if len(code6) < 1:
                     code6 = None
                 if type_of == "c":
-                    if code5 is not None and code5 != '|': 
+                    if field007_lkup[type_of]["5"].has_key(code5): 
                         output.append(field007_lkup[type_of]["5"][code5])
                 elif ["g","m","v"].count(type_of) > 0:
-                    if code5 is not None and code5 != '|':
+                    if field007_lkup[type_of]["5"].has_key(code5):
                          output.append(field007_lkup[type_of]["5"][code5])
-                    if code5 is not None and code5 != '|':
+                    if field007_lkup[type_of]["6"].has_key(code6):
                          output.append(field007_lkup[type_of]["6"][code6])
         if len(output) > 0:
              self.entity_info['soundContent'] = set(output)
@@ -946,14 +949,8 @@ class MARC21toBIBFRAME(Ingester):
         self.marc2instance.ingest()
         self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
         self.marc2instance.instance.save()
-        if hasattr(self.marc2creative_work.creative_work,'bibframe:Instances'):
-            getattr(self.marc2creative_work.creative_work,
-                    'bibframe:Instances').add(self.marc2instance.instance.redis_key)
-        else:
-            setattr(self.marc2creative_work.creative_work,
-                    'bibframe:Instances',
-                    [self.marc2instance.instance.redis_key,])
-        self.marc2creative_work.creative_work.save()
+        self.creative_work_ds.sadd("{0}:bibframe:Instances".format(self.marc2creative_work.creative_work.redis_key),
+                                   self.marc2instance.instance.redis_key)
         self.marc2library_holdings = MARC21toLibraryHolding(annotation_ds=self.annotation_ds,
                                                             authority_ds=self.authority_ds,
                                                             creative_work_ds=self.creative_work_ds,
@@ -1000,11 +997,9 @@ class MARC21toLibraryHolding(MARC21Ingester):
         if self.instance is not None:
             self.holding.annotates = self.instance.redis_key
             self.holding.save()
-            if self.instance.hasAnnotation is not None:
-                self.instance.hasAnnotation.add(self.holding.redis_key)
-            else:
-                 self.instance.hasAnnotation = set([self.holding.redis_key,])
-            self.instance.save()
+            self.instance_ds.sadd("{0}:hasAnnotation".format(self.instance.redis_key),
+                                  self.holding.redis_key)
+            
         else:
             self.holding.save()
 

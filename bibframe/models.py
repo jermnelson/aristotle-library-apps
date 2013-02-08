@@ -198,7 +198,7 @@ class RedisBibframeInterface(object):
             for property in all_properties:
                 if property.startswith("__"):
                     continue
-                elif property == 'primary_redis' or property == 'redis_key':
+                elif property == 'primary_redis' or property == 'redis_key' or property == 'name':
                     continue
                 elif inspect.ismethod(getattr(self,property)):
                     continue
