@@ -23,11 +23,8 @@ def about_instance(instance):
     :rtype: HTML or -0-length string
     """
     info = []
-    work_key = instance.instanceOf
-    info.append(('Creative Work',
-	         '''<a href="/apps/discovery/work/{0}/">Link <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1])))
     info.append(('Format',getattr(instance,'rda:carrierTypeManifestation')))
-    creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(work_key))
+    creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(instance.instanceOf))
     creator_dd = ''
     for key in creator_keys:
 	creator_info = AUTHORITY_REDIS.hgetall(key)
@@ -76,6 +73,13 @@ def about_instance(instance):
                if type(instance_attribute) == set:
                    for row in list(instance_attribute):
                        info.append((label,row))
+               elif name == 'instanceOf':
+                   work_key = instance.instanceOf
+                   ((name,
+                    '''<a href="/apps/discovery/work/{0}/">{1} <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1],
+                                                                                                        work_key)))
+
+
                else:
                    info.append((label,instance_attribute))
        else:
