@@ -12,7 +12,7 @@ from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 
 from app_settings import APP
-from bibframe.bibframe_models import CreativeWork,Instance,Person
+from bibframe.models import Work,Instance,Person
 
 from discovery.forms import SearchForm
 from discovery.redis_helpers import get_facets,get_result_facets,BIBFRAMESearch
@@ -37,8 +37,8 @@ def app(request):
 	    bibframe_search.run()
 	    search_query = bibframe_search.query
 	    for key in bibframe_search.creative_work_keys:
-                result = {'work': CreativeWork(redis_key=key,
-	                                       redis=CREATIVE_WORK_REDIS)}
+                result = {'work': Work(redis_key=key,
+	                               primary_redis=CREATIVE_WORK_REDIS)}
 	    
 	        results.append(result)
 	    facet_list = get_result_facets(bibframe_search.creative_work_keys)
@@ -73,8 +73,8 @@ def creative_work(request,redis_id):
     """
     redis_key = "bibframe:Work:{0}".format(redis_id)
     if CREATIVE_WORK_REDIS.exists(redis_key):
-        creative_work = CreativeWork(redis=CREATIVE_WORK_REDIS,
-	     	                     redis_key=redis_key)
+        creative_work = Work(primary_redis=CREATIVE_WORK_REDIS,
+	     	             redis_key=redis_key)
     else:
         raise Http404
     return direct_to_template(request,
@@ -96,7 +96,7 @@ def instance(request,redis_id):
     """
     redis_key = "bibframe:Instance:{0}".format(redis_id)
     if INSTANCE_REDIS.exists(redis_key):
-        instance = Instance(redis=INSTANCE_REDIS,
+        instance = Instance(primary_redis=INSTANCE_REDIS,
 			    redis_key=redis_key)
     else:
         raise Http404
@@ -118,9 +118,9 @@ def person(request,redis_id):
     :param request: HTTP Request
     :param redis_id": Redis integer for the Person
     """
-    redis_key = "bibframe:Authority:Person:{0}".format(redis_id)
+    redis_key = "bibframe:Person:{0}".format(redis_id)
     if AUTHORITY_REDIS.exists(redis_key):
-        person = Person(redis=AUTHORITY_REDIS,
+        person = Person(primary_redis=AUTHORITY_REDIS,
 			redis_key=redis_key)
     else:
         raise Http404

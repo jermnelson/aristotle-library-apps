@@ -44,6 +44,11 @@ def load_rdf():
             for desc in all_ranges:
                 attribute = os.path.split(desc.attrib.get("{{{0}}}about".format(RDF)))[1]
                 params[attribute] = None
+                label = desc.find("{{{0}}}label".format(RDFS))
+                if label is not None:
+                    OPERATIONAL_REDIS.hsetnx('bibframe:vocab:{0}:labels'.format(class_name),
+                                             attribute,
+                                             label.text)
             new_class = type(class_name,
                              (RedisBibframeInterface,),
                              params)
@@ -64,16 +69,18 @@ def process_key(bibframe_key,
         output[key] = value
     if redis_instance.exists("{0}:keys".format(bibframe_key)):
         for key in list(redis_instance.smembers("{0}:keys".format(bibframe_key))):
+            attribute_name = key.split(":")[-1]
             key_type = redis_instance.type(key) 
             if key_type == 'hash':
-                output[attrib_key] = {}
+                output[attribute_name] = {}
                 hash_values = redis_instance.hgetall(key)
                 for k,v in hash_values.iteritems():
-                    output[key][k] = v
+                    output[attribute_name][k] = v
             elif key_type == 'set':
-                output[key] = redis_instance.smembers(key)
+                output[attribute_name] = redis_instance.smembers(key)
             elif key_type == 'list':
-                output[key] = redis_instance.lrange(key,0,-1)
+                output[attribute_name] = redis_instance.lrange(key,0,-1)
+    print(output)
     return output
 
 def save_keys(entity_key,name,value,redis_object):
@@ -81,17 +88,19 @@ def save_keys(entity_key,name,value,redis_object):
     Save keys 
 
     """
+    print("{0} {1} {2} {3}".format(entity_key,name,value,redis_object))
     new_redis_key = "{0}:{1}".format(entity_key,name)
     all_keys_key = "{0}:keys".format(entity_key)
-    if not redis_object.sismember(all_keys_key, new_redis_key):
-        redis_object.sadd(all_keys_key,new_redis_key)
-    if type(value) is list:
+    redis_object.sadd(all_keys_key,new_redis_key)
+    if value is None:
+        redis_object.srem(all_keys_key,new_redis_key)
+    elif type(value) is list:
         redis_object.lpush(new_redis_key, value)
     elif type(value) is set:
         if len(value) == 1:
             redis_object.hset(entity_key,name,list(value)[0])
-        else:  
-            redis_object.sadd(all_keys_key,new_redis_key)
+            redis_object.srem(all_keys_key,new_redis_key)
+        else:
             for member in list(value):
                 redis_object.sadd(new_redis_key,member)
     elif type(value) is dict:
@@ -100,11 +109,11 @@ def save_keys(entity_key,name,value,redis_object):
             redis_object.hset(new_redis_key,
                               nk,
                               nv)
-    elif value is not None:
+    else:
         redis_object.hset(entity_key,name,value)
-    # Remove new_redis_key from all_keys_key as new_redis_key
-    # is not a distinct Redis key
-    redis_object.srem(all_keys_key,new_redis_key)
+        # Remove new_redis_key from all_keys_key as new_redis_key
+        # is not a distinct Redis key
+        redis_object.srem(all_keys_key,new_redis_key)
 
           
 
@@ -136,7 +145,6 @@ class RedisBibframeInterface(object):
     attribute values from passed kwargs in __init__ or upon a
     refresh from the Redis server.
         """
-
         if self.redis_key is not None:
             kwargs.update(process_key(self.redis_key,
                                       self.primary_redis))
@@ -166,10 +174,6 @@ class RedisBibframeInterface(object):
         return output
    
 
-    
-     
-
-               
     def save(self,
              property_name=None):
         """

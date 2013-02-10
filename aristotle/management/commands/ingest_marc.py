@@ -6,7 +6,7 @@ __author__ = "Jeremy Nelson"
 
 import sys
 from django.core.management.base import BaseCommand, CommandError
-from aristotle.settings import REDIS_MASTER_HOST
+from aristotle.settings import *
 from bibframe.ingesters import *
 
 def run_ingestion(MARC21_filename,
@@ -14,15 +14,23 @@ def run_ingestion(MARC21_filename,
     """
     Function runs the ingestions for all of the datastores
     """
-    work_redis = redis.StrictRedis(host=redis_host, port=6380)
-    instance_redis = redis.StrictRedis(host=redis_host, port=6381)
-    authority_redis = redis.StrictRedis(host=redis_host, port=6382)
-    annotation_redis = redis.StrictRedis(host=redis_host, port=6383)
-    ingest_marcfile(marc_filename=MARC21_filename,
-                    creative_work_redis=work_redis,
-         	    instance_redis=instance_redis,
-		    authority_redis=authority_redis,
-		    annotation_redis=annotation_redis)
+    if LOCAL is True:
+        ingest_marcfile(marc_filename=MARC21_filename,
+                        creative_work_redis=CREATIVE_WORK_REDIS,
+                        instance_redis=INSTANCE_REDIS,
+	                authority_redis=AUTHORITY_REDIS,
+		        annotation_redis=ANNOTATION_REDIS)
+
+    else:
+        work_redis = redis.StrictRedis(host=redis_host, port=6380)
+        instance_redis = redis.StrictRedis(host=redis_host, port=6381)
+        authority_redis = redis.StrictRedis(host=redis_host, port=6382)
+        annotation_redis = redis.StrictRedis(host=redis_host, port=6383)
+        ingest_marcfile(marc_filename=MARC21_filename,
+                        creative_work_redis=work_redis,
+                        instance_redis=instance_redis,
+		        authority_redis=authority_redis,
+		        annotation_redis=annotation_redis)
 
 
 class Command(BaseCommand):

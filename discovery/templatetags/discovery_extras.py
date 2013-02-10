@@ -3,9 +3,9 @@
 """
 __author__ = 'Jeremy Nelson'
 import aristotle.settings as settings
-import redis
+import redis, inspect
 import xml.etree.ElementTree as etree
-from bibframe.bibframe_models import CreativeWork,Instance
+from bibframe.models import Work,Instance,Person,Holding
 from django.template import Context,Library,loader
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
@@ -23,11 +23,11 @@ def about_instance(instance):
     :rtype: HTML or -0-length string
     """
     info = []
-    work_key = instance.attributes.get('bibframe:CreativeWork')
+    work_key = instance.instanceOf
     info.append(('Creative Work',
 	         '''<a href="/apps/discovery/work/{0}/">Link <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1])))
-    info.append(('Format',instance.attributes.get('rda:carrierTypeManifestation')))
-    creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:creator".format(work_key))
+    info.append(('Format',getattr(instance,'rda:carrierTypeManifestation')))
+    creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(work_key))
     creator_dd = ''
     for key in creator_keys:
 	creator_info = AUTHORITY_REDIS.hgetall(key)
@@ -60,19 +60,26 @@ def about_instance(instance):
 	    location = ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:Locations',
 		                             key.split(":")[-1])
 	    info.append(('Location in Library',location))
-    identifiers = instance.attributes['rda:identifierForTheManifestation']
-    if identifiers.has_key('lccn'):
-        info.append(('LOC Call Number',identifiers.get('lccn')))
-    if identifiers.has_key('local'):
-        info.append(('Local Call Number',identifiers.get('local')))
-    if identifiers.has_key('sudoc'):
-        info.append(('Government Call Number',identifiers.get('sudoc')))
-    if identifiers.has_key('ils-bib-number'):
-        info.append(('Legacy ILS number',identifiers.get('ils-bib-number')))
+    #identifiers = getattr(instance,'rda:identifierForTheManifestation')
+    for name in dir(instance):
+       value = getattr(instance,name)
+       if OPERATIONAL_REDIS.hexists('bibframe:vocab:Instance:labels',
+                                    name) and value is not None:
+           info.append((OPERATIONAL_REDIS.hget('bibframe:vocab:Instance:labels',
+                                               name),
+                       getattr(instance,name))) 
+    #if identifiers.has_key('lccn'):
+    #    info.append(('LOC Call Number',identifiers.get('lccn')))
+    #if identifiers.has_key('local'):
+    #    info.append(('Local Call Number',identifiers.get('local')))
+    #if identifiers.has_key('sudoc'):
+    #    info.append(('Government Call Number',identifiers.get('sudoc')))
+    #if identifiers.has_key('ils-bib-number'):
+    #    info.append(('Legacy ILS number',identifiers.get('ils-bib-number')))
     info = sorted(info)
     # Publishing Information
-    if 'rda:dateOfPublicationManifestation' in instance.attributes:
-        info.append(('Published',instance.attributes['rda:dateOfPublicationManifestation']))
+    #if 'rda:dateOfPublicationManifestation' in instance:
+    #    info.append(('Published',instance.attributes['rda:dateOfPublicationManifestation']))
     html_output = ''
     for row in info:
         html_output += '<dt>{0}</dt><dd>{1}</dd>'.format(row[0],row[1])
@@ -104,10 +111,10 @@ def get_creators(bibframe_entity):
     html_output = ''
     creator_template= loader.get_template('creator-icon.html')
     if type(bibframe_entity) == Instance:
-        redis_key = bibframe_entity.attributes.get('bibframe:CreativeWork')
+        redis_key = bibframe_entity.attributes.get('instanceOf')
     else:
         redis_key = bibframe_entity.redis_key
-    creators = list(CREATIVE_WORK_REDIS.smembers("{0}:rda:creator".format(redis_key)))
+    creators = list(CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(redis_key)))
     for key in creators:
         creator = AUTHORITY_REDIS.hgetall(key)
 	redis_id = key.split(":")[-1]
@@ -141,10 +148,14 @@ def get_creator_works(person):
             instances.append({'redis_id':key.split(":")[-1],
 		              'carrier_type':carrier_type,
 			      'graphic':CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")})
-	context = {'image':person.attributes.get('image','creative_writing_48x48.png'),
+        if hasattr(person,'image'):
+            image = person.image
+        else:
+            image = 'creative_writing_48x48.png' 
+	context = {'image':image,
 		   'instances':instances,
                    'redis_id':wrk_key.split(":")[-1],
-		   'title':unicode(CREATIVE_WORK_REDIS.hget('{0}:rda:Title'.format(wrk_key),
+		   'title':unicode(CREATIVE_WORK_REDIS.hget('{0}:title'.format(wrk_key),
 			                                    'rda:preferredTitleForTheWork'),
 				   errors='ignore')}
 	html_output += work_template.render(Context(context))
@@ -158,13 +169,15 @@ def get_date(person,type_of):
     :param person: Person
     :param type_of: Type of date, should be "birth" or "death"
     """
+    output = None
     if ["birth","death"].count(type_of) < 1:
         raise ValueError("get_date's type_of should 'birth' or 'death', got {0}".format(type_of))
-    if type_of == 'birth':
-        output = person.attributes.get('rda:dateOfBirth','')
-    else:
-        output = person.attributes.get('rda:dateOfDeath','')
-    return mark_safe(output)
+    if type_of == 'birth' and hasattr(person,'rda:dateOfBirth'):
+        output = getattr(person,'rda:dateOfBirth')
+    elif hasattr(person,'rda:dateOfDeath'):
+        output = getattr(person,'rda:dateOfDeath')
+    if output is not None:
+        return mark_safe(output)
 
 
 def get_ids(instance):
@@ -193,7 +206,7 @@ def get_image(instance):
     :param instance: Instance
     :rtype: HTML or 0-length string
     """
-    carrier_type = instance.attributes['rda:carrierTypeManifestation']
+    carrier_type = getattr(instance,'rda:carrierTypeManifestation')
     html_output = CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")
     return mark_safe(html_output)
 
@@ -238,7 +251,7 @@ def get_name(person):
     :param person: Person
     :rtype: string
     """
-    output = unicode(person.attributes.get('rda:preferredNameForThePerson',''),errors='ignore')
+    output = unicode(getattr(person,'rda:preferredNameForThePerson'),errors='ignore')
     return mark_safe(output)
 
 def get_subjects(creative_work):
@@ -251,7 +264,7 @@ def get_subjects(creative_work):
     """
     html_output = ''
     #! Using LOC Facet as proxy for subjects
-    facets = list(CREATIVE_WORK_REDIS.smembers("{0}:Annotations:facets".format(creative_work.redis_key)))
+    facets = list(CREATIVE_WORK_REDIS.smembers("{0}:hasAnnotation".format(creative_work.redis_key)))
     for facet in facets:
         if facet.startswith("bibframe:Annotation:Facet:LOCFirstLetter"):
             subject_template = loader.get_template('subject-icon.html')
@@ -270,11 +283,13 @@ def get_title(bibframe_entity):
     :rtype: string
     """
     try:
-	if bibframe_entity.attributes.has_key('rda:Title'):
-	    preferred_title = bibframe_entity.attributes['rda:Title']['rda:preferredTitleForTheWork']
-	elif bibframe_entity.attributes.has_key('bibframe:CreativeWork'):
-	    work_key = bibframe_entity.attributes.get('bibframe:CreativeWork')
-	    preferred_title = CREATIVE_WORK_REDIS.hget('{0}:rda:Title'.format(work_key),
+	if hasattr(bibframe_entity,'title'):
+            print('Has title {0}'.format(bibframe_entity.title))
+            #print("BIBFRAME entity has title {0}'.format(getattr(bibframe_entity,'title')))
+	    preferred_title = bibframe_entity.title['rda:preferredTitleForTheWork']
+	elif bibframe_entity.attributes.has_key('instanceOf'):
+	    work_key = bibframe_entity.get('instanceOf')
+	    preferred_title = CREATIVE_WORK_REDIS.hget('{0}:title'.format(work_key),
                                                        'rda:preferredTitleForTheWork')
         return mark_safe(preferred_title)
     except:

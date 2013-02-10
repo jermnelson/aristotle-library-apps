@@ -2,7 +2,8 @@
 {% load discovery_extras %}
 <div class="work-detail">
  <a class="close" href="#">&times;</a>
- <h2>{{ creative_work|get_title }}<a href="#"><i class="icon-question-sign"></i></a></h2>
+ <h2>{{ creative_work|get_title }}<a href="#title-info"
+                                     data-toggle="modal"><i class="icon-question-sign"></i></a></h2>
  {# START Creative Work Details Row #}
  <div class="row">
    <div class="span2 offset1">
@@ -25,4 +26,27 @@
    </div>
  {# END Creative Work's Instances Row #}
  </div>
+</div>
+{# START Creative Work's Title info #}
+<div class="modal hide fade" id="title-info">
+ <div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h3>Additional Title Information for {{ creative_work.redis_key }}</h3>
+ </div>
+ <div class="modal-body">
+  <dl class="dl-horizontal">
+  {% if creative_work.title.sort %}
+   <dt>Sort</dt>
+   <dd>{{ creative_work.title.sort }}</dd>
+  {% endif %}
+  {% if creative_work.title.normed %}
+   <dt>Normed</dt>
+   <dd>{{ creative_work.title.normed }}</dd>
+  {% endif %}
+  </dl>
+ </div>
+ <div class="modal-footer">
+  <a href="#" data-dismiss="modal" class="btn btn-primary">Close</a>
+ </div>
+{# END Creative Work's Title info #}
 </div>
