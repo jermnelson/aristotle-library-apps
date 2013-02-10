@@ -632,19 +632,6 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
            self.entity_info['legal-deposit'] = set(output)
 
-    def extract_local(self):
-        """
-        Extracts local call number MARC21 record and
-        saves as a rda:identifierForTheManifestation
-        """
-        local_099 = self.record['099']
-        if local_099 is not None:
-            self.entity_info['rda:identifierForTheManifestation']['local'] = local_099.value()
-        else:
-            local_090 = self.record['090']
-            if local_090 is not None and not self.entity_info['rda:identifierForTheManifestation'].has_key('lccn'):
-                self.entity_info['rda:identifierForTheManifestation']['local'] = local_090.value()
-
     def extract_date_of_publication(self):
         """
         Extracts the date of publication and saves as a
@@ -917,10 +904,8 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_supplementaryContentNote()
         self.extract_system_number()
         self.extract_date_of_publication()
-        self.extract_local()
         self.add_instance()
-        generate_call_number_app(self.instance, self.instance_ds)
-
+        
 
 class MARC21toBIBFRAME(Ingester):
     """
@@ -965,6 +950,9 @@ class MARC21toBIBFRAME(Ingester):
                                   'hasAnnotation')
             self.instance_ds.sadd("{0}:hasAnnotation".format(self.marc2instance.instance.redis_key),
                                   annotation)
+        generate_call_number_app(self.marc2instance.instance, 
+                                 self.instance_ds,
+                                 self.annotation_ds)
         self.marc2facets = MARC21toFacets(annotation_ds=self.annotation_ds,
                                           authority_ds=self.authority_ds,
                                           creative_work_ds=self.creative_work_ds,
@@ -1012,6 +1000,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
         self.extract_ddc()
         self.extract_govdoc()
         self.extract_lcc()
+        self.extract_cc_local()
         self.extract_udc()
         self.add_holding()
 
@@ -1066,6 +1055,20 @@ class MARC21toLibraryHolding(MARC21Ingester):
                                                   '071'])
         if len(lcc_values) > 0:
             self.entity_info['callno-lcc'] = lcc_values
+
+    def extract_cc_local(self):
+        """
+        Extracts local call number from MARC21 record following Colorado College
+        practice
+        """
+        local_099 = self.record['099']
+        if local_099 is not None:
+            self.entity_info['callno-local'] = local_099.value()
+        else:
+            local_090 = self.record['090']
+            if local_090 is not None and not self.entity_info.has_key('lcc'):
+                self.entity_info['callno-local'] = local_090.value()
+
 
     def extract_udc(self):
         """

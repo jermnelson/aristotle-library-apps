@@ -16,20 +16,20 @@ from aristotle.forms import FeedbackForm
 import redis_helpers,sys,logging
 from app_settings import APP,SEED_RECORD_ID
 
-redis_server = settings.INSTANCE_REDIS
+instance_server = settings.INSTANCE_REDIS
+annotation_server = settings.ANNOTATION_REDIS
 
 def setup_seed_rec():
     """
     Helper function returns a record based on the SEED_RECORD_ID
     for the default view
     """
-    seed_rec = redis_server.hgetall(SEED_RECORD_ID)
-    ident_key = '{0}:rda:identifierForTheManifestation'.format(SEED_RECORD_ID)
-    idents = redis_server.hgetall(ident_key)
-
-    if idents.has_key('lccn'):
-        current = redis_helpers.get_record(call_number=idents['lccn'])
-    return current
+    if annotation_server.hexists(SEED_RECORD_ID,'callno-lcc'):
+        lcc = annotation_server.hget(SEED_RECORD_ID,'callno-lcc')
+        current = redis_helpers.get_record(call_number=lcc)
+        return current
+    else:
+        return None
 
 def app(request):
     """

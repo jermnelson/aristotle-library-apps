@@ -63,11 +63,28 @@ def about_instance(instance):
     #identifiers = getattr(instance,'rda:identifierForTheManifestation')
     for name in dir(instance):
        value = getattr(instance,name)
+       if name.startswith("__") or name.find('redis') > -1:
+           continue
+       if inspect.ismethod(getattr(instance,name)):
+           continue
        if OPERATIONAL_REDIS.hexists('bibframe:vocab:Instance:labels',
-                                    name) and value is not None:
-           info.append((OPERATIONAL_REDIS.hget('bibframe:vocab:Instance:labels',
-                                               name),
-                       getattr(instance,name))) 
+                                    name):
+           if value is not None:
+               label = OPERATIONAL_REDIS.hget('bibframe:vocab:Instance:labels',
+                                               name)
+               instance_attribute = getattr(instance,name)
+               if type(instance_attribute) == set:
+                   for row in list(instance_attribute):
+                       info.append((label,row))
+               else:
+                   info.append((label,instance_attribute))
+       else:
+           if type(value) == dict:
+               for k,v in value.iteritems():
+                   info.append((k,v))
+           else:
+               info.append((name,getattr(instance,name)))
+       
     #if identifiers.has_key('lccn'):
     #    info.append(('LOC Call Number',identifiers.get('lccn')))
     #if identifiers.has_key('local'):
@@ -284,12 +301,10 @@ def get_title(bibframe_entity):
     """
     try:
 	if hasattr(bibframe_entity,'title'):
-            print('Has title {0}'.format(bibframe_entity.title))
-            #print("BIBFRAME entity has title {0}'.format(getattr(bibframe_entity,'title')))
-	    preferred_title = bibframe_entity.title['rda:preferredTitleForTheWork']
-	elif bibframe_entity.attributes.has_key('instanceOf'):
-	    work_key = bibframe_entity.get('instanceOf')
-	    preferred_title = CREATIVE_WORK_REDIS.hget('{0}:title'.format(work_key),
+            if bibframe_entity.title is not None:
+	        preferred_title = bibframe_entity.title['rda:preferredTitleForTheWork']
+	if hasattr(bibframe_entity,'instanceOf'):
+	    preferred_title = CREATIVE_WORK_REDIS.hget('{0}:title'.format(bibframe_entity.instanceOf),
                                                        'rda:preferredTitleForTheWork')
         return mark_safe(preferred_title)
     except:

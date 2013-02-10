@@ -6,6 +6,7 @@ import pymarc,redis,re
 import logging,sys
 from app_settings import APP,SEED_RECORD_ID
 import aristotle.settings as settings
+annotation_server = settings.ANNOTATION_REDIS
 authority_redis = settings.AUTHORITY_REDIS
 redis_server = settings.INSTANCE_REDIS
 creative_work_redis = settings.CREATIVE_WORK_REDIS
@@ -20,44 +21,57 @@ lccn_first_cutter_re = re.compile(r"^(\D+)(\d+)")
 lc_regex = re.compile(r"^(?P<leading>[A-Z]{1,3})(?P<number>\d{1,4}.?\d{0,1}\d*)\s*(?P<cutter1>[.|\w]*\d*)\s*(?P<cutter2>\w*)\s*(?P<last>\d*)")
 
 
-def generate_call_number_app(instance,redis_server):
+def generate_call_number_app(instance,
+                             instance_server,
+                             annotation_server=settings.ANNOTATION_REDIS):
     """
-    Helper function takes a MARCR Instance with call-numbers, creates supporting
+    Helper function takes a BIBFRAME Instance, extracts any call-numbers from the
+    any associated Library Holdings, and creates supporting
     Redis datastructures to support the call number app
 
-    :param instance: MARCR Instance
-    :parm redis_server: Redis server
+    :param instance: BIBFRAME Instance
+    :param instance_server: Redis server
+    :param annotation_server: 
     """
-    identifiers = getattr(instance,'rda:identifierForTheManifestation',{})
-    if identifiers.has_key('lccn'):
-        redis_server.hset('lccn-hash',
-                          identifiers.get('lccn'),
-                          instance.redis_key)
-        normalized_call_number = lccn_normalize(identifiers.get('lccn'))
-        redis_server.hset('lccn-normalized-hash',
-                          normalized_call_number,
-                          instance.redis_key)
-        redis_server.zadd('lccn-sort-set',
-                          0,
-                          normalized_call_number)
-        instance.attributes['rda:identifierForTheManifestation']['lccn-normalized'] = normalized_call_number
-        instance.save()
-    if identifiers.has_key('sudoc'):
-        call_number = identifiers.get('sudoc')
-        redis_server.hset('sudoc-hash',
-                          call_number,
-                          instance.redis_key)
-        redis_server.zadd('sudoc-sort-set',
-                          0,
-                          call_number)
-    if identifiers.has_key('local'):
-        call_number = identifiers.get('local')
-        redis_server.hset('local-hash',
-                          call_number,
-                          instance.redis_key)
-        redis_server.zadd('local-sort-set',
-                          0,
-                          call_number)
+    has_annotations_key = "{0}:hasAnnotation".format(instance.redis_key)
+    print(instance_server.dbsize())
+    annotations = instance_server.smembers(has_annotations_key)
+    for annotation_key in annotations:
+        print("annotation key {0}".format(annotation_key)) 
+        if annotation_key.startswith('bibframe:Holding'):
+            print("{0} keys={1}".format(annotation_key,
+                                        annotation_server.hgetall(annotation_key)))
+            if annotation_server.hexists(annotation_key,'callno-lcc'):
+                callno_lcc = annotation_server.hget(annotation_key,
+                                                    'callno-lcc')
+                annotation_server.hset('lcc-hash',
+                                       callno_lcc,
+                                       annotation_key)
+                normalized_call_number = lccn_normalize(callno_lcc)
+                annotation_server.hset('lcc-normalized-hash',
+                                       normalized_call_number,
+                                       annotation_key)
+                annotation_server.zadd('lcc-sort-set',
+                                       0,
+                                       normalized_call_number)
+            if annotation_server.hexists(annotation_key,'callno-govdoc'):
+                callno_govdoc = annotation_server.hget(annotation_key,
+                                                       'callno-govdoc')
+                annotation_server.hset('govdoc-hash',
+                                       callno_govdoc,
+                                       annotation_key)
+                annotation_server.zadd('govdoc-sort-set',
+                                  0,
+                                  callno_govdoc)
+            if annotation_server.hexists(annotation_key,'callno-local'):
+                 callno_local = annotation_server.hget(annotation_key,
+                                                       'callno-local')
+                 annotation_server.hset('local-hash',
+                                        callno_local,
+                                        annotation_key)
+                 annotation_server.zadd('local-sort-set',
+                                        0,
+                                        callno_local)
         
         
         
@@ -126,7 +140,7 @@ def get_next(call_number,
                      call_number_type)
 
 def get_rank(call_number,
-             call_number_type='lccn'):
+             call_number_type='lcc'):
     """
     Function takes a call_number, iterates through Redis datastore hash values
     for lccn, sudoc, and local, and if call_number is present returns the
@@ -136,18 +150,23 @@ def get_rank(call_number,
     :param call_number_type: Type of call number (lccn, sudoc, or local)
     :rtype integer or None:
     """
-    if redis_server.hexists("{0}-hash".format(call_number_type),
+    if annotation_server.hexists("{0}-hash".format(call_number_type),
                             call_number):
-        entity_key = redis_server.hget("{0}-hash".format(call_number_type),
-                                       call_number)
-        ident_key = "{0}:rda:identifierForTheManifestation".format(entity_key)
+        entity_key = annotation_server.hget("{0}-hash".format(call_number_type),
+                                            call_number)
+        ident_key = annotation_server.hget(entity_key,'annotates')
+        #ident_key = "{0}:rda:identifierForTheManifestation".format(entity_key)
         entity_idents = redis_server.hgetall(ident_key)
-        if entity_idents.has_key("{0}-normalized".format(call_number_type)):
+        
+        if annotation_server.hexists("{0}-normalized".format(call_number_type),
+                                     entity_key):
+            normed_key = annotation_server.hget("{0}-normalized".format(call_number_type),
+                                                entity_key)
             current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
-                                              entity_idents["{0}-normalized".format(call_number_type)])
+                                              normed_key)
         else:
             current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
-                                              entity_idents[call_number_type])
+                                              call_number)
         return current_rank
             
 
@@ -181,17 +200,17 @@ def get_slice(start,stop,
 def get_record(**kwargs):
     call_number = kwargs.get('call_number')
     record_info = {'call_number':call_number}
-    for hash_base in ['lccn','sudoc','local']:
+    for hash_base in ['lcc','govdoc','local']:
         hash_name = '{0}-hash'.format(hash_base)
         if redis_server.hexists(hash_name,call_number):
             record_info['type_of'] = hash_base
-            instance_key = redis_server.hget(hash_name,call_number)
+            instance_key = redis_server.hget(hash_name,'annotates')
             record_info['bib_number'] = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(instance_key),
                                                           'ils-bib-number')
-            work_key = redis_server.hget(instance_key,'bibframe:CreativeWork')
-            record_info['title'] = creative_work_redis.hget("{0}:rda:Title".format(work_key),
+            work_key = redis_server.hget(instance_key,'instanceOf')
+            record_info['title'] = creative_work_redis.hget("{0}:title".format(work_key),
                                                   'rda:preferredTitleForTheWork')
-            creator_keys = creative_work_redis.smembers("{0}:rda:creator".format(work_key))
+            creator_keys = creative_work_redis.smembers("{0}:rda:isCreatedBy".format(work_key))
             if len(creator_keys) > 0:
                 creator_keys = list(creator_keys)
                 creator = authority_redis.hget(creator_keys[0],

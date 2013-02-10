@@ -80,7 +80,6 @@ def process_key(bibframe_key,
                 output[attribute_name] = redis_instance.smembers(key)
             elif key_type == 'list':
                 output[attribute_name] = redis_instance.lrange(key,0,-1)
-    print(output)
     return output
 
 def save_keys(entity_key,name,value,redis_object):
@@ -88,7 +87,6 @@ def save_keys(entity_key,name,value,redis_object):
     Save keys 
 
     """
-    print("{0} {1} {2} {3}".format(entity_key,name,value,redis_object))
     new_redis_key = "{0}:{1}".format(entity_key,name)
     all_keys_key = "{0}:keys".format(entity_key)
     redis_object.sadd(all_keys_key,new_redis_key)
@@ -185,7 +183,7 @@ class RedisBibframeInterface(object):
             raise ValueError("Cannot save, no primary_redis")
         if self.redis_key is None:
             self.redis_key = "bibframe:{0}:{1}".format(self.name,
-                                          self.primary_redis.incr("global bibframe:{0}".format(self.name)))
+                                                       self.primary_redis.incr("global bibframe:{0}".format(self.name)))
             self.primary_redis.hset(self.redis_key,
                                     'created_on',
                                     datetime.datetime.utcnow().isoformat())
