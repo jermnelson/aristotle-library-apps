@@ -34,13 +34,9 @@ def generate_call_number_app(instance,
     :param annotation_server: 
     """
     has_annotations_key = "{0}:hasAnnotation".format(instance.redis_key)
-    print(instance_server.dbsize())
     annotations = instance_server.smembers(has_annotations_key)
     for annotation_key in annotations:
-        print("annotation key {0}".format(annotation_key)) 
         if annotation_key.startswith('bibframe:Holding'):
-            print("{0} keys={1}".format(annotation_key,
-                                        annotation_server.hgetall(annotation_key)))
             if annotation_server.hexists(annotation_key,'callno-lcc'):
                 callno_lcc = annotation_server.hget(annotation_key,
                                                     'callno-lcc')
@@ -171,7 +167,7 @@ def get_rank(call_number,
             
 
 def get_slice(start,stop,
-              call_number_type='lccn'):
+              call_number_type='lcc'):
     """
     Function gets a list of entities saved as Redis records
 
@@ -186,7 +182,7 @@ def get_slice(start,stop,
                                        start,
                                        stop)
     for number in record_slice:
-        if call_number_type == 'lccn':
+        if call_number_type == 'lcc':
             entity_key = redis_server.hget('lccn-normalized-hash',number)
         else:
             entity_key = redis_server.hget('{0}-hash'.format(call_number_type),
@@ -202,15 +198,18 @@ def get_record(**kwargs):
     record_info = {'call_number':call_number}
     for hash_base in ['lcc','govdoc','local']:
         hash_name = '{0}-hash'.format(hash_base)
-        if redis_server.hexists(hash_name,call_number):
+        
+        if annotation_server.hexists(hash_name,call_number):
             record_info['type_of'] = hash_base
-            instance_key = redis_server.hget(hash_name,'annotates')
+            holding_key = annotation_server.hget(hash_name,call_number)
+            instance_key = annotation_server.hget(holding_key,'annotates')
             record_info['bib_number'] = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(instance_key),
                                                           'ils-bib-number')
             work_key = redis_server.hget(instance_key,'instanceOf')
             record_info['title'] = creative_work_redis.hget("{0}:title".format(work_key),
                                                   'rda:preferredTitleForTheWork')
             creator_keys = creative_work_redis.smembers("{0}:rda:isCreatedBy".format(work_key))
+            print("Creator keys are {0}".format(creator_keys))
             if len(creator_keys) > 0:
                 creator_keys = list(creator_keys)
                 creator = authority_redis.hget(creator_keys[0],
