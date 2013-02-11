@@ -190,7 +190,7 @@ class RedisBibframeInterface(object):
         else:
             if not self.primary_redis.exists(self.redis_key):
                 raise ValueError("Cannot save, {0} doesn't exist in primary_redis port={1}".format(self.redis_key,
-                                                                                              self.primary_redis.info()['tcp-port']))
+                                                                                                   self.primary_redis.info()['tcp_port']))
         # If property_name is None, save everything
         if property_name is None:
             all_properties = dir(self)

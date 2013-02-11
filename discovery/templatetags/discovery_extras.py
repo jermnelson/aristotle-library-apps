@@ -24,14 +24,19 @@ def about_instance(instance):
     """
     info = []
     info.append(('Format',getattr(instance,'rda:carrierTypeManifestation')))
-    creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(instance.instanceOf))
+    print("BEFORE rda:isCreatedBy {0} {1}".format(instance.instanceOf,
+                                                  CREATIVE_WORK_REDIS.hexists(instance.redis_key,'rda:isCreatedBy')))
+    if CREATIVE_WORK_REDIS.hexists(instance.instanceOf,'rda:isCreatedBy'):
+        creator_keys = [CREATIVE_WORK_REDIS.hget(instance.instanceOf,'rda:isCreatedBy'),]
+    else:
+        creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(instance.instanceOf))
     creator_dd = ''
     for key in creator_keys:
 	creator_info = AUTHORITY_REDIS.hgetall(key)
 	name = unicode(creator_info.get('rda:preferredNameForThePerson'),errors='ignore')
 	creator_dd += '''<a href="/apps/discovery/authority/person/{0}/">
 	<i class="icon-user"></i> {1}</a>'''.format(key.split(":")[-1],
-			                                                                   name)
+    name)
 	if 'rda:dateOfBirth' in creator_info:
 	    creator_dd += '({0}-'.format(creator_info.get('rda:dateOfBirth'))
 	if 'rda:dateOfDeath' in creator_info:
@@ -64,6 +69,7 @@ def about_instance(instance):
            continue
        if inspect.ismethod(getattr(instance,name)):
            continue
+       
        if OPERATIONAL_REDIS.hexists('bibframe:vocab:Instance:labels',
                                     name):
            if value is not None:
@@ -73,12 +79,11 @@ def about_instance(instance):
                if type(instance_attribute) == set:
                    for row in list(instance_attribute):
                        info.append((label,row))
-               elif name == 'instanceOf':
+               if name == 'instanceOf':
                    work_key = instance.instanceOf
-                   ((name,
-                    '''<a href="/apps/discovery/work/{0}/">{1} <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1],
-                                                                                                        work_key)))
-
+                   info.append((name,
+                                '''<a href="/apps/discovery/work/{0}/">{1} <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1],
+                                                                                                                    work_key)))
 
                else:
                    info.append((label,instance_attribute))
@@ -86,6 +91,8 @@ def about_instance(instance):
            if type(value) == dict:
                for k,v in value.iteritems():
                    info.append((k,v))
+           if name == 'rda:uniformResourceLocatorItem':
+               info.append((name,'<a href="{0}">{1}</a>'.format(value,value)))
            else:
                info.append((name,getattr(instance,name)))
        
@@ -135,7 +142,10 @@ def get_creators(bibframe_entity):
         redis_key = bibframe_entity.attributes.get('instanceOf')
     else:
         redis_key = bibframe_entity.redis_key
-    creators = list(CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(redis_key)))
+    if CREATIVE_WORK_REDIS.hexists(redis_key,"rda:isCreatedBy"):
+        creators = [CREATIVE_WORK_REDIS.hget(redis_key,"rda:isCreatedBy"),]
+    else:
+        creators = list(CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(redis_key)))
     for key in creators:
         creator = AUTHORITY_REDIS.hgetall(key)
 	redis_id = key.split(":")[-1]
@@ -248,6 +258,21 @@ def get_instances(creative_work):
 		   'name':carrier_type,
 		   'redis_id':key.split(":")[-1]}
 	html_output += instance_template.render(Context(context))
+    return mark_safe(html_output)
+
+def get_library_holdings(instance):
+    """
+    Returns any library holdings for the instance
+
+    :param instance:
+    :rtype HTML or 0-length string
+    """
+    html_output = ''
+    for key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+        if key.startswith('bibframe:Holding'):
+            if ANNOTATION_REDIS.hexists(key,'callno-lcc'):
+                
+      
     return mark_safe(html_output)
 
 def get_location(instance):

@@ -865,6 +865,18 @@ class MARC21toInstance(MARC21Ingester):
         if len(output) > 0:
             self.entity_info['system-number'] = set(output)
 
+    def extract_url(self):
+        """
+        Extracts Uniform resource locator 
+        """
+        output = []
+        fields = self.record.get_fields('856')
+        for field in fields:
+            for subfield in field.get_subfields('u'):
+                output.append(subfield)
+        if len(output) > 0:
+            self.entity_info['rda:uniformResourceLocatorItem'] = set(output) 
+
     def ingest(self):
         """
         Ingests a MARC21 record into a BIBFRAME Instance Redis datastore
@@ -904,6 +916,7 @@ class MARC21toInstance(MARC21Ingester):
         self.extract_supplementaryContentNote()
         self.extract_system_number()
         self.extract_date_of_publication()
+        self.extract_url()
         self.add_instance()
         
 

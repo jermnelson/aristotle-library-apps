@@ -28,9 +28,31 @@
      <img src="{{ STATIC_URL }}img/maps_48x48.png" />
      <br/>
       {{ instance|get_location }}</a>
+     <a href="#creators-dlg" class="btn" data-toggle="modal">
+      Creator(s)<br/>
+      <img src="{{ STATIC_URL }}img/user_48x48.png">
+      </a>
+     {{ instance|get_library_holdings }}
+     {% endif %}
    </div>
   </div>
  {# END Instance row 2 #}
  </div>
 {# END Instance Details #}
+</div>
+{# START creators-dlg DIV #}
+<div class="modal hide fade" id="creators-dlg">
+ <div class="modal-header">
+ <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h4>Creators for</h4>
+  <h3>{{ instance|get_title }}</h3>
+ </div>
+ <div class="modal-body">
+
+ 
+ </div>
+ <div class="modal-footer">
+  <a href="#" data-dismiss="modal" class="btn btn-primary">Close</a>
+ </div>
+{# END creators-dlg DIV #}
 </div>
