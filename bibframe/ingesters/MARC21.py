@@ -280,7 +280,8 @@ class MARC21toInstance(MARC21Ingester):
         """
         self.instance = Instance(primary_redis=self.instance_ds)
         for key,value in self.entity_info.iteritems():
-            setattr(self.instance,key,value)
+            if key is not None and value is not None:
+                setattr(self.instance,key,value)
         self.instance.save()
 
     def extract_024(self):
@@ -301,6 +302,7 @@ class MARC21toInstance(MARC21Ingester):
         for field in fields:
             a_subfields = field.get_subfields('a')
             z_subfields = field.get_subfields('z')
+            source_code = None
             if field.indicator1 == '0':
                 source_code = 'isrc'
             if field.indicator1 == '1':
@@ -315,12 +317,13 @@ class MARC21toInstance(MARC21Ingester):
                 source_code = field['2']
             if not self.entity_info.has_key(source_code):
                 self.entity_info[source_code] = []
-            for subfield in a_subfields:
-                self.entity_info[source_code].append(subfield)
-            for subfield in z_subfields:
-                self.entity_info[source_code].append(subfield)
-                self.instance_ds.sadd('identifiers:{0}:invalid'.format(source_code),
-                                       subfield)
+            if source_code is not None:
+                for subfield in a_subfields:
+                    self.entity_info[source_code].append(subfield)
+                for subfield in z_subfields:
+                    self.entity_info[source_code].append(subfield)
+                    self.instance_ds.sadd('identifiers:{0}:invalid'.format(source_code),
+                                          subfield)
         for name in names:
              if self.entity_info.has_key(name):
                  self.entity_info[name] = set(self.entity_info[name])             
@@ -420,7 +423,7 @@ class MARC21toInstance(MARC21Ingester):
         for field in fields:
             type_of = field.data[0]
             if field007_lkup.has_key(type_of):
-                if ["a","c","d","g","k","c","v"].count(type_of) > 0:
+                if ["a","c","d","g","k","c","v"].count(type_of) > 0 and len(field.data) > 3:
                     if field007_lkup[type_of]["3"].has_key(field.data[3]):
                         output.append(field007_lkup[type_of]["3"][field.data[3]])
                 elif type_of == "h":
