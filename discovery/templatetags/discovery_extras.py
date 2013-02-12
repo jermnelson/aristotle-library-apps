@@ -79,7 +79,10 @@ def about_instance(instance):
                if type(instance_attribute) == set:
                    for row in list(instance_attribute):
                        info.append((label,row))
-               if name == 'instanceOf':
+               elif type(instance_attribute) == dict:
+                   for k,v in instance_attribute.iteritems():
+                       info.append((k,v))
+               elif name == 'instanceOf':
                    work_key = instance.instanceOf
                    info.append((name,
                                 '''<a href="/apps/discovery/work/{0}/">{1} <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1],
