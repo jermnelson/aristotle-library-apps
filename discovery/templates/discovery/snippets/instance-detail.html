@@ -16,7 +16,7 @@
  {# START Instance row 2 #}
  <div class="row">
   <div class="span6 well well-small">
-    <h4>About</h3>
+    <h4>About this Instance</h3>
     <dl>
      {{ instance|about_instance }}
     </dl>
@@ -33,7 +33,6 @@
       <img src="{{ STATIC_URL }}img/user_48x48.png">
       </a>
      {{ instance|get_library_holdings }}
-     {% endif %}
    </div>
   </div>
  {# END Instance row 2 #}

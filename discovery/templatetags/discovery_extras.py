@@ -268,11 +268,23 @@ def get_library_holdings(instance):
     :rtype HTML or 0-length string
     """
     html_output = ''
-    for key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
-        if key.startswith('bibframe:Holding'):
-            if ANNOTATION_REDIS.hexists(key,'callno-lcc'):
-                
-      
+    holdings_info = []
+    holding_template = loader.get_template('holding-icon.html')
+    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+        if redis_key.startswith('bibframe:Holding'):
+            for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():
+                if OPERATIONAL_REDIS.hexists('bibframe:vocab:Holding:labels',
+                                             key):
+                    name = OPERATIONAL_REDIS.hget('bibframe:vocab:Holding:labels',key)
+                else:
+                    name = key
+                if key != 'created_on' and key != 'annotates':
+                    holdings_info.append({"name":name,
+                                          "value":value})
+    if len(holdings_info) > 0:
+         context = {'holdings': holdings_info,
+                    'instance':instance}
+         html_output += holding_template.render(Context(context))
     return mark_safe(html_output)
 
 def get_location(instance):
@@ -347,6 +359,7 @@ register.filter('get_date',get_date)
 register.filter('get_ids',get_ids)
 register.filter('get_image',get_image)
 register.filter('get_instances',get_instances)
+register.filter('get_library_holdings',get_library_holdings)
 register.filter('get_location',get_location)
 register.filter('get_name',get_name)
 register.filter('get_subjects',get_subjects)

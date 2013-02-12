@@ -1,0 +1,10 @@
+{% load static %}
+<div class="well well-small">
+ <h4>Library Holdings</h4>
+ <dl>
+  {% for holding in holdings %}
+  <dt>{{ holding.name }}</dt>
+  <dd>{{ holding.value }}</dd>
+  {% endfor %}
+ </dl>
+</div>
