@@ -862,7 +862,7 @@ class MARC21toInstance(MARC21Ingester):
         for field in fields:
             for subfield in field.get_subfields('a'):
                 output.append(subfield)
-            for subfiedl in field.get_subfields('z'):
+            for subfield in field.get_subfields('z'):
                 output.append(subfield)
                 self.instance_ds.sadd("identifiers:system-number:invalid",subfield)
         if len(output) > 0:
