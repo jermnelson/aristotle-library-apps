@@ -14,15 +14,7 @@ search_options = [("all","All"),
 
 class MARC12toMARCRForm(forms.Form):
     marc_file_location = forms.CharField(max_length=255)
-    
-    
-    
 
 class MARCRSearchForm(forms.Form):
     search_options = forms.ChoiceField(choices=search_options)
-
-
-
-    
-    
 
