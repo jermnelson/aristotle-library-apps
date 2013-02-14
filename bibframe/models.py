@@ -139,9 +139,9 @@ class RedisBibframeInterface(object):
     
     def __load__(self,kwargs):
         """
-    Internal method either sets instance's properties or sets new
-    attribute values from passed kwargs in __init__ or upon a
-    refresh from the Redis server.
+        Internal method either sets instance's properties or sets new
+        attribute values from passed kwargs in __init__ or upon a
+        refresh from the Redis server.
         """
         if self.redis_key is not None:
             kwargs.update(process_key(self.redis_key,
