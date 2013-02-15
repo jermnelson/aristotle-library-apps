@@ -3,17 +3,19 @@
 
 {% block body %}
 <div class="row-fluid">     
- <div class="span10 offset2"> 
+ <div class="span6 offset3"> 
   <div class="well well-small">
+   <p>
    {% for collection in alpha_dbs %}
     <a href="/apps/dbfinder/{{ collection.letter }}" class="btn btn-small">{{ collection.letter }}</a>
    {% endfor %}
+   </p>
    <p>
-    <input type="select" name="db_subject">
+    <select name="db_subject">
     {% for collection in subject_dbs %}
      <option name="{{ collection.subject }}">{{ collection.subject }}</option> 
     {% endfor %}
-    </input>
+    </select>
    </p>
   </div>
  </div>

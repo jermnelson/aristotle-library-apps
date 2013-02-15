@@ -92,7 +92,7 @@
   }, 
   {
     "fields": {
-      "name": "All subjects"
+      "name": "ALL SUBJECTS"
     }, 
     "model": "dbfinder.subject", 
     "pk": 14

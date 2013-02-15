@@ -6,4 +6,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('dbfinder.views',
     url(r"^$","app",name="dbfinder-default"),
+    url(r"^(\w+)$","alpha",name="dbfinder-alpha"),
+    url(r"^subjects/(\w+)$","subject",name="dbfinder-subject"),
+   
 )

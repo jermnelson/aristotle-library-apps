@@ -45,6 +45,33 @@ def __get_database__(work_key,
             database['uri'] = instance_ds.hget(redis_key,"uri")
     return database      
 
+def get_databases(letter=None,
+                  subject=None,
+                  authority_ds=AUTHORITY_REDIS,
+                  instance_ds=INSTANCE_REDIS,
+                  work_ds=CREATIVE_WORK_REDIS):
+    """
+    Helper function takes either a letter or subject and returns 
+    a sorted list of databases.
+
+    :param letter: First character of database title
+    :param subject: Subject
+    """
+    databases = []
+    if letter is None and subject is None:
+        raise ValueError("get_database error letter and subject are both None")
+    if letter is not None and subject is not None:
+        raise ValueError( "get_database error letter and subject cannot both have values")
+    if letter is not None:
+        alpha_key = "dbfinder:alpha:{0}".format(letter.upper())
+        for work_key in authority_ds.smembers(alpha_key):
+            databases.append(__get_database__(work_key,instance_ds,work_ds))
+    if subject is not None:
+        subject_key = "dbfinder:subject:{0}".format(subject)
+        for work_key in authority_ds.smembers(subject_key):
+            databases.append(__get_database__(work_key,instance_ds,work_ds))
+    return sorted(databases, key=lambda x: x.get('title'))
+
 def get_dbs_alpha(authority_ds=AUTHORITY_REDIS,
                   instance_ds=INSTANCE_REDIS,
                   work_ds=CREATIVE_WORK_REDIS):
@@ -73,11 +100,14 @@ def get_dbs_subjects(authority_ds=AUTHORITY_REDIS,
     subject_keys = authority_ds.sort("dbfinder:subjects",alpha=True)
     for key in subject_keys:
         subject_db = []
-        for work_key in authority_ds.smembers(key):
+        label = authority_ds.hget(key,"label")
+        print("{0} {1}".format(key,label)) 
+        subject_key = "dbfinder:subject:{0}".format(label)
+        for work_key in authority_ds.smembers(subject_key):
             subject_db.append(__get_database__(work_key,instance_ds,work_ds))
-        databases.append({"subject":key.split(":")[-1],
+        databases.append({"subject":label,
                           'databases':sorted(subject_db)})
-    return databases
+    return sorted(databases, key=lambda x: x.get('subject'))
 
 def load_databases():
     subject_dict = {}
