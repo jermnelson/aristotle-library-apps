@@ -35,9 +35,10 @@ def __get_database__(work_key,
     :param instance_ds: Instance Datastore, defaults to INSTANCE_REDIS
     :param work_ds: Creative Work Datastore, defaults to CREATIVE_WORK_REDIS
     """
-    database = {'title': work_ds.hget("{0}:title".format(work_key),
+    database = {'description': work_ds.hget(work_key,'description'),
+                'title': work_ds.hget("{0}:title".format(work_key),
                                       'rda:preferredTitleOfWork'),
-                'varientTitle':work_ds.smembers('{0}:varientTitle'.format(work_key)),
+                'varientTitle':list(work_ds.smembers('{0}:varientTitle'.format(work_key))),
                 'uri':None}
     instance_keys = instance_ds.smembers("{0}:bibframe:Instances".format(work_key))
     for redis_key in instance_keys:
@@ -70,7 +71,7 @@ def get_databases(letter=None,
         subject_key = "dbfinder:subject:{0}".format(subject)
         for work_key in authority_ds.smembers(subject_key):
             databases.append(__get_database__(work_key,instance_ds,work_ds))
-    return sorted(databases, key=lambda x: x.get('title'))
+    return sorted(databases, key=lambda x: x.get('title').lower())
 
 def get_dbs_alpha(authority_ds=AUTHORITY_REDIS,
                   instance_ds=INSTANCE_REDIS,

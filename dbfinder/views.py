@@ -11,10 +11,10 @@ def alpha(request,letter):
     Returns a list of databases organized by letter
     """
     return direct_to_template(request,
-                              'dbfinder/alpha.html',
+                              'dbfinder/filter.html',
                               {'app':APP,
                                'databases':get_databases(letter=letter),
-                               'letter':letter,
+                               'filter':letter,
                                'institution':INSTITUTION,
                                'user':None})
   
@@ -37,5 +37,11 @@ def subject(request,subject_name):
 
     :param subject_name: Subject name
     """
-    return HttpResponse("In subject view, subject is {0}".format(subject_name))
+    return direct_to_template(request,
+                              'dbfinder/filter.html',
+                              {'app':APP,
+                               'databases':get_databases(subject=subject_name),
+                               'institution':INSTITUTION,
+                               'filter':subject_name,
+                               'user':None})
     

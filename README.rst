@@ -11,13 +11,17 @@ and library operational information.
 Productivity apps are available to authenticated users for managing the 
 bibliographic and library information stored in a `Redis`_ datastore.
 
+Installing
+----------
+
+
 License
 -------
 `Aristotle Library Apps`_ project is released under the `Apache 2`_ 
 open-source license.
 
 
-   Copyright 2012 Jeremy Nleson
+   Copyright 2012, 2013 Jeremy Nelson
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

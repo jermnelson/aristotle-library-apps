@@ -7,8 +7,11 @@
   <div class="well well-small">
    <p>
    {% for collection in alpha_dbs %}
-    <a href="/apps/dbfinder/{{ collection.letter }}" class="btn btn-small">{{ collection.letter }}</a>
+    <a href="/apps/dbfinder/{{ collection.letter }}" style="padding-top: 5px"
+       class="btn btn-small btn-success">{{ collection.letter }}</a>
    {% endfor %}
+    <a href="/apps/dbfinder/full-text" style="padding-top: 5px"
+       class="btn btn-small btn-success">Full Text</a>
    </p>
    <p>
     <select name="db_subject">
