@@ -81,6 +81,7 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_HOME,'book_search/assets'),
     os.path.join(PROJECT_HOME,'call_number/assets'),
     os.path.join(PROJECT_HOME,'reserve_search/assets'),
+    os.path.join(PROJECT_HOME,'dbfinder/assets'),
     os.path.join(PROJECT_HOME, 'discovery/assets'),
     # os.path.join(PROJECT_HOME,'hours/assets'),
     os.path.join(PROJECT_HOME,'marc_batch/assets'),

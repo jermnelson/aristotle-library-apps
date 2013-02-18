@@ -13,14 +13,45 @@
     <a href="/apps/dbfinder/full-text" style="padding-top: 5px"
        class="btn btn-small btn-success">Full Text</a>
    </p>
-   <p>
-    <select name="db_subject">
-    {% for collection in subject_dbs %}
-     <option name="{{ collection.subject }}">{{ collection.subject }}</option> 
-    {% endfor %}
-    </select>
-   </p>
+   <form class="form-inline">
+    <select name="db_subject"
+            data-bind="value: chosenSubject,
+                       options: subjectsList,
+                       optionsText: 'name'"></select>
+    <button data-bind="click: viewSubject" type="button" class="btn">Go</button>
+   </form>
   </div>
  </div>
 </div>
 {% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script>
+ function DBFinderAppViewModel() {
+  var self = this;
+
+  self.chosenSubject = ko.observable();
+  self.viewSubject = function() {
+    var subject = self.chosenSubject().name;
+    window.location.replace('/apps/dbfinder/subjects/' + subject);  
+  } 
+
+ 
+  self.subjectsList = [
+  {% for collection in subject_dbs %}
+   {"name": "{{ collection.subject }}" }
+   {% if not forloop.last %}
+    ,
+   {% endif %}
+  {% endfor %}
+  ]; 
+
+ } 
+ var view_model = new DBFinderAppViewModel();
+ ko.applyBindings(view_model);
+
+</script>
+{% endblock %}
+
+

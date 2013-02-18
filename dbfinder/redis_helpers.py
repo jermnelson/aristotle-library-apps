@@ -40,7 +40,7 @@ def __get_database__(work_key,
                                       'rda:preferredTitleOfWork'),
                 'varientTitle':list(work_ds.smembers('{0}:varientTitle'.format(work_key))),
                 'uri':None}
-    instance_keys = instance_ds.smembers("{0}:bibframe:Instances".format(work_key))
+    instance_keys = work_ds.smembers("{0}:bibframe:Instances".format(work_key))
     for redis_key in instance_keys:
         if database['uri'] is None and instance_ds.hexists(redis_key,"uri"):
             database['uri'] = instance_ds.hget(redis_key,"uri")
@@ -83,11 +83,7 @@ def get_dbs_alpha(authority_ds=AUTHORITY_REDIS,
     databases = []
     alpha_keys = authority_ds.sort("dbfinder:alphas",alpha=True)
     for key in alpha_keys:
-        alpha_dbs = []
-        for work_key in authority_ds.smembers(key):
-            alpha_dbs.append(__get_database__(work_key,instance_ds,work_ds))
-        databases.append({'letter':key.split(":")[-1],
-                          'databases':sorted(alpha_dbs)})
+        databases.append({'letter':key.split(":")[-1]})
     return databases
     
 def get_dbs_subjects(authority_ds=AUTHORITY_REDIS,
@@ -100,14 +96,8 @@ def get_dbs_subjects(authority_ds=AUTHORITY_REDIS,
     databases = []
     subject_keys = authority_ds.sort("dbfinder:subjects",alpha=True)
     for key in subject_keys:
-        subject_db = []
         label = authority_ds.hget(key,"label")
-        print("{0} {1}".format(key,label)) 
-        subject_key = "dbfinder:subject:{0}".format(label)
-        for work_key in authority_ds.smembers(subject_key):
-            subject_db.append(__get_database__(work_key,instance_ds,work_ds))
-        databases.append({"subject":label,
-                          'databases':sorted(subject_db)})
+        databases.append({"subject":label})
     return sorted(databases, key=lambda x: x.get('subject'))
 
 def load_databases():

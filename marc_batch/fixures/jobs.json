@@ -68,7 +68,17 @@
     },
     "model":"marc_batch.Job",
     "pk":7
+  },
+  {"fields": {
+        "job_type": 3,
+        "help_rst":"fod-help",
+        "name": "Films on Demand",
+        "python_module":"fod"
+    },
+    "model":"marc_batch.Job",
+    "pk":8
   }
+    
  
 ]
         

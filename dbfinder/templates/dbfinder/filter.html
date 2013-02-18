@@ -4,20 +4,85 @@
 {% block body %}
 <div class="row-fluid">    
  <div class="span2">
-  <div class="btn-grp btn-vertical">
-   <a href="#" class="btn">Go Back</a>
-   <a href="#" class="btn">Next Database</a>
+  {# START Subject and Alpha list Accordion DIV #}
+  <div class="accordion" id="subject-alpha-nav">
+   {# START Subject Accordion group #}
+   <div class="accordion-group">
+     {# START Subject Heading DIV #}
+     <div class="accordion-heading">
+      <a class="accordion-toggle" 
+         data-toggle="collapse"
+         data-parent="#subject-alpha-nav"
+         href="#subject-subnav">
+        By Subjects 
+      </a>
+     {# END Subject Heading DIV #}
+     </div>
+     {# START Subject Body DIV #}
+     <div id="subject-subnav"
+          class="accordion-body collapse {% if filter|length > 1 %}in{% endif %}">
+      {# START Subject Inner Body DIV #}
+      <div class="accordion-inner">
+       <ul class="nav nav-tabs nav-stacked">
+        {% for row in subject_dbs %}
+         <li {% if row.subject == filter %}class="active" {% endif %}>
+          <a {% if row.subject == filter %}class="btn btn-warning"{% endif %} 
+             href="/apps/dbfinder/subjects/{{ row.subject }}">{{ row.subject }}</a>
+         </li>
+        {% endfor %}
+       </ul>
+      {# END Subject Inner Body DIV #}
+      </div>
+      
+     {# END Subject Body DIV #}
+     </div>
+   {# END Subject Accordion group #}
+   </div>
+   {# START Title Accordion group #}
+   <div class="accordion-group"> 
+    {# START Title Heading DIV #}
+     <div class="accordion-heading">
+      <a class="accordion-toggle" 
+         data-toggle="collapse"
+         data-parent="#subject-alpha-nav"
+         href="#title-subnav">
+        By Titles 
+      </a>
+     {# END Title Heading DIV #}
+     </div>
+    {# START Title Body DIV #}
+    <div id="title-subnav" 
+         class="accordion-body collapse {% if filter|length < 2 %}in{% endif %}">
+     <div class="accordion-inner">
+      {% for row in alpha_dbs %}
+        <a class="btn btn-small {% if filter == row.letter %}btn-warning{% else %}btn-success{% endif %}"
+           href="/apps/dbfinder/{{ row.letter }}">
+        {{ row.letter }}</a>
+      {% endfor %}
+     </div>
+    {# END Title Body DIV #}
+    </div>
+ 
+   {# END Title Accordion group #}
+   </div>
+  {# END Subject and Alpha list Accordion DIV #}
   </div>
  </div> 
  <div class="span10"> 
   <div class="well well-small">
-   <h3><em>{{ filter }}</em> Databases</h3>
+   <h3>{{ databases|length }} <em>{{ filter }}</em> Databases</h3>
+
    <dl> 
    {% for database in databases %}
     <dt>
     <a href="{{ database.uri }}" class="btn btn-primary">
-    {{ database.title }}</a>  
-    <dt>
+    {{ database.title }}</a> 
+    {% if user.is_authenticated %}
+     <a href="#edit-db-dlg"
+        data-toggle="modal" 
+        class="btn btn-small">Edit</a> 
+    {% endif %} 
+    </dt>
     {% if database.varientTitle %}
     <dd>
      Alternate titles: 
@@ -31,9 +96,33 @@
     <dd>
     {{ database.description }}
     </dd>
+    <hr>
     </dl>
    {% endfor %}
   </div>
  </div>
 </div>
+<div class="modal hide fade" id="edit-db-dlg">
+ <div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal">&times;</button>
+  <h2>Edit Database Dialog</h2>
+ </div>
+ <div class="modal-body">
+  <h1>NEEDS DESIGN</h1>
+ </div>
+ <div class="modal-footer">
+  <button class="btn" data-dismiss="modal">Close</button>
+  <button class="btn btn-primary">Save changes</button>
+ </div>
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script src="{{ STATIC_URL }}dbfinder/js/dbfinder.js"></script>
+<script>
+ var view_model = new DBFinderAppViewModel();
+ ko.applyBindings(view_model);
+
+</script>
 {% endblock %}

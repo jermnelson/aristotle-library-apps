@@ -9,6 +9,9 @@ from django.core.management.base import BaseCommand, CommandError
 from aristotle.settings import *
 from bibframe.ingesters import *
 
+def profile_run():
+   run_ingestion('bibframe/fixures/pride-and-prejudice.mrc','192.168.189.128')
+
 def run_ingestion(MARC21_filename,
                   redis_host):
     """

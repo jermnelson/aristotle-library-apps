@@ -12,6 +12,7 @@ from asp_cml import AlexanderStreetPressClassicalMusicLibrary
 from asp_jml import AlexanderStreetPressJazzMusicLibrary
 from eai_evans import EarlyAmericanImprintsEvansJob
 from eai_shaw import EarlyAmericanImprintsShawJob
+from fod import FilmsOnDemandJob
 from springer import SpringerEBookJob
 from ybp_ebl import ybp_ebl
 from ybp_ebrary import ybp_ebrary
@@ -21,6 +22,7 @@ asp_cml = AlexanderStreetPressClassicalMusicLibrary
 asp_jml = AlexanderStreetPressJazzMusicLibrary
 eai_evans = EarlyAmericanImprintsEvansJob
 eai_shaw = EarlyAmericanImprintsShawJob
+fod = FilmsOnDemandJob
 springer = SpringerEBookJob
 ybp_ebl = ybp_ebl
 ybp_ebrary = ybp_ebrary
