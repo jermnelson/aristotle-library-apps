@@ -1,5 +1,5 @@
 {% extends 'app-base.html' %}
-
+{% load dbfinder_extras %}
 
 {% block body %}
 <div class="row-fluid">    
@@ -83,6 +83,9 @@
         class="btn btn-small">Edit</a> 
     {% endif %} 
     </dt>
+    <dd>
+      {{ database.work_key|get_discovery_link }}
+    </dd>
     {% if database.varientTitle %}
     <dd>
      Alternate titles: 

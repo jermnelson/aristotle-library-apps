@@ -23,9 +23,8 @@ def about_instance(instance):
     :rtype: HTML or -0-length string
     """
     info = []
-    info.append(('Format',getattr(instance,'rda:carrierTypeManifestation')))
-    print("BEFORE rda:isCreatedBy {0} {1}".format(instance.instanceOf,
-                                                  CREATIVE_WORK_REDIS.hexists(instance.redis_key,'rda:isCreatedBy')))
+    if hasattr(instance,'rda:carrierTypeManifestation'):
+        info.append(('Format',getattr(instance,'rda:carrierTypeManifestation')))
     if CREATIVE_WORK_REDIS.hexists(instance.instanceOf,'rda:isCreatedBy'):
         creator_keys = [CREATIVE_WORK_REDIS.hget(instance.instanceOf,'rda:isCreatedBy'),]
     else:
@@ -240,9 +239,10 @@ def get_image(instance):
     :param instance: Instance
     :rtype: HTML or 0-length string
     """
-    carrier_type = getattr(instance,'rda:carrierTypeManifestation')
-    html_output = CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")
-    return mark_safe(html_output)
+    if hasattr(instance,'rda:carrierTypeManifestation'):
+        carrier_type = getattr(instance,'rda:carrierTypeManifestation')
+        html_output = CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")
+        return mark_safe(html_output)
 
 def get_instances(creative_work):
     """
@@ -256,7 +256,7 @@ def get_instances(creative_work):
     instances = list(CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(creative_work.redis_key)))
     for key in instances:
 	instance = INSTANCE_REDIS.hgetall(key)
-        carrier_type = instance['rda:carrierTypeManifestation']
+        carrier_type = instance.get('rda:carrierTypeManifestation','Unknown')
         context = {'graphic':CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png"),
 		   'name':carrier_type,
 		   'redis_id':key.split(":")[-1]}

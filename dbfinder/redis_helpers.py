@@ -39,7 +39,8 @@ def __get_database__(work_key,
                 'title': work_ds.hget("{0}:title".format(work_key),
                                       'rda:preferredTitleOfWork'),
                 'varientTitle':list(work_ds.smembers('{0}:varientTitle'.format(work_key))),
-                'uri':None}
+                'uri':None,
+                'work_key':work_key}
     instance_keys = work_ds.smembers("{0}:bibframe:Instances".format(work_key))
     for redis_key in instance_keys:
         if database['uri'] is None and instance_ds.hexists(redis_key,"uri"):
