@@ -80,10 +80,10 @@ function CallNumberAppViewModel() {
 
   self.callNumberTypes = [
     { name: "LOC Call Number", number_type: "lccn" },
-    { name: "Government Call Number", number_type: "sudoc" },
-    { name: "Local Call Number", number_type: "local" }];
-    //{ name: "ISBN", number_type: "isbn" },
-    //{ name: "ISSN", number_type: "issn" }]; 
+    { name: "Government Call Number", number_type: "govdoc" },
+    { name: "Local Call Number", number_type: "local"}, 
+    { name: "ISBN", number_type: "isbn" },
+    { name: "ISSN", number_type: "issn" }]; 
 
   self.chosenNumberType = ko.observable();
   self.currentTitle = ko.observable();

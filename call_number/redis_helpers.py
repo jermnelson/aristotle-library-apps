@@ -9,7 +9,7 @@ import aristotle.settings as settings
 annotation_server = settings.ANNOTATION_REDIS
 authority_redis = settings.AUTHORITY_REDIS
 redis_server = settings.INSTANCE_REDIS
-creative_work_redis = settings.CREATIVE_WORK_REDIS
+creative_work_server = settings.CREATIVE_WORK_REDIS
 
 english_alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
                     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
@@ -68,7 +68,16 @@ def generate_call_number_app(instance,
                  annotation_server.zadd('local-sort-set',
                                         0,
                                         callno_local)
-        
+    for name in ['isbn','issn','lccn']:
+        if hasattr(instance,name) and getattr(instance,name) is not None:
+            for value in list(getattr(instance,name)): 
+                instance_server.hset('{0}-hash'.format(name), 
+                                     value,
+                                     instance.redis_key)
+                instance_server.zadd('{0}-sort-set'.format(name),
+                                     0,
+                                     value)
+
         
         
     
@@ -118,7 +127,7 @@ def get_previous(call_number,
                      call_number_type)
 
 def get_next(call_number,
-             call_number_type='lccn'):
+             call_number_type='lcc'):
     """
     Function returns a list of two records that follow the current
     param call_number using the get_slice method.
@@ -143,27 +152,26 @@ def get_rank(call_number,
     rank from the sorted set.
 
     :param call_number: Call Number String
-    :param call_number_type: Type of call number (lccn, sudoc, or local)
+    :param call_number_type: Type of call number (lcc, sudoc, local, )
     :rtype integer or None:
     """
-    if annotation_server.hexists("{0}-hash".format(call_number_type),
-                            call_number):
-        entity_key = annotation_server.hget("{0}-hash".format(call_number_type),
-                                            call_number)
-        ident_key = annotation_server.hget(entity_key,'annotates')
-        #ident_key = "{0}:rda:identifierForTheManifestation".format(entity_key)
-        entity_idents = redis_server.hgetall(ident_key)
-        
-        if annotation_server.hexists("{0}-normalized".format(call_number_type),
-                                     entity_key):
-            normed_key = annotation_server.hget("{0}-normalized".format(call_number_type),
-                                                entity_key)
-            current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
-                                              normed_key)
+    current_rank = -1
+    hash_key = "{0}-hash".format(call_number_type)
+    sort_set_key = '{0}-sort-set'.format(call_number_type)
+    if annotation_server.exists(hash_key):
+        # Currently we are only creating normalized values for LCC call number
+        if call_number_type == 'lcc': 
+            normalized_call_number = lcc_normalize(call_number)
+            current_rank = annotation_server.zrank(sort_set_key,
+                                                   normalized_call_number)
         else:
-            current_rank = redis_server.zrank('{0}-sort-set'.format(call_number_type),
-                                              call_number)
-        return current_rank
+            current_rank = annotation_server.zrank(sort_set_key,
+                                                   call_number)
+
+    elif redis_server.exists(hash_key): 
+        current_rank = redis_server.zrank(sort_set_key,
+                                          call_number)
+    return current_rank
             
 
 def get_slice(start,stop,
@@ -174,26 +182,93 @@ def get_slice(start,stop,
     :param start: Beginning of slice of sorted call number
     :param stop: End of slice of sorted call numbers
     :param call_number_type: Type of call number (lccn, sudoc, or local), defaults
-                             to lccn.
+                             to lcc.
     :rtype: List of entities saved as Redis records
     """
     entities = []
-    record_slice = redis_server.zrange('{0}-sort-set'.format(call_number_type),
-                                       start,
-                                       stop)
+    hash_key = '{0}-hash'.format(call_number_type)
+    sort_set_key = '{0}-sort-set'.format(call_number_type)
+    if annotation_server.exists(sort_set_key):
+        record_slice = annotation_server.zrange(sort_set_key,
+                                                start,
+                                                stop)
+    elif redis_server.exists(sort_set_key):
+        record_slice = redis_server.zrange(sort_set_key,
+                                           start,
+                                           stop)
+    else:
+        raise ValueError("get_slice error, {0} not in Annotation or Instance Redis instances".format(sort_set_key))
+ 
     for number in record_slice:
         if call_number_type == 'lcc':
-            entity_key = redis_server.hget('lccn-normalized-hash',number)
-        else:
-            entity_key = redis_server.hget('{0}-hash'.format(call_number_type),
-                                           number)
+            annotation_key = annotation_server.hget('lcc-normalized-hash',number)
+            entity_key = annotation_server.hget(annotation_key,'annotates')
+        elif annotation_server.exists(hash_key):
+            annotation_key = annotation_server.hget(hash_key,number)
+            entity_key = annotation_server.hget(annotation_key,'annotates')
+        elif redis_server.exists(hash_key):
+            entity_key = redis_server.hget(hash_key, number)
         call_number = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(entity_key),
                                         call_number_type)
-        record = get_record(call_number=call_number)
+        record = get_record(call_number=call_number,
+                            instance_key=entity_key)
         entities.append(record)
     return entities
 
 def get_record(**kwargs):
+    record_info = {'call_number':kwargs.get('call_number')}
+    if kwargs.has_key('work_key'):
+        record_info['work_key'] = kwargs.get('work_key')
+    elif kwargs.has_key('instance_key'):
+        instance_key = kwargs.get('instance_key')
+        record_info['work_key'] = redis_server.hget(instance_key, 'instanceOf')
+    else:
+        # Try searching for call_number in Instance datastores
+        for name in ['isbn','issn']:
+            if redis_server.hexists("{0}-hash".format(name),
+                                    record_info['call_number']):
+                instance_key = redis_server.hget("{0}-hash".format(name),
+                                                 record_info['call_number'])
+                record_info['work_key'] = redis_server.hget(instance_key, 'instanceOf')
+                record_info['type_of'] = name
+                break
+        # Trys searching for call_number in Annotation datastore
+        if 'work_key' not in record_info:
+            for name in ['lcc','govdoc','local']:
+                hash_key = "{0}-hash".format(name)
+                if annotation_server.hexists(hash_key,
+                                             record_info['call_number']):
+                    record_info['type_of'] = name
+                    holding_key = annotation_server.hget(hash_key,
+                                                         record_info['call_number'])
+                    instance_key = annotation_server.hget(holding_key,
+                                                          "annotates")
+                    
+                    record_info['work_key'] = redis_server.hget(instance_key, 
+                                                                'instanceOf')
+                    break
+        
+    record_info['title'] = creative_work_server.hget("{0}:title".format(record_info['work_key']),
+                                                     'rda:preferredTitleForTheWork')
+    record_info['title'] = unicode(record_info['title'], encoding="utf-8", errors="ignore")
+    if creative_work_server.exists('{0}:rda:isCreatedBy'.format(record_info['work_key'])):
+        creator_keys = list(creative_work_server.smembers('{0}:rda:isCreatedBy'.format(record_info['work_key'])))
+    elif creative_work_server.hexists(record_info['work_key'],'rda:isCreatedBy'):
+        creator_keys = [creative_work_server.hget(record_info['work_key'],
+                                                  'rda:isCreatedBy'),]
+    else:
+        creator_keys = []
+    if len(creator_keys) > 0:
+        creator = authority_redis.hget(creator_keys[0],"rda:preferredNameForThePerson")
+        if len(creator_keys) > 1:
+            creator += ' et.al.'
+        record_info['authors'] = unicode(creator,encoding="utf-8",errors='ignore')
+    return record_info
+
+    
+
+
+def old_get_record(**kwargs):
     call_number = kwargs.get('call_number')
     record_info = {'call_number':call_number}
     for hash_base in ['lcc','govdoc','local']:
@@ -209,7 +284,6 @@ def get_record(**kwargs):
             record_info['title'] = creative_work_redis.hget("{0}:title".format(work_key),
                                                   'rda:preferredTitleForTheWork')
             creator_keys = creative_work_redis.smembers("{0}:rda:isCreatedBy".format(work_key))
-            print("Creator keys are {0}".format(creator_keys))
             if len(creator_keys) > 0:
                 creator_keys = list(creator_keys)
                 creator = authority_redis.hget(creator_keys[0],
@@ -221,7 +295,7 @@ def get_record(**kwargs):
     return None
     
 
-def lccn_normalize(raw_callnumber):
+def lcc_normalize(raw_callnumber):
     """
     Function based on Bill Dueber algorithm at
     <http://code.google.com/p/library-callnumber-lc/wiki/Home>
@@ -262,7 +336,7 @@ def lccn_set(identifiers_key,
     redis_server.hset(identifiers_key,
                       'lccn',
                       call_number)
-    normalized_call_number = lccn_normalize(call_number)
+    normalized_call_number = lcc_normalize(call_number)
     redis_server.hset(identifiers_key,
                       'lccn-normalized',
                       normalized_call_number)

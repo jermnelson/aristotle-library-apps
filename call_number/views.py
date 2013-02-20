@@ -126,7 +126,7 @@ def discovery_search(request):
     if request.REQUEST.has_key("type"):
         call_number_type = request.REQUEST.get('type')
     else:
-        call_number_type = "lccn"
+        call_number_type = "lcc"
     if request.REQUEST.has_key("slice-size"):
         slice_size = int(request.REQUEST.get('slice-size'))
     else:
@@ -198,7 +198,6 @@ def widget_search(request):
     else:
         call_number_type = "lccn"
     current = redis_helpers.get_record(call_number=call_number)
-    print(current)
     next_recs = redis_helpers.get_next(call_number, call_number_type)
     previous_recs = redis_helpers.get_previous(call_number, call_number_type)
     return {

@@ -553,13 +553,16 @@ class MARC21toInstance(MARC21Ingester):
         Extract's ISBN  from MARC21 record and
         saves as a rda:identifierForTheManifestation:isbn
         """
-        isbn_field = self.record['020']
+        isbn_fields = self.record.get_fields('020')
         isbn_values = []
-        if isbn_field is not None:
-            for subfield in isbn_field.get_subfields('a', 'z'):
-                isbn_values.append(''.join(subfield))
-            self.entity_info['rda:identifierForTheManifestation:isbn'] = \
-            set(isbn_values)
+        for isbn_field in isbn_fields:
+            for subfield in isbn_field.get_subfields('a'):
+                isbn_values.append(subfield)
+            for subfield in isbn_field.get_subfields('z'):
+                isbn_values.append(subfield)
+                self.instance_ds.sadd("identifiers:issn:invalid",subfield)
+        if len(isbn_values) > 0:
+            self.entity_info['isbn'] = set(isbn_values)
 
     def extract_issn(self):
         """
@@ -591,7 +594,7 @@ class MARC21toInstance(MARC21Ingester):
 
     def extract_lccn(self):
         """
-        Extract's LCCN call-number from MARC21 record and
+        Extract's LCCN from MARC21 record
         """
         lccn_field = self.record['010']
         if lccn_field is not None:
@@ -1082,8 +1085,8 @@ class MARC21toLibraryHolding(MARC21Ingester):
             self.entity_info['callno-local'] = local_099.value()
         else:
             local_090 = self.record['090']
-            if local_090 is not None and not self.entity_info.has_key('lcc'):
-                self.entity_info['callno-local'] = local_090.value()
+            if local_090 is not None and not self.entity_info.has_key('callno-lcc'): 
+                self.entity_info['callno-lcc'] = local_090.value()
 
 
     def extract_udc(self):
