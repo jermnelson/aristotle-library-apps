@@ -43,6 +43,7 @@ def app(request):
     call_number = current.get('call_number')
     next_recs = redis_helpers.get_next(call_number,
                                        call_number_type=current['type_of'])
+    print(next_recs)
     previous_recs = redis_helpers.get_previous(call_number,
                                                call_number_type=current['type_of'])
     return direct_to_template(request,
@@ -196,8 +197,9 @@ def widget_search(request):
     if "type" in request.REQUEST:
         call_number_type = request.REQUEST.get('type')
     else:
-        call_number_type = "lccn"
-    current = redis_helpers.get_record(call_number=call_number)
+        call_number_type = "lcc"
+    current = redis_helpers.get_record(call_number=call_number,
+                                       call_number_type=call_number_type)
     next_recs = redis_helpers.get_next(call_number, call_number_type)
     previous_recs = redis_helpers.get_previous(call_number, call_number_type)
     return {

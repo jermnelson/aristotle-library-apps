@@ -119,7 +119,7 @@ function CallNumberAppViewModel() {
    if(previousRecs) {
      for(row in previousRecs) {
        rec = previousRecs[row];
-       var bib_link = "/catalog/record/" + rec['bib_number'];
+       var bib_link = "/apps/discovery/" + rec['work_key'];
        self.previousItems.push(new CallNumberItem(bib_link,rec['title'],rec['authors'],' ',rec['call_number']));
      }
    }
@@ -131,7 +131,7 @@ function CallNumberAppViewModel() {
    if(nextRecs) {
      for(row in nextRecs) {
        rec = nextRecs[row];
-       var bib_link = "/catalog/record/" + rec['bib_number'];
+       var bib_link = "/apps/discovery/" + rec['work_key'];
        self.nextItems.push(new CallNumberItem(bib_link,rec['title'],rec['authors'],' ',rec['call_number']));
      }
    }

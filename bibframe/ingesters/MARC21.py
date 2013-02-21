@@ -952,6 +952,9 @@ class MARC21toBIBFRAME(Ingester):
             creative_work_ds=self.creative_work_ds)
         self.marc2instance.ingest()
         self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
+        if self.marc2creative_work.creative_work.title is not None:
+            self.marc2instance.instance.title = getattr(self.marc2creative_work.creative_work.title,
+                                                        'rda:preferredTitleOfWork')
         self.marc2instance.instance.save()
         self.creative_work_ds.sadd("{0}:bibframe:Instances".format(self.marc2creative_work.creative_work.redis_key),
                                    self.marc2instance.instance.redis_key)

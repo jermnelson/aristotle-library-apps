@@ -203,13 +203,14 @@ def get_slice(start,stop,
         if call_number_type == 'lcc':
             annotation_key = annotation_server.hget('lcc-normalized-hash',number)
             entity_key = annotation_server.hget(annotation_key,'annotates')
+            call_number = annotation_server.hget(annotation_key,'callno-lcc')
         elif annotation_server.exists(hash_key):
             annotation_key = annotation_server.hget(hash_key,number)
             entity_key = annotation_server.hget(annotation_key,'annotates')
+            call_number = annotation_server.hget(annotation_key,"callno-{0}".format(call_number_type))
         elif redis_server.exists(hash_key):
             entity_key = redis_server.hget(hash_key, number)
-        call_number = redis_server.hget('{0}:rda:identifierForTheManifestation'.format(entity_key),
-                                        call_number_type)
+            call_number = redis_server.hget(entity_key,call_number_type)
         record = get_record(call_number=call_number,
                             instance_key=entity_key)
         entities.append(record)

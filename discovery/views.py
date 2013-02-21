@@ -7,7 +7,7 @@ __author__ = "Jeremy Nelson"
 import os,random
 
 from django.views.generic.simple import direct_to_template
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 
@@ -86,6 +86,55 @@ def creative_work(request,redis_id):
 			       'institution': INSTITUTION,
 			       'search_form': SearchForm(),
 			       'user':None})
+
+def facet_detail(request,facet_name,facet_item):
+    """
+    Displays a specific Facet listing
+    """
+    redis_key = "bibframe:Annotation:Facet:{0}:{1}".format(facet_name,facet_item)
+    listing_key = "facet-listing:{0}:{1}".format(facet_name,facet_item)
+    if not ANNOTATION_REDIS.exists(redis_key):
+        raise Http404
+    if not ANNOTATION_REDIS.exists(listing_key):
+        ANNOTATION_REDIS.sort(redis_key,alpha=True,store=listing_key)
+        ANNOTATION_REDIS.expire(listing_key,86400)
+    offset =  request.REQUEST.get('offset',0)
+    records = []
+    record_slice = ANNOTATION_REDIS.lrange(listing_key,offset,offset+25)
+    for row in record_slice:
+        if row.find("Instance") > -1:
+            work_key = INSTANCE_REDIS.hget(row,'instanceOf')
+        elif row.find("Work") > -1:
+            work_key = row
+        work = Work(primary_redis=CREATIVE_WORK_REDIS,
+                    redis_key=work_key)
+        records.append({'work':work})
+    return direct_to_template(request,
+                              'discovery/app.html',
+                              {'app': APP,
+                               'example':{},
+			       'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
+			       'feedback_context':request.get_full_path(),
+                               'institution': INSTITUTION,
+                               'facet_list': None,
+			       'results':records,
+			       'search_form': SearchForm(),
+			       'search_query': None,
+                               'user': None})
+
+                              
+
+    return HttpResponse("In facet detail key={0}\n{1}".format(redis_key,records))
+
+def facet_summary(request,facet_name):
+    """
+    Displays A general facet with all of its's items
+    """
+    redis_key = "bibframe:Annnotation:Facet:{0}s".format(facet_name)
+    if not ANNOTATION_REDIS.exists(redis_key):
+        raise Http404
+    return HttpResponse("In facet_summary, Facet = {0}".format(redis_key))
+    
 
 def instance(request,redis_id):
     """

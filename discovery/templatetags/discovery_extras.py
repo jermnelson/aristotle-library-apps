@@ -346,10 +346,14 @@ def get_title(bibframe_entity):
     try:
 	if hasattr(bibframe_entity,'title'):
             if bibframe_entity.title is not None:
-	        preferred_title = bibframe_entity.title['rda:preferredTitleForTheWork']
+	        preferred_title = unicode(bibframe_entity.title['rda:preferredTitleForTheWork'],
+                                          encoding='utf-8',
+                                          errors="ignore")
 	if hasattr(bibframe_entity,'instanceOf'):
-	    preferred_title = CREATIVE_WORK_REDIS.hget('{0}:title'.format(bibframe_entity.instanceOf),
-                                                       'rda:preferredTitleForTheWork')
+	    preferred_title = unicode(CREATIVE_WORK_REDIS.hget('{0}:title'.format(bibframe_entity.instanceOf),
+                                                               'rda:preferredTitleForTheWork'),
+                                      encoding='utf-8',
+                                      errors="ignore")
         return mark_safe(preferred_title)
     except:
         return ''

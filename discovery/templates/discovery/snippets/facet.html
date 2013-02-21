@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load discovery_extras %}
 <div class="facet span7 offset1" id="{{ facet.name|slugify }}-facet" draggable="true">
  <div class="facet-header">
   {% trans facet.name  %}
@@ -24,7 +25,8 @@
      </a>
      <ul class="dropdown-menu" role="menu"> 
       {% for child in item.items %}
-      <li><a href="#" data-bind="click: displayFacet">
+      <li><a href="/apps/discovery/facets/{{ child.name }}" 
+             data-bind="click: displayFacet">
 	  {{ child.name }} 
 	  {% if child.count %}
 	  ({{ child.count }}) 
@@ -34,7 +36,7 @@
      </ul>
    </div>
    {% else %}
-   <a href="#" data-bind="click: displayFacet">
+   <a href="{{ item.redis_key }}" data-bind="click: displayFacet">
      {% if item.icon %}
      <img src="{{ STATIC_URL }}img/{{ item.icon }}" alt="{{ item.name }} icon">
      {% endif %} 
