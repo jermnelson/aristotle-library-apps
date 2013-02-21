@@ -1,0 +1,10 @@
+{% load static %}
+<div class="well well-small">
+ <img src="{% get_static_prefix %}img/maps_48x48.png" style="float: right" >
+ <h4>Location in Library</h4>
+ <dl>
+  <dt>Code: {{ location.code }}</dt>
+  <dd>{{ location.label }}</dd>
+ </dl>
+ <p>Other Resources at <a href="{{ location.url }}">{{ location.label }}</a></p>
+</div>

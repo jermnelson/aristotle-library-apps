@@ -22,19 +22,8 @@
     </dl>
   </div>
   <div class="span4">
-   <div class="btn-grp">
-     <a href="#" class="btn" onclick="alert('Dynamic Map coming soon!')">
-	     Location<br/>
-     <img src="{{ STATIC_URL }}img/maps_48x48.png" />
-     <br/>
-      {{ instance|get_location }}</a>
-     <a href="#creators-dlg" class="btn" data-toggle="modal">
-      Creator(s)<br/>
-      <img src="{{ STATIC_URL }}img/user_48x48.png">
-      </a>
-      {{ instance|get_library_holdings }}
+   {{ instance|get_annotations }}
 
-   </div>
   </div>
  {# END Instance row 2 #}
  </div>

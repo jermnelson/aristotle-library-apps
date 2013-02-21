@@ -115,6 +115,45 @@ def about_instance(instance):
         html_output += '<dt>{0}</dt><dd>{1}</dd>'.format(row[0],row[1])
     return mark_safe(html_output)
 
+def get_annotations(instance):
+    """
+    Returns Library Holdings and Facets
+
+    """
+    output = ''
+    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+        if redis_key.find('Facet') > -1:
+            facet_info = redis_key.split(":")
+            facet_url = "/apps/discovery/facet/{0}/{1}".format(facet_info[-2],
+                                                               facet_info[-1])
+        if redis_key.startswith('bibframe:Holding'):
+            holdings_info = []
+            for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():
+                if OPERATIONAL_REDIS.hexists('bibframe:vocab:Holding:labels',
+                                             key):
+                    name = OPERATIONAL_REDIS.hget('bibframe:vocab:Holding:labels',key)
+                else:
+                    name = key
+                if key != 'created_on' and key != 'annotates':
+                    holdings_info.append({"name":name,
+                                          "value":value})
+            output += get_library_holdings(holdings_info)
+        elif redis_key.find('Facet:Location') > -1:
+            location_info = {'code':facet_info[-1],
+                             'label': ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:Locations',
+                                                            facet_info[-1]),
+                             'url':facet_url}
+            location_template = loader.get_template('location-icon.html')
+            output += location_template.render(Context({'location':location_info}))
+        elif redis_key.find('Facet:Format') > -1:
+            format_template = loader.get_template('carrier-type-icon.html')
+            output += format_template.render(Context({'graphic':get_image(instance),
+                                                      'label':facet_info[-1],
+                                                      'url':facet_url}))
+        
+    return mark_safe(output)
+      
+
 def get_brief_heading(work):
     """
     Returns generated h4 for brief record view
@@ -254,6 +293,7 @@ def get_image(instance):
         html_output = CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")
         return mark_safe(html_output)
 
+
 def get_instances(creative_work):
     """
     Returns generated html of the Creative Work's instances
@@ -273,30 +313,17 @@ def get_instances(creative_work):
 	html_output += instance_template.render(Context(context))
     return mark_safe(html_output)
 
-def get_library_holdings(instance):
+def get_library_holdings(holdings_info):
     """
     Returns any library holdings for the instance
 
-    :param instance:
+    :param holding_info: List of holdings info
     :rtype HTML or 0-length string
     """
     html_output = ''
-    holdings_info = []
     holding_template = loader.get_template('holding-icon.html')
-    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
-        if redis_key.startswith('bibframe:Holding'):
-            for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():
-                if OPERATIONAL_REDIS.hexists('bibframe:vocab:Holding:labels',
-                                             key):
-                    name = OPERATIONAL_REDIS.hget('bibframe:vocab:Holding:labels',key)
-                else:
-                    name = key
-                if key != 'created_on' and key != 'annotates':
-                    holdings_info.append({"name":name,
-                                          "value":value})
     if len(holdings_info) > 0:
-         context = {'holdings': holdings_info,
-                    'instance':instance}
+         context = {'holdings': holdings_info}
          html_output += holding_template.render(Context(context))
     return mark_safe(html_output)
 
@@ -369,6 +396,7 @@ def get_title(bibframe_entity):
         return ''
 
 register.filter('about_instance',about_instance)
+register.filter('get_annotations',get_annotations)
 register.filter('get_brief_heading',get_brief_heading)
 register.filter('get_creators',get_creators)
 register.filter('get_creator_works',get_creator_works)

@@ -37,7 +37,7 @@ def __get_database__(work_key,
     """
     database = {'description': work_ds.hget(work_key,'description'),
                 'title': work_ds.hget("{0}:title".format(work_key),
-                                      'rda:preferredTitleOfWork'),
+                                      'rda:preferredTitleForTheWork'),
                 'varientTitle':list(work_ds.smembers('{0}:varientTitle'.format(work_key))),
                 'uri':None,
                 'work_key':work_key}
@@ -124,7 +124,7 @@ def load_databases():
         title = row['fields']['title']
         new_work = Work(primary_redis=CREATIVE_WORK_REDIS,
                         description=description,
-                        title={'rda:preferredTitleOfWork':title})
+                        title={'rda:preferredTitleForTheWork':title})
         if alt_title_dict.has_key(db_pk):
             new_work.varientTitle = []
             for alt_title in alt_title_dict[db_pk]:
