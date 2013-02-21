@@ -79,7 +79,7 @@ function CallNumberAppViewModel() {
   }
 
   self.callNumberTypes = [
-    { name: "LOC Call Number", number_type: "lccn" },
+    { name: "LOC Call Number", number_type: "lcc" },
     { name: "Government Call Number", number_type: "govdoc" },
     { name: "Local Call Number", number_type: "local"}, 
     { name: "ISBN", number_type: "isbn" },
