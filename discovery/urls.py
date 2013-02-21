@@ -14,6 +14,6 @@ urlpatterns = patterns('discovery.views',
     url(r"^person/(\d+)/$", "person", name="discovery-person"),
     url(r"^bibframe:Work:(\d+)$", "creative_work", name="discovery-work-direct"),
     url(r"^work/(\d+)/$", "creative_work", name="discovery-work"),
-    url(r"^facet/(\w+)/$", "facet_summary"),
-    url(r"^facet/(\w+)/(\w+)/$", "facet_detail"),
+    url(r"^facet/([\w ]+)/$", "facet_summary"),
+    url(r"^facet/([\w ]+)/([\w ]+)$", "facet_detail"),
 )

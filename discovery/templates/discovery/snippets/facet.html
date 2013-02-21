@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load discovery_extras %}
-<div class="facet span7 offset1" id="{{ facet.name|slugify }}-facet" draggable="true">
+<div class="facet" id="{{ facet.name|slugify }}-facet" draggable="true">
  <div class="facet-header">
   {% trans facet.name  %}
   <a href="#" class="close" data-bind="click: closeFacet">&times;</a>
@@ -36,7 +36,7 @@
      </ul>
    </div>
    {% else %}
-   <a href="{{ item.redis_key }}" data-bind="click: displayFacet">
+   <a href="{{ item|get_facet_url }}" data-bind="click: displayFacet">
      {% if item.icon %}
      <img src="{{ STATIC_URL }}img/{{ item.icon }}" alt="{{ item.name }} icon">
      {% endif %} 

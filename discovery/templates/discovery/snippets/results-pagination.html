@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load discovery_extras %}
+<div class="span6">
+ <div class="pagination">
+  <ul>
+  <li><a href="{{ pagination.previous.url }}">Prev</a></li>
+  {% for page in pagination.pages %}
+  <li {% if page.active %}class="active"{% endif %}
+      {% if page.disabled %}class="disabled"{% endif %}>
+   <a href="{{ page.route }}" >{{ page.number }}</a>
+  </li>
+  {% endfor %}
+  <li><a href="{{ pagination.next.url }}">Next</a></li>
+  </ul> 
+ </div>
+</div>

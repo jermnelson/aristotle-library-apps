@@ -1,4 +1,0 @@
-www:
-  type: python
-data:
-  type: redis

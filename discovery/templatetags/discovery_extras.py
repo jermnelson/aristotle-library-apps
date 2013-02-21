@@ -213,6 +213,16 @@ def get_date(person,type_of):
         return mark_safe(output)
 
 
+def get_facet_url(facet_item):
+    """
+    Returns generated html of a Facet
+    
+    :param facet_item: FacetItem
+    """
+    facet_list = facet_item.redis_key.split(":")
+    if len(facet_list) > 1:
+        return mark_safe("/apps/discovery/facet/{0}/{1}".format(facet_list[-2],facet_list[-1]))
+
 def get_ids(instance):
     """
     Returns generated html of the Instance's identifiers
@@ -363,6 +373,7 @@ register.filter('get_brief_heading',get_brief_heading)
 register.filter('get_creators',get_creators)
 register.filter('get_creator_works',get_creator_works)
 register.filter('get_date',get_date)
+register.filter('get_facet_url',get_facet_url)
 register.filter('get_ids',get_ids)
 register.filter('get_image',get_image)
 register.filter('get_instances',get_instances)

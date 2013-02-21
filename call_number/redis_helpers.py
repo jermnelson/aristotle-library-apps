@@ -43,7 +43,7 @@ def generate_call_number_app(instance,
                 annotation_server.hset('lcc-hash',
                                        callno_lcc,
                                        annotation_key)
-                normalized_call_number = lccn_normalize(callno_lcc)
+                normalized_call_number = lcc_normalize(callno_lcc)
                 annotation_server.hset('lcc-normalized-hash',
                                        normalized_call_number,
                                        annotation_key)
