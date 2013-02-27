@@ -8,6 +8,8 @@ import datetime,logging
 from marc_batch.marc_helpers import MARCModifier
 from  pymarc import Field
 
+DIGITAL_RE = re.compile(r'digital\s?(file)?[.]?')
+
 class FilmsOnDemandJob(MARCModifier):
     """
     The `FilmsOnDemandJob` reads MARC records from Films
@@ -160,22 +162,22 @@ class FilmsOnDemandJob(MARCModifier):
         :param marc_record: MARC record, required
         """
         all300s = marc_record.get_fields('300')
-        field300 = all300s[0]
-        raw_string = field300.get_subfields('b')[0]
-        digital_re = re.compile(r'digital\s?(file)?[.]?')
-        good_300b = '%s, %s' % ('digital',digital_re.sub('',raw_string).strip())
-        last_char = good_300b[-1]
-        if last_char == '+':
-             good_300b = good_300b[:-1].strip()
-             if good_300b[-1] == ',':
-                 good_300b = good_300b[:-1]
-             good_300b +=  ' + '
-        elif last_char == ',':
-            good_300b = good_300b[:-1]
+        for field300 in all300s:
+            raw_string = ''.join(field300.get_subfields('b'))
+            good_300b = '{0}, {1}'.format('digital',
+                                          DIGITAL_RE.sub('',raw_string).strip())
+            last_char = good_300b[-1]
+            if last_char == '+':
+                good_300b = good_300b[:-1].strip()
+            if good_300b[-1] == ',':
+                good_300b = good_300b[:-1]
+                good_300b +=  ' + '
+            elif last_char == ',':
+                good_300b = good_300b[:-1]
             if good_300b[-1] != '.':
                 good_300b = good_300b + '.'
-        field300.delete_subfield("b")
-        field300.add_subfield("b",good_300b)
+            field300.delete_subfield("b")
+            field300.add_subfield("b",good_300b)
         return marc_record
 
               
