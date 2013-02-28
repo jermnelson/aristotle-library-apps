@@ -51,3 +51,24 @@ def get_brief(**kwargs):
                                           errors="ignore"))
     return output
 
+
+def get_json_linked_data(primary_redis, redis_key):
+    """
+    Function takes a redis_key and Redis instance, return JSON_LD of the
+    BIBFRAME entity
+    """
+    ld_output = {"@context":{ "bibframe": "http://bibframe.org/vocab/",
+                              "prov":"http://www.w3.org/ns/prov#",
+                              "rda": "http://rdvocab.info",
+                              "redis_key": None,
+                              "result": None }}
+    ld_output['redis_key'] = redis_key
+    for key, value in primary_redis.hgetall(redis_key).iteritems():
+        # Assumes all values not explictly starting with "rda" is part of the bibframe name-space
+        if key == 'created_on':
+            ld_output['prov:Generation'] = {'prov:atTime': value }
+        elif not key.startswith('rda:'):
+            ld_output["bibframe:{0}".format(key)] = value
+        else:
+            ld_output[key] = value
+    return ld_output

@@ -13,6 +13,7 @@ from aristotle.forms import FeedbackForm
 
 from app_settings import APP, PAGINATION_SIZE
 from bibframe.models import Work,Instance,Person
+from bibframe.redis_helpers import get_json_linked_data
 
 from discovery.forms import SearchForm
 from discovery.redis_helpers import get_facets,get_result_facets,BIBFRAMESearch
@@ -88,6 +89,35 @@ def creative_work(request,redis_id):
 			       'institution': INSTITUTION,
 			       'search_form': SearchForm(),
 			       'user':None})
+
+@json_view
+def creative_work_json_ld(request, redis_id):
+    """
+    View returns the bibframe:Work as JSON linked data
+
+    :param request: HTTP Request
+    :param redis_id": Redis integer for the Creative Work
+    """
+    redis_key = "bibframe:Work:{0}".format(redis_id) 
+    if CREATIVE_WORK_REDIS.exists(redis_key):
+        json_linked_data = get_json_linked_data(primary_redis=CREATIVE_WORK_REDIS,
+                                                redis_key=redis_key)
+        # Add current absolute url as prov:wasGeneratedBy
+        absolute_url = request.build_absolute_uri()
+        url_parts = os.path.split(absolute_url)
+        json_linked_data['prov:wasGeneratedBy'] = url_parts[0]
+        instance_url_pattern = "{0}/apps/discovery/Instance/".format(request.get_host())
+        # Add Instances to json_linked_data
+        for instance_key in CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(redis_key)):
+            instance_url = "http://{0}{1}".format(instance_url_pattern,
+                                                  instance_key.split(":")[-1])
+            if json_linked_data.has_key('bibframe:Instance'):
+                json_linked_data['bibframe:Instance'].append(instance_url)
+            else:
+                json_linked_data['bibframe:Instance'] = [instance_url,]     
+        return json_linked_data
+    else:
+        raise Http404
 
 def get_pagination(full_path,redis_key,redis_server,offset=0):
     """
@@ -211,6 +241,23 @@ def instance(request,redis_id):
 			       'search_form': SearchForm(),
 			       'user':None})
 
+@json_view
+def instance_json_ld(request, redis_id):
+    """
+    View returns the bibframe:Instance as JSON linked data
+
+    :param request: HTTP Request
+    :param redis_id": Redis integer for the Instance
+    """
+    redis_key = "bibframe:Instance:{0}".format(redis_id) 
+    if INSTANCE_REDIS.exists(redis_key):
+        json_linked_data = get_json_linked_data(primary_redis=INSTANCE_REDIS,
+                                                redis_key=redis_key)
+        # Add current absolute url as prov:wasGeneratedBy
+        json_linked_data['prov:wasGeneratedBy'] = request.build_absolute_uri()
+        return json_linked_data
+    else:
+        raise Http404
 
 def person(request,redis_id):
     """

@@ -7,7 +7,7 @@ __author__ = "Jeremy Nelson"
 import sys
 from django.core.management.base import BaseCommand, CommandError
 from aristotle.settings import *
-from bibframe.ingesters import *
+from bibframe.ingesters.MARC21 import *
 
 def profile_run():
    run_ingestion('bibframe/fixures/pride-and-prejudice.mrc','192.168.189.128')

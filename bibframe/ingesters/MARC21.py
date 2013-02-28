@@ -343,7 +343,7 @@ class MARC21toInstance(MARC21Ingester):
                  '5':'publisher-number'}
         for field in fields:
             a_subfield = field['a']
-            if a_subfield is not None:
+            if a_subfield is not None and names.has_key(field.indicator1):
                 prop_name = names[field.indicator1]
                 if self.entity_info.has_key(prop_name):
                     self.entity_info[prop_name].append(a_subfield)
@@ -968,6 +968,11 @@ class MARC21toBIBFRAME(Ingester):
                                                             marc_record=self.record,
                                                             instance=self.marc2instance.instance)
         self.marc2library_holdings.ingest()
+        if self.instance_ds.hexists("{0}:rda:identifierForTheManifestation".format(self.marc2instance.instance.redis_key),
+                                    "ils-bib-number"):
+            bib_number = self.instance_ds.hget("{0}:rda:identifierForTheManifestation".format(self.marc2instance.instance.redis_key),
+                                               "ils-bib-number") 
+            self.instance_ds.hset("ils-bib-numbers", bib_number, self.marc2instance.instance.redis_key)
         if self.instance_ds.hexists(self.marc2instance.instance.redis_key,
                                     'hasAnnotation'):
             annotation = self.marc2instance.instance.hasAnnotation
@@ -1696,7 +1701,26 @@ class MARC21toCreativeWork(MARC21Ingester):
 
 
 
+def check_marc_exists(instance_ds, record, marc_tag='907'):
+    """
+    Helper function checks to see the bib number is already associated with 
+    a bibframe:Instance, returns True if that bibnumber already exists,
+    False otherwise.
 
+    :param instance_ds: BIBFRAME Instance 
+    :param record: MARC21 record
+    :param marc_tag: MARC tag of bib number, default to CC's III 907 
+                     field   
+    """
+    field = record[marc_tag]
+    if field is not None:
+        raw_bib_id = ''.join(field.get_subfields('a'))
+        # Extract III specific bib number
+        bib_number = raw_bib_id[1:-1]
+        if instance_ds.hexists('ils-bib-numbers', bib_number):
+            return True
+    return False
+ 
 
 def ingest_marcfile(**kwargs):
     marc_filename = kwargs.get("marc_filename")
@@ -1712,12 +1736,15 @@ def ingest_marcfile(**kwargs):
         start_time = datetime.datetime.now()
         sys.stderr.write("Starting at {0}\n".format(start_time.isoformat()))
         for record in marc_reader:
-            ingester = MARC21toBIBFRAME(annotation_ds=annotation_ds,
-                                        authority_ds=authority_ds,
-                                        instance_ds=instance_ds,
-                                        marc_record=record,
-                                        creative_work_ds=creative_work_ds)
-            ingester.ingest()
+            # Need to check if MARC21 record has already been ingested into the
+            # datastore
+            if not check_marc_exists(instance_ds, record):
+                ingester = MARC21toBIBFRAME(annotation_ds=annotation_ds,
+                                            authority_ds=authority_ds,
+                                            instance_ds=instance_ds,
+                                            marc_record=record,
+                                            creative_work_ds=creative_work_ds)
+                ingester.ingest()
             if count%1000:
                 if not count % 100:
                     sys.stderr.write(".")
