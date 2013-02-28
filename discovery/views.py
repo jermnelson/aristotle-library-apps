@@ -107,6 +107,7 @@ def creative_work_json_ld(request, redis_id):
         url_parts = os.path.split(absolute_url)
         json_linked_data['prov:wasGeneratedBy'] = url_parts[0]
         instance_url_pattern = "{0}/apps/discovery/Instance/".format(request.get_host())
+        person_url_pattern = "{0}/apps/discovery/Person/".format(request.get_host())
         # Add Instances to json_linked_data
         for instance_key in CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(redis_key)):
             instance_url = "http://{0}{1}".format(instance_url_pattern,
@@ -114,7 +115,19 @@ def creative_work_json_ld(request, redis_id):
             if json_linked_data.has_key('bibframe:Instance'):
                 json_linked_data['bibframe:Instance'].append(instance_url)
             else:
-                json_linked_data['bibframe:Instance'] = [instance_url,]     
+                json_linked_data['bibframe:Instance'] = [instance_url,]
+        title_key = "{0}:title".format(redis_key)
+        if CREATIVE_WORK_REDIS.exists(title_key):
+            rda_pref_title_key = 'rda:preferredTitleForTheWork'
+            rda_pref_title = CREATIVE_WORK_REDIS.hget(title_key, rda_pref_title_key)
+            json_linked_data['bibframe:title'] = {rda_pref_title_key: rda_pref_title}
+        creators_key = "{0}:rda:isCreatedBy".format(redis_key)
+        if CREATIVE_WORK_REDIS.exists(creators_key):
+            creators = []
+            for creator_key in list(CREATIVE_WORK_REDIS.smembers(creators_key)):
+                creators.append("http://{0}{1}".format(person_url_pattern,
+                                                       creator_key.split(":")[-1]))
+            json_linked_data['rda:isCreatedBy'] = creators
         return json_linked_data
     else:
         raise Http404
@@ -253,8 +266,22 @@ def instance_json_ld(request, redis_id):
     if INSTANCE_REDIS.exists(redis_key):
         json_linked_data = get_json_linked_data(primary_redis=INSTANCE_REDIS,
                                                 redis_key=redis_key)
+        # Turn the instanceOf into URI
+        work_key = json_linked_data['bibframe:instanceOf'] 
+        work_url = "http://{0}/apps/discovery/Work/{1}".format(request.get_host(), 
+                                                               work_key.split(":")[-1])
+        json_linked_data['bibframe:instanceOf'] = work_url
         # Add current absolute url as prov:wasGeneratedBy
-        json_linked_data['prov:wasGeneratedBy'] = request.build_absolute_uri()
+        json_linked_data['prov:wasGeneratedBy'] = os.path.split(request.build_absolute_uri())[0]
+
+        # Add Library Holding Annotation
+        annotations_key = "{0}:hasAnnotation".format(redis_key)
+        if INSTANCE_REDIS.exists(annotations_key):
+            library_holdings = []
+            for annotation_key in INSTANCE_REDIS.smembers(annotations_key):
+                if annotation_key.startswith('bibframe:Holding'):
+                    library_holdings.append(annotation_key)
+            json_linked_data['bibframe:hasAnnotation'] = library_holdings
         return json_linked_data
     else:
         raise Http404
