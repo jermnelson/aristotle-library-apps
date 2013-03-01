@@ -947,6 +947,9 @@ class MARC21toBIBFRAME(Ingester):
             marc_record=self.record,
             creative_work_ds=self.creative_work_ds)
         self.marc2creative_work.ingest()
+        # Exit ingest if a creative work is missing
+        if self.marc2creative_work.creative_work is None:
+            return
         self.marc2instance = MARC21toInstance(
             annotation_ds=self.annotation_ds,
             authority_ds=self.authority_ds,
@@ -954,6 +957,7 @@ class MARC21toBIBFRAME(Ingester):
             marc_record=self.record,
             creative_work_ds=self.creative_work_ds)
         self.marc2instance.ingest()
+        
         self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
         if self.marc2creative_work.creative_work.title is not None:
             self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:preferredTitleOfWork')
@@ -1250,7 +1254,7 @@ class MARC21toPerson(MARC21Ingester):
 
 class MARC21toSubjects(MARC21Ingester):
     """
-    MARC21toWork ingests a MARC21 record into the BIBFRAME Redis datastore
+    MARC21toSubjects ingests a MARC21 record into the BIBFRAME Redis datastore
     """
 
     def __init__(self,**kwargs):
