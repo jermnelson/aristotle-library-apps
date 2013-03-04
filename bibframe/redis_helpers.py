@@ -61,7 +61,8 @@ def get_json_linked_data(primary_redis, redis_key):
                               "prov":"http://www.w3.org/ns/prov#",
                               "rda": "http://rdvocab.info",
                               "redis_key": None,
-                              "result": None }}
+                              "result": None,
+                              "schema":"http://schema.org/" }}
     ld_output['redis_key'] = redis_key
     for key, value in primary_redis.hgetall(redis_key).iteritems():
         # Assumes all values not explictly starting with "rda" is part of the bibframe name-space
