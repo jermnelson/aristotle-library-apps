@@ -95,13 +95,77 @@ def get_dbs_subjects(authority_ds=AUTHORITY_REDIS,
     of the title
     """
     databases = []
-    subject_keys = authority_ds.sort("dbfinder:subjects",alpha=True)
+    subject_keys = authority_ds.sort("dbfinder:subjects",
+                                     alpha=True)
     for key in subject_keys:
         label = authority_ds.hget(key,"label")
         databases.append({"subject":label})
     return sorted(databases, key=lambda x: x.get('subject'))
 
-def load_databases():
+def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
+                                                  'dbfinder',
+                                                  'fixures',
+                                                  'ccweb.csv')),
+                       authority_ds=AUTHORITY_REDIS,
+                       instance_ds=INSTANCE_REDIS,
+                       work_ds=CREATIVE_WORK_REDIS):
+    """
+    Helper function updates the BIBFRAME Annotation and Instance
+    datastores based on values from CSV file exported from
+    legacy ILS
+
+    :param csv_file_location: Defaults to ccweb.csv located in dbfinder
+                              fixures directory.
+    """
+    for row in csv.DictReader(csv_file, delimiters="\t"):
+        bib_number = row.get('RECORD #(BIBLIO)')[:-1] # Drop-off last char
+        if instance_ds.hexists("ils-bib-numbers", bib_number):
+            instance_key = instance_ds.hget("ils-bib-numbers", bib_number)
+        else:
+            raise ValueError("load_databases_csv bib number {0} not found".format(bib_number))
+        work_key = instance_ds.hget(instance_key,
+                                    'instanceOf')
+        if len(row.get('246')) > 0:
+            titles = [title.replace('"','') for title in row.get("246").split("|")]
+            if len(titles) == 1:
+                work_ds.hset(work_key, 'variantTitle', title[0])
+            else:
+                if work_ds.hexists(work_key, 'variantTitle'):
+                    existing_variant_title = work_ds.hget(work_key,
+                                                          'variantTitle')
+                    if titles.count(existing_variant_title) < 0:
+                        titles.append(existing_variant_title)
+                    work_ds.hdel(work_key,'variantTitle')
+                work_variant_title_key = "{0}:variantTitle".format(work_key)
+                for title in raw_titles:
+                    work_ds.sadd(work_variant_title_key,
+                                 title)
+        if len(row.get('590')) > 0:
+            work_ds.hset(work_key, 'description', row.get('590'))
+        if len(row.get('690')) > 0:
+            subjects = row.get('690').split("|")
+            for raw_subject in subjects:
+                name = raw_subject.replace('"', '')
+                subject_key = "dbfinder:subject:{0}".format(name)
+                if authority_redis.exists(subject_key):
+                    if not authority_redis.sismember(subject_key,
+                                                     work_key):
+                        authority_redis.sadd(subject_key, work_key)
+                else: # Assume this subject doesn't exist in the datastore
+                    new_topic = TopicalConcept(primary_redis=authority_redis,
+                                               description="Topic Used for Database-by-Subject view in dbfinder",
+                                               label=name)
+                    setattr(new_topic, "bibframe:Works", work_key)
+                    setattr(new_topic, "prov:PrimarySource", "local")
+                    new_topic.save()
+                    work_ds.sadd("{0}:subject".format(work_key),
+                                 new_topic.redis_key)
+                    authority_redis.sadd(subject_key, work_key)
+        
+
+    
+
+def legacy_load_databases_json():
     subject_dict = {}
     alt_title_dict = {}
     for row in subjects:
