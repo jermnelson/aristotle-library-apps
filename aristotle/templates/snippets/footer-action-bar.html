@@ -9,6 +9,11 @@
   <div class="btn-group">
    <a href="#" class="btn" onclick="$('#about_app_dlg').modal('show')"><i class="icon-info-sign"></i> About</a>
    <a href="/" class="btn"><i class="icon-home"></i> Home</a>
+   {% if user.is_authenticated %}
+   <a href="#" class="btn" onclick="alert('logging out {{ user.username }}')"><i class="icon-circle-arrow-left"></i> Logout</a>
+   {% else %}
+   <a href="#" onclick="$('#login-dlg').modal('show')" class="btn"><i class="icon-circle-arrow-right"></i> Login</a>
+   {% endif %}
    <a href="#" class="btn" onclick="$('#feedback_app_dlg').modal('show')" ><i class="icon-envelope"></i> Comment</a>
    <a href="#" onclick="$('#help_app_dlg').modal('show')" class="btn"><i class="icon-question-sign"></i> Help</a>
   </div>

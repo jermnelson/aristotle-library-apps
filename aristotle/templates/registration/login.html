@@ -1,32 +1,31 @@
-{% extends "app-base.html" %}
-
-{% block action-view-title %}Login{% endblock %}
-
-{% block body %}
-{% if form.errors %}
-
-{% endif %}
-<h3>Please login</h3>
-<form class="form-horizontal" method="post" action="/aristotle/app_login">
- {% csrf_token %}
+<div class="modal hide fade" id="login-dlg">
+ <div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h3>Please login to continue</h3>
+ </div>
+  <div class="modal-body">
+ <form class="form-horizontal" method="post" action="accounts/login/">
+ <input type="hidden" name="next" value="{{ next }}" />
+  {% csvf_token %}
   <div class="control-group">
-    <label for="id_username" class="control-label">{{ form.username.label_tag }}</label>
+    <label for="id_username" class="control-label">{{ login_form.username.label_tag }}</label>
     <div class="controls">
-      {{ form.username }}
+      {{ login_form.username }}
     </div>
   </div>
   <div class="control-group">
-   <label for="id_password" class="control-label">{{ form.password.label_tag }}</label>
+   <label for="id_password" class="control-label">{{ login_form.password.label_tag }}</label>
    <div class="controls">
-     {{ form.password }}
+     {{ login_form.password }}
     </div>
   </div>
   <div class="control-group">
     <div class="controls">
-      <input type="submit" class="btn" value="Login" />
+       <input type="submit" class="btn" value="Login" />
     </div>
-  </div>
-  <input type="hidden" name="next" value="{{ next }}" />
-</form>
-
-{% endblock %}
+ </form>
+ </div>
+ <div class="modal-footer">
+  <a href="#" class="btn btn-primary" data-dismiss="modal">Cancel</a>
+ </div>
+</div>

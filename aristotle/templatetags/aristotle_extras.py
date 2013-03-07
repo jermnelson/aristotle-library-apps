@@ -6,9 +6,23 @@ import aristotle.settings as settings
 import redis
 from django.template import Context,Library,loader
 from django.utils import simplejson as json
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.safestring import mark_safe
 
 register = Library()
+
+def get_login_dlg(csrf_token):
+    """
+    Returns rendered Login Modal for Apps
+    """
+    print("CSRF_TOKEN is {0}".format(csrf_token))
+    try:
+        login_template = loader.get_template('registration/login.html')
+        params = {"form": AuthenticationForm(),
+                  "passthrough_token":csrf_token}
+        return mark_safe(login_template.render(Context(params)))
+    except:
+        return
 
 def get_navbar_menu(menu):
     """
@@ -24,4 +38,5 @@ def get_navbar_menu(menu):
     except:
         return 
 
+register.filter('get_login_dlg', get_login_dlg)
 register.filter('get_navbar_menu',get_navbar_menu)

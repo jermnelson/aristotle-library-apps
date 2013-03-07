@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load aristotle_extras %}
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -80,6 +81,7 @@
       {% include 'snippets/about.html' %}
       {% include 'snippets/help.html' %}
       {% include 'snippets/feedback.html' %}
+      {{ csrf_token|get_login_dlg }}
     {% endblock %} 
     {% block more-dialogs %}{% endblock %}
 </body></html>

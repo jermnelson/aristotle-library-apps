@@ -37,7 +37,7 @@ def about_instance(instance):
 	<i class="icon-user"></i> {1}</a>'''.format(key.split(":")[-1],
     name)
 	if 'rda:dateOfBirth' in creator_info:
-	    creator_dd += '({0}-'.format(creator_info.get('rda:dateOfBirth'))
+	    creator_dd += ' ({0}-'.format(creator_info.get('rda:dateOfBirth'))
 	if 'rda:dateOfDeath' in creator_info:
             creator_dd += '{0})'.format(creator_info.get('rda:dateOfDeath'))
 	creator_dd += '<br/>'
@@ -68,7 +68,6 @@ def about_instance(instance):
            continue
        if inspect.ismethod(getattr(instance,name)):
            continue
-       
        if OPERATIONAL_REDIS.hexists('bibframe:vocab:Instance:labels',
                                     name):
            if value is not None:
@@ -93,7 +92,12 @@ def about_instance(instance):
            if type(value) == dict:
                for k,v in value.iteritems():
                    info.append((k,v))
-           if name == 'rda:uniformResourceLocatorItem':
+           elif type(value) == set:
+              for row in list(value):
+                  if name == 'uniformResourceLocatorItem':
+                      row = '<a href="{0}">{0}</a>'.format(row)
+                  info.append((name, row))
+           elif name == 'rda:uniformResourceLocatorItem':
                info.append((name,'<a href="{0}">{1}</a>'.format(value,value)))
            else:
                info.append((name,getattr(instance,name)))
@@ -368,7 +372,8 @@ def get_subjects(creative_work):
             subject_template = loader.get_template('subject-icon.html')
 	    loc_key = facet.split(":")[-1]
 	    context = {'name':ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:LOCFirstLetters',
-		                                    loc_key)}
+		                                    loc_key),
+                       'letter':loc_key}
 	    html_output += subject_template.render(Context(context))
     return mark_safe(html_output)
 
