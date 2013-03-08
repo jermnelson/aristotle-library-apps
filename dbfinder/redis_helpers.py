@@ -1,6 +1,6 @@
 __author__ = "Jeremy Nelson"
 
-import json, redis, os
+import json, redis, os, csv
 from bibframe.models import Instance, Holding, Work, TopicalConcept
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS, CREATIVE_WORK_REDIS, PROJECT_HOME
 
@@ -117,7 +117,7 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
     :param csv_file_location: Defaults to ccweb.csv located in dbfinder
                               fixures directory.
     """
-    for row in csv.DictReader(csv_file, delimiters="\t"):
+    for row in csv.DictReader(csv_file, delimiter="\t"):
         bib_number = row.get('RECORD #(BIBLIO)')[:-1] # Drop-off last char
         if instance_ds.hexists("ils-bib-numbers", bib_number):
             instance_key = instance_ds.hget("ils-bib-numbers", bib_number)
@@ -140,19 +140,19 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                 for title in raw_titles:
                     work_ds.sadd(work_variant_title_key,
                                  title)
-        if len(row.get('590')) > 0:
+        if len(row.get('590',[])) > 0:
             work_ds.hset(work_key, 'description', row.get('590'))
-        if len(row.get('690')) > 0:
-            subjects = row.get('690').split("|")
+        if len(row.get('690', [])) > 0:
+            subjects = row.get('690',[]).split("|")
             for raw_subject in subjects:
                 name = raw_subject.replace('"', '')
                 subject_key = "dbfinder:subject:{0}".format(name)
-                if authority_redis.exists(subject_key):
-                    if not authority_redis.sismember(subject_key,
-                                                     work_key):
-                        authority_redis.sadd(subject_key, work_key)
+                if authority_ds.exists(subject_key):
+                    if not authority_ds.sismember(subject_key,
+                                                  work_key):
+                        authority_ds.sadd(subject_key, work_key)
                 else: # Assume this subject doesn't exist in the datastore
-                    new_topic = TopicalConcept(primary_redis=authority_redis,
+                    new_topic = TopicalConcept(primary_redis=authority_ds,
                                                description="Topic Used for Database-by-Subject view in dbfinder",
                                                label=name)
                     setattr(new_topic, "bibframe:Works", work_key)
@@ -160,7 +160,7 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                     new_topic.save()
                     work_ds.sadd("{0}:subject".format(work_key),
                                  new_topic.redis_key)
-                    authority_redis.sadd(subject_key, work_key)
+                    authority_ds.sadd(subject_key, work_key)
         
 
     
