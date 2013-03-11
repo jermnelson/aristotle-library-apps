@@ -1,3 +1,11 @@
+"""
+ :mod:`urls` Url routing for the Aristotle Library Apps Project
+
+ Most basic configuration is to provide django.conf.urls for all of your active apps located
+ in your local_settings.py file.
+"""
+__author__ = "Jeremy Nelson"
+
 from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
@@ -8,16 +16,18 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'portfolio.views.default', name='home'),
-    url(r'^background.html$','aristotle.views.background',name='background'),
-    url(r'^getting-started.html$','aristotle.views.starting',name='getting-started'),
-    url(r'^accounts/login/$', login),
-    url(r'^accounts/login/$', logout),
+    url(r'^background.html$','aristotle.views.background', name='background'),
+    url(r'^getting-started.html$','aristotle.views.starting', name='getting-started'),
+    url(r'^apps/app_login$', 'aristotle.views.app_login', name='app-login'),
+    url(r'^accounts/login[$|/]', login),
+    url(r'^accounts/logout[$|/]', 'aristotle.views.app_logout', name='logout'),
 ##    url(r'^apps/article_search/', include('article_search.urls')),
 ##    url(r'^apps/book_search/', include('book_search.urls')),
     url(r'^apps/discovery[$|/]', include('discovery.urls')),
     url(r'^apps/call_number/', include('call_number.urls')),
     url(r'^apps/dbfinder/', include('dbfinder.urls')),
-    url(r'^apps/etd/', include('etd.urls')),
+    url(r'^etd/', include('etd.urls')),
+    url(r'^apps/etd[$|/]', include('etd.urls')),
 ##    url(r'^apps/fedora_batch','fedora_batch.views.default'),
 ##    url(r'^apps/fedora_utilities/', include('fedora_utilities.urls')),
     url(r'^apps/hours/', include('hours.urls')),
