@@ -8,8 +8,13 @@ __author__ = 'Jeremy Nelson'
 
 
 import pymarc,copy
+from asp_am import AlexanderStreetPressAmericanSong
+from asp_bd2 import AlexanderStreetPressBlackDrama
 from asp_cml import AlexanderStreetPressClassicalMusicLibrary
+from asp_cwm import AlexanderStreetPressContemporaryWorldMusic
 from asp_jml import AlexanderStreetPressJazzMusicLibrary
+from asp_sgs import AlexanderStreetPressSmithsonianGlobalSoundsForLibraries
+from asp_wsm import AlexanderStreetPressWomenSocialMovements
 from eai_evans import EarlyAmericanImprintsEvansJob
 from eai_shaw import EarlyAmericanImprintsShawJob
 from fod import FilmsOnDemandJob
@@ -18,8 +23,12 @@ from ybp_ebl import ybp_ebl
 from ybp_ebrary import ybp_ebrary
 
 
+asp_am = AlexanderStreetPressAmericanSong
+asp_bd2 = AlexanderStreetPressBlackDrama
 asp_cml = AlexanderStreetPressClassicalMusicLibrary
+asp_cwm = AlexanderStreetPressContemporaryWorldMusic
 asp_jml = AlexanderStreetPressJazzMusicLibrary
+asp_sgs = AlexanderStreetPressSmithsonianGlobalSoundsForLibraries
 eai_evans = EarlyAmericanImprintsEvansJob
 eai_shaw = EarlyAmericanImprintsShawJob
 fod = FilmsOnDemandJob
