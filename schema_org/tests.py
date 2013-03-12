@@ -1,9 +1,7 @@
 """
  :mod:`tests` Tests Schema.org Models
-
 """
 from unittest import TestCase
-
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
