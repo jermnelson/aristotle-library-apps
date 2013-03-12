@@ -123,6 +123,32 @@ def starting(request):
                                'navbar_menus':json_loader.get('navbar-menus'),
                                'user':None})
 
+
+def website_footer(request):
+    """
+    Displays a footer replaced by a harvested footer from a website. This
+    function is for one example of website interoperbility of the an App
+ 
+    :param request: HTTP Request
+    """
+    return direct_to_template(request,
+                              'snippets/website-footer.html',
+                             {})
+
+
+def website_header(request):
+    """
+    Displays a footer replaced by a harvested footer from a website. This
+    function is for one example of website interoperbility of the an App
+ 
+    :param request: HTTP Request
+    """
+    return direct_to_template(request,
+                              'snippets/website-header.html',
+                             {})
+
+
+    
 def json_view(func):
     """
     Returns JSON results from method call, from Django snippets
