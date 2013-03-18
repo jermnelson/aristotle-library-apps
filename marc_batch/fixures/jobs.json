@@ -127,7 +127,59 @@
     },
     "model":"marc_batch.Job",
     "pk":13
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Reference Online",
+        "python_module":"op_ro"
+    },
+    "model":"marc_batch.Job",
+    "pk":14
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Business & Management",
+        "python_module":"oho_bm"
+    },
+    "model":"marc_batch.Job",
+    "pk":15
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Philosophy",
+        "python_module":"oho_p"
+    },
+    "model":"marc_batch.Job",
+    "pk":16
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Political Science",
+        "python_module":"oho_ps"
+    },
+    "model":"marc_batch.Job",
+    "pk":17
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Religion",
+        "python_module":"oho_r"
+    },
+    "model":"marc_batch.Job",
+    "pk":18
   }
+
+
 
 
  

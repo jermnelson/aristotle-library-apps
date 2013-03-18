@@ -12,7 +12,8 @@ class AlexanderStreetPressAmericanSong(AlexanderStreetPressMusicJob):
         """
         kwargs['asp_code'] = 'amso'
         kwargs['proxy'] = '0-amso.alexanderstreet.com.tiger.coloradocollege.edu'
-        AlexanderStreetPressMusicJob.__init__(self,marc_file,**kwargs)
+        AlexanderStreetPressMusicJob.__init__(self,
+                                              **kwargs)
         
         
 
