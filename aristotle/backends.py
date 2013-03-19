@@ -4,6 +4,7 @@
 __author__ = 'Jeremy Nelson'
 
 import logging
+import re
 import sys
 import urllib2
 from django.contrib.auth.backends import ModelBackend

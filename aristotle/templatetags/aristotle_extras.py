@@ -11,18 +11,6 @@ from django.utils.safestring import mark_safe
 
 register = Library()
 
-def get_login_dlg(csrf_token):
-    """
-    Returns rendered Login Modal for Apps
-    """
-    try:
-        login_template = loader.get_template('registration/login-dlg.html')
-        params = {"form": AuthenticationForm(),
-                  "passthrough_token":csrf_token}
-        return mark_safe(login_template.render(Context(params)))
-    except:
-        return
-
 def get_navbar_menu(menu):
     """
     Calls and generates HTML for a Twitter Bootstrap navbar menu
@@ -37,5 +25,4 @@ def get_navbar_menu(menu):
     except:
         return 
 
-register.filter('get_login_dlg', get_login_dlg)
 register.filter('get_navbar_menu',get_navbar_menu)

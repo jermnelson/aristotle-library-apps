@@ -58,8 +58,11 @@ def app_login(request):
     username = request.POST['username']
     password = request.POST['password']
     next_page = request.REQUEST.get('next')
-    user = authenticate(username=username,
-		        password=password)
+    try:
+        user = authenticate(last_name=username,
+	                    iii_id=password)
+    except KeyError:
+        user = None
     if user is not None:
         if user.is_active:
             login(request, user)
@@ -68,8 +71,10 @@ def app_login(request):
             else:
                 return redirect('/apps')
 	else:
+            logging.error("User not active")
             raise Http404
     else:
+        logging.error("User {0} not found".format(username))
 	raise Http404
 
 def app_logout(request):
