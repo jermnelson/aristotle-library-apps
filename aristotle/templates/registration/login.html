@@ -7,7 +7,7 @@
 
 {% endif %}
 <h3>Please login</h3>
-<form class="form-horizontal" method="post" action="/apps/app_login">
+<form class="form-horizontal" method="post" action="/apps/app_login/">
  {% csrf_token %}
   <div class="control-group">
     <label for="id_username" class="control-label">{{ form.username.label_tag }}</label>

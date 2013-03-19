@@ -53,7 +53,7 @@ def app_login(request):
 
     :param request: HTTP Request
     """
-    if request.method is 'GET':
+    if request.method == 'GET':
         return HttpResponse("IN GET App Login")
     username = request.POST['username']
     password = request.POST['password']
@@ -62,7 +62,6 @@ def app_login(request):
 		        password=password)
     if user is not None:
         if user.is_active:
-            print("User is active trying to login {0}".format(user.username))
             login(request, user)
             if len(next_page) > 0:
 	        return redirect(next_page)
