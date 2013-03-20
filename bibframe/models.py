@@ -88,14 +88,14 @@ def save_keys(entity_key,name,value,redis_object):
     """
     new_redis_key = "{0}:{1}".format(entity_key,name)
     all_keys_key = "{0}:keys".format(entity_key)
-    redis_object.sadd(all_keys_key,new_redis_key)
+    redis_object.sadd(all_keys_key, new_redis_key)
     if value is None:
         redis_object.srem(all_keys_key,new_redis_key)
     elif type(value) is list:
         redis_object.lpush(new_redis_key, value)
     elif type(value) is set:
         if len(value) == 1:
-            redis_object.hset(entity_key,name,list(value)[0])
+            redis_object.hset(entity_key, name, list(value)[0])
             redis_object.srem(all_keys_key,new_redis_key)
         else:
             for member in list(value):
@@ -204,14 +204,16 @@ class RedisBibframeInterface(object):
                 elif inspect.ismethod(getattr(self,property)):
                     continue
                 else:
-                    prop_value = getattr(self,property)
-                    save_keys(self.redis_key,property,prop_value,redis_pipeline)
+                    prop_value = getattr(self, property)
+                    save_keys(self.redis_key,property,
+                              prop_value,
+                              redis_pipeline)
                     redis_pipeline.execute()
         # Specific redis key structure to save instead of entire object, checks
         # both the instance and the instance's attributes dictionary
         else:
             if hasattr(self,property_name): 
-                prop_value = getattr(self,property_name)
+                prop_value = getattr(self, property_name)
             else:
                 err_msg = '''Cannot save {0}, 
                 Redis Key of {1} does not have {2}'''.format(self.attributes.name,
