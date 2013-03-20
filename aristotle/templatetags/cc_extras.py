@@ -3,8 +3,9 @@
 """
 __author__ = "Jeremy Nelson"
 
-import urllib2
+import logging
 import re
+import urllib2
 from bs4 import BeautifulSoup
 from django.core.cache import cache
 from django import template
