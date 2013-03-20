@@ -9,7 +9,6 @@ import redis,datetime,json,urllib2
 import os,sys, inspect
 from lxml import etree
 from rdflib import RDF,RDFS
-from django.db import models
 try:
     import aristotle.settings as settings
     CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
