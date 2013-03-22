@@ -130,6 +130,10 @@ def get_annotations(instance):
             facet_info = redis_key.split(":")
             facet_url = "/apps/discovery/facet/{0}/{1}".format(facet_info[-2],
                                                                facet_info[-1])
+        if redis_key.startswith('bibframe:CoverArt'):
+           cover_art = ANNOTATION_REDIS.hgetall(redis_key)
+           cover_art_template = loader.get_template('cover-art-medium.html')
+           output += cover_art_template.render(Context({'img_url': cover_art.get('annotationBody')}))
         if redis_key.startswith('bibframe:Holding'):
             holdings_info = []
             for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():

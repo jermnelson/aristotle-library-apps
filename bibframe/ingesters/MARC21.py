@@ -573,7 +573,7 @@ class MARC21toInstance(MARC21Ingester):
                 isbn_values.append(subfield)
             for subfield in isbn_field.get_subfields('z'):
                 isbn_values.append(subfield)
-                self.instance_ds.sadd("identifiers:issn:invalid",subfield)
+                self.instance_ds.sadd("identifiers:isbn:invalid",subfield)
         if len(isbn_values) > 0:
             self.entity_info['isbn'] = set(isbn_values)
 
@@ -1005,8 +1005,6 @@ class MARC21toBIBFRAME(Ingester):
                                           creative_work=self.marc2creative_work.creative_work,
                                           instance=self.marc2instance.instance)
         self.marc2facets.ingest()
-
-
 
 class MARC21toLibraryHolding(MARC21Ingester):
     """
