@@ -67,14 +67,14 @@ def app(request):
 			       'search_query':search_query,
                                'user': None})
 
-def creative_work(request,redis_id):
+
+def creative_work(request, redis_id):
     """
     Displays Creative Work View for the discovery app
 
     :param request: HTTP Request
     :param redis_id: Redis integer for the Creative Work
     """
-    print("REDIS ID is {0}".format(redis_id))
     redis_key = "bibframe:Work:{0}".format(redis_id)
     if CREATIVE_WORK_REDIS.exists(redis_key):
         creative_work = Work(primary_redis=CREATIVE_WORK_REDIS,
@@ -132,6 +132,29 @@ def creative_work_json_ld(request, redis_id):
         return json_linked_data
     else:
         raise Http404
+
+def display_cover_image(request, redis_id, type_of, image_ext):
+    """
+    Returns a cover image based on the CoverArt's redis key,
+    if the type-of is body or thumbnail and the image_ext is
+    either "jpg", "png", or "gif"
+    
+    :param redis_id: Redis key id of the bibframe:CoverArt 
+    :param type_of: Should be either "thumbnail" or "body" 
+    "param image_ext: The images extension
+    """
+    redis_key = "bibframe:CoverArt:{0}".format(redis_id)
+    if type_of == 'thumbnail':
+        raw_image = ANNOTATION_REDIS.hget(redis_key, 
+                                          'thumbnail')
+    elif type_of == 'body':
+        raw_image = ANNOTATION_REDIS.hget(redis_key, 
+                                          'annotationBody')
+    if raw_image is None:
+        raise Http404
+    return HttpResponse(raw_image, 
+                        mimetype="image/{0}".format(image_ext))
+
 
 def get_pagination(full_path,redis_key,redis_server,offset=0):
     """

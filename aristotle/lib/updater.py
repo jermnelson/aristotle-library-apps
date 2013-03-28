@@ -72,15 +72,17 @@ def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
                     if covers.has_key('small'):
                         small_url = covers.get('small')
                         if urllib2.urlopen(small_url).getcode() != 404:
+                            thumbnail = urllib2.urlopen(small_url).read()
                             setattr(new_cover,
-                                    'thumbnail-url',
-                                    small_url)
+                                    'thumbnail',
+                                    thumbnail)
                     if covers.has_key('medium'):
                         medium_url = covers.get('medium')
                         if urllib2.urlopen(medium_url).getcode() != 404:
+                            cover_body = urllib2.urlopen(medium_url).read()
                             setattr(new_cover,
                                     'annotationBody',
-                                    medium_url)
+                                    cover_body)
                     new_cover.save()
                     instance_ds.sadd('{0}:hasAnnotation'.format(instance_key),
                                      new_cover.redis_key)
