@@ -4,7 +4,8 @@
 
 __author__ = "Jeremy Nelson"
 
-import os,random
+import os
+import random
 
 from django.views.generic.simple import direct_to_template
 from django.http import Http404, HttpResponse
@@ -16,7 +17,7 @@ from bibframe.models import Work,Instance,Person
 from bibframe.redis_helpers import get_json_linked_data
 
 from discovery.forms import SearchForm
-from discovery.redis_helpers import get_facets,get_result_facets,BIBFRAMESearch
+from discovery.redis_helpers import get_facets, get_result_facets, BIBFRAMESearch
 
 from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
 from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
@@ -45,9 +46,9 @@ def app(request):
 	    facet_list = get_result_facets(bibframe_search.creative_work_keys)
 	    message = 'Results for {0}'.format(query)
 	else:
-            facet_list = get_facets(ANNOTATION_REDIS)
+            facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
     else:
-        facet_list = get_facets(ANNOTATION_REDIS)
+        facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
 #    example = {'work_path': os.path.join("apps",
 #	                                 "discovery",
 #			                 "work",

@@ -50,6 +50,7 @@ field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
                                 "rb"))
 
 
+
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
 class MARC21Helpers(object):
     """
@@ -231,26 +232,45 @@ class MARC21toFacets(MARC21Ingester):
         """
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get("record", self.record)
-
-        locations = marc21_facets.get_location(record)
-        if len(locations) > 0:
-            for location in locations:
+        if hasattr(settings, "IS_CONSORTIUM"):
+            consortium = settings.IS_CONSORTIUM
+        else:
+            consortium = False
+        if consortium is True:
+            output = marc21_facets.get_carl_location(record)
+            if len(output) > 0:
                 redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
-                    location[0])
+                    output.get("site-code"))
                 self.annotation_ds.sadd(redis_key, instance.redis_key)
-                if not self.annotation_ds.hexists(
-                    "bibframe:Annotation:Facet:Locations",
-                    location[0]):
-                    self.annotation_ds.hset(
+                self.instance_ds.hset(instance.redis_key,
+                                      "ils-bib-number",
+                                      output.get('ils-bib-number'))
+                self.instance_ds.hset(instance.redis_key,
+                                      "ils-item-number",
+                                      output.get('ils-item-number'))
+                self.annotation_ds.zadd("bibframe:Annotation:Facet:Locations:sort",
+                                        float(self.annotation_ds.scard(redis_key)),
+                                        redis_key)
+        else:
+            locations = marc21_facets.get_cc_location(record)
+            if len(locations) > 0:
+                for location in locations:
+                    redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
+                        location[0])
+                    self.annotation_ds.sadd(redis_key, instance.redis_key)
+                    if not self.annotation_ds.hexists(
                         "bibframe:Annotation:Facet:Locations",
-                        location[0],
-                        location[1])
-                self.annotation_ds.zadd(
-                    "bibframe:Annotation:Facet:Locations:sort",
-                    float(self.annotation_ds.scard(redis_key)),
-                    redis_key)
-                self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
-                                      redis_key)
+                        location[0]):
+                        self.annotation_ds.hset(
+                            "bibframe:Annotation:Facet:Locations",
+                            location[0],
+                            location[1])
+                    self.annotation_ds.zadd(
+                        "bibframe:Annotation:Facet:Locations:sort",
+                        float(self.annotation_ds.scard(redis_key)),
+                        redis_key)
+                    self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
+                                          redis_key)
 
     def ingest(self,**kwargs):
         """
