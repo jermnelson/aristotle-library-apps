@@ -80,4 +80,6 @@ class WorkClassifier(SimpleFuzzyClassifier):
                 self.creative_work = Work(primary_redis=self.creative_work_ds)
                 for key, value in self.entity_info.iteritems():
                     setattr(self.creative_work,key,value)
+        else:
+            print("Entity does not have a title {0}".format(self.entity_info))
         

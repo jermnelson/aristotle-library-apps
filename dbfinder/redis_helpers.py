@@ -137,7 +137,7 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                         titles.append(existing_variant_title)
                     work_ds.hdel(work_key,'variantTitle')
                 work_variant_title_key = "{0}:variantTitle".format(work_key)
-                for title in raw_titles:
+                for title in titles:
                     work_ds.sadd(work_variant_title_key,
                                  title)
         if len(row.get('590',[])) > 0:
@@ -161,7 +161,13 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                     work_ds.sadd("{0}:subject".format(work_key),
                                  new_topic.redis_key)
                     authority_ds.sadd(subject_key, work_key)
-        
+        title = work_ds.hget('{0}:title'.format(work_key), 
+                             'rda:preferredTitleForTheWork')
+        alpha_redis_key = "dbfinder:alpha:{0}".format(title[0].upper())
+        authority_ds.sadd(alpha_redis_key,
+                          work_key)
+        authority_ds.sadd("dbfinder:alphas", alpha_redis_key)
+
 
     
 

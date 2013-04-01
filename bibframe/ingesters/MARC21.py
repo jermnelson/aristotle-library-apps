@@ -1653,7 +1653,8 @@ class MARC21toCreativeWork(MARC21Ingester):
                                     entity_info = self.entity_info)
         work_classifier.classify()
         self.creative_work = work_classifier.creative_work
-        self.creative_work.save()
+        if self.creative_work is not None:
+            self.creative_work.save()
 
     def ingest(self):
         """
