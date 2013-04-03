@@ -92,13 +92,13 @@ def get_dbs_subjects(authority_ds=AUTHORITY_REDIS,
                     work_ds=CREATIVE_WORK_REDIS):
     """
     Helper function returns a list of databases organized by the first character
-    of the title
+    of the subjects 
     """
     databases = []
     subject_keys = authority_ds.sort("dbfinder:subjects",
                                      alpha=True)
     for key in subject_keys:
-        label = authority_ds.hget(key,"label")
+        label = key.split(":")[-1]
         databases.append({"subject":label})
     return sorted(databases, key=lambda x: x.get('subject'))
 
@@ -146,6 +146,7 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
             subjects = row.get('690',[]).split("|")
             for raw_subject in subjects:
                 name = raw_subject.replace('"', '')
+                name = name.replace(":","-")
                 subject_key = "dbfinder:subject:{0}".format(name)
                 if authority_ds.exists(subject_key):
                     if not authority_ds.sismember(subject_key,
@@ -161,6 +162,7 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                     work_ds.sadd("{0}:subject".format(work_key),
                                  new_topic.redis_key)
                     authority_ds.sadd(subject_key, work_key)
+                    authority_ds.sadd('dbfinder:subjects', new_topic.redis_key)
         title = work_ds.hget('{0}:title'.format(work_key), 
                              'rda:preferredTitleForTheWork')
         alpha_redis_key = "dbfinder:alpha:{0}".format(title[0].upper())
@@ -181,7 +183,7 @@ def legacy_load_databases_json():
                                    label=row['fields']['name'])
         new_topic.save()
         subject_dict[row['pk']]["redis_key"] = new_topic.redis_key
-        AUTHORITY_REDIS.sadd("dbfinder:subjects",new_topic.redis_key) 
+        AUTHORITY_REDIS.sadd("dbfinder:subjects", new_topic.redis_key) 
     for row in alt_titles:
         db_key = row['fields']['database']
         if alt_title_dict.has_key(db_key):
