@@ -6,6 +6,7 @@ import aristotle.settings as settings
 import redis
 from django.template import Context,Library,loader
 from django.utils import simplejson as json
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.safestring import mark_safe
 
 register = Library()

@@ -1,6 +1,5 @@
 __author__ = "Jeremy Nelson"
 import json, os
-
 from stdnet import odm
 
 from aristotle.settings import PROJECT_HOME

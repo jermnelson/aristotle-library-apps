@@ -3,8 +3,11 @@
  Press MARC21 record loads to CC's standards
 """
 __author__ = "Jeremy Nelson"
-import urlparse,urllib2,re
-import datetime,logging
+import urlparse
+import urllib2
+import re
+import datetime
+import logging
 from marc_batch.marc_helpers import MARCModifier
 from pymarc import Field
 

@@ -1,6 +1,6 @@
 __author__ = "Jeremy Nelson"
 
-import json, redis, os
+import json, redis, os, csv
 from bibframe.models import Instance, Holding, Work, TopicalConcept
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS, CREATIVE_WORK_REDIS, PROJECT_HOME
 
@@ -92,13 +92,13 @@ def get_dbs_subjects(authority_ds=AUTHORITY_REDIS,
                     work_ds=CREATIVE_WORK_REDIS):
     """
     Helper function returns a list of databases organized by the first character
-    of the title
+    of the subjects 
     """
     databases = []
     subject_keys = authority_ds.sort("dbfinder:subjects",
                                      alpha=True)
     for key in subject_keys:
-        label = authority_ds.hget(key,"label")
+        label = key.split(":")[-1]
         databases.append({"subject":label})
     return sorted(databases, key=lambda x: x.get('subject'))
 
@@ -117,7 +117,7 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
     :param csv_file_location: Defaults to ccweb.csv located in dbfinder
                               fixures directory.
     """
-    for row in csv.DictReader(csv_file, delimiters="\t"):
+    for row in csv.DictReader(csv_file, delimiter="\t"):
         bib_number = row.get('RECORD #(BIBLIO)')[:-1] # Drop-off last char
         if instance_ds.hexists("ils-bib-numbers", bib_number):
             instance_key = instance_ds.hget("ils-bib-numbers", bib_number)
@@ -137,22 +137,23 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                         titles.append(existing_variant_title)
                     work_ds.hdel(work_key,'variantTitle')
                 work_variant_title_key = "{0}:variantTitle".format(work_key)
-                for title in raw_titles:
+                for title in titles:
                     work_ds.sadd(work_variant_title_key,
                                  title)
-        if len(row.get('590')) > 0:
+        if len(row.get('590',[])) > 0:
             work_ds.hset(work_key, 'description', row.get('590'))
-        if len(row.get('690')) > 0:
-            subjects = row.get('690').split("|")
+        if len(row.get('690', [])) > 0:
+            subjects = row.get('690',[]).split("|")
             for raw_subject in subjects:
                 name = raw_subject.replace('"', '')
+                name = name.replace(":","-")
                 subject_key = "dbfinder:subject:{0}".format(name)
-                if authority_redis.exists(subject_key):
-                    if not authority_redis.sismember(subject_key,
-                                                     work_key):
-                        authority_redis.sadd(subject_key, work_key)
+                if authority_ds.exists(subject_key):
+                    if not authority_ds.sismember(subject_key,
+                                                  work_key):
+                        authority_ds.sadd(subject_key, work_key)
                 else: # Assume this subject doesn't exist in the datastore
-                    new_topic = TopicalConcept(primary_redis=authority_redis,
+                    new_topic = TopicalConcept(primary_redis=authority_ds,
                                                description="Topic Used for Database-by-Subject view in dbfinder",
                                                label=name)
                     setattr(new_topic, "bibframe:Works", work_key)
@@ -160,8 +161,15 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                     new_topic.save()
                     work_ds.sadd("{0}:subject".format(work_key),
                                  new_topic.redis_key)
-                    authority_redis.sadd(subject_key, work_key)
-        
+                    authority_ds.sadd(subject_key, work_key)
+                    authority_ds.sadd('dbfinder:subjects', new_topic.redis_key)
+        title = work_ds.hget('{0}:title'.format(work_key), 
+                             'rda:preferredTitleForTheWork')
+        alpha_redis_key = "dbfinder:alpha:{0}".format(title[0].upper())
+        authority_ds.sadd(alpha_redis_key,
+                          work_key)
+        authority_ds.sadd("dbfinder:alphas", alpha_redis_key)
+
 
     
 
@@ -175,7 +183,7 @@ def legacy_load_databases_json():
                                    label=row['fields']['name'])
         new_topic.save()
         subject_dict[row['pk']]["redis_key"] = new_topic.redis_key
-        AUTHORITY_REDIS.sadd("dbfinder:subjects",new_topic.redis_key) 
+        AUTHORITY_REDIS.sadd("dbfinder:subjects", new_topic.redis_key) 
     for row in alt_titles:
         db_key = row['fields']['database']
         if alt_title_dict.has_key(db_key):

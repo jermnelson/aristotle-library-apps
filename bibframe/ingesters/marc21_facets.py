@@ -256,7 +256,26 @@ def get_lcletter(record):
         return code,lc_descriptions
     return None,lc_descriptions
 
-def get_location(record):
+def get_carl_location(record):
+    """
+    Uses 945 field to extract library code, bib number, and item number
+    from record
+
+    :param record: MARC21 record
+    """
+    output = {}
+    field945 = record['945']
+    if field945 is not None:
+        subfield_a = field945['a']
+        if subfield_a is not None:
+            data = subfield_a.split(" ")
+            output['site-code'] = data[0]
+            output['ils-bib-number'] = data[1]
+            output['ils-item-number'] = data[2]
+    return output
+    
+
+def get_cc_location(record):
     """Uses CC's location codes in Millennium to map physical
     location of the item to human friendly description from 
     the tutt_maps LOCATION_CODE_MAP dict"""

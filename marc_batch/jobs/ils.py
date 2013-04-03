@@ -18,6 +18,11 @@ from asp_wsm import AlexanderStreetPressWomenSocialMovements
 from eai_evans import EarlyAmericanImprintsEvansJob
 from eai_shaw import EarlyAmericanImprintsShawJob
 from fod import FilmsOnDemandJob
+from oho_bm import OxfordHandbooksOnlineBusinessAndManagement
+from oho_p import OxfordHandbooksOnlinePhilosophy
+from oho_ps import OxfordHandbooksOnlinePoliticalScience
+from oho_r import OxfordHandbooksOnlineReligion
+from op_ro import OxfordReferenceOnlineJob
 from springer import SpringerEBookJob
 from ybp_ebl import ybp_ebl
 from ybp_ebrary import ybp_ebrary
@@ -32,6 +37,11 @@ asp_sgs = AlexanderStreetPressSmithsonianGlobalSoundsForLibraries
 eai_evans = EarlyAmericanImprintsEvansJob
 eai_shaw = EarlyAmericanImprintsShawJob
 fod = FilmsOnDemandJob
+oho_bm = OxfordHandbooksOnlineBusinessAndManagement
+oho_p = OxfordHandbooksOnlinePhilosophy
+oho_ps = OxfordHandbooksOnlinePoliticalScience
+oho_r = OxfordHandbooksOnlineReligion
+op_ro = OxfordReferenceOnlineJob
 springer = SpringerEBookJob
 ybp_ebl = ybp_ebl
 ybp_ebrary = ybp_ebrary

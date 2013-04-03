@@ -9,6 +9,7 @@ import discovery.views
 urlpatterns = patterns('discovery.views',
     url(r"$^", "app", name="discovery-default"),
     url(r"^authority/person/(\d+)/?$", "person", name="discovery-authority-person"),
+    url(r"^[c|C]over[A|_a]rt/(\d+)-(\w+).(\w+)$", "display_cover_image"),
     url(r"^bibframe:Instance:(\d+)$", "instance", name="discovery-instance-direct"),
     url(r"^[i|I]nstance/(\d+).json$", "instance_json_ld", name="discovery-instance-json_ld"),
     url(r"^[i|I]nstance/(\d+)/?$", "instance", name="discovery-instance"),

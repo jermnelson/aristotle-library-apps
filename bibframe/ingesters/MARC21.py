@@ -4,17 +4,27 @@
 """
 __author__ = "Jeremy Nelson"
 
-import datetime, re, pymarc, os, sys,logging, redis, time
+import datetime
+import logging
+import json
+import marc21_facets
+import os
+import pymarc 
+import re
+import redis
+import sys
+import time
 from bibframe.models import Annotation, Organization, Work, Holding, Instance, Person
 from bibframe.ingesters.Ingester import Ingester
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
-from title_search.redis_helpers import generate_title_app,search_title
-import marc21_facets
+from title_search.redis_helpers import generate_title_app, search_title
+
 from lxml import etree
-from rdflib import RDF,RDFS,Namespace
-import json
+from rdflib import RDF, RDFS, Namespace
+
+from bibframe.classifiers import simple_fuzzy
 
 try:
     import aristotle.settings as settings
@@ -38,6 +48,7 @@ field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
                                             "marc21-007.json"),
 
                                 "rb"))
+
 
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
@@ -221,26 +232,45 @@ class MARC21toFacets(MARC21Ingester):
         """
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get("record", self.record)
-
-        locations = marc21_facets.get_location(record)
-        if len(locations) > 0:
-            for location in locations:
+        if hasattr(settings, "IS_CONSORTIUM"):
+            consortium = settings.IS_CONSORTIUM
+        else:
+            consortium = False
+        if consortium is True:
+            output = marc21_facets.get_carl_location(record)
+            if len(output) > 0:
                 redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
-                    location[0])
+                    output.get("site-code"))
                 self.annotation_ds.sadd(redis_key, instance.redis_key)
-                if not self.annotation_ds.hexists(
-                    "bibframe:Annotation:Facet:Locations",
-                    location[0]):
-                    self.annotation_ds.hset(
+                self.instance_ds.hset(instance.redis_key,
+                                      "ils-bib-number",
+                                      output.get('ils-bib-number'))
+                self.instance_ds.hset(instance.redis_key,
+                                      "ils-item-number",
+                                      output.get('ils-item-number'))
+                self.annotation_ds.zadd("bibframe:Annotation:Facet:Locations:sort",
+                                        float(self.annotation_ds.scard(redis_key)),
+                                        redis_key)
+        else:
+            locations = marc21_facets.get_cc_location(record)
+            if len(locations) > 0:
+                for location in locations:
+                    redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
+                        location[0])
+                    self.annotation_ds.sadd(redis_key, instance.redis_key)
+                    if not self.annotation_ds.hexists(
                         "bibframe:Annotation:Facet:Locations",
-                        location[0],
-                        location[1])
-                self.annotation_ds.zadd(
-                    "bibframe:Annotation:Facet:Locations:sort",
-                    float(self.annotation_ds.scard(redis_key)),
-                    redis_key)
-                self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
-                                      redis_key)
+                        location[0]):
+                        self.annotation_ds.hset(
+                            "bibframe:Annotation:Facet:Locations",
+                            location[0],
+                            location[1])
+                    self.annotation_ds.zadd(
+                        "bibframe:Annotation:Facet:Locations:sort",
+                        float(self.annotation_ds.scard(redis_key)),
+                        redis_key)
+                    self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
+                                          redis_key)
 
     def ingest(self,**kwargs):
         """
@@ -563,7 +593,7 @@ class MARC21toInstance(MARC21Ingester):
                 isbn_values.append(subfield)
             for subfield in isbn_field.get_subfields('z'):
                 isbn_values.append(subfield)
-                self.instance_ds.sadd("identifiers:issn:invalid",subfield)
+                self.instance_ds.sadd("identifiers:isbn:invalid",subfield)
         if len(isbn_values) > 0:
             self.entity_info['isbn'] = set(isbn_values)
 
@@ -995,8 +1025,6 @@ class MARC21toBIBFRAME(Ingester):
                                           creative_work=self.marc2creative_work.creative_work,
                                           instance=self.marc2instance.instance)
         self.marc2facets.ingest()
-
-
 
 class MARC21toLibraryHolding(MARC21Ingester):
     """
@@ -1624,7 +1652,8 @@ class MARC21toCreativeWork(MARC21Ingester):
 
               
 
-    def get_or_add_work(self):
+    def get_or_add_work(self,
+                        classifer=simple_fuzzy.WorkClassifier):
         """
         Method either returns a new Work or an existing work based
         on a similarity metric, basic similarity is 100% match
@@ -1637,37 +1666,15 @@ class MARC21toCreativeWork(MARC21Ingester):
             self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
         # If the title matches an existing Work's title and the creative work's creators, 
         # assumes that the Creative Work is the same.
-        if self.entity_info.has_key('title'):
-            cw_title_keys = search_title(self.entity_info['title']['rda:preferredTitleForTheWork'],
-                                         self.creative_work_ds)
-            for creative_wrk_key in cw_title_keys:
-                creator_keys = self.creative_work_ds.smembers(
-                    "{0}:associatedAgent".format(creative_wrk_key))
-                if self.entity_info.has_key('rda:isCreatedBy'):
-                    existing_keys = creator_keys.intersection(self.entity_info['rda:isCreatedBy'])
-                    if len(existing_keys) == 1:
-                        self.creative_work = Work(primary_redis=self.creative_work_ds,
-                                                  redis_key=creative_wrk_key)
-            if not self.creative_work:
-                self.creative_work = Work(primary_redis=self.creative_work_ds)
-                for key, value in self.entity_info.iteritems():
-                    setattr(self.creative_work,key,value)
-                                    
-
+        work_classifier = classifer(annotation_ds = self.annotation_ds,
+                                    authority_ds = self.authority_ds,
+                                    creative_work_ds = self.creative_work_ds,
+                                    instance_ds = self.instance_ds,
+                                    entity_info = self.entity_info)
+        work_classifier.classify()
+        self.creative_work = work_classifier.creative_work
+        if self.creative_work is not None:
             self.creative_work.save()
-        else:
-            # Work does not have a Title, this should be manditory but requires human
-            # investigation.
-            error_mrc_file = open(os.path.join(PROJECT_HOME,
-                                               "bibframe",
-                                               "errors",
-                                               "missing-title-{0}.mrc".format(time.mktime(time.gmtime()))),
-                                  "wb")
-            error_writer = pymarc.MARCWriter(error_mrc_file)
-            error_writer.write(self.record)
-            error_mrc_file.close()
-
-
 
     def ingest(self):
         """
