@@ -68,6 +68,9 @@ def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
                 if info.has_key('cover'):
                     new_cover = CoverArt(primary_redis=annotation_ds,
                                          annotates=instance_key)
+                    setattr(new_cover,
+                            'prov:generated',
+                            open_lib_rec.get('url'))
                     covers = info.get('cover')
                     if covers.has_key('small'):
                         small_url = covers.get('small')
@@ -109,6 +112,7 @@ def get_open_library_info(lccn=None):
                                                       lccn))
         print(e)
         return {}
+    open_lib_json['url'] = open_lib_url
     return open_lib_json
     
 def clean_cover_art(instance_ds=INSTANCE_REDIS, annotation_ds=ANNOTATION_REDIS):

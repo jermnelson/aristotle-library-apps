@@ -86,6 +86,7 @@ def generate_title_app(work, redis_server):
     title_pipeline = redis_server.pipeline()
     title_pipeline.sadd(title_key,work.redis_key)
     for term in terms:
+        title_pipeline
         title_pipeline.sadd('title-normed:{0}'.format(term),
 			    work.redis_key)
     title_pipeline.zadd('z-titles-alpha',

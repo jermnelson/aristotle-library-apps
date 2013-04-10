@@ -76,11 +76,9 @@ class FilmsOnDemandJob(MARCModifier):
         marc_record = self.remove020(marc_record)
         marc_record = self.validate245(marc_record)
         marc_record = self.validate300(marc_record)
-        marc_record = self.remove490(marc_record)
         marc_record = self.validate538processURLS(marc_record)    
         marc_record = self.validateAll5xxs(marc_record)
         marc_record = self.validate730(marc_record)
-        marc_record = self.remove830(marc_record)
         return marc_record
     
 
@@ -169,14 +167,11 @@ class FilmsOnDemandJob(MARCModifier):
             if good_300b[-1] == ',':
                 good_300b = good_300b[:-1]
                 good_300b +=  ' + '
-            elif last_char == ',':
-                good_300b = good_300b[:-1]
             if good_300b[-1] != '.':
                 good_300b = good_300b + '.'
             last_char = good_300b[-1]
             if last_char == '+':
                 good_300b = good_300b[:-1].strip()
-
             field300.delete_subfield("b")
             field300.add_subfield("b",good_300b)
         return marc_record
