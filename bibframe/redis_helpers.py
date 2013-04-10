@@ -3,6 +3,8 @@
  Framework App
 """
 __author__ = "Jeremy Nelson"
+
+import csv
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS
 from aristotle.settings import CREATIVE_WORK_REDIS, INSTANCE_REDIS
 
@@ -73,3 +75,7 @@ def get_json_linked_data(primary_redis, redis_key):
         else:
             ld_output[key] = value
     return ld_output
+
+def load_carl_location_codes(primary_redis, csv_file):
+    for row in csv.reader(open(csv_file, 'rb')):
+        primary_redis.hset('bibframe:Annotation:Facet:Locations', row[2], row[0])

@@ -113,11 +113,13 @@ class LocationFacet(Facet):
         for row in location_keys:
             redis_key = row[0]
             location_code = redis_key.split(":")[-1]
-            org_key = kwargs['redis'].hget(
-                'bibframe:Annotation:Facet:Locations',
-                location_code)
-            item_name = kwargs['authority_ds'].hget(org_key,
-                                                    'label')
+            #org_key = kwargs['redis'].hget(
+            #    'bibframe:Annotation:Facet:Locations',
+            #    location_code)
+            #item_name = kwargs['authority_ds'].hget(org_key,
+            #                                        'label')
+            item_name = kwargs['redis'].hget('bibframe:Annotation:Facet:Locations',
+                                             location_code)
             kwargs['items'].append(
                 FacetItem(count=row[1],
                     key=redis_key,
