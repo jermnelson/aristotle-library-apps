@@ -135,7 +135,9 @@ def get_annotations(instance):
            cover_art = ANNOTATION_REDIS.hgetall(redis_key)
            cover_art_template = loader.get_template('cover-art-medium.html')
            redis_id = redis_key.split(":")[-1]
-           output += cover_art_template.render(Context({'img_url': '/apps/discovery/CoverArt/{0}-body.jpg'.format(redis_id)}))
+           output += cover_art_template.render(
+                       Context({'img_url': '/apps/discovery/CoverArt/{0}-body.jpg'.format(redis_id),
+                                'source_url': cover_art.get('prov:generated')}))
         if redis_key.startswith('bibframe:Holding'):
             holdings_info = []
             for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():

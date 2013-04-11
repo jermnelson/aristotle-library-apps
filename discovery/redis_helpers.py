@@ -107,7 +107,7 @@ class LocationFacet(Facet):
         location_keys = kwargs['redis'].zrevrange(
             'bibframe:Annotation:Facet:Locations:sort',
             0,
-            5,
+            -1,
             withscores=True
             )
         for row in location_keys:

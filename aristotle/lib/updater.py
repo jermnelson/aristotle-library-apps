@@ -11,7 +11,7 @@ from aristotle.settings import CREATIVE_WORK_REDIS, INSTANCE_REDIS, ANNOTATION_R
 from bibframe.models import CoverArt
 
 ISBN_REGEX = re.compile(r'([0-9\-xX]+)') # from pymarc.record.py
-
+LCCN_REGEX = re.compile(r'([a-w]|[A-W]|[y-z]|[Y-Z]|//]+)')
 def UpdateCreativeWorks(function,
                         work_ds=CREATIVE_WORK_REDIS):
     """
@@ -60,6 +60,10 @@ def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
     print("Start at {0}".format(start_time.isoformat()))
     for counter in range(1, int(instance_ds.get('global bibframe:Instance'))):
         instance_key = 'bibframe:Instance:{0}'.format(counter)
+        for annotation_key in instance_ds.smembers("{0}:hasAnnotation".format(instance_key)):
+            if annotation_key.startswith('bibframe:CoverArt'):
+                sys.stderr.write(" {0} already has cover art ".format(instance_key))
+                continue
         lccn = instance_ds.hget(instance_key, 'lccn')
         if lccn is not None:
             open_lib_rec = get_open_library_info(lccn)
@@ -104,12 +108,16 @@ def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
                                 
         
 def get_open_library_info(lccn=None):
+    lccn = LCCN_REGEX.sub('', lccn).strip()
     open_lib_url = 'http://openlibrary.org/api/books?bibkeys=LCCN:{0}&format=json&jscmd=data'.format(lccn)
     try:
         open_lib_json = json.load(urllib2.urlopen(open_lib_url))
     except ValueError, e:
         print("Error opening {0} for LCCN={1}".format(open_lib_url,
                                                       lccn))
+        error_log = open("open_library_errors.txt", "a")
+        error_log.write(open_lib_url)
+        error_log.close()
         print(e)
         return {}
     open_lib_json['url'] = open_lib_url

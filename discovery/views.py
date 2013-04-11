@@ -227,6 +227,12 @@ def facet_detail(request,facet_name,facet_item):
         work = Work(primary_redis=CREATIVE_WORK_REDIS,
                     redis_key=work_key)
         records.append({'work':work})
+    label_key = 'bibframe:Annotation:Facet:{0}s'.format(facet_name)
+    if ANNOTATION_REDIS.exists(label_key):
+        msg = "Results for Facet {0} {1}".format(facet_name,
+                                                 ANNOTATION_REDIS.hget(label_key, facet_item))
+    else:
+        msg = "Results for Facet {0}:{1}".format(facet_name,facet_item)
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
@@ -235,7 +241,7 @@ def facet_detail(request,facet_name,facet_item):
 			       'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,
                                'facet_list': None,
-			       'message':"Results for Facet {0}:{1}".format(facet_name,facet_item),
+			       'message': msg,
 			       'pagination':pagination,
 			       'results':records,
 			       'search_form': SearchForm(),

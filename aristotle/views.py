@@ -182,7 +182,11 @@ def json_view(func):
             response = {'result': 'error',
                         'text': msg}
             
-        json_output = json.dumps(response)
+        
+        try:
+            json_output = json.dumps(response)
+        except UnicodeDecodeError, e:
+            json_output = json.dumps(unicode(response, "ISO-8849-1"))
         return HttpResponse(json_output,
                             mimetype='application/json')
     return wrap
