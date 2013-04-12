@@ -7,6 +7,7 @@ import json
 import re
 import sys
 import urllib2
+import threading
 from aristotle.settings import CREATIVE_WORK_REDIS, INSTANCE_REDIS, ANNOTATION_REDIS
 from bibframe.models import CoverArt
 
@@ -55,18 +56,25 @@ def CorrectISSNtoISBN(instance_ds):
             instance_ds.srem('identifiers:issn:invalid', issn)
                 
 def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
-                        annotation_ds=ANNOTATION_REDIS):
+                        annotation_ds=ANNOTATION_REDIS,
+                        start=1,
+                        end=None):
     start_time = datetime.datetime.now()
     print("Start at {0}".format(start_time.isoformat()))
-    for counter in range(1, int(instance_ds.get('global bibframe:Instance'))):
+    if end is None:
+        end = int(instance_ds.get('global bibframe:Instance'))
+    for counter in range(start, end):
         instance_key = 'bibframe:Instance:{0}'.format(counter)
+        already_exists = False
         for annotation_key in instance_ds.smembers("{0}:hasAnnotation".format(instance_key)):
             if annotation_key.startswith('bibframe:CoverArt'):
                 sys.stderr.write(" {0} already has cover art ".format(instance_key))
-                continue
+                already_exists = True
+        if already_exists is True:
+            continue
         lccn = instance_ds.hget(instance_key, 'lccn')
         if lccn is not None:
-            open_lib_rec = get_open_library_info(lccn)
+            open_lib_rec = get_open_library_info(lccn, instance_key)
             if open_lib_rec.has_key('LCCN:{0}'.format(lccn)):
                 info = open_lib_rec.get('LCCN:{0}'.format(lccn))
                 if info.has_key('cover'):
@@ -78,22 +86,29 @@ def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
                     covers = info.get('cover')
                     if covers.has_key('small'):
                         small_url = covers.get('small')
-                        if urllib2.urlopen(small_url).getcode() != 404:
-                            thumbnail = urllib2.urlopen(small_url).read()
-                            setattr(new_cover,
-                                    'thumbnail',
-                                    thumbnail)
+                        try:
+                            if urllib2.urlopen(small_url).getcode() != 404:
+                                thumbnail = urllib2.urlopen(small_url).read()
+                                setattr(new_cover,
+                                        'thumbnail',
+                                        thumbnail)
+                        except urllib2.HTTPError, e:
+                            print("Cannot open small_url of {0}".format(small_url))
                     if covers.has_key('medium'):
                         medium_url = covers.get('medium')
-                        if urllib2.urlopen(medium_url).getcode() != 404:
-                            cover_body = urllib2.urlopen(medium_url).read()
-                            setattr(new_cover,
-                                    'annotationBody',
-                                    cover_body)
-                    new_cover.save()
-                    instance_ds.sadd('{0}:hasAnnotation'.format(instance_key),
-                                     new_cover.redis_key)
-        if not counter%1000:
+                        try:
+                            if urllib2.urlopen(medium_url).getcode() != 404:
+                                cover_body = urllib2.urlopen(medium_url).read()
+                                setattr(new_cover,
+                                        'annotationBody',
+                                        cover_body)
+                        except urllib2.HTTPError, e:
+                            print("Cannot open medium_url of {0}".format(medium_url))
+                    if hasattr(new_cover, 'thumbnail') or hasattr(new_cover, 'annotationBody'):
+                        new_cover.save()
+                        instance_ds.sadd('{0}:hasAnnotation'.format(instance_key),
+                                         new_cover.redis_key)
+        if not counter%50:
             sys.stderr.write(str(counter))
         else:
             sys.stderr.write(".")
@@ -107,18 +122,22 @@ def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
                 
                                 
         
-def get_open_library_info(lccn=None):
+def get_open_library_info(lccn=None, instance_key=None):
+    def delay():
+        return None
     lccn = LCCN_REGEX.sub('', lccn).strip()
     open_lib_url = 'http://openlibrary.org/api/books?bibkeys=LCCN:{0}&format=json&jscmd=data'.format(lccn)
     try:
         open_lib_json = json.load(urllib2.urlopen(open_lib_url))
+        timer = threading.Timer(1, delay)
+        timer.start()
     except ValueError, e:
-        print("Error opening {0} for LCCN={1}".format(open_lib_url,
-                                                      lccn))
+        #print("Error opening {0} for LCCN={1}".format(open_lib_url,
+        #                                              lccn))
         error_log = open("open_library_errors.txt", "a")
-        error_log.write("{0}\n".format(open_lib_url))
+        error_log.write("{0}\t{1}\n".format(instance_key,open_lib_url))
         error_log.close()
-        print(e)
+        #print(e)
         return {}
     open_lib_json['url'] = open_lib_url
     return open_lib_json

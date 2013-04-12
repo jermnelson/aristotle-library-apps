@@ -126,18 +126,15 @@ def get_annotations(instance):
 
     """
     output = ''
-    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+    annotations = INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key))
+    sorted_annotations = sorted(annotations)
+    for redis_key in sorted_annotations:
         if redis_key.find('Facet') > -1:
             facet_info = redis_key.split(":")
             facet_url = "/apps/discovery/facet/{0}/{1}".format(facet_info[-2],
                                                                facet_info[-1])
         if redis_key.startswith('bibframe:CoverArt'):
-           cover_art = ANNOTATION_REDIS.hgetall(redis_key)
-           cover_art_template = loader.get_template('cover-art-medium.html')
-           redis_id = redis_key.split(":")[-1]
-           output += cover_art_template.render(
-                       Context({'img_url': '/apps/discovery/CoverArt/{0}-body.jpg'.format(redis_id),
-                                'source_url': cover_art.get('prov:generated')}))
+            continue
         if redis_key.startswith('bibframe:Holding'):
             holdings_info = []
             for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():
@@ -180,6 +177,24 @@ def get_brief_heading(work):
 		             attrib={'href':'/apps/discovery/work/{0}/'.format(work.redis_key.split(":")[-1])})
     new_a.text = get_title(work)
     output = etree.tostring(new_h4)
+    return mark_safe(output)
+
+def get_cover_art(instance):
+    """
+    Returns generated cover art for an Instance
+
+    :param instance: Instance
+    :rtype: HTML or 0-length string
+    """
+    output = ''
+    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+        if redis_key.startswith('bibframe:CoverArt'):
+           cover_art = ANNOTATION_REDIS.hgetall(redis_key)
+           cover_art_template = loader.get_template('cover-art-medium.html')
+           redis_id = redis_key.split(":")[-1]
+           output += cover_art_template.render(
+                       Context({'img_url': '/apps/discovery/CoverArt/{0}-body.jpg'.format(redis_id),
+                                'source_url': cover_art.get('prov:generated')}))
     return mark_safe(output)
 
 def get_creators(bibframe_entity):
@@ -448,6 +463,7 @@ def get_title(bibframe_entity):
 register.filter('about_instance',about_instance)
 register.filter('get_annotations',get_annotations)
 register.filter('get_brief_heading',get_brief_heading)
+register.filter('get_cover_art', get_cover_art)
 register.filter('get_creators',get_creators)
 register.filter('get_creator_works',get_creator_works)
 register.filter('get_date',get_date)
