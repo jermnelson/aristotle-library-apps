@@ -70,10 +70,14 @@ def get_json_linked_data(primary_redis, redis_key):
         # Assumes all values not explictly starting with "rda" is part of the bibframe name-space
         if key == 'created_on':
             ld_output['prov:Generation'] = {'prov:atTime': value }
-        elif not key.startswith('rda:'):
-            ld_output["bibframe:{0}".format(key)] = value
+        if not key.startswith('rda:') or key.startswith('prov'):
+            ld_key = "bibframe:{0}".format(key)
         else:
-            ld_output[key] = value
+            ld_key = key
+        try:
+            ld_output[ld_key] = unicode(value)
+        except UnicodeDecodeError, e:
+            ld_output[ld_key] = unicode(value, 'iso_8859_1')
     return ld_output
 
 def load_carl_location_codes(primary_redis, csv_file):

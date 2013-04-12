@@ -116,7 +116,7 @@ def get_open_library_info(lccn=None):
         print("Error opening {0} for LCCN={1}".format(open_lib_url,
                                                       lccn))
         error_log = open("open_library_errors.txt", "a")
-        error_log.write(open_lib_url)
+        error_log.write("{0}\n".format(open_lib_url))
         error_log.close()
         print(e)
         return {}

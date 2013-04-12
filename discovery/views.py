@@ -228,11 +228,15 @@ def facet_detail(request,facet_name,facet_item):
                     redis_key=work_key)
         records.append({'work':work})
     label_key = 'bibframe:Annotation:Facet:{0}s'.format(facet_name)
+    msg = "Results for Facet {0}".format(facet_name)
     if ANNOTATION_REDIS.exists(label_key):
-        msg = "Results for Facet {0} {1}".format(facet_name,
-                                                 ANNOTATION_REDIS.hget(label_key, facet_item))
+        if ANNOTATION_REDIS.type(label_key) == 'zset':
+            msg = "{0} {1}".format(msg, facet_item)
+        else:
+            msg = " {0} {1}".format(msg,    
+                                    ANNOTATION_REDIS.hget(label_key, facet_item))
     else:
-        msg = "Results for Facet {0}:{1}".format(facet_name,facet_item)
+        msg = "{0} {1}".format(msg, facet_item)
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,

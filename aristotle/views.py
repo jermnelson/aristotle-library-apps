@@ -181,12 +181,7 @@ def json_view(func):
                 msg = ugettext("Internal error: %s" % str(e))
             response = {'result': 'error',
                         'text': msg}
-            
-        
-        try:
-            json_output = json.dumps(response)
-        except UnicodeDecodeError, e:
-            json_output = json.dumps(unicode(response, "ISO-8849-1"))
+        json_output = json.dumps(response)
         return HttpResponse(json_output,
                             mimetype='application/json')
     return wrap
