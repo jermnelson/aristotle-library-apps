@@ -1,6 +1,6 @@
 """
- :mod:`ingesters` Module ingests MARC21 and MODS records into a MARCR-Redis datastore
- controlled by the MARCR app.
+ :mod:`ingesters` Module ingests MARC21 and MODS records into a BIBFRAME-Redis datastore
+ controlled by the BIBFRAME app.
 """
 __author__ = "Jeremy Nelson"
 

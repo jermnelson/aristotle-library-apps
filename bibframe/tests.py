@@ -1190,3 +1190,4 @@ class LibraryHoldingTest(TestCase):
 Tries to import all classifer tests
 """
 from bibframe.classifiers.tests import TestWorkClassifier
+from bibframe.ingesters.test_ProjectGutenbergRDF import TestProjectGutenbergIngester
