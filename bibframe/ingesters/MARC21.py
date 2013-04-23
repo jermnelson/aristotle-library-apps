@@ -1210,24 +1210,24 @@ class MARC21toPerson(MARC21Ingester):
             for name in self.field.get_subfields('a'):
                 raw_names = [r.strip() for r in name.split(',')]
                 if self.field.indicator1 == '0':
-		    self.entity_info['foaf:givenName'] = raw_names[0]
+		    self.entity_info['schema:givenName'] = raw_names[0]
                 elif self.field.indicator1 == '1':
-                    self.entity_info['foaf:familyName'] = raw_names.pop(0)
+                    self.entity_info['schema:familyName'] = raw_names.pop(0)
                     # Assigns the next raw_name to givenName 
                     for raw_name in raw_names:
                         tokens = raw_name.split(' ')
                         if len(tokens[0]) > 0:
                             if [".",",","/"].count(tokens[0][-1]) > 0:
                                 tokens[0] = tokens[0][:-1]
-                            self.entity_info['foaf:givenName'] = tokens[0]
+                            self.entity_info['schema:givenName'] = tokens[0]
             for title in self.field.get_subfields('b'):
-                 if self.entity_info.has_key('foaf:title'):
-                     if type(self.entity_info['foaf:title']) == list:
-                         self.entity_info['foaf:title'].append(title)
+                 if self.entity_info.has_key('schema:honorificPrefix'):
+                     if type(self.entity_info['schema:honorificPrefix']) == list:
+                         self.entity_info['schema:honorificPrefix'].append(title)
                      else:
-                         self.entity_info['foaf:title'] = list(self.entity_info['foaf:title'])
+                         self.entity_info['schema:honorificPrefix'] = list(self.entity_info['schema:honorificPrefix'])
                  else:
-                     self.entity_info['foaf:title'] = title
+                     self.entity_info['schema:honorificPrefix'] = title
 
     def extract_isni(self):
         """

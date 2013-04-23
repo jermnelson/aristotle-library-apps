@@ -74,12 +74,14 @@ class WorkClassifier(SimpleFuzzyClassifier):
                     else:
                         existing_keys = creator_keys.union(self.entity_info['rda:isCreatedBy'])
                     if len(existing_keys) == 1:
+                        print("MATCHED {0} to {1}".format(creative_wrk_key, self.entity_info))
                         self.creative_work = Work(primary_redis=self.creative_work_ds,
                                                   redis_key=creative_wrk_key)
             if not self.creative_work:
                 self.creative_work = Work(primary_redis=self.creative_work_ds)
                 for key, value in self.entity_info.iteritems():
-                    setattr(self.creative_work,key,value)
+                    setattr(self.creative_work, key, value)
+                self.creative_work.save()
         else:
             print("Entity does not have a title {0}".format(self.entity_info))
         

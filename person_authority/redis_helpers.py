@@ -20,7 +20,7 @@ def add_person(authority_redis,
     """
     new_person = Person(primary_redis=authority_redis)
     for key, value in person_attributes.iteritems():
-        setattr(new_person,key,value)
+        setattr(new_person, key, value)
     new_person.save()
     for metaphone in person_metaphones_keys:
         authority_redis.sadd(metaphone,new_person.redis_key)
@@ -50,7 +50,7 @@ def get_person(person_redis_key,
                              
     
 
-def get_or_generate_person(person_attributes,authority_redis):
+def get_or_generate_person(person_attributes, authority_redis):
     """
     Method either returns a new Person or an existing Person based
     on a similarity metric.
@@ -123,9 +123,13 @@ def person_search(raw_name,
      
 def process_name(raw_name):
     person_metaphones = []
+    raw_name = ' '.join(raw_name.split(","))
     raw_names = raw_name.split(" ")
     for name in raw_names:
-        first_phonetic,second_phonetic = metaphone.dm(name.decode('utf8',
-                                                                  'ignore'))
+        try:
+            name = name.decode('utf-8', 'ignore')
+        except UnicodeEncodeError, e:
+            pass
+        first_phonetic,second_phonetic = metaphone.dm(name)
         person_metaphones.append(first_phonetic)
     return person_metaphones

@@ -147,6 +147,10 @@ def process_title(raw_title):
         if term.lower() not in STOPWORDS: 
 	    for punc in [",",".",";",":","'",'"']:
 	        term = term.replace(punc,"")
+            try:
+                term = term.decode('utf-8', 'ignore')
+            except UnicodeEncodeError, e:
+                pass
             terms.append(term.upper())
     title_key = ''.join(terms)
     return terms, title_key
@@ -217,7 +221,13 @@ def search_title(user_input,redis_server):
     # associated with normed title key
     #if redis_server.exists("title-normed:{0}".format(normed_title)):
     #    return list(redis_server.smembers("title-normed:{0}".format(normed_title)))
-    title_keys = ["title-normed:{0}".format(x) for x in terms]
+
+    # If the terms list is null, tries to norm user_input, for edge cases where
+    # the user input for the title could be a single, stop-word
+    if len(terms) < 1:
+        title_keys = ["title-normed:{0}".format(user_input.lower().strip()), ]        
+    else:
+        title_keys = ["title-normed:{0}".format(x.encode('utf-8', 'ignore')) for x in terms]
     for work_key in redis_server.sinter(title_keys):
         work_keys.append(work_key)
     return work_keys
