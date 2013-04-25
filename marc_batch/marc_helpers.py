@@ -106,21 +106,26 @@ class MARCModifier(object):
             marc_record.add_field(new856)
         return marc_record    
 
-    def output(self,marcfile_output=None):
-        ''' Method writes all records to a MARC21 output file'''
-        #output = open(marcfile_output,'wb')
-        output = cStringIO.StringIO()
-        for record in self.records:
-            record_str = record.as_marc()
-            output.write(record_str.decode('utf8','ignore'))
-        return output.getvalue()
-
-##    def output(self):
-##        output_string = cStringIO.StringIO()
-##        marc_writer = pymarc.MARCWriter(output_string)
+##    def output(self,marcfile_output=None):
+##        ''' Method writes all records to a MARC21 output file'''
+##        #output = open(marcfile_output,'wb')
+##        output = cStringIO.StringIO()
 ##        for record in self.records:
-##            marc_writer.write(record)
-##        return output_string.getvalue()
+##            record_str = record.as_marc()
+##            output.write(record_str.decode('utf8','ignore'))
+##        return output.getvalue()
+
+    def output(self):
+        output_string = cStringIO.StringIO()
+        marc_writer = pymarc.MARCWriter(output_string)
+        for record in self.records:
+            try:
+                marc_writer.write(record)
+            except UnicodeError, e:
+                record_str = record.as_marc()
+                output_string.write(record_str.decode('utf8',
+                                                      'ignore'))
+        return output_string.getvalue()
 
   
 
