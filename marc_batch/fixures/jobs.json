@@ -77,8 +77,111 @@
     },
     "model":"marc_batch.Job",
     "pk":8
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"asp-help",
+        "name": "Alexander Street Press - American Song",
+        "python_module":"asp_am"
+    },
+    "model":"marc_batch.Job",
+    "pk":9
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"asp-help",
+        "name": "Alexander Street Press - Contemporary world music",
+        "python_module":"asp_cwm"
+    },
+    "model":"marc_batch.Job",
+    "pk":10
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"asp-help",
+        "name": "Alexander Street Press - Smithsonian global sounds for libraries",
+        "python_module":"asp_sgs"
+    },
+    "model":"marc_batch.Job",
+    "pk":11
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"asp-help",
+        "name": "Alexander Street Press - Women and Social Movement",
+        "python_module":"asp_wsm"
+    },
+    "model":"marc_batch.Job",
+    "pk":12
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"asp-help",
+        "name": "Alexander Street Press - Black Drama",
+        "python_module":"asp_bd2"
+    },
+    "model":"marc_batch.Job",
+    "pk":13
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Reference Online",
+        "python_module":"op_ro"
+    },
+    "model":"marc_batch.Job",
+    "pk":14
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Business & Management",
+        "python_module":"oho_bm"
+    },
+    "model":"marc_batch.Job",
+    "pk":15
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Philosophy",
+        "python_module":"oho_p"
+    },
+    "model":"marc_batch.Job",
+    "pk":16
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Political Science",
+        "python_module":"oho_ps"
+    },
+    "model":"marc_batch.Job",
+    "pk":17
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Religion",
+        "python_module":"oho_r"
+    },
+    "model":"marc_batch.Job",
+    "pk":18
   }
-    
+
+
+
+
  
 ]
         

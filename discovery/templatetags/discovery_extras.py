@@ -3,15 +3,16 @@
 """
 __author__ = 'Jeremy Nelson'
 import aristotle.settings as settings
-import redis, inspect
+import redis
+import inspect
 import xml.etree.ElementTree as etree
-from bibframe.models import Work,Instance,Person,Holding
-from django.template import Context,Library,loader
+from bibframe.models import Work, Instance, Person, Holding
+from django.template import Context, Library, loader
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
 from discovery.app_settings import CARRIER_TYPE_GRAPHICS
-from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
-from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
+from aristotle.settings import INSTITUTION, ANNOTATION_REDIS, AUTHORITY_REDIS
+from aristotle.settings import INSTANCE_REDIS, OPERATIONAL_REDIS, CREATIVE_WORK_REDIS
 
 register = Library()
 
@@ -37,7 +38,7 @@ def about_instance(instance):
 	<i class="icon-user"></i> {1}</a>'''.format(key.split(":")[-1],
     name)
 	if 'rda:dateOfBirth' in creator_info:
-	    creator_dd += '({0}-'.format(creator_info.get('rda:dateOfBirth'))
+	    creator_dd += ' ({0}-'.format(creator_info.get('rda:dateOfBirth'))
 	if 'rda:dateOfDeath' in creator_info:
             creator_dd += '{0})'.format(creator_info.get('rda:dateOfDeath'))
 	creator_dd += '<br/>'
@@ -68,7 +69,6 @@ def about_instance(instance):
            continue
        if inspect.ismethod(getattr(instance,name)):
            continue
-       
        if OPERATIONAL_REDIS.hexists('bibframe:vocab:Instance:labels',
                                     name):
            if value is not None:
@@ -93,7 +93,12 @@ def about_instance(instance):
            if type(value) == dict:
                for k,v in value.iteritems():
                    info.append((k,v))
-           if name == 'rda:uniformResourceLocatorItem':
+           elif type(value) == set:
+              for row in list(value):
+                  if name == 'uniformResourceLocatorItem':
+                      row = '<a href="{0}">{0}</a>'.format(row)
+                  info.append((name, row))
+           elif name == 'rda:uniformResourceLocatorItem':
                info.append((name,'<a href="{0}">{1}</a>'.format(value,value)))
            else:
                info.append((name,getattr(instance,name)))
@@ -121,11 +126,15 @@ def get_annotations(instance):
 
     """
     output = ''
-    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+    annotations = INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key))
+    sorted_annotations = sorted(annotations)
+    for redis_key in sorted_annotations:
         if redis_key.find('Facet') > -1:
             facet_info = redis_key.split(":")
             facet_url = "/apps/discovery/facet/{0}/{1}".format(facet_info[-2],
                                                                facet_info[-1])
+        if redis_key.startswith('bibframe:CoverArt'):
+            continue
         if redis_key.startswith('bibframe:Holding'):
             holdings_info = []
             for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():
@@ -147,7 +156,7 @@ def get_annotations(instance):
             output += location_template.render(Context({'location':location_info}))
         elif redis_key.find('Facet:Format') > -1:
             format_template = loader.get_template('carrier-type-icon.html')
-            output += format_template.render(Context({'graphic':get_image(instance),
+            output += format_template.render(Context({'graphic':get_format_image(instance),
                                                       'label':facet_info[-1],
                                                       'url':facet_url}))
         
@@ -170,6 +179,24 @@ def get_brief_heading(work):
     output = etree.tostring(new_h4)
     return mark_safe(output)
 
+def get_cover_art(instance):
+    """
+    Returns generated cover art for an Instance
+
+    :param instance: Instance
+    :rtype: HTML or 0-length string
+    """
+    output = ''
+    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+        if redis_key.startswith('bibframe:CoverArt'):
+           cover_art = ANNOTATION_REDIS.hgetall(redis_key)
+           cover_art_template = loader.get_template('cover-art-medium.html')
+           redis_id = redis_key.split(":")[-1]
+           output += cover_art_template.render(
+                       Context({'img_url': '/apps/discovery/CoverArt/{0}-body.jpg'.format(redis_id),
+                                'source_url': cover_art.get('prov:generated')}))
+    return mark_safe(output)
+
 def get_creators(bibframe_entity):
     """
     Returns generated html of Creators associated with the Creative Work
@@ -187,7 +214,7 @@ def get_creators(bibframe_entity):
         creators = [CREATIVE_WORK_REDIS.hget(redis_key,"rda:isCreatedBy"),]
     else:
         creators = list(CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(redis_key)))
-    for key in creators:
+    for i, key in enumerate(creators):
         creator = AUTHORITY_REDIS.hgetall(key)
 	redis_id = key.split(":")[-1]
 	context = {'name':unicode(creator['rda:preferredNameForThePerson'],
@@ -197,7 +224,10 @@ def get_creators(bibframe_entity):
             context['birth'] = creator['rda:dateOfBirth']
         if 'rda:dateOfDeath' in creator:
             context['death'] = creator['rda:dateOfDeath']
+        if not i%4:
+            html_output += "<br>"
 	html_output += creator_template.render(Context(context))
+        
     return mark_safe(html_output)
     
 def get_creator_works(person):
@@ -262,6 +292,15 @@ def get_facet_url(facet_item):
     if len(facet_list) > 1:
         return mark_safe("/apps/discovery/facet/{0}/{1}".format(facet_list[-2],facet_list[-1]))
 
+
+def get_format_image(instance_key):
+    if INSTANCE_REDIS.hexists(instance_key, 'rda:carrierTypeManifestation'):
+        carrier_type = INSTANCE_REDIS.hget(instance_key, 'rda:carrierTypeManifestation')
+    else:
+        carrier_type = "Unknown"
+    html_output = CARRIER_TYPE_GRAPHICS.get(carrier_type, "publishing_48x48.png")
+    return mark_safe("{0}img/{1}".format(settings.STATIC_URL, html_output))
+
 def get_ids(instance):
     """
     Returns generated html of the Instance's identifiers
@@ -281,6 +320,16 @@ def get_ids(instance):
         html_output += '<dt>Legacy ILS number:</dt><dd>{0}</dd>'.format(identifiers.get('ils-bib-number'))
     return mark_safe(html_output)
 
+def get_graphic(instance_key):
+    annotations = INSTANCE_REDIS.smembers("{0}:hasAnnotation".format(instance_key))
+    for annotation_key in annotations:
+        if annotation_key.startswith("bibframe:CoverArt"):
+            if ANNOTATION_REDIS.hexists(annotation_key, "thumbnail"):
+                redis_id = annotation_key.split(":")[-1]
+                return mark_safe("/apps/discovery/CoverArt/{0}-thumbnail.jpg".format(redis_id))
+    return get_format_image(instance_key)
+
+
 def get_image(instance):
     """
     Returns HTML img of an instance's graphic
@@ -288,10 +337,10 @@ def get_image(instance):
     :param instance: Instance
     :rtype: HTML or 0-length string
     """
-    if hasattr(instance,'rda:carrierTypeManifestation'):
-        carrier_type = getattr(instance,'rda:carrierTypeManifestation')
-        html_output = CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")
-        return mark_safe(html_output)
+    image_graphic = get_graphic(instance.redis_key)
+    if image_graphic is not None:
+        return mark_safe(image_graphic)
+    return get_format_image(instance.redis_key)
 
 
 def get_instances(creative_work):
@@ -305,10 +354,25 @@ def get_instances(creative_work):
     instance_template = loader.get_template('instance-icon.html')
     instances = list(CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(creative_work.redis_key)))
     for key in instances:
+        context = None
 	instance = INSTANCE_REDIS.hgetall(key)
         carrier_type = instance.get('rda:carrierTypeManifestation','Unknown')
-        context = {'graphic':CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png"),
-		   'name':carrier_type,
+        redis_id = key.split(":")[-1]
+        annotations = INSTANCE_REDIS.smembers("{0}:hasAnnotation".format(key))
+        graphic = get_graphic(key)
+        for annotation_key in annotations:
+            if annotation_key.startswith('bibframe:CoverArt'):
+                if ANNOTATION_REDIS.hexists(annotation_key, "thumbnail"):
+                    annotation_id = annotation_key.split(":")[-1]
+                    context = {'graphic': '/apps/discovery/CoverArt/{0}-thumbnail.jpg'.format(annotation_id),
+                               'name': carrier_type,
+                               'redis_id': redis_id}
+    
+        if context is None:        
+            context = {'graphic':'{0}img/{1}'.format(settings.STATIC_URL,
+                                                     CARRIER_TYPE_GRAPHICS.get(carrier_type,
+                                                                               "publishing_48x48.png")),
+	    	       'name':carrier_type,
 		   'redis_id':key.split(":")[-1]}
 	html_output += instance_template.render(Context(context))
     return mark_safe(html_output)
@@ -368,7 +432,8 @@ def get_subjects(creative_work):
             subject_template = loader.get_template('subject-icon.html')
 	    loc_key = facet.split(":")[-1]
 	    context = {'name':ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:LOCFirstLetters',
-		                                    loc_key)}
+		                                    loc_key),
+                       'letter':loc_key}
 	    html_output += subject_template.render(Context(context))
     return mark_safe(html_output)
 
@@ -398,6 +463,7 @@ def get_title(bibframe_entity):
 register.filter('about_instance',about_instance)
 register.filter('get_annotations',get_annotations)
 register.filter('get_brief_heading',get_brief_heading)
+register.filter('get_cover_art', get_cover_art)
 register.filter('get_creators',get_creators)
 register.filter('get_creator_works',get_creator_works)
 register.filter('get_date',get_date)

@@ -3,6 +3,8 @@
  Framework App
 """
 __author__ = "Jeremy Nelson"
+
+import csv
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS
 from aristotle.settings import CREATIVE_WORK_REDIS, INSTANCE_REDIS
 
@@ -61,14 +63,23 @@ def get_json_linked_data(primary_redis, redis_key):
                               "prov":"http://www.w3.org/ns/prov#",
                               "rda": "http://rdvocab.info",
                               "redis_key": None,
-                              "result": None }}
+                              "result": None,
+                              "schema":"http://schema.org/" }}
     ld_output['redis_key'] = redis_key
     for key, value in primary_redis.hgetall(redis_key).iteritems():
         # Assumes all values not explictly starting with "rda" is part of the bibframe name-space
         if key == 'created_on':
             ld_output['prov:Generation'] = {'prov:atTime': value }
-        elif not key.startswith('rda:'):
-            ld_output["bibframe:{0}".format(key)] = value
+        if not key.startswith('rda:') or key.startswith('prov'):
+            ld_key = "bibframe:{0}".format(key)
         else:
-            ld_output[key] = value
+            ld_key = key
+        try:
+            ld_output[ld_key] = unicode(value)
+        except UnicodeDecodeError, e:
+            ld_output[ld_key] = unicode(value, 'iso_8859_1')
     return ld_output
+
+def load_carl_location_codes(primary_redis, csv_file):
+    for row in csv.reader(open(csv_file, 'rb')):
+        primary_redis.hset('bibframe:Annotation:Facet:Locations', row[2], row[0])

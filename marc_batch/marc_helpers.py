@@ -56,7 +56,7 @@ class MARCModifier(object):
     def processURLs(self,
                     marc_record,
                     proxy_location,
-                    public_note='View online',
+                    public_note='View online - Access limited to subscribers',
                     note_prefix='Available via Internet'):
         """ Method extracts URL from 856 field, sets 538 and 856 to CC's format practices.
 
@@ -106,21 +106,26 @@ class MARCModifier(object):
             marc_record.add_field(new856)
         return marc_record    
 
-    def output(self,marcfile_output=None):
-        ''' Method writes all records to a MARC21 output file'''
-        #output = open(marcfile_output,'wb')
-        output = cStringIO.StringIO()
-        for record in self.records:
-            record_str = record.as_marc()
-            output.write(record_str.encode('utf8','ignore'))
-        return output.getvalue()
-
-##    def output(self):
-##        output_string = cStringIO.StringIO()
-##        marc_writer = pymarc.MARCWriter(output_string)
+##    def output(self,marcfile_output=None):
+##        ''' Method writes all records to a MARC21 output file'''
+##        #output = open(marcfile_output,'wb')
+##        output = cStringIO.StringIO()
 ##        for record in self.records:
-##            marc_writer.write(record)
-##        return output_string.getvalue()
+##            record_str = record.as_marc()
+##            output.write(record_str.decode('utf8','ignore'))
+##        return output.getvalue()
+
+    def output(self):
+        output_string = cStringIO.StringIO()
+        marc_writer = pymarc.MARCWriter(output_string)
+        for record in self.records:
+            try:
+                marc_writer.write(record)
+            except UnicodeError, e:
+                record_str = record.as_marc()
+                output_string.write(record_str.decode('utf8',
+                                                      'ignore'))
+        return output_string.getvalue()
 
   
 
@@ -244,13 +249,15 @@ class MARCModifier(object):
                         subfield_a = subfield_a[:-1].strip()
             new245 = Field(tag='245',
                            indicators=[indicator1,indicator2],
-                           subfields = ['a','%s ' % subfield_a])
+                           subfields = ['a','{0} '.format(subfield_a)])
             b_subfields = field245.get_subfields('b')
             c_subfields = field245.get_subfields('c')
+            n_subfields = field245.get_subfields('n')
+            p_subfields = field245.get_subfields('p')
             if len(c_subfields) > 0 and len(b_subfields) < 1:
-                new245.add_subfield('h','%s / ' % subfield_h_val)
+                new245.add_subfield('h','{0} / '.format(subfield_h_val))
             elif len(b_subfields) > 0:
-                new245.add_subfield('h','%s : ' % subfield_h_val)
+                new245.add_subfield('h','{0} : '.format(subfield_h_val))
             else:
                 new245.add_subfield('h',subfield_h_val)
             if len(b_subfields) > 0:
@@ -259,6 +266,12 @@ class MARCModifier(object):
             if len(c_subfields) > 0:
                 for subfield_c in c_subfields:
                     new245.add_subfield('c',subfield_c)
+            if len(n_subfields) > 0:
+                 for subfield_n in n_subfields:
+                    new245.add_subfield('n', subfield_n)
+            if len(p_subfields) > 0:
+                 for subfield_p in p_subfields:
+                    new245.add_subfield('p', subfield_p)
             marc_record.add_field(new245)
         return marc_record
 

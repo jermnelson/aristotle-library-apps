@@ -81,8 +81,9 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_HOME,'book_search/assets'),
     os.path.join(PROJECT_HOME,'call_number/assets'),
     os.path.join(PROJECT_HOME,'reserve_search/assets'),
-    os.path.join(PROJECT_HOME,'dbfinder/assets'),
+    os.path.join(PROJECT_HOME, 'dbfinder/assets'),
     os.path.join(PROJECT_HOME, 'discovery/assets'),
+    os.path.join(PROJECT_HOME, 'etd/assets'),
     # os.path.join(PROJECT_HOME,'hours/assets'),
     os.path.join(PROJECT_HOME,'marc_batch/assets'),
     # os.path.join(PROJECT_HOME,'orders/assets'),
@@ -107,6 +108,11 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
 )
+
+AUTHENTICATION_BACKENDS = [
+    "aristotle.backends.IIIUserBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -134,6 +140,8 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME,'call_number/templates/call_number/snippets/'),
     os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
     os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
+    os.path.join(PROJECT_HOME, 'etd/templates/etd/'),
+
     os.path.join(PROJECT_HOME,'hours/templates/'),
     os.path.join(PROJECT_HOME,'hours/templates/snippets/'),
     os.path.join(PROJECT_HOME,'marc_batch/templates/marc_batch/'),

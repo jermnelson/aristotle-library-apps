@@ -76,15 +76,13 @@ class FilmsOnDemandJob(MARCModifier):
         marc_record = self.remove020(marc_record)
         marc_record = self.validate245(marc_record)
         marc_record = self.validate300(marc_record)
-        marc_record = self.remove490(marc_record)
-        marc_record = self.processURLs(marc_record,
-                                       proxy_location="0-digital.films.com.tiger.coloradocollege.edu",
-                                       public_note='Watch online')
+        marc_record = self.validate538processURLS(marc_record)    
         marc_record = self.validateAll5xxs(marc_record)
         marc_record = self.validate730(marc_record)
-        marc_record = self.remove830(marc_record)
         return marc_record
-        
+    
+
+    
     def validate001(self,marc_record):
         """
         Method constructs 001 by inserting fod infront of unique
@@ -110,7 +108,7 @@ class FilmsOnDemandJob(MARCModifier):
         marc_record = self.__remove_field__(marc_record=marc_record,
                                             tag='006')   
         field006 = Field(tag='006',indicators=None)
-        field006.data = r'm        c        '
+        field006.data = r'm     o  c        '
         marc_record.add_field(field006)
         return marc_record
 
@@ -166,16 +164,14 @@ class FilmsOnDemandJob(MARCModifier):
             raw_string = ''.join(field300.get_subfields('b'))
             good_300b = '{0}, {1}'.format('digital',
                                           DIGITAL_RE.sub('',raw_string).strip())
-            last_char = good_300b[-1]
-            if last_char == '+':
-                good_300b = good_300b[:-1].strip()
             if good_300b[-1] == ',':
                 good_300b = good_300b[:-1]
                 good_300b +=  ' + '
-            elif last_char == ',':
-                good_300b = good_300b[:-1]
             if good_300b[-1] != '.':
                 good_300b = good_300b + '.'
+            last_char = good_300b[-1]
+            if last_char == '+':
+                good_300b = good_300b[:-1].strip()
             field300.delete_subfield("b")
             field300.add_subfield("b",good_300b)
         return marc_record
@@ -190,6 +186,24 @@ class FilmsOnDemandJob(MARCModifier):
         return self.__remove_field__(marc_record=marc_record,
                                      tag='490')
 
+    def validate538processURLS(self, marc_record):
+        """
+        Method retains the System requirements 538 field in the MARC record 
+        while still being able to use parent process URLS method.
+
+        :param marc_record: MARC21 record, required
+        """
+        keep538 = None
+        all538s = marc_record.get_fields('538')
+        for field in all538s:
+            if field['a'].startswith('System requirements'):
+                keep538 = field
+        marc_record = self.processURLs(marc_record,
+                                       proxy_location="0-digital.films.com.tiger.coloradocollege.edu",
+                                       public_note='Watch online - Access limited to subscribers')
+        if keep538 is not None:
+            marc_record.add_field(keep538)
+        return marc_record
 
 
 

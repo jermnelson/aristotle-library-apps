@@ -4,7 +4,8 @@
 
 __author__ = "Jeremy Nelson"
 
-import os,random
+import os
+import random
 
 from django.views.generic.simple import direct_to_template
 from django.http import Http404, HttpResponse
@@ -16,7 +17,7 @@ from bibframe.models import Work,Instance,Person
 from bibframe.redis_helpers import get_json_linked_data
 
 from discovery.forms import SearchForm
-from discovery.redis_helpers import get_facets,get_result_facets,BIBFRAMESearch
+from discovery.redis_helpers import get_facets, get_result_facets, BIBFRAMESearch
 
 from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
 from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
@@ -45,9 +46,9 @@ def app(request):
 	    facet_list = get_result_facets(bibframe_search.creative_work_keys)
 	    message = 'Results for {0}'.format(query)
 	else:
-            facet_list = get_facets(ANNOTATION_REDIS)
+            facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
     else:
-        facet_list = get_facets(ANNOTATION_REDIS)
+        facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
 #    example = {'work_path': os.path.join("apps",
 #	                                 "discovery",
 #			                 "work",
@@ -67,14 +68,14 @@ def app(request):
 			       'search_query':search_query,
                                'user': None})
 
-def creative_work(request,redis_id):
+
+def creative_work(request, redis_id):
     """
     Displays Creative Work View for the discovery app
 
     :param request: HTTP Request
     :param redis_id: Redis integer for the Creative Work
     """
-    print("REDIS ID is {0}".format(redis_id))
     redis_key = "bibframe:Work:{0}".format(redis_id)
     if CREATIVE_WORK_REDIS.exists(redis_key):
         creative_work = Work(primary_redis=CREATIVE_WORK_REDIS,
@@ -132,6 +133,29 @@ def creative_work_json_ld(request, redis_id):
         return json_linked_data
     else:
         raise Http404
+
+def display_cover_image(request, redis_id, type_of, image_ext):
+    """
+    Returns a cover image based on the CoverArt's redis key,
+    if the type-of is body or thumbnail and the image_ext is
+    either "jpg", "png", or "gif"
+    
+    :param redis_id: Redis key id of the bibframe:CoverArt 
+    :param type_of: Should be either "thumbnail" or "body" 
+    "param image_ext: The images extension
+    """
+    redis_key = "bibframe:CoverArt:{0}".format(redis_id)
+    if type_of == 'thumbnail':
+        raw_image = ANNOTATION_REDIS.hget(redis_key, 
+                                          'thumbnail')
+    elif type_of == 'body':
+        raw_image = ANNOTATION_REDIS.hget(redis_key, 
+                                          'annotationBody')
+    if raw_image is None:
+        raise Http404
+    return HttpResponse(raw_image, 
+                        mimetype="image/{0}".format(image_ext))
+
 
 def get_pagination(full_path,redis_key,redis_server,offset=0):
     """
@@ -203,6 +227,16 @@ def facet_detail(request,facet_name,facet_item):
         work = Work(primary_redis=CREATIVE_WORK_REDIS,
                     redis_key=work_key)
         records.append({'work':work})
+    label_key = 'bibframe:Annotation:Facet:{0}s'.format(facet_name)
+    msg = "Results for Facet {0}".format(facet_name)
+    if ANNOTATION_REDIS.exists(label_key):
+        if ANNOTATION_REDIS.type(label_key) == 'zset':
+            msg = "{0} {1}".format(msg, facet_item)
+        else:
+            msg = " {0} {1}".format(msg,    
+                                    ANNOTATION_REDIS.hget(label_key, facet_item))
+    else:
+        msg = "{0} {1}".format(msg, facet_item)
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
@@ -211,7 +245,7 @@ def facet_detail(request,facet_name,facet_item):
 			       'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,
                                'facet_list': None,
-			       'message':"Results for Facet {0}:{1}".format(facet_name,facet_item),
+			       'message': msg,
 			       'pagination':pagination,
 			       'results':records,
 			       'search_form': SearchForm(),

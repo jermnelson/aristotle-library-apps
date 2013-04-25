@@ -3,6 +3,7 @@
 *.bundle
 *.class
 *.*~
+*.swp*
 local_settings.*
 aristotle/static*
 bibframe/errors*

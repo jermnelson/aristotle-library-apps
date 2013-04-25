@@ -2,7 +2,9 @@
  :mod:`tests` - Unit tests for the Bibliographic Framework App
 """
 __author__ = "Jeremy Nelson"
-import redis,pymarc,os
+import pymarc
+import os
+import redis
 from django.test import TestCase
 from bibframe.models import *
 from bibframe.ingesters.MARC21 import *
@@ -1183,3 +1185,9 @@ class LibraryHoldingTest(TestCase):
 
     def tearDown(self):
         test_redis.flushdb()
+
+"""
+Tries to import all classifer tests
+"""
+from bibframe.classifiers.tests import TestWorkClassifier
+from bibframe.ingesters.test_ProjectGutenbergRDF import TestProjectGutenbergIngester

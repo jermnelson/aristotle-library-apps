@@ -107,15 +107,19 @@ class LocationFacet(Facet):
         location_keys = kwargs['redis'].zrevrange(
             'bibframe:Annotation:Facet:Locations:sort',
             0,
-            5,
+            -1,
             withscores=True
             )
         for row in location_keys:
             redis_key = row[0]
             location_code = redis_key.split(":")[-1]
-            item_name = kwargs['redis'].hget(
-                'bibframe:Annotation:Facet:Locations',
-                location_code)
+            #org_key = kwargs['redis'].hget(
+            #    'bibframe:Annotation:Facet:Locations',
+            #    location_code)
+            #item_name = kwargs['authority_ds'].hget(org_key,
+            #                                        'label')
+            item_name = kwargs['redis'].hget('bibframe:Annotation:Facet:Locations',
+                                             location_code)
             kwargs['items'].append(
                 FacetItem(count=row[1],
                     key=redis_key,
@@ -146,7 +150,7 @@ class BIBFRAMESearch(object):
 
 
 
-def get_facets(annotation_ds):
+def get_facets(annotation_ds, authority_ds):
     """
     Helper Function returns a list of Facets
 
@@ -155,7 +159,8 @@ def get_facets(annotation_ds):
     facets = []
     facets.append(AccessFacet(redis=annotation_ds))
     facets.append(FormatFacet(redis=annotation_ds))
-    facets.append(LocationFacet(redis=annotation_ds))
+    facets.append(LocationFacet(authority_ds=authority_ds,
+                                redis=annotation_ds))
     facets.append(LCFirstLetterFacet(redis=annotation_ds))
 
     return facets

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:dcam="http://purl.org/dc/dcam/"
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:marcrel="http://id.loc.gov/vocabulary/relators"
+   xmlns:pgterms="http://www.gutenberg.org/2009/pgterms/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xml:base="http://www.gutenberg.org/">
+  <cc:Work rdf:about="feeds/catalog.rdf">
+    <cc:license rdf:resource="http://www.gnu.org/licenses/gpl.html"/>
+  </cc:Work>
+  <pgterms:ebook rdf:about="ebooks/33">
+    <dcterms:creator rdf:resource="2009/agents/28"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/ebooks/33.epub.noimages"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/ebooks/33.html.noimages"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/ebooks/33.kindle.noimages"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/ebooks/33.plucker"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/ebooks/33.qioo"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/ebooks/33.txt.utf-8"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/files/33/33.txt"/>
+    <dcterms:hasFormat rdf:resource="http://www.gutenberg.org/files/33/33.zip"/>
+    <dcterms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">1992-06-01</dcterms:issued>
+    <dcterms:language rdf:datatype="http://purl.org/dc/terms/RFC4646">en</dcterms:language>
+    <dcterms:license rdf:resource="license"/>
+    <dcterms:publisher>Project Gutenberg</dcterms:publisher>
+    <dcterms:rights>Public domain in the USA.</dcterms:rights>
+    <dcterms:subject>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/LCSH"/>
+        <rdf:value>Adultery -- Fiction</rdf:value>
+        <rdf:value>Boston (Mass.) -- History -- Colonial period, ca. 1600-1775 -- Fiction</rdf:value>
+        <rdf:value>Clergy -- Fiction</rdf:value>
+        <rdf:value>Historical fiction</rdf:value>
+        <rdf:value>Illegitimate children -- Fiction</rdf:value>
+        <rdf:value>Married women -- Fiction</rdf:value>
+        <rdf:value>Psychological fiction</rdf:value>
+        <rdf:value>Puritans -- Fiction</rdf:value>
+        <rdf:value>Revenge -- Fiction</rdf:value>
+        <rdf:value>Triangles (Interpersonal relations) -- Fiction</rdf:value>
+        <rdf:value>Women immigrants -- Fiction</rdf:value>
+      </rdf:Description>
+    </dcterms:subject>
+    <dcterms:subject>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/LCC"/>
+        <rdf:value>PS</rdf:value>
+      </rdf:Description>
+    </dcterms:subject>
+    <dcterms:title>The Scarlet Letter</dcterms:title>
+    <dcterms:type>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/DCMIType"/>
+        <rdf:value>Text</rdf:value>
+      </rdf:Description>
+    </dcterms:type>
+  </pgterms:ebook>
+  <pgterms:agent rdf:about="2009/agents/28">
+    <pgterms:birthdate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1804</pgterms:birthdate>
+    <pgterms:deathdate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1864</pgterms:deathdate>
+    <pgterms:name>Hawthorne, Nathaniel</pgterms:name>
+    <pgterms:webpage rdf:resource="http://en.wikipedia.org/wiki/Nathaniel_Hawthorne"/>
+  </pgterms:agent>
+  <rdf:Description rdf:about="http://en.wikipedia.org/wiki/Nathaniel_Hawthorne">
+    <dcterms:description>Wikipedia</dcterms:description>
+  </rdf:Description>
+  <pgterms:file rdf:about="http://www.gutenberg.org/ebooks/33.html.noimages">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">539128</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">text/html</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-03-13T05:27:33.265360</dcterms:modified>
+  </pgterms:file>
+  <pgterms:file rdf:about="http://www.gutenberg.org/ebooks/33.epub.noimages">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">220385</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">application/epub+zip</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-03-13T05:27:33.753360</dcterms:modified>
+  </pgterms:file>
+  <pgterms:file rdf:about="http://www.gutenberg.org/ebooks/33.kindle.noimages">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">890805</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">application/x-mobipocket-ebook</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-03-13T05:27:36.225331</dcterms:modified>
+  </pgterms:file>
+  <pgterms:file rdf:about="http://www.gutenberg.org/ebooks/33.plucker">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">306699</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">application/prs.plucker</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-03-13T05:27:38.884298</dcterms:modified>
+  </pgterms:file>
+  <pgterms:file rdf:about="http://www.gutenberg.org/ebooks/33.qioo">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">263345</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">application/x-qioo-ebook</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-03-13T05:27:32.489389</dcterms:modified>
+  </pgterms:file>
+  <pgterms:file rdf:about="http://www.gutenberg.org/ebooks/33.txt.utf-8">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">516423</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">text/plain</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2013-03-13T05:27:32.204372</dcterms:modified>
+  </pgterms:file>
+  <pgterms:file rdf:about="http://www.gutenberg.org/files/33/33.txt">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">516451</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">text/plain; charset=us-ascii</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2011-12-17T19:21:48</dcterms:modified>
+  </pgterms:file>
+  <pgterms:file rdf:about="http://www.gutenberg.org/files/33/33.zip">
+    <dcterms:extent rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">201385</dcterms:extent>
+    <dcterms:format>
+      <rdf:Description>
+        <dcam:memberOf rdf:resource="http://purl.org/dc/terms/IMT"/>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">application/zip</rdf:value>
+        <rdf:value rdf:datatype="http://purl.org/dc/terms/IMT">text/plain; charset=us-ascii</rdf:value>
+      </rdf:Description>
+    </dcterms:format>
+    <dcterms:isFormatOf rdf:resource="ebooks/33"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2011-12-17T19:26:58</dcterms:modified>
+  </pgterms:file>
+</rdf:RDF>

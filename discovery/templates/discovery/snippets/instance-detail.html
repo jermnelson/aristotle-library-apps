@@ -6,7 +6,7 @@
  {# START Instance row #}
  <div class="row">
   <div class="span1 offset1">
-   <img src="{{ STATIC_URL }}img/{{ instance|get_image }}" />
+   <img src="{{ instance|get_image }}" />
   </div>
   <div class="span8" >
    <h2>{{ instance|get_title }}</h2>
@@ -22,6 +22,7 @@
     </dl>
   </div>
   <div class="span4">
+   {{ instance|get_cover_art }}
    {{ instance|get_annotations }}
 
   </div>

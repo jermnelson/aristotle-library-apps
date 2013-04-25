@@ -1,0 +1,31 @@
+<div class="modal hide fade" id="login-dlg">
+ <div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h3>Please login to continue</h3>
+ </div>
+  <div class="modal-body">
+ <form class="form-horizontal" method="post" action="accounts/login/">
+ <input type="hidden" name="next" value="{{ next }}" />
+  {{ csvf_token }}
+  <div class="control-group">
+    <label for="id_username" class="control-label">{{ login_form.username.label_tag }}</label>
+    <div class="controls">
+      {{ login_form.username }}
+    </div>
+  </div>
+  <div class="control-group">
+   <label for="id_password" class="control-label">{{ login_form.password.label_tag }}</label>
+   <div class="controls">
+     {{ login_form.password }}
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+       <input type="submit" class="btn" value="Login" />
+    </div>
+ </form>
+ </div>
+ <div class="modal-footer">
+  <a href="#" class="btn btn-primary" data-dismiss="modal">Cancel</a>
+ </div>
+</div>

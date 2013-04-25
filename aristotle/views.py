@@ -6,7 +6,7 @@ __author__ = 'Jeremy Nelson'
 import logging,sys, datetime
 from django.http import HttpResponse, Http404
 from django.views.generic.simple import direct_to_template
-from django.contrib.auth import authenticate, login 
+from django.contrib.auth import authenticate, login, logout 
 from django.contrib.auth.forms import AuthenticationForm
 import django.utils.simplejson as json
 from django.shortcuts import redirect
@@ -48,19 +48,48 @@ def default(request):
                                'user':None})
 
 def app_login(request):
+    """
+    Attempts to authenticate a user to Aristotle Library Apps 
+
+    :param request: HTTP Request
+    """
+    if request.method == 'GET':
+        return HttpResponse("IN GET App Login")
     username = request.POST['username']
     password = request.POST['password']
-    next_page = request.REQUEST['next']
-    user = authenticate(username=username,
-		        password=password)
+    next_page = request.REQUEST.get('next')
+    try:
+        user = authenticate(last_name=username,
+	                    iii_id=password)
+    except KeyError:
+        user = None
     if user is not None:
         if user.is_active:
-            login(request,user)
-	    return redirect(next_page)
+            login(request, user)
+            if len(next_page) > 0:
+	        return redirect(next_page)
+            else:
+                return redirect('/apps')
 	else:
+            logging.error("User not active")
             raise Http404
     else:
+        logging.error("User {0} not found".format(username))
 	raise Http404
+
+def app_logout(request):
+    """
+    Attempts to logout a user from the Aristotle Library Apps 
+
+    :param request: HTTP Request
+    """
+    if request.REQUEST.has_key('next'):
+        next_page = request.REQUEST.get('next')
+    else:
+        next_page = '/apps'
+    logout(request)
+    return redirect(next_page)
+   
 
 def feedback(request):
     """
@@ -101,6 +130,32 @@ def starting(request):
                                'navbar_menus':json_loader.get('navbar-menus'),
                                'user':None})
 
+
+def website_footer(request):
+    """
+    Displays a footer replaced by a harvested footer from a website. This
+    function is for one example of website interoperbility of the an App
+ 
+    :param request: HTTP Request
+    """
+    return direct_to_template(request,
+                              'snippets/website-footer.html',
+                             {})
+
+
+def website_header(request):
+    """
+    Displays a footer replaced by a harvested footer from a website. This
+    function is for one example of website interoperbility of the an App
+ 
+    :param request: HTTP Request
+    """
+    return direct_to_template(request,
+                              'snippets/website-header.html',
+                             {})
+
+
+    
 def json_view(func):
     """
     Returns JSON results from method call, from Django snippets
@@ -126,7 +181,6 @@ def json_view(func):
                 msg = ugettext("Internal error: %s" % str(e))
             response = {'result': 'error',
                         'text': msg}
-            
         json_output = json.dumps(response)
         return HttpResponse(json_output,
                             mimetype='application/json')
