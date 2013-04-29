@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block custom_css %}
+<link href="/assets/css/carl.css" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+{% include 'carl-navbar.html' %}
+
+{# START main content #}
+<div class="container-fluid">
+ {# START Search Widget #}
+ <div class="row-fluid">
+  {% include 'carl-search-widget.html' %}
+  <div class="span2">
+   <img src="/assets/img/prospector_man_smaller.png" style="height:150px">
+  </div>
+ {# END search Widget #}
+ </div>
+ {# START Facet and Content #}
+ <div class="row-fluid">
+   {% include 'carl-left-column.html' %}
+   {% include 'carl-right-column.html' %}
+ {# END Facet and Content #}
+ </div>
+{# END main content #}
+</div>
+{% include 'carl-footer.html' %}
+{% endblock %}

@@ -1,0 +1,68 @@
+body {
+ color: #2c2c2c !important;
+ margin-top: 50px;
+}
+
+header {
+  background-color: #e09010;
+  margin: .5em;
+  padding: .5em;
+}
+
+h1.featured-items {
+  background-color: rgb(227, 169, 59);
+  font-size: 1.5em;
+  padding-left: .5em;
+}
+
+h1.interesting-facts {
+  background-color: rgb(212,94,94);
+  font-size: 1.5em;
+  padding-left: .5em;
+
+}
+
+h1.prospector-news {
+  background-color: rgb(209, 91, 41);
+  font-size: 1.5em;
+  padding-left: .5em;
+
+}
+
+.brand {
+  color: rgb(0,0,0) !important;
+  font-size: 1.5em;
+  text-shadow: none !important;
+}
+
+.rounded-corners {
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+.header-navbar {
+ background-color: rgb(123, 157, 143);
+}
+
+.footer-navbar {
+ background-color: #0072b9 !important;
+}
+
+.navbar-inner {
+ background-image: none !important;
+ background-repeat: no-repeat !important;
+ filter: none;
+}
+
+.search-main {
+ background-color: rgb(167,205,224);
+ margin-top: .5em;
+ padding-left: 5px;
+}
+
+.search-main h1 {
+ font-size: 1.5em;
+ margin: 3px;
+ padding: 5px;
+}

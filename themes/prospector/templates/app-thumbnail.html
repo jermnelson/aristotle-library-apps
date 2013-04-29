@@ -1,0 +1,10 @@
+{% load i18n %}
+{% load portfolio_extras %}
+ <td style="padding-left:20px">
+  <div class="app_icon">
+  <a href="/apps/{{ app.url }}">
+  <img src="/static/img/{{ app.icon_url }}" alt="{{ app.current_view. }}"/>
+  <p>{{ app.current_view.title }}</p>
+  </a>
+  </div>
+</td>

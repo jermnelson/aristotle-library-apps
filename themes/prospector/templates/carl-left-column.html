@@ -1,0 +1,24 @@
+{% load prospector_extras %}
+{# START left-column #}
+<div class="span6">
+ {# START featured-items #}
+ <div>
+  <h1 class="featured-items rounded-corners">Featured Items</h1>
+  {{ 2|get_featured_instances }}   
+ {# END featured-items #}
+ </div>
+ {# START interesting-facts #}
+ <div>
+  <h1 class="interesting-facts rounded-corners">Interesting Facts About Prospector</h1>
+   <ul>
+    <li>Prospector includes books, DVDs and CDs!</li>
+    <li>We have incorporated facets for limiting results, 
+        book jackets and other design elements</li>
+    <li>If you prefer our classic interface it is still 
+        available</li>
+    <li>Prospector has over 11 million unique titles and 30 million 
+        copies</li>
+{# END interesting-facts #}
+ </div>
+{# END left-column #}
+</div>

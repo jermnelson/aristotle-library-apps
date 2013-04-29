@@ -1,0 +1,8 @@
+<div>
+{% for row in instances %}
+<a class="btn" 
+   href="/apps/discovery/instance/{{ row.redis_key }}">
+  {{ row }}
+</a>
+{% endfor %}
+</div>
