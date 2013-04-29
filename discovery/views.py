@@ -32,6 +32,8 @@ def app(request):
     results,search_query,message = [],None,None
     if request.method == 'POST':
 	query = request.POST.get('q')
+	type_of = request.POST.get('q_type')
+	print(type_of)
 	if len(query) > 0:
             bibframe_search = BIBFRAMESearch(q=request.POST.get('q'),
 	     		                     authority_ds=AUTHORITY_REDIS,

@@ -3,7 +3,8 @@
 """
 __author__ = 'Jeremy Nelson'
 
-import imp,os
+import imp
+import os
 from django.views.generic.simple import direct_to_template
 import django.utils.simplejson as json
 from aristotle.settings import PROJECT_HOME,PROJECT_ROOT,INSTITUTION,INSTALLED_APPS
@@ -26,13 +27,14 @@ def get_apps(is_authenticated):
             settings_file = os.path.join(PROJECT_HOME,
                                          row,
                                          "app_settings.py")
-            app_settings = imp.load_source(row,settings_file)
-            app_info = app_settings.APP
-            if app_info.get('is_productivity'):
-                if is_authenticated is True:
+            if os.path.exists(settings_file):
+                app_settings = imp.load_source(row,settings_file)
+                app_info = app_settings.APP
+                if app_info.get('is_productivity'):
+                    if is_authenticated is True:
+                        output.append(app_info)
+                else:
                     output.append(app_info)
-            else:
-                output.append(app_info)
     return output
             
         

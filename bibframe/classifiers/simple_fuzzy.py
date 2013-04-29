@@ -3,9 +3,14 @@
   BIBFRAME Works
 """
 __author__ = "Jeremy Nelson"
+import datetime
+import logging
+
 from fuzzywuzzy import fuzz
 from bibframe.models import Work, Instance
 from title_search.redis_helpers import search_title
+logger = logging.getLogger(__name__)
+
 
 class SimpleFuzzyClassifier(object):
     """
@@ -74,7 +79,12 @@ class WorkClassifier(SimpleFuzzyClassifier):
                     else:
                         existing_keys = creator_keys.union(self.entity_info['rda:isCreatedBy'])
                     if len(existing_keys) == 1:
-                        print("MATCHED {0} to {1}".format(creative_wrk_key, self.entity_info))
+                        msg = "{0} MATCHED {1} to {2}".format(
+                            datetime.datetime.utcnow().isoformat(),
+                            creative_wrk_key,
+                            self.entity_info.get('title').get('rda:preferredTitleForTheWork'))
+                        print(msg)
+                        logger.info(msg)
                         self.creative_work = Work(primary_redis=self.creative_work_ds,
                                                   redis_key=creative_wrk_key)
             if not self.creative_work:

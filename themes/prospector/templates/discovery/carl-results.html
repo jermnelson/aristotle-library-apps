@@ -1,0 +1,53 @@
+{% load discovery_extras %}
+{# START main content #}
+<div class="container-fluid">
+ <div class="row-fluid">
+ {% include 'discovery/carl-active-search.html' %}
+ </div>
+ <hr>
+ {# START results header row #}
+ <div class="row-fluid">
+  <div class="span10">  
+   <h3>Results {{ results|length }} for {{ search_query }}</h3>
+   <div class="row-fluid">
+    <div class="span6">
+     Sorted by:
+     <div class="btn-group"> 
+      <button class="btn disabled">Relevance</button>
+      <button class="btn">Title</button>
+      <button class="btn">Date</button>
+     </div>
+    </div>
+    {# START pagination span #}
+    <div class="span4">
+     <div class="pagination">
+     <ul>
+      <li><a href="#">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">3</a></li>
+      <li><a href="#">4</a></li>
+      <li><a href="#">5</a></li>
+      <li><a href="#">Next</a></li>
+     </ul>
+    </div>
+   {# END pagination span #}
+   </div>
+  {# END results header row #}
+  </div>
+ </div>
+  <hr>
+  <div class="row-fluid">
+   <div class="span3">
+    Refine by:
+    {# NEED facets include here #}    
+   </div>
+   <div class="span6">
+   {% for result in results %} 
+   <div>
+   {{ result.work|get_brief_heading }}
+   </div>
+   {% endfor %}
+   </div>
+  </div>
+{# END main content #}
+</div>

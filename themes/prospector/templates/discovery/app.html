@@ -2,6 +2,9 @@
 
 {% block body %}
 {# START main content #}
+{% if results %}
+  {% include 'discovery/carl-results.html' %}
+{% else %}
 <div class="container-fluid">
  {# START Search Widget #}
  <div class="row-fluid">
@@ -19,4 +22,5 @@
  </div>
 {# END main content #}
 </div>
+{% endif %}
 {% endblock %}

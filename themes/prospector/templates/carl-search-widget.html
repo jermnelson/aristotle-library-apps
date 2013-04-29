@@ -1,9 +1,13 @@
 <div class="span8 search-main rounded-corners">
  <h1>Search</h1>
- <form class="form-search">
+ <form class="form-search" 
+       method="POST" 
+       action="/apps/discovery/">
+  {% csrf_token %}
   <input type="text" class="span6 search-query"
-   placeholder="Find books, movies, music, and more!">
-  <select>
+   placeholder="Find books, movies, music, and more!"
+   name="q">
+  <select name="q_type">
    <option>Keyword</option>
    <option>Author</option>
    <option>Title</option>
@@ -24,8 +28,10 @@
   </select>
   {% comment %}
   <div class="btn-group">
-   <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-   Keyword
+   <a class="btn btn-warning dropdown-toggle" 
+      data-toggle="dropdown" 
+      href="#">
+   Search
    <span class="caret"></span>
    </a>
    <ul class="dropdown-menu">
@@ -34,20 +40,19 @@
     <li><a href="#">Title</a></li>
     <li><a href="#">Journal Title</a></li>
     <li class="divider"></li>
-    <li>LC Subject</li>
-    <li>Medical Subject</li>
-    <li>Children's Subject</li>
+    <li><a href="#">LC Subject</a></li>
+    <li><a href="#">Medical Subject</a></li>
+    <li><a href="#">Children's Subject</a></li>
     <li class="divider"></li>
-    <li>LC Call Number</li>
-    <li>Gov Doc Number</li>
-    <li>ISSN/ISBN</li>
-    <li>Dewey Call Number</li>
-    <li>Medical Call Number</li>
-    <li>OCLC Number</li>
+    <li><a href="#">LC Call Number</a></li>
+    <li><a href="#">Gov Doc Number</a></li>
+    <li><a href="#">ISSN/ISBN</a></li>
+    <li><a href="#">Dewey Call Number</a></li>
+    <li><a href="#">Medical Call Number</a></li>
+    <li><a href="#">OCLC Number</a></li>
    </ul>
   </div>
   {% endcomment %}
-
-  <button type="submit" class="btn btn-warning">Search</button>
+  <input type="submit" class="btn btn-warning" value="Search"></input>
 </form>
 </div>

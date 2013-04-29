@@ -193,6 +193,9 @@ class MARC21toFacets(MARC21Ingester):
             instance.redis_key),
                 facet_key)
 
+
+
+    
     def add_lc_facet(self, **kwargs):
         """
         Adds bibframe:CreativeWork to the bibframe:Annotation:Facet:LOCLetter
@@ -220,6 +223,13 @@ class MARC21toFacets(MARC21Ingester):
                 "bibframe:Annotation:Facet:LOCFirstLetters:sort",
                 float(self.annotation_ds.scard(facet_key)),
                 facet_key)
+
+    def add_language_facet(self, **kwargs):
+        """
+        Method takes an instance and adds to
+        bibframe:Annotation:Facet:Language:LanguageTerm facet
+        """
+        pass
 
     def add_locations_facet(self, **kwargs):
         """
@@ -271,6 +281,13 @@ class MARC21toFacets(MARC21Ingester):
                         redis_key)
                     self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
                                           redis_key)
+
+    def add_publish_date_facet(instance, record):
+        """
+        Method adds the publication date of the instance to the
+        bibframe:Annotation:Facet:PublishDate:{year}
+        """
+        pass
 
     def ingest(self,**kwargs):
         """

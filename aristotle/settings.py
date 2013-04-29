@@ -139,8 +139,8 @@ TEMPLATE_DIRS = (
 ##    os.path.join(PROJECT_HOME,'book_search/templates/book_search/snippets/'),
 ##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/'),
 ##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/snippets/'),
-##    os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
-##    os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
+    os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
+    os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
 ##    os.path.join(PROJECT_HOME, 'etd/templates/etd/'),
 ##
 ##    os.path.join(PROJECT_HOME,'hours/templates/'),
@@ -202,6 +202,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        
     }
 }
 try:
