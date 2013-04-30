@@ -49,6 +49,10 @@ h1.prospector-news {
  background-color: #0072b9 !important;
 }
 
+h4.media a {
+   color: #5a8f7c;
+}
+
 .navbar-inner {
  background-image: none !important;
  background-repeat: no-repeat !important;

@@ -1079,6 +1079,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
         self.extract_ddc()
         self.extract_govdoc()
         self.extract_lcc()
+        self.extract_medical()
         self.extract_cc_local()
         self.extract_udc()
         self.add_holding()
@@ -1128,12 +1129,16 @@ class MARC21toLibraryHolding(MARC21Ingester):
         lcc_values = self.__extract_callnumber__(['050',
                                                   '051',
                                                   '055',
-                                                  '060',
                                                   '061',
                                                   '070',
                                                   '071'])
         if len(lcc_values) > 0:
             self.entity_info['callno-lcc'] = lcc_values
+
+    def extract_medical(self):
+        med_callnumbers = self.__extract_callnumber__(['060',])
+        if len(med_callnumbers) > 0:
+            self.entity_info['callno-nlm'] = med_callnumbers
 
     def extract_cc_local(self):
         """

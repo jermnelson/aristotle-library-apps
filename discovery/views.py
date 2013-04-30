@@ -33,11 +33,12 @@ def app(request):
     if request.method == 'POST':
 	query = request.POST.get('q')
 	type_of = request.POST.get('q_type')
-	print(type_of)
 	if len(query) > 0:
-            bibframe_search = BIBFRAMESearch(q=request.POST.get('q'),
+            bibframe_search = BIBFRAMESearch(q=query,
+                                             type_of=type_of,
 	     		                     authority_ds=AUTHORITY_REDIS,
-				             creative_wrk_ds=CREATIVE_WORK_REDIS)
+				             creative_wrk_ds=CREATIVE_WORK_REDIS,
+                                             instance_ds=INSTANCE_REDIS)
 	    bibframe_search.run()
 	    search_query = bibframe_search.query
 	    for key in bibframe_search.creative_work_keys:
@@ -345,4 +346,46 @@ def person(request,redis_id):
 			       'person':person,
 			       'search_form': SearchForm(),
 			       'user':None})
+
+@json_view
+def person_json_ld(request, redis_id):
+    """
+    Person JSON-LD view for the discovery app
+
+    :param request: HTTP Request
+    :param redis_id": Redis integer for the Person
+    """
+    redis_key = "bibframe:Person:{0}".format(redis_id)
+    if AUTHORITY_REDIS.exists(redis_key):
+        json_linked_data = get_json_linked_data(primary_redis=AUTHORITY_REDIS,
+                                                redis_key=redis_key)
+        for work_key in list(AUTHORITY_REDIS.smembers("{0}:rda:isCreatorPersonOf")):
+            work_url = "http://{0}/apps/discovery/Work/{1}".format(request.get_host(), 
+                                                                   work_key.split(":")[-1])
+            if json_linked_data.has_key('rda:isCreatorPersonOf'):
+                json_linked_data['rda:isCreatorPersonOf'].append(work_url)
+            else:
+                json_linked_data['rda:isCreatorPersonOf'] = [work_url,]
+    return json_linked_data
+
+@json_view
+def search(request):
+    """
+    JSON-based search api for external calls into the discovery app
+    """
+    query = request.POST.get('q')
+    type_of = request.POST.get('q_type')
+    if len(query) > 0:
+        bibframe_search = BIBFRAMESearch(q=query,
+                                         type_of=type_of,
+                                         authority_ds=AUTHORITY_REDIS,
+                                         creative_wrk_ds=CREATIVE_WORK_REDIS,
+                                         instance_ds=INSTANCE_REDIS)
+        bibframe_search.run()
+        search_results = json.loads(bibframe_search.__json__())
+        return search_results
+    else:
+        return {'works':[]}
+
+
 

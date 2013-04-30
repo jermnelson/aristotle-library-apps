@@ -70,10 +70,12 @@ def get_json_linked_data(primary_redis, redis_key):
         # Assumes all values not explictly starting with "rda" is part of the bibframe name-space
         if key == 'created_on':
             ld_output['prov:Generation'] = {'prov:atTime': value }
-        if not key.startswith('rda:') or key.startswith('prov'):
-            ld_key = "bibframe:{0}".format(key)
-        else:
+        if key.startswith('rda:')\
+           or key.startswith('prov')\
+           or key.startswith('schema'):
             ld_key = key
+        else:
+            ld_key = "bibframe:{0}".format(key)
         try:
             ld_output[ld_key] = unicode(value)
         except UnicodeDecodeError, e:

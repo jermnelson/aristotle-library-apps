@@ -165,7 +165,7 @@ def get_annotations(instance):
 
 def get_brief_heading(work):
     """
-    Returns generated h4 for brief record view
+    Returns generated div for brief record view
     
     :param work: Creative Work
     :rtype: HTML or 0-length string

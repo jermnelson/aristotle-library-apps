@@ -1,6 +1,9 @@
 """
 `mod`: redis_helpers - Redis Helpers for Discovery App
 """
+from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS
+from aristotle.settings import CREATIVE_WORK_REDIS, OPERATIONAL_REDIS
+
 import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
 
@@ -132,22 +135,115 @@ class BIBFRAMESearch(object):
 
     def __init__(self,**kwargs):
         self.query = kwargs.get('q')
-	self.authority_ds =kwargs.get('authority_ds')
-	self.creative_wrk_ds = kwargs.get('creative_wrk_ds')
-	self.creative_work_keys = []
+        self.type_of = kwargs.get('type_of', 'kw')
+	self.authority_ds = kwargs.get('authority_ds', AUTHORITY_REDIS)
+	self.creative_wrk_ds = kwargs.get('creative_wrk_ds', CREATIVE_WORK_REDIS)
+        self.instance_ds = kwargs.get('instance_ds', INSTANCE_REDIS)
+        self.operational_ds = kwargs.get('operational_ds', OPERATIONAL_REDIS)
+	self.creative_work_keys, self.fails = [], []
+
+    def __json__(self, with_results=True):
+        """
+        Method returns a json view of a BIBFRAMESearch
+        """
+        info = {"query":self.query,
+                "type": self.type_of}
+        if with_results is True:
+            info['works'] = list(set(self.creative_work_keys))
+        else:
+            info['works'] = len(set(self.creative_work_keys))
+        return json.dumps(info) 
+
 
     def run(self):
-	# Search using Title App and Person Authority App
-	found_titles = title_app.search_title(self.query,self.creative_wrk_ds)
-	found_creators = person_authority_app.person_search(self.query,
+        """
+        Runs the search based on the search type. Adds json representation of 
+        the query to a sorted-set based on the time.
+        """
+        if self.type_of == 'au':
+            self.author()
+        elif self.type_of == 'cs':
+            self.subject_children()
+        elif self.type_of == 'dw':
+            self.number_dewey()
+        elif self.type_of == 'is':
+            self.number_issn_isbn()
+        elif self.type_of == 'kw':
+            self.keyword()
+        elif self.type_of == 'jt':
+            self.journal_title()
+        elif self.type_of == 'lc':
+            self.subject_lc()
+        elif self.type_of == 'lccn':
+            self.number_lccn()
+        elif self.type_of == 'med':
+            self.subject_med()
+        elif self.type_of == 'medc':
+            self.number_med()
+        elif self.type_of == 't':
+            self.title()
+        self.operational_ds.zadd('bibframe-searches', 
+                                 time.time(),
+                                 self.__json__(with_results=False))
+        self.creative_work_keys = set(self.creative_work_keys)
+
+
+    def author(self):
+        found_creators = person_authority_app.person_search(self.query,
 			                                    authority_redis=self.authority_ds)
-	# Get the intersection of the sets to deduplicate results
-	self.creative_work_keys.extend(found_titles)
-	self.creative_work_keys.extend(list(found_creators))
-	self.creative_work_keys = set(self.creative_work_keys)
+        self.creative_work.extend(list(found_creators))
+
+    def journal_title(self):
+        pass
+
+    def keyword(self):
+        #! This should do a Solr search as the default
+        self.author()
+        self.title()
+	
+    
+    def number_dewey(self):
+        pass
+
+    def number_issn_isbn(self):
+        instances_keys = []
+        issn = self.instance.hget('issn-hash', self.query.strip())
+        if issn is not None:
+            instance_keys.extend(issn)
+        isbn = self.instance.hget('issn-hash', self.query.strip())
+        if isbn is not None:
+            instance_keys.extend(isbn)
+        for key in instance_keys:
+            self.creative_works
 
 
+    def number_lccn(self):
+        instance_key = self.instance_ds.hget('lccn-hash', self.query.strip())
+        if instance_key is not None:
+            self.creative_work_keys.append(self.instance_ds.hget(instance_key, 
+                                                                 'instanceOf'))
+        
 
+    def number_med(self):
+        instance_key = self.instance_ds.hget('nlm-hash', self.query.strip())
+        if instance_key is not None:
+            self.creative_work_keys.append(self.instance_ds.hget(instance_key, 
+                                                                 'instanceOf'))
+      
+
+    def number_oclc(self):
+        pass
+
+    def subject_children(self):
+        pass
+
+    def subject_lc(self):
+        pass
+
+    def title(self):
+        # Search using Title App
+        found_titles = title_app.search_title(self.query,self.creative_wrk_ds)
+        self.creative_work_keys.extend(found_titles)
 
 
 def get_facets(annotation_ds, authority_ds):

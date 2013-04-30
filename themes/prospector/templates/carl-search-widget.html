@@ -8,22 +8,23 @@
    placeholder="Find books, movies, music, and more!"
    name="q">
   <select name="q_type">
-   <option>Keyword</option>
-   <option>Author</option>
-   <option>Title</option>
-   <option>Journal Title</option>
+   <option value="kw">Keyword</option>
+   <option value="au">Author</option>
+   <option value="t">Title</option>
+   <option value="jt">Journal Title</option>
    <optgroup label="Subject">
-    <option>LC Subject</option>
-    <option>Medical Subject</option>
-    <option>Children's Subject</option>
+    <option value="lc">LC Subject</option>
+    <option value="med">Medical Subject</option>
+    <option vale="cs">Children's Subject</option>
    </optgroup>
    <optgroup label="Number">
-    <option>LC Call Number</option>
-    <option>Gov Doc Number</option>
-    <option>ISSN/ISBN</option>
-    <option>Dewey Call Number</option>
-    <option>Medical Call Number</option>
-    <option>OCLC Number</option>
+    <option value="lccn">LC Call Number</option>
+    <option value="gov">Gov Doc Number</option>
+    <option value="is">ISSN/ISBN</option>
+    <option value="dw">Dewey Call Number</option>
+    <option value="medc">Medical Call Number</option>
+    <option value="oclc">OCLC Number</option>
+   </optgroup>
    </optgroup>
   </select>
   {% comment %}
