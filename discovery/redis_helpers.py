@@ -1,6 +1,8 @@
 """
 `mod`: redis_helpers - Redis Helpers for Discovery App
 """
+import json
+import time
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS
 from aristotle.settings import CREATIVE_WORK_REDIS, OPERATIONAL_REDIS
 
@@ -191,7 +193,7 @@ class BIBFRAMESearch(object):
     def author(self):
         found_creators = person_authority_app.person_search(self.query,
 			                                    authority_redis=self.authority_ds)
-        self.creative_work.extend(list(found_creators))
+        self.creative_work_keys.extend(list(found_creators))
 
     def journal_title(self):
         pass
