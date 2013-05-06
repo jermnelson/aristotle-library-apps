@@ -112,7 +112,16 @@ def save_keys(entity_key,name,value,redis_object):
         # is not a distinct Redis key
         redis_object.srem(all_keys_key,new_redis_key)
 
-          
+class RedisBibframeModelError(Exception):
+    """Redis Bibframe Model Error
+     
+    Error raised when a Model Error occurs
+    """
+    def __init__(self, message):
+        self.value = message
+
+    def __str__(self):
+        return repr(self.value)
 
 class RedisBibframeInterface(object):
     """
@@ -188,9 +197,9 @@ class RedisBibframeInterface(object):
                                     datetime.datetime.utcnow().isoformat())
         else:
             if not self.primary_redis.exists(self.redis_key):
-                error_msg = """Cannot save, {0} doesn't exist in primary_redis port={1}".
-                raise ValueError("Cannot save, {0} doesn't exist in primary_redis port={1}".format(self.redis_key,
-                                                                                                   self.primary_redis.info()['tcp_port']))
+                error_msg = "Save failed {0} doesn't exist in primary redis".format(
+                   self.redis_key)
+                raise RedisBibframeModelError(error_msg)
         # If property_name is None, save everything
         if property_name is None:
             all_properties = dir(self)
@@ -225,6 +234,5 @@ class RedisBibframeInterface(object):
                       property_name, 
                       prop_value, 
                       self.primary_redis)
-       
 
-load_rdf() 
+load_rdf()
