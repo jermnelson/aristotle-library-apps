@@ -54,31 +54,49 @@ def load_rdf():
             setattr(sys.modules[__name__],class_name,new_class)
 
 def process_key(bibframe_key,
-                redis_instance):
-    """
-    Helper function 
+                client=None,
+                redis_instance=None):
+    """Helper function returns a info dict about a bibframe entity 
 
-    :param bibframe_key: Redis bibframe entities key
-    :param redis_instance: Redis instance to check 
+    Function extracts information from either a RedisShard or Redis
+    instance and returns a dictionary of information
+    
+     
+    Parameters:
+    bibframe_key -- Redis bibframe entities key
+    client == RedisShard to check, defaults to None
+    redis_instance -- Redis instance to check, defaults to None 
     """
     output = {}
-    if not redis_instance.exists(bibframe_key):
-        raise ValueError("Redis-key of {0} doesn't exist in datastore".format(bibframe_key))
-    for key,value in redis_instance.hgetall(bibframe_key).iteritems():
+    if client is None and redis_instance is None:
+        msg = "process_key requires client or redis_instance"
+        raise RedisBibframeModelError(msg)
+    if client is not None and client.exists(bibframe_key) is None:
+        msg = "{0} doesn't exist in client"
+        raise RedisBibframeModelError(msg)
+    if redis_instance is not None and\
+       redis_instance.exists(bibframe_key) is None:
+        msg = "{0} doesn't exist in redis_instance".format(bibframe_key)
+        raise RedisBibframeModelError(msg)
+    if client is not None:
+        redis_server = client
+    else:
+        redis_server = redis_instance
+    for key, value in redis_server.hgetall(bibframe_key).iteritems():
         output[key] = value
-    if redis_instance.exists("{0}:keys".format(bibframe_key)):
-        for key in list(redis_instance.smembers("{0}:keys".format(bibframe_key))):
+    if redis_server.exists("{0}:keys".format(bibframe_key)):
+        for key in list(redis_server.smembers("{0}:keys".format(bibframe_key))):
             attribute_name = key.split(":")[-1]
-            key_type = redis_instance.type(key) 
+            key_type = redis_server.type(key) 
             if key_type == 'hash':
                 output[attribute_name] = {}
-                hash_values = redis_instance.hgetall(key)
+                hash_values = redis_server.hgetall(key)
                 for k,v in hash_values.iteritems():
                     output[attribute_name][k] = v
             elif key_type == 'set':
-                output[attribute_name] = redis_instance.smembers(key)
+                output[attribute_name] = redis_server.smembers(key)
             elif key_type == 'list':
-                output[attribute_name] = redis_instance.lrange(key,0,-1)
+                output[attribute_name] = redis_server.lrange(key,0,-1)
     return output
 
 def save_keys(entity_key,name,value,redis_object):
@@ -131,6 +149,7 @@ class RedisBibframeInterface(object):
     
 
     def __init__(self,
+                 client=None,
                  primary_redis=None,
                  redis_key=None,
                  **kwargs):
@@ -140,12 +159,13 @@ class RedisBibframeInterface(object):
 
         :param primary_redis: Redis instance used for primary 
         """
+        self.client = client
         self.primary_redis = primary_redis
         self.redis_key = redis_key
         self.__load__(kwargs)
         
     
-    def __load__(self,kwargs):
+    def __load__(self, kwargs):
         """
         Internal method either sets instance's properties or sets new
         attribute values from passed kwargs in __init__ or upon a
@@ -154,7 +174,7 @@ class RedisBibframeInterface(object):
         if self.redis_key is not None:
             kwargs.update(process_key(self.redis_key,
                                       self.primary_redis))
-        for key,value in kwargs.iteritems():
+        for key, value in kwargs.iteritems():
             setattr(self,key,value)
 
     def feature(self,
@@ -187,19 +207,32 @@ class RedisBibframeInterface(object):
         class's primary redis or creates a new root Redis key 
         and supporting keys to the primary redis datastore.
         """
-        if self.primary_redis is None:
-            raise ValueError("Cannot save, no primary_redis")
+        if self.client is None and self.primary_redis is None:
+            msg = "Cannot save missing RedisShard client or Primary Redis"
+            raise RedisBibframeModelError(msg)
         if self.redis_key is None:
-            self.redis_key = "bf:{0}:{1}".format(self.name,
-                                                 self.primary_redis.incr("global bf:{0}".format(self.name)))
-            self.primary_redis.hset(self.redis_key,
-                                    'created_on',
-                                    datetime.datetime.utcnow().isoformat())
+            redis_base = "bf:{0}".format(self.name)
+            created_on = datetime.datetime.utcnow().isoformat()
+            if self.client is not None:
+                redis_id = self.client.incr('global {0}'.format(redis_base))
+            else:
+                redis_id = self.primary_redis.incr('global {0}'.format(redis_base))
+            self.redis_key = "{0}:{1}".format(redis_base, redis_id)
+            if self.client is not None:
+                self.client.hset(self.redis_key, created_on)
+            else:
+                self.primary_redis.hset(self.redis_key, created_on)
         else:
-            if not self.primary_redis.exists(self.redis_key):
-                error_msg = "Save failed {0} doesn't exist in primary redis".format(
-                   self.redis_key)
-                raise RedisBibframeModelError(error_msg)
+            if self.client is not None:
+                if not self.client.exists(self.redis_key):
+                    error_msg = "Save failed {0}, no existance in client".format(
+                                    self.redis_key)
+                    raise RedisBibframeModelError(error_msg)
+            else:
+                if not self.primary_redis.exists(self.redis_key):
+                    error_msg = "Save failed for {0} in primary redis".format(
+                                    self.redis_key)
+                    raise RedisBibframeModelError(error_msg)
         # If property_name is None, save everything
         if property_name is None:
             all_properties = dir(self)

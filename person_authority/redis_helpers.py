@@ -9,46 +9,80 @@ from bibframe.redis_helpers import get_brief
 from title_search.redis_helpers import STOPWORDS
 from aristotle.settings import AUTHORITY_REDIS, CREATIVE_WORK_REDIS, INSTANCE_REDIS
 
-def add_person(authority_redis,
-               person_attributes,
-               person_metaphones_keys):
-    """
-    Function adds a bibframe_models.Person to authority datastore
 
-    :param authority_redis: Authority Redis datastore
-    :param person_metaphones_keys: Metaphones for Person's name
+def add_person(person_attributes,
+               person_metaphones_keys,
+               authority_redis=None,
+               client=None):
+    """Function adds a BIBFRAME Person to RLSP 
+
+    Function creates a new Person object using either a Redis Shard
+    or Redis Authority instance. 
+
+    Arguments:
+    person_attributes -- Dictionary of attributes associated with the Person
+    person_metaphones_keys -- Metaphones for Person's name
+    authority_redis -- Authority Redis datastore, defaults to None
+    client -- RedisSharder Client, defaults to None
     """
-    new_person = Person(primary_redis=authority_redis)
+    if client is not None:
+        new_person = Person(client=client)
+    elif authority_redis is not None:
+        new_person = Person(primary_redis=authority_redis)
+    # Raises an error, either client or authority_redis must exist
+    else:
+        msg = "add_person requires either a Redis client or authority"
+        raise PersonAuthorityError(msg)
     for key, value in person_attributes.iteritems():
         setattr(new_person, key, value)
     new_person.save()
     for metaphone in person_metaphones_keys:
-        authority_redis.sadd(metaphone,new_person.redis_key)
-    
-    if hasattr(new_person,'rda:dateOfBirth'):
-        raw_dob = person_attributes.get('rda:dateOfBirth')
-        authority_redis.sadd('person-dob:{0}'.format(raw_dob),
-                             new_person.redis_key)
-    if hasattr(new_person,'rda:dateOfDeath'):
-        raw_dod = person_attributes.get('rda:dateOfDeath')
-        authority_redis.sadd('person-dod:{0}'.format(raw_dod),
-                             new_person.redis_key)
+        if client is not None:
+            client.sadd(metaphone_key, new_person.redis_key)
+        else:
+            authority_redis.sadd(metaphone,new_person.redis_key)
+    if hasattr(new_person, 'schema:dateOfBirth'):
+        dob_key = 'person-dob:{0}'.format(
+                      person_attributes.get('schema:dateOfBirth'))
+        if client is not None:
+            client.sadd(dob_key, new_person.redis_key)
+        else:
+            authority_redis.sadd(dob_key,
+                                 new_person.redis_key)
+    if hasattr(new_person, 'schema:dateOfDeath'):
+        dod_key = "person-dod:{0}".format(
+                      person_attributes.get('schema:dateOfDeath'))
+        if client is not None:
+            client.sadd(dod_key, new_person.redis_key)
+        else:
+            authority_redis.sadd(dod_key, new_person.redis_key)
     return new_person
 
 
 def get_person(person_redis_key,
-               authority_redis):
-    """
-    Function gets a bibframe_models.Person to authority datastore
+               authority_redis=None,
+               client=None):
+    """Function gets a bibframe.models.Person
 
-    :param person_redis_key: Person Redis Key
-    :param authority_redis: Authority Redis datastore
+    Function instantiates a bibframe.model.Person using a Person's Redis Key 
+    and either a RedisShard client or Redis authority datastore
+
+    Arguments:
+    person_redis_key -- Person Redis Key
+    authority_redis -- Authority Redis datastore, defaults to None
+    client -- RedisShard Client, defaults to None
     """
-    existing_person = Person(primary_redis=authority_redis,
+    if client is not None:
+        existing_person = Person(client=client,
+                                 redis_key=person_redis_key)
+    elif authority_redis is not None:
+        existing_person = Person(primary_redis=authority_redis,
                              redis_key=person_redis_key)
+    else:
+        msg = "get_person requires either a Redis client or authority"
+        raise PersonAuthorityError(msg)
     return existing_person
                              
-    
 
 def get_or_generate_person(person_attributes, authority_redis):
     """

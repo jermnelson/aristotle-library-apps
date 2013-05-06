@@ -1,6 +1,8 @@
 """
 `mod`: redis_helpers - Redis Helpers for Discovery App
 """
+import json
+import time
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS
 from aristotle.settings import CREATIVE_WORK_REDIS, OPERATIONAL_REDIS
 
@@ -17,12 +19,23 @@ class Facet(object):
         self.redis_keys = kwargs.get('keys')
         self.name = kwargs.get('name')
 
+class FacetError(Exception):
+    "Exception for errors with Facets"
+
+    def __init__(self, message):
+        "FacetError with message"
+        self.value = message
+
+    def __str__(self):
+        "FacetError string representation"
+        return repr(self.value)
+
 class FacetItem(object):
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.redis_ds = kwargs.get('redis')
         if self.redis_ds is None:
-            raise ValueError("FacetItem requires a Redis instance")
+            raise FacetError("FacetItem requires a Redis instance")
         self.redis_key = kwargs.get('key','bibframe:Annotation:Facet')
         self.count = 0
         if 'count' in kwargs:
@@ -84,7 +97,7 @@ class LCFirstLetterFacet(Facet):
         kwargs['name'] = 'Call Number'
         kwargs['items'] = []
         lc_item_keys = kwargs['redis'].zrevrange(
-            'bibframe:Annotation:Facet:LOCFirstLetters:sort',
+            'bf:Annotation:Facet:LOCFirstLetters:sort',
             0,
             5,
             withscores=True
@@ -93,7 +106,7 @@ class LCFirstLetterFacet(Facet):
             redis_key = row[0]
             loc_key = redis_key.split(":")[-1]
             item_name = kwargs['redis'].hget(
-                'bibframe:Annotation:Facet:LOCFirstLetters',
+                'bf:Annotation:Facet:LOCFirstLetters',
                 loc_key)
             kwargs['items'].append(
                 FacetItem(count=row[1],
@@ -108,7 +121,7 @@ class LocationFacet(Facet):
         kwargs['name'] = 'Location'
         kwargs['items'] = []
         location_keys = kwargs['redis'].zrevrange(
-            'bibframe:Annotation:Facet:Locations:sort',
+            'bf:Annotation:Facet:Locations:sort',
             0,
             -1,
             withscores=True
@@ -121,7 +134,7 @@ class LocationFacet(Facet):
             #    location_code)
             #item_name = kwargs['authority_ds'].hget(org_key,
             #                                        'label')
-            item_name = kwargs['redis'].hget('bibframe:Annotation:Facet:Locations',
+            item_name = kwargs['redis'].hget('bf:Annotation:Facet:Locations',
                                              location_code)
             kwargs['items'].append(
                 FacetItem(count=row[1],
@@ -130,6 +143,97 @@ class LocationFacet(Facet):
                     redis=kwargs['redis']))
         super(LocationFacet, self).__init__(**kwargs)
 
+
+class ShardSearch(object):
+    """Base Shard Search Class
+
+    This class uses redis-shard python module and REDIS_SERVERS
+    settings to create a shard search
+    """
+
+    def __init__(self, **kwargs):
+        """Initializes a Redis Shard search object
+
+        Keyword Arguments:
+        q -- String query
+        servers -- Listing of search servers
+        """
+        self.q = kwargs.get('q')
+        self.client = RedisShardAPI(kwargs.get('servers', REDIS_SERVERS))
+ 
+
+
+class BIBFRAMEShardSearch(ShardSearch):
+    """BIBFRAME Shard Search
+
+    Class uses    
+    """
+    search_types =  {'au': "Author",
+                     'cs': "Children Subject",
+                     'dw': "Dewey Call Number",
+                     'gov': "Government Document Call Number",
+                     'is': 'ISBN and ISSN',
+                     'kw': 'Keyword',
+                     'jt': 'Journal Title',
+                     'lc': 'Library of Congress Subject Heading',
+                     'lccn': "Library of Congress Call Number",
+                     'med': "Medical Subject",
+                     'medc': "Medical Call Number",
+                     'oclc': "OCLC Number",
+                     'ol': "Open Library Number", 
+                     'title': "Title"}
+
+    def __init__(self, **kwargs):
+        """Initializes a BIBFRAMEShardSearch 
+
+        Keyword Arguments:
+        type_of -- Type of BIBFRAME search, should be in the list of 
+                   search_types, defaults to kw
+        """
+        self.query_type = kwargs.get('type', "kw")
+        self.creator_keys = []
+
+    def run(self):
+        "Runs the query on Shard Client based on query string and type"
+        if self.query_type == "kw":
+            self.author()
+            self.title()
+        elif self.query_type == "au":
+            self.author()
+        elif self.query_type == 'is':
+            self.number_issn_isbn()
+        elif self.query_type == "t":
+            self.title()
+        self.client.zadd('bibframe-searches', 
+                         time.time(),
+                         self.__json__(with_results=False))
+
+
+    # Helper functions for specific types of searches
+    def author(self):
+        "Author search uses Person and Organization Apps for searching"
+        self.creator_keys.extend(person_app.shard_search(self.query,
+                                                         client=self.client))
+        self.creator_keys.extend(organization_app.shard_search(self.query,
+                                                               client=self.client))
+
+    def number_issn_isbn(self):
+        "Number search for ISSN and ISBN identifiers"
+        instances_keys = []
+        issn = self.client.hget('issn-hash', self.query.strip())
+        if issn is not None:
+            instance_keys.extend(issn)
+        isbn = self.client.hget('issn-hash', self.query.strip())
+        if isbn is not None:
+            instance_keys.extend(isbn)
+        for key in instance_keys:
+            self.creative_works.extend(self.client.hget(key,
+                                                        'isInstanceOf'))
+
+    def title(self):
+        "Title search uses the Creative Work titles"
+        self.creator_keys.extend(title_app.shard_search(self.query,
+                                                        self.creative_wrk_ds))
 
 class BIBFRAMESearch(object):
 
@@ -140,11 +244,21 @@ class BIBFRAMESearch(object):
 	self.creative_wrk_ds = kwargs.get('creative_wrk_ds', CREATIVE_WORK_REDIS)
         self.instance_ds = kwargs.get('instance_ds', INSTANCE_REDIS)
         self.operational_ds = kwargs.get('operational_ds', OPERATIONAL_REDIS)
+        if 'servers' in kwargs:
+            self.shard_client = RedisShardAPI(kwargs.get('servers'), 
+                                              REDIS_SERVERS)
+        else:
+            self.shard_client = None
 	self.creative_work_keys, self.fails = [], []
 
     def __json__(self, with_results=True):
         """
         Method returns a json view of a BIBFRAMESearch
+
+        Keywords:
+        with_results -- Boolean, if True returns the search results in a list.
+                        If False, just returns the number of creative work
+                        keys 
         """
         info = {"query":self.query,
                 "type": self.type_of}
@@ -191,7 +305,7 @@ class BIBFRAMESearch(object):
     def author(self):
         found_creators = person_authority_app.person_search(self.query,
 			                                    authority_redis=self.authority_ds)
-        self.creative_work.extend(list(found_creators))
+        self.creative_work_keys.extend(list(found_creators))
 
     def journal_title(self):
         pass
@@ -225,7 +339,8 @@ class BIBFRAMESearch(object):
         
 
     def number_med(self):
-        instance_key = self.instance_ds.hget('nlm-hash', self.query.strip())
+                    else:
+            instance_key = self.instance_ds.hget('nlm-hash', self.query.strip())
         if instance_key is not None:
             self.creative_work_keys.append(self.instance_ds.hget(instance_key, 
                                                                  'instanceOf'))
