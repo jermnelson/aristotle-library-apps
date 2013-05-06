@@ -45,7 +45,7 @@ def load_rdf():
                 params[attribute] = None
                 label = desc.find("{{{0}}}label".format(RDFS))
                 if label is not None:
-                    OPERATIONAL_REDIS.hsetnx('bibframe:vocab:{0}:labels'.format(class_name),
+                    OPERATIONAL_REDIS.hsetnx('bf:vocab:{0}:labels'.format(class_name),
                                              attribute,
                                              label.text)
             new_class = type(class_name,
@@ -181,13 +181,14 @@ class RedisBibframeInterface(object):
         if self.primary_redis is None:
             raise ValueError("Cannot save, no primary_redis")
         if self.redis_key is None:
-            self.redis_key = "bibframe:{0}:{1}".format(self.name,
-                                                       self.primary_redis.incr("global bibframe:{0}".format(self.name)))
+            self.redis_key = "bf:{0}:{1}".format(self.name,
+                                                 self.primary_redis.incr("global bf:{0}".format(self.name)))
             self.primary_redis.hset(self.redis_key,
                                     'created_on',
                                     datetime.datetime.utcnow().isoformat())
         else:
             if not self.primary_redis.exists(self.redis_key):
+                error_msg = """Cannot save, {0} doesn't exist in primary_redis port={1}".
                 raise ValueError("Cannot save, {0} doesn't exist in primary_redis port={1}".format(self.redis_key,
                                                                                                    self.primary_redis.info()['tcp_port']))
         # If property_name is None, save everything
