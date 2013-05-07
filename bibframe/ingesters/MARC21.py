@@ -15,7 +15,7 @@ import redis
 import sys
 import time
 from bibframe.models import Annotation, Organization, Work, Holding, Instance, Person
-from bibframe.ingesters.Ingester import Ingester
+from bibframe.ingesters.Ingester import Ingester, ClusterIngester
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
@@ -102,12 +102,19 @@ class MARC21IngesterException(Exception):
         return "MARC21IngesterException Error={0}".format(self.value)
 
 
-class MARC21Ingester(Ingester):
+class MARC21Ingester(ClusterIngester):
 
     def __init__(self, **kwargs):
         super(MARC21Ingester,self).__init__(**kwargs)
         self.entity_info = {}
         self.record = kwargs.get('marc_record',None)
+        # To maintain backward compatbility with MARC21Ingester subclasses,
+        # annotation_ds, authority_ds, creative_work_ds, and instance_ds are
+        # set to the same Redis cluster instance
+        self.annotation_ds=self.cluster_ds 
+        self.authority_ds=self.cluster_ds
+        self.creative_work_ds=self.cluster_ds
+        self.instance_ds=self.cluster_ds
 
     def __extract__(self,**kwargs):
         """
@@ -1293,6 +1300,7 @@ class MARC21toPerson(MARC21Ingester):
         self.extract_orcid()
         self.extract_viaf()
         self.extractDates()
+        print(self.authority_ds)
         result = get_or_generate_person(self.entity_info,
                                         self.authority_ds)
         if type(result) == list:
@@ -1761,6 +1769,7 @@ def ingest_marcfile(**kwargs):
     authority_ds = kwargs.get('authority_redis')
     creative_work_ds = kwargs.get("creative_work_redis")
     instance_ds =kwargs.get("instance_redis")
+    cluster = kwargs.get('cluster', None)
     if marc_filename is not None:
         marc_file = open(marc_filename,'rb')
         count = 0
@@ -1772,11 +1781,15 @@ def ingest_marcfile(**kwargs):
             # Need to check if MARC21 record has already been ingested into the
             # datastore
             if not check_marc_exists(instance_ds, record):
-                ingester = MARC21toBIBFRAME(annotation_ds=annotation_ds,
-                                            authority_ds=authority_ds,
-                                            instance_ds=instance_ds,
-                                            marc_record=record,
-                                            creative_work_ds=creative_work_ds)
+                if cluster is not None:
+                    ingester = MARC21toBIBFRAME(cluster=cluster, 
+                                                marc_record=record)
+                else:
+                    ingester = MARC21toBIBFRAME(annotation_ds=annotation_ds,
+                                                authority_ds=authority_ds,
+                                                instance_ds=instance_ds,
+                                                marc_record=record,
+                                                creative_work_ds=creative_work_ds)
                 ingester.ingest()
             if count%1000:
                 if not count % 100:

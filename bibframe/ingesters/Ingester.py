@@ -5,9 +5,9 @@
 __author__ = "Jeremy Nelson"
 
 import datetime, re, pymarc, os, sys,logging, redis, time
-from aristotle.settings import PROJECT_HOME
+from aristotle.settings import PROJECT_HOME, REDIS_CLUSTER
 import json
-
+import rediscluster
 try:
     import aristotle.settings as settings
     CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
@@ -27,7 +27,7 @@ except ImportError, e:
 class Ingester(object):
     """
     Base Ingester class for ingesting metadata and bibliographic
-    records into the MARCR Redis datastore.
+    records into the BIBFRAME Redis datastore.
     """
 
     def __init__(self, **kwargs):
@@ -54,3 +54,26 @@ class Ingester(object):
 
     def ingest(self):
         pass # Should be overridden by child classes
+
+class ClusterIngester(object):
+    "Base Ingester Class for a Redis Library Services Platform Cluster"
+
+    def __init__(self, **kwargs):
+        """Initializes Ingester
+
+        Keyword arguements:
+        cluster -- A dictionary of Redis Cluster instances, defaults to local
+                   settings value
+        """
+        self.cluster = kwargs.get('cluster', REDIS_CLUSTER)
+        if self.cluster is not None:
+            self.cluster_ds = rediscluster.StrictRedisCluster(cluster=self.cluster)
+        else:
+            self.cluster_ds = None
+        
+
+    def ingest(self):
+        "Method stub, should be overriden by child classes"
+        pass
+
+

@@ -12,8 +12,7 @@ from aristotle.settings import AUTHORITY_REDIS, CREATIVE_WORK_REDIS, INSTANCE_RE
 
 def add_person(person_attributes,
                person_metaphones_keys,
-               authority_redis=None,
-               client=None):
+               authority_redis):
     """Function adds a BIBFRAME Person to RLSP 
 
     Function creates a new Person object using either a Redis Shard
@@ -23,16 +22,8 @@ def add_person(person_attributes,
     person_attributes -- Dictionary of attributes associated with the Person
     person_metaphones_keys -- Metaphones for Person's name
     authority_redis -- Authority Redis datastore, defaults to None
-    client -- RedisSharder Client, defaults to None
     """
-    if client is not None:
-        new_person = Person(client=client)
-    elif authority_redis is not None:
-        new_person = Person(primary_redis=authority_redis)
-    # Raises an error, either client or authority_redis must exist
-    else:
-        msg = "add_person requires either a Redis client or authority"
-        raise PersonAuthorityError(msg)
+    new_person = Person(primary_redis=authority_redis)
     for key, value in person_attributes.iteritems():
         setattr(new_person, key, value)
     new_person.save()
@@ -107,6 +98,7 @@ def get_or_generate_person(person_attributes, authority_redis):
         dod_keys = authority_redis.smembers('person-dod:{0}'.format(raw_dod))
     # No match on names, assume Person is not in the datastore and add to datastore
     if len(person_keys) <= 0:
+        print("authority_redis is {0}".format(authority_redis))
         return add_person(authority_redis,
                           person_attributes,
                           person_metaphones_keys)
