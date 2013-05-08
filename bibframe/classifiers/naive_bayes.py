@@ -31,9 +31,10 @@ class BayesClassifier(object):
         self.instance_ds = kwargs.get('instance_ds', INSTANCE_REDIS)
         self.operational_ds = kwargs.get('operational_ds', OPERATIONAL_REDIS)
         self.entity_info = kwargs.get('entity_info', {})
+        self.data_set = []
 
     def load_dataset(self):
-        """Method should be overloaded by implementing child classes."""
+        "Method should be overloaded by implementing child classes."
         pass
 
 class WorkClassifier(BayesClassifier):
@@ -44,11 +45,9 @@ class WorkClassifier(BayesClassifier):
     """
 
     def __init__(self, **kwargs):
-        """Creates an instance of a Naive Bayes Work Classifier
-        """
+        "Creates an instance of a Naive Bayes Work Classifier"
         super(self, WorkClassifer).__init__(**kwargs)
-        self.load_dataset()
-        
+
 
     def load_dataset(self):
         """Loads a bit-count for each existing Creative Work 
@@ -57,10 +56,20 @@ class WorkClassifier(BayesClassifier):
 
         Bit count for each title and author term
         """ 
+        row = list()
         if 'title' not in self.entity_info:
-           return []
-    
-            
-        
-        
+            pass
+        else:
+            row.append(self.entity_info.get('title')
+            for creator_key in self.entity_info.get('author'):
+                row.append(self.authority_ds.hget(creator_key, 'name'))     
+            self.data_set.append(row)
+           
 
+    def generate_work_labels(self, is_manual=False):
+        """Generates a vector of booleans one for each row in the dataset
+
+        Keywork arguments:
+        is_manual -- Manually prompting, default is False
+        """
+        pass

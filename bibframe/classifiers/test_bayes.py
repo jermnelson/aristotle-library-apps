@@ -7,15 +7,19 @@ import datetime
 import os
 import pymarc
 import unittest
-from 
+from bibframe.classifiers.naive_bayes import WorkClassifier
 from aristotle.settings import TEST_REDIS, PROJECT_HOME
 
 class TestNaiveBayesWorkClassifier(unittest.TestCase):
-    "Class tests NaiveByes WorkClassifer class"
+    "Tests NaiveByes WorkClassifer class"
 
     def setUp(self):
-        pass
+        self.classifier = WorkClassifer(annotation_ds=TEST_REDIS,
+                                        authority_ds=TEST_REDIS,
+                                        creative_work_ds=TEST_REDIS,
+                                        instance_ds=TEST_REDIS)
+
 
     def tearDown(self):
-        pass
+        TEST_REDIS.flushdb()
     
