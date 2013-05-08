@@ -45,7 +45,7 @@ def load_rdf():
                 params[attribute] = None
                 label = desc.find("{{{0}}}label".format(RDFS))
                 if label is not None:
-                    OPERATIONAL_REDIS.hsetnx('bibframe:vocab:{0}:labels'.format(class_name),
+                    OPERATIONAL_REDIS.hsetnx('bf:vocab:{0}:labels'.format(class_name),
                                              attribute,
                                              label.text)
             new_class = type(class_name,
@@ -112,7 +112,16 @@ def save_keys(entity_key,name,value,redis_object):
         # is not a distinct Redis key
         redis_object.srem(all_keys_key,new_redis_key)
 
-          
+class RedisBibframeModelError(Exception):
+    """Redis Bibframe Model Error
+     
+    Error raised when a Model Error occurs
+    """
+    def __init__(self, message):
+        self.value = message
+
+    def __str__(self):
+        return repr(self.value)
 
 class RedisBibframeInterface(object):
     """
@@ -181,34 +190,33 @@ class RedisBibframeInterface(object):
         if self.primary_redis is None:
             raise ValueError("Cannot save, no primary_redis")
         if self.redis_key is None:
-            self.redis_key = "bibframe:{0}:{1}".format(self.name,
-                                                       self.primary_redis.incr("global bibframe:{0}".format(self.name)))
+            self.redis_key = "bf:{0}:{1}".format(self.name,
+                                                 self.primary_redis.incr("global bf:{0}".format(self.name)))
             self.primary_redis.hset(self.redis_key,
                                     'created_on',
                                     datetime.datetime.utcnow().isoformat())
         else:
             if not self.primary_redis.exists(self.redis_key):
-                raise ValueError("Cannot save, {0} doesn't exist in primary_redis port={1}".format(self.redis_key,
-                                                                                                   self.primary_redis.info()['tcp_port']))
+                error_msg = "Save failed {0} doesn't exist in primary redis".format(
+                   self.redis_key)
+                raise RedisBibframeModelError(error_msg)
         # If property_name is None, save everything
         if property_name is None:
             all_properties = dir(self)
-            
-            redis_pipeline = self.primary_redis.pipeline()
-       
-            for property in all_properties:
-                if property.startswith("__"):
+            #redis_pipeline = self.primary_redis.pipeline()
+            for prop in all_properties:
+                if prop.startswith("__"):
                     continue
-                elif property == 'primary_redis' or property == 'redis_key' or property == 'name':
+                elif prop == 'primary_redis' or prop == 'redis_key' or prop == 'name':
                     continue
-                elif inspect.ismethod(getattr(self,property)):
+                elif inspect.ismethod(getattr(self,prop)):
                     continue
                 else:
-                    prop_value = getattr(self, property)
-                    save_keys(self.redis_key,property,
+                    prop_value = getattr(self, prop)
+                    save_keys(self.redis_key,prop,
                               prop_value,
-                              redis_pipeline)
-                    redis_pipeline.execute()
+                              self.primary_redis)
+              #      redis_pipeline.execute()
         # Specific redis key structure to save instead of entire object, checks
         # both the instance and the instance's attributes dictionary
         else:
@@ -224,6 +232,5 @@ class RedisBibframeInterface(object):
                       property_name, 
                       prop_value, 
                       self.primary_redis)
-       
 
-load_rdf() 
+load_rdf()

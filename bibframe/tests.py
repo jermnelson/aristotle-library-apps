@@ -24,18 +24,21 @@ class ProcessKeyTest(TestCase):
 
     def setUp(self):
 	self.timestamp = datetime.datetime.utcnow().isoformat()
-        test_redis.hset('bibframe:CreativeWork:1',
+        test_redis.hset('bf:CreativeWork:1',
 			'created_on',
 			self.timestamp)
 
 
     def test_process_key(self):
-	self.assertEquals(process_key('bibframe:CreativeWork:1', test_redis)['created_on'],
+	self.assertEquals(process_key('bf:CreativeWork:1', test_redis)['created_on'],
 			              self.timestamp)
 
 	
     def test_process_key_exception(self):
-        self.assertRaises(ValueError,process_key,'bibframe:CreativeWork:2', test_redis)
+        self.assertRaises(,
+                          process_key,
+                          'bf:CreativeWork:2', 
+                          test_redis)
 
     def tearDown(self):
         test_redis.flushdb()
