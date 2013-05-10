@@ -151,7 +151,7 @@ class MARC21Ingester(ClusterIngester):
 
 class MARC21toFacets(MARC21Ingester):
     """
-     MARC21toFacets creates a MARCR annotations to be associated with
+     MARC21toFacets creates a BIBFRAME annotations to be associated with
      either a Work or Instance.
     """
 
@@ -172,7 +172,7 @@ class MARC21toFacets(MARC21Ingester):
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get("record", self.record)
         access = marc21_facets.get_access(record)
-        facet_key = "bibframe:Annotation:Facet:Access:{0}".format(access)
+        facet_key = "bf:Annotation:Facet:Access:{0}".format(access)
         self.annotation_ds.sadd(facet_key, instance.redis_key)
         self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
                               facet_key)
@@ -189,10 +189,10 @@ class MARC21toFacets(MARC21Ingester):
         # is either added to an existing set or creates a new
         # sorted set for the facet marcr:Annotation
         instance = kwargs.get("instance", self.instance)
-        facet_key = "bibframe:Annotation:Facet:Format:{0}".format(
+        facet_key = "bf:Annotation:Facet:Format:{0}".format(
             getattr(instance,'rda:carrierTypeManifestation'))
         self.annotation_ds.sadd(facet_key, instance.redis_key)
-        self.annotation_ds.zadd('bibframe:Annotation:Facet:Formats',
+        self.annotation_ds.zadd('bf:Annotation:Facet:Formats',
             float(self.annotation_ds.scard(facet_key)),
             facet_key)
         instance_annotation_key = "{0}:hasAnnotation".format(instance.redis_key)
@@ -216,18 +216,18 @@ class MARC21toFacets(MARC21Ingester):
         record = kwargs.get('record', self.record)
         lc_facet, lc_facet_desc = marc21_facets.get_lcletter(record)
         for row in lc_facet_desc:
-            facet_key = "bibframe:Annotation:Facet:LOCFirstLetter:{0}".format(
+            facet_key = "bf:Annotation:Facet:LOCFirstLetter:{0}".format(
                 lc_facet)
             self.annotation_ds.sadd(facet_key, creative_work.redis_key)
             self.creative_work_ds.sadd("{0}:hasAnnotation".format(
                 creative_work.redis_key),
                 facet_key)
             self.annotation_ds.hset(
-                "bibframe:Annotation:Facet:LOCFirstLetters",
+                "bf:Annotation:Facet:LOCFirstLetters",
                 lc_facet,
                 row)
             self.annotation_ds.zadd(
-                "bibframe:Annotation:Facet:LOCFirstLetters:sort",
+                "bf:Annotation:Facet:LOCFirstLetters:sort",
                 float(self.annotation_ds.scard(facet_key)),
                 facet_key)
 
@@ -256,7 +256,7 @@ class MARC21toFacets(MARC21Ingester):
         if consortium is True:
             output = marc21_facets.get_carl_location(record)
             if len(output) > 0:
-                redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
+                redis_key = "bf:Annotation:Location:{0}".format(
                     output.get("site-code"))
                 self.annotation_ds.sadd(redis_key, instance.redis_key)
                 self.instance_ds.hset(instance.redis_key,
@@ -265,14 +265,14 @@ class MARC21toFacets(MARC21Ingester):
                 self.instance_ds.hset(instance.redis_key,
                                       "ils-item-number",
                                       output.get('ils-item-number'))
-                self.annotation_ds.zadd("bibframe:Annotation:Facet:Locations:sort",
+                self.annotation_ds.zadd("bf:Annotation:Facet:Locations:sort",
                                         float(self.annotation_ds.scard(redis_key)),
                                         redis_key)
         else:
             locations = marc21_facets.get_cc_location(record)
             if len(locations) > 0:
                 for location in locations:
-                    redis_key = "bibframe:Annotation:Facet:Location:{0}".format(
+                    redis_key = "bf:Annotation:Location:{0}".format(
                         location[0])
                     self.annotation_ds.sadd(redis_key, instance.redis_key)
                     if not self.annotation_ds.hexists(
@@ -311,8 +311,8 @@ class MARC21toFacets(MARC21Ingester):
         self.add_format_facet(instance=instance)
         self.add_lc_facet(creative_work=creative_work,
             record=record)
-        self.add_locations_facet(instance=instance,
-            record=record)
+        #self.add_locations_facet(instance=instance,
+        #    record=record)
 
 
 isbn_regex = re.compile(r'([0-9\-]+)')
@@ -421,9 +421,9 @@ class MARC21toInstance(MARC21Ingester):
                     for name in ['doi','hdl']:
                         if subfield.count(name) > 0:
                             if self.entity_info.has_key(name):
-			        if type(self.entity_info[name]) is list:
+                                if type(self.entity_info[name]) is list:
                                     self.entity_info[name].append(subfield)
-			        elif type(self.entity_info[name]) is set:
+                                elif type(self.entity_info[name]) is set:
                                     self.entity_info[name].add(subfield)
                             else:
                                 self.entity_info[name] = [subfield,]
@@ -1057,25 +1057,41 @@ class MARC21toLibraryHolding(MARC21Ingester):
 
     def __init__(self,**kwargs):
         super(MARC21toLibraryHolding,self).__init__(**kwargs)
-        self.holding = None
-        self.instance = kwargs.get('instance',None)
+        self.holdings = []
+        self.instance = kwargs.get('instance', None)
 
 
-    def add_holding(self):
+    def add_holdings(self):
         """
-        Creates a Library Holdings based on values in the entity
+        Creates one or more Library Holdings based on values in the entity
         """
-        self.holding = Holding(primary_redis=self.annotation_ds)
-        for key,value in self.entity_info.iteritems():
-            setattr(self.holding,key,value)
-        if self.instance is not None:
-            self.holding.annotates = self.instance.redis_key
-            self.holding.save()
-            self.instance_ds.sadd("{0}:hasAnnotation".format(self.instance.redis_key),
-                                  self.holding.redis_key)
+        all945s = self.record.get_fields('945')
+        for field in all945s:
+            a_subfields = field.get_subfields('a')
+            for subfield in a_subfields:
+                holding = Holding(primary_redis=self.annotation_ds)
+                data = subfield.split(" ")
+                institution_code = data[0]
+                org_key = self.authority_ds.hget(
+                    'prospector-institution-codes',
+                     institution_code)
+                setattr(holding, 'schema:contentLocation', org_key)
+                setattr(holding, 'ils-bib-number', data[1])
+                setattr(holding, 'ils-item-number', data[2])
+                for key,value in self.entity_info.iteritems():
+                    setattr(holding, key, value)
+                if self.instance is not None:
+                    holding.annotates = self.instance.redis_key
+                holding.save()
+                if self.instance is not None:
+                    instance_annotation_key = "{0}:hasAnnotation".format(
+                        self.instance.redis_key)
+                    self.instance_ds.sadd(instance_annotation_key,
+                                          holding.redis_key)
+                    self.instance_ds.sadd("{0}:keys".format(self.instance.redis_key),
+                                          instance_annotation_key)
+                self.authority_ds.sadd("{0}:bf:Holdings".format(org_key),holding.redis_key)
             
-        else:
-            self.holding.save()
 
 
     def ingest(self):
@@ -1089,7 +1105,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
         self.extract_medical()
         self.extract_cc_local()
         self.extract_udc()
-        self.add_holding()
+        self.add_holdings()
 
     def __extract_callnumber__(self,tags):
         """
@@ -1112,6 +1128,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
             return set(output)
         else:
             return output
+       
 
     def extract_ddc(self):
         """
@@ -1239,7 +1256,7 @@ class MARC21toPerson(MARC21Ingester):
             for name in self.field.get_subfields('a'):
                 raw_names = [r.strip() for r in name.split(',')]
                 if self.field.indicator1 == '0':
-		    self.entity_info['schema:givenName'] = raw_names[0]
+                    self.entity_info['schema:givenName'] = raw_names[0]
                 elif self.field.indicator1 == '1':
                     self.entity_info['schema:familyName'] = raw_names.pop(0)
                     # Assigns the next raw_name to givenName 
@@ -1300,7 +1317,6 @@ class MARC21toPerson(MARC21Ingester):
         self.extract_orcid()
         self.extract_viaf()
         self.extractDates()
-        print(self.authority_ds)
         result = get_or_generate_person(self.entity_info,
                                         self.authority_ds)
         if type(result) == list:
@@ -1354,7 +1370,7 @@ class MARC21toSubjects(MARC21Ingester):
         Extracts Genre from the MARC21 655 field
         """
         if self.field.tag == '651':
-            subject_key = 'bibframe:Authority:Subject:Genre:{0}'.format(
+            subject_key = 'bf:Authority:Subject:Genre:{0}'.format(
                 ''.join(self.field.get_subfields('a')))
             self.authority_ds.sadd(subject_key,
                 self.creative_work.redis_key)
@@ -1365,7 +1381,7 @@ class MARC21toSubjects(MARC21Ingester):
         Extracts Geographic Subject from MARC21 651 field
         """
         if self.field.tag == '651':
-            subject_key = 'bibframe:Authority:Subject:Geographic:{0}'.format(
+            subject_key = 'bf:Authority:Subject:Geographic:{0}'.format(
                 ''.join(self.field.get_subfields('a')))
             self.subjects.append(subject_key)
             self.add_subdivision(subject_key)
@@ -1375,7 +1391,7 @@ class MARC21toSubjects(MARC21Ingester):
         Extracts Topical Subject from MARC21 650 field
         """
         if ['650'].count(self.field.tag) > -1:
-            subject_key = 'bibframe:Authority:Subject:{0}'.format(
+            subject_key = 'bf:Authority:Subject:{0}'.format(
                 ''.join(self.field.get_subfields('a')))
             self.subjects.append(subject_key)
             self.add_subdivision(subject_key)
@@ -1511,7 +1527,7 @@ class MARC21toCreativeWork(MARC21Ingester):
 
     def extract_creators(self):
         """
-        Extracts and associates bibframe:Authority:Person entities creators
+        Extracts and associates bf:Authority:Person entities creators
         work.
         """
         people_keys = []
@@ -1647,7 +1663,7 @@ class MARC21toCreativeWork(MARC21Ingester):
 
     def extract_subjects(self):
         """
-        Extracts amd associates bibframe:Authority:rda:Subjects entities
+        Extracts amd associates bf:Authority:rda:Subjects entities
         with the creators work.
         """
         subject_keys = []
@@ -1764,12 +1780,16 @@ def check_marc_exists(instance_ds, record, marc_tag='907'):
  
 
 def ingest_marcfile(**kwargs):
-    marc_filename = kwargs.get("marc_filename")
-    annotation_ds = kwargs.get('annotation_redis')
-    authority_ds = kwargs.get('authority_redis')
-    creative_work_ds = kwargs.get("creative_work_redis")
-    instance_ds =kwargs.get("instance_redis")
+    marc_filename = kwargs.get("marc_filename", None)
+    annotation_ds = kwargs.get('annotation_redis', None)
+    authority_ds = kwargs.get('authority_redis', None)
+    creative_work_ds = kwargs.get("creative_work_redis", None)
+    instance_ds =kwargs.get("instance_redis", None)
     cluster = kwargs.get('cluster', None)
+    if cluster is not None:
+        # Loads Prospector Consortium Libraries
+        from themes.prospector.redis_helpers import load_prospector_orgs
+        load_prospector_orgs(cluster)
     if marc_filename is not None:
         marc_file = open(marc_filename,'rb')
         count = 0

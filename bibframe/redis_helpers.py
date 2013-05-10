@@ -82,6 +82,5 @@ def get_json_linked_data(primary_redis, redis_key):
             ld_output[ld_key] = unicode(value, 'iso_8859_1')
     return ld_output
 
-def load_carl_location_codes(primary_redis, csv_file):
-    for row in csv.reader(open(csv_file, 'rb')):
-        primary_redis.hset('bibframe:Annotation:Facet:Locations', row[2], row[0])
+
+

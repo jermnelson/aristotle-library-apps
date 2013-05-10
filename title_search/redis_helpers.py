@@ -32,10 +32,9 @@ def add_title(raw_title, title_metaphone, redis_server):
     #title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
     title_pipeline = redis_server.pipeline()
     title_key = "rda:Title:{0}".format(redis_server.incr("global rda:Title"))
-    title_pipeline.sadd(title_metaphone, title_key)
-    title_pipeline.hset(title_key, "phonetic", title_metaphone)
-    title_pipeline.hset(title_key, "raw", raw_title)
-    title_pipeline.execute()
+    redis_server.sadd(title_metaphone, title_key)
+    redis_server.hset(title_key, "phonetic", title_metaphone)
+    redis_server.hset(title_key, "raw", raw_title)
     return title_key
 
 #def add_title(raw_title,redis_server):
@@ -46,9 +45,8 @@ def add_title(raw_title, title_metaphone, redis_server):
 
 def add_metaphone_key(metaphone, title_keys, redis_server):
     metaphone_key = "all-metaphones:{0}".format(metaphone)
-    title_pipeline = redis_server.pipeline()
     for title_key in title_keys:
-        title_pipeline.sadd(metaphone_key, title_key)
+        redis_server.sadd(metaphone_key, title_key)
     title_pipeline.execute()
 
 
@@ -83,16 +81,13 @@ def generate_title_app(work, redis_server):
     terms, normed_title = process_title(raw_title)
     title_key = 'title-normed:{0}'.format(normed_title)
     work.title['normed'] = normed_title
-    title_pipeline = redis_server.pipeline()
-    title_pipeline.sadd(title_key,work.redis_key)
+    redis_server.sadd(title_key,work.redis_key)
     for term in terms:
-        title_pipeline
-        title_pipeline.sadd('title-normed:{0}'.format(term),
-			    work.redis_key)
-    title_pipeline.zadd('z-titles-alpha',
-		        0,
-			normed_title)
-    title_pipeline.execute()
+        redis_server.sadd('title-normed:{0}'.format(term),
+                          work.redis_key)
+    redis_server.zadd('z-titles-alpha',
+                      0,
+	              normed_title)
     work.save()
 
 
@@ -113,24 +108,22 @@ def generate_title_app_metaphone(work, redis_server):
     stop_metaphones, all_metaphones, title_metaphone = process_title(raw_title)
     title_metaphone_key = 'first-term-metaphones:{0}'.format(all_metaphones[0])
     first_word_key = 'first-word:{0}'.format(raw_title.split(" ")[0].lower())
-    title_pipeline = redis_server.pipeline()
-    title_pipeline.sadd(title_metaphone_key, work.redis_key)
-    title_pipeline.sadd(first_word_key, work. redis_key)
+    redis_server.sadd(title_metaphone_key, work.redis_key)
+    redis_server.sadd(first_word_key, work. redis_key)
     work.attributes['rda:Title']['phonetic'] = title_metaphone
     if 'rda:variantTitleForTheWork:sort' in work.attributes:
-        title_pipeline.zadd("z-titles-alpha",
+        redis_server.zadd("z-titles-alpha",
             0,
             work.attributes['rda:Title'].get('rda:variantTitleForTheWork:sort')
             )
     else:
-        title_pipeline.zadd("z-titles-alpha",
+        redis_server.zadd("z-titles-alpha",
             0,
             work.attributes['rda:Title'].get('rda:preferredTitleForTheWork'))
     for row in all_metaphones:
         add_metaphone_key(row, [work.redis_key, ], redis_server)
     for row in stop_metaphones:
         add_metaphone_key(row, [work.redis_key, ], redis_server)
-    title_pipeline.execute()
     work.save()
 
 

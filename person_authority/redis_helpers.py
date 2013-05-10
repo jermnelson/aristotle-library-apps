@@ -15,8 +15,7 @@ def add_person(person_attributes,
                authority_redis):
     """Function adds a BIBFRAME Person to RLSP 
 
-    Function creates a new Person object using either a Redis Shard
-    or Redis Authority instance. 
+    Function creates a new Person object using Redis Authority instance.
 
     Arguments:
     person_attributes -- Dictionary of attributes associated with the Person
@@ -28,49 +27,33 @@ def add_person(person_attributes,
         setattr(new_person, key, value)
     new_person.save()
     for metaphone in person_metaphones_keys:
-        if client is not None:
-            client.sadd(metaphone_key, new_person.redis_key)
-        else:
-            authority_redis.sadd(metaphone,new_person.redis_key)
+        authority_redis.sadd(metaphone,new_person.redis_key)
     if hasattr(new_person, 'schema:dateOfBirth'):
         dob_key = 'person-dob:{0}'.format(
                       person_attributes.get('schema:dateOfBirth'))
-        if client is not None:
-            client.sadd(dob_key, new_person.redis_key)
-        else:
-            authority_redis.sadd(dob_key,
-                                 new_person.redis_key)
+        authority_redis.sadd(dob_key,
+                             new_person.redis_key)
     if hasattr(new_person, 'schema:dateOfDeath'):
         dod_key = "person-dod:{0}".format(
                       person_attributes.get('schema:dateOfDeath'))
-        if client is not None:
-            client.sadd(dod_key, new_person.redis_key)
-        else:
-            authority_redis.sadd(dod_key, new_person.redis_key)
+        authority_redis.sadd(dod_key, new_person.redis_key)
     return new_person
 
 
 def get_person(person_redis_key,
-               authority_redis=None,
-               client=None):
+               authority_redis=None):
     """Function gets a bibframe.models.Person
 
     Function instantiates a bibframe.model.Person using a Person's Redis Key 
-    and either a RedisShard client or Redis authority datastore
-
     Arguments:
     person_redis_key -- Person Redis Key
     authority_redis -- Authority Redis datastore, defaults to None
-    client -- RedisShard Client, defaults to None
     """
-    if client is not None:
-        existing_person = Person(client=client,
-                                 redis_key=person_redis_key)
-    elif authority_redis is not None:
+    if authority_redis is not None:
         existing_person = Person(primary_redis=authority_redis,
-                             redis_key=person_redis_key)
+                                redis_key=person_redis_key)
     else:
-        msg = "get_person requires either a Redis client or authority"
+        msg = "get_person requires a Redis datastore"
         raise PersonAuthorityError(msg)
     return existing_person
                              
@@ -98,10 +81,9 @@ def get_or_generate_person(person_attributes, authority_redis):
         dod_keys = authority_redis.smembers('person-dod:{0}'.format(raw_dod))
     # No match on names, assume Person is not in the datastore and add to datastore
     if len(person_keys) <= 0:
-        print("authority_redis is {0}".format(authority_redis))
-        return add_person(authority_redis,
-                          person_attributes,
-                          person_metaphones_keys)
+        return add_person(person_attributes,
+                          person_metaphones_keys,
+                          authority_redis)
     # Try extracting the union of person_metaphone,dob_metaphones, and
     # dod_metaphones
     found_persons = []
@@ -121,9 +103,9 @@ def get_or_generate_person(person_attributes, authority_redis):
         return found_persons
     # Assumes that person does not exist, add to datastore
     else:
-        return add_person(authority_redis,
-                          person_attributes,
-                          person_metaphones_keys)
+        return add_person(person_attributes,
+                          person_metaphones_keys,
+                          authority_redis)
 
 def person_search(raw_name,
 		  authority_redis=AUTHORITY_REDIS,

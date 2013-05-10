@@ -1,0 +1,368 @@
+{
+  "Anthropology Seminar-Barnes": [
+    "xsan"
+  ], 
+  "Art Reading Room Tutt 2nd Floor South": [
+    "tbanf", 
+    "tban"
+  ], 
+  "Baca Campus": [
+    "xbaca"
+  ], 
+  "Barnes Chemistry Library": [
+    "xsch", 
+    "xscho"
+  ], 
+  "Biology Seminar-Olin": [
+    "xsbyo", 
+    "xsby"
+  ], 
+  "CDROM/Cassette Tutt Circulation Desk": [
+    "tcas"
+  ], 
+  "DVD-Tutt Circulation Desk": [
+    "tvdvd"
+  ], 
+  "Education Dept. (Mierow)": [
+    "xsedc", 
+    "xsed", 
+    "xsedp"
+  ], 
+  "Education Dept. Computer Lab": [
+    "xsedl"
+  ], 
+  "Electronic Reserves": [
+    "tre"
+  ], 
+  "Environmental Science Seminar": [
+    "xsetv", 
+    "xserc"
+  ], 
+  "Fine Arts Center": [
+    "xfcab", 
+    "xfup", 
+    "xffil", 
+    "xfdsk", 
+    "xfo", 
+    "xfdvd", 
+    "xfb", 
+    "xfv"
+  ], 
+  "Folio Tutt 3rd Floor": [
+    "tf"
+  ], 
+  "Geology Map Room": [
+    "xsgm", 
+    "xsgeo"
+  ], 
+  "Government Publications": {
+    "Government Documents CD-ROM index": [
+      "tdacd"
+    ], 
+    "Microforms Tutt 2nd Floor": [
+      "tdmi"
+    ], 
+    "Online Government Documents": [
+      "ewwwd"
+    ], 
+    "Oversize Tutt 2nd Floor": [
+      "tdmo"
+    ], 
+    "Tutt 1st Floor South": [
+      "tdof", 
+      "tdi", 
+      "tdm", 
+      "tdmf", 
+      "tdmt"
+    ], 
+    "Tutt South Basement": [
+      "tdcol", 
+      "td", 
+      "tdemc", 
+      "tdea", 
+      "tdo", 
+      "tdn", 
+      "tde", 
+      "tdem"
+    ]
+  }, 
+  "Keck GIS Commons": [
+    "xsgix"
+  ], 
+  "Math Seminar-Palmer": [
+    "xsmat"
+  ], 
+  "Microforms Tutt 2nd Floor": [
+    "tmifs", 
+    "tmic", 
+    "tmi", 
+    "tmico", 
+    "tmics"
+  ], 
+  "Music Library": {
+    "Music Library General": [
+      "xmld"
+    ],
+    "Music Lib. -Instrument Storage": [
+      "xmins"
+    ], 
+    "Music Library -NC Books and Scores": [
+      "xmh"
+    ], 
+    "Music Library -NC Music Mini Scores": [
+      "xmhsm"
+    ], 
+    "Music Library -NC Storage": [
+      "xmhs"
+    ], 
+    "Music Library Books and Scores": [
+      "xm"
+    ], 
+    "Music Library CD-ROM": [
+      "xmcd"
+    ], 
+    "Music Library Cassette": [
+      "xmcas"
+    ], 
+    "Music Library Catalog Office": [
+      "xmcat"
+    ], 
+    "Music Library Circ Desk": [
+      "xmcir"
+    ], 
+    "Music Library DVD": [
+      "xmdvd"
+    ], 
+    "Music Library Education DVD": [
+      "xmedd"
+    ], 
+    "Music Library LP/SLP Room": [
+      "xmlp1"
+    ], 
+    "Music Library Microforms": [
+      "xmmi"
+    ], 
+    "Music Library MiniScores": [
+      "xmscm"
+    ], 
+    "Music Library Music CD": [
+      "xmmcd"
+    ], 
+    "Music Library Oversize": [
+      "xmo"
+    ], 
+    "Music Library Periodicals": [
+      "xmper"
+    ], 
+    "Music Library Reel Tape": [
+      "xmrt"
+    ], 
+    "Music Library Reference": [
+      "xmr"
+    ], 
+    "Music Library Reserves": [
+      "xmrs"
+    ], 
+    "Music Library Storage": [
+      "xms"
+    ], 
+    "Music Library Video": [
+      "xmv"
+    ]
+  }, 
+  "On Order": [
+    "tr"
+  ], 
+  "On The Fly": [
+    "tfly"
+  ], 
+  "Online": [
+    "ewwwn", 
+    "ewww"
+  ], 
+  "Online Periodcals": [
+    "ewwwp"
+  ], 
+  "Oversize Tutt 3rd Floor": [
+    "to"
+  ], 
+  "Penrose Hospital": [
+    "xwebb"
+  ], 
+  "Periodicals Tutt 2nd Floor": [
+    "tper", 
+    "tpero"
+  ], 
+  "Physics Seminar-Barnes": [
+    "xsph", 
+    "xspho"
+  ], 
+  "Political Science Seminar-Palmer": [
+    "xsps"
+  ], 
+  "Reserves Tutt 1st Floor": [
+    "trrm", 
+    "trstv", 
+    "trsdo", 
+    "trs", 
+    "trp"
+  ], 
+  "Russian Seminar-Armstrong": [
+    "xsrus"
+  ], 
+  "Special Collections": {
+    "Special Collections Audio": [
+      "tsa"
+    ], 
+    "Special Collections CC Room": [
+      "tscc"
+    ], 
+    "Special Collections CC Room Folio": [
+      "tsccf"
+    ], 
+    "Special Collections CC Room Oversize": [
+      "tscco"
+    ], 
+    "Special Collections CC Room Pamphlet ": [
+      "tsnv"
+    ], 
+    "Special Collections CC Room Periodical ": [
+      "tsccp"
+    ], 
+    "Special Collections Colorado Room": [
+      "tsco"
+    ], 
+    "Special Collections Colorado Room Folio": [
+      "tscof"
+    ], 
+    "Special Collections Colorado Room Oversize": [
+      "tscoo"
+    ], 
+    "Special Collections Colorado Room Periodical": [
+      "tscop"
+    ], 
+    "Special Collections Lincoln Room": [
+      "tlr"
+    ], 
+    "Special Collections Lincoln Room Folio": [
+      "tlrf"
+    ], 
+    "Special Collections Lincoln Room Oversize": [
+      "tlro"
+    ], 
+    "Special Collections Lincoln Room Pamphlet": [
+      "tlrpa"
+    ], 
+    "Special Collections Lincoln Room Periodical": [
+      "tlrp"
+    ], 
+    "Special Collections Lincoln Room Small": [
+      "tlrc"
+    ], 
+    "Special Collections Manuscripts": [
+      "tsms"
+    ], 
+    "Special Collections Manuscripts File": [
+      "tsmf"
+    ], 
+    "Special Collections Maps": [
+      "tsm"
+    ], 
+    "Special Collections Microform": [
+      "tsmi"
+    ], 
+    "Special Collections Offices": [
+      "tsof"
+    ], 
+    "Special Collections Rare": [
+      "tsra"
+    ], 
+    "Special Collections Rare Folio": [
+      "tsraf"
+    ], 
+    "Special Collections Rare Oversize": [
+      "tsrao"
+    ], 
+    "Special Collections Rare Small": [
+      "tsrat"
+    ], 
+    "Special Collections Special Editions": [
+      "tsse"
+    ], 
+    "Special Collections Special Editions Folio": [
+      "tssef"
+    ], 
+    "Special Collections Special Editions Oversize": [
+      "tsseo"
+    ], 
+    "Special Collections Special Editions Small": [
+      "tsset"
+    ], 
+    "Special Collections Storage Basement": [
+      "tssto"
+    ], 
+    "Special Collections Videos": [
+      "tsv"
+    ]
+  }, 
+  "Teaching Learning Center": [
+    "ttlc"
+  ], 
+  "Technical Services": [
+    "tor"
+  ], 
+  "Tutt 1st Floor South": [
+    "tarfa", 
+    "tdscs"
+  ], 
+  "Tutt 3rd Floor": [
+    "tb", 
+    "tbnc", 
+    "tcurr"
+  ], 
+  "Tutt Cataloging Office": [
+    "tcat"
+  ], 
+  "Tutt Display": [
+    "tbndp"
+  ], 
+  "Tutt Leisure Reading": [
+    "tcbs"
+  ], 
+  "Tutt New Arrivals": [
+    "tbnew"
+  ], 
+  "Tutt North 2nd Floor Map File": [
+    "tmaps"
+  ], 
+  "Tutt North Basement": [
+    "tgr", 
+    "tbp", 
+    "tbpnc"
+  ], 
+  "Tutt North Basement Lit Award": [
+    "ttla"
+  ], 
+  "Tutt North Basement Theses": [
+    "tt"
+  ], 
+  "Tutt Reference": [
+    "tarfi", 
+    "tarfc", 
+    "tarf"
+  ], 
+  "Tutt Reference Desk": [
+    "tarfg", 
+    "tarfd"
+  ], 
+  "Tutt Reference North 2nd Floor": [
+    "tarfo", 
+    "tarfm"
+  ], 
+  "Video-Tutt Circulation Desk": [
+    "tvc"
+  ], 
+  "Videos-Tutt 2nd Floor North": [
+    "tv"
+  ]
+}

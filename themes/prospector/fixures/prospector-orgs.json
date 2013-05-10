@@ -1,0 +1,137 @@
+{
+  "ALD": {
+    "label": "Arapahoe Library District", 
+    "prospector-id": "9arap", 
+    "schema:type": "schema:Library"
+  }, 
+  "APL": {
+    "label": "Aurora Public Library", 
+    "prospector-id": "9arrp", 
+    "schema:type": "schema:Library"
+  }, 
+  "AUR": {
+    "label": "Auraria", 
+    "prospector-id": "9aurp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "BPL": {
+    "label": "Boulder Public Library", 
+    "prospector-id": "9bldr", 
+    "schema:type": "schema:Library"
+  }, 
+  "Broomfield": {
+    "label": "Boulder and Louisville", 
+    "prospector-id": "BLB", 
+    "schema:type": "schema:Library"
+  }, 
+  "CC": {
+    "label": "Colorado College", 
+    "prospector-id": "9cocp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "CSM": {
+    "label": "Colorado School Mines", 
+    "prospector-id": "9csmp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "CSU": {
+    "label": "Colorado State University", 
+    "prospector-id": "9csup", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "CSU-Pueblo": {
+    "label": "Colorado State University-Pueblo", 
+    "prospector-id": "9cspp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "CU-L": {
+    "label": "University of Colorado-Boulder Law", 
+    "prospector-id": "9culp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "CUB": {
+    "label": "University of Colorado-Boulder", 
+    "prospector-id": "9cubp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "DPL": {
+    "label": "Denver Public Library", 
+    "prospector-id": "9dplp", 
+    "schema:type": "schema:Library"
+  }, 
+  "DU": {
+    "label": "University of Denver", 
+    "prospector-id": "9dupp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "DU-L": {
+    "label": "University of Denver Law", 
+    "prospector-id": "9dulp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "FCPL": {
+    "label": "Fort Collins Public Library", 
+    "prospector-id": "9fcpp", 
+    "schema:type": "schema:Library"
+  }, 
+  "FTL": {
+    "label": "Fort Lewis College", 
+    "prospector-id": "9ftlp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "JCPL": {
+    "label": "Jeffco Public", 
+    "prospector-id": "9jcp", 
+    "schema:type": "schema:Library"
+  }, 
+  "LSV": {
+    "label": "Louisville Public Library", 
+    "prospector-id": "9lsvl", 
+    "schema:type": "schema:Library"
+  }, 
+  "MDE": {
+    "label": "Broomfield Public Library", 
+    "prospector-id": "9mdel", 
+    "schema:type": "schema:Library"
+  }, 
+  "MSC": {
+    "label": "Colorado Mesa University", 
+    "prospector-id": "9mscp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "REG": {
+    "label": "Regis University", 
+    "prospector-id": "9rgsp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "UCCS": {
+    "label": "University of Colorado-Colorado Springs", 
+    "prospector-id": "9uccp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "UCHSC": {
+    "label": "University of Colorado-Health Sciences", 
+    "prospector-id": "9hscp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "UNC": {
+    "label": "University of Northern Colorado", 
+    "prospector-id": "9uncp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "UWY": {
+    "label": "University of Wyoming", 
+    "prospector-id": "9uwyp", 
+    "schema:type": "schema:CollegeOrUniversity"
+  }, 
+  "colorado publications": {
+    "label": "Colorado State Publications", 
+    "prospector-id": "9cspu", 
+    "schema:type": "schema:GovernmentOrganization"
+  }, 
+  "crl": {
+    "label": "Center for Research Libraries", 
+    "prospector-id": "cr0zz", 
+    "schema:type": "schema:NGO"
+  }
+}
