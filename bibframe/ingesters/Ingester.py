@@ -67,7 +67,7 @@ class ClusterIngester(object):
         """
         self.cluster = kwargs.get('cluster', REDIS_CLUSTER)
         if self.cluster is not None:
-            self.cluster_ds = rediscluster.StrictRedisCluster(cluster=self.cluster)
+            self.cluster_ds = self.cluster
         else:
             self.cluster_ds = None
         

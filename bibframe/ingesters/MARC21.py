@@ -983,7 +983,7 @@ class MARC21toInstance(MARC21Ingester):
         self.add_instance()
         
 
-class MARC21toBIBFRAME(Ingester):
+class MARC21toBIBFRAME(MARC21Ingester):
     """
     MARC21toBIBFRAME takes a MARC21 record and ingests into BIBFRAME Redis
     datastore
@@ -995,34 +995,26 @@ class MARC21toBIBFRAME(Ingester):
 
     def ingest(self):
         self.marc2creative_work = MARC21toCreativeWork(
-            annotation_ds=self.annotation_ds,
-            authority_ds=self.authority_ds,
-            instance_ds=self.instance_ds,
-            marc_record=self.record,
-            creative_work_ds=self.creative_work_ds)
+            cluster=self.cluster_ds,
+            marc_record=self.record)
         self.marc2creative_work.ingest()
         # Exit ingest if a creative work is missing
         if self.marc2creative_work.creative_work is None:
             return
         self.marc2instance = MARC21toInstance(
-            annotation_ds=self.annotation_ds,
-            authority_ds=self.authority_ds,
-            instance_ds=self.instance_ds,
-            marc_record=self.record,
-            creative_work_ds=self.creative_work_ds)
+            cluster=self.cluster_ds,
+            marc_record=self.record)
         self.marc2instance.ingest()
-        
+        finish_instance = datetime.datetime.utcnow()
         self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
         if self.marc2creative_work.creative_work.title is not None:
             self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:preferredTitleOfWork')
                                                         
         self.marc2instance.instance.save()
-        self.creative_work_ds.sadd("{0}:bf:Instances".format(self.marc2creative_work.creative_work.redis_key),
+        work_instances_key = "{0}:bf:Instances".format(self.marc2creative_work.creative_work.redis_key)
+        self.creative_work_ds.sadd(work_instances_key,
                                    self.marc2instance.instance.redis_key)
-        self.marc2library_holdings = MARC21toLibraryHolding(annotation_ds=self.annotation_ds,
-                                                            authority_ds=self.authority_ds,
-                                                            creative_work_ds=self.creative_work_ds,
-                                                            instance_ds=self.instance_ds,
+        self.marc2library_holdings = MARC21toLibraryHolding(cluster=self.cluster_ds,
                                                             marc_record=self.record,
                                                             instance=self.marc2instance.instance)
         self.marc2library_holdings.ingest()
@@ -1041,14 +1033,12 @@ class MARC21toBIBFRAME(Ingester):
         generate_call_number_app(self.marc2instance.instance, 
                                  self.instance_ds,
                                  self.annotation_ds)
-        self.marc2facets = MARC21toFacets(annotation_ds=self.annotation_ds,
-                                          authority_ds=self.authority_ds,
-                                          creative_work_ds=self.creative_work_ds,
-                                          instance_ds=self.instance_ds,
+        self.marc2facets = MARC21toFacets(cluster=self.cluster_ds,
                                           marc_record=self.record,
                                           creative_work=self.marc2creative_work.creative_work,
                                           instance=self.marc2instance.instance)
         self.marc2facets.ingest()
+
 
 class MARC21toLibraryHolding(MARC21Ingester):
     """
@@ -1533,8 +1523,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         people_keys = []
         for field in self.record.get_fields('100','700','800'):
             if field is not None:
-                people_ingester = MARC21toPerson(redis=self.authority_ds,
-                                                 authority_ds=self.authority_ds,
+                people_ingester = MARC21toPerson(cluster=self.cluster_ds,
                                                  field=field)
                 people_ingester.ingest()
                 for person in people_ingester.people:

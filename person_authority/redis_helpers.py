@@ -58,13 +58,14 @@ def get_person(person_redis_key,
     return existing_person
                              
 
-def get_or_generate_person(person_attributes, authority_redis):
+def get_or_generate_person(person_attributes, 
+                           authority_redis):
     """
     Method either returns a new Person or an existing Person based
     on a similarity metric.
 
     :param person_attributes: Person attributes in a dict
-    :param authority_redis: MARCR Authority Redis datastore
+    :param authority_redis: BIBFRAME Authority Redis datastore
     """
     person_metaphones,person_metaphones_keys,person_keys = [],[],[]
     dob_keys,dod_keys = [],[]
