@@ -59,7 +59,7 @@ def get_json_linked_data(primary_redis, redis_key):
     Function takes a redis_key and Redis instance, return JSON_LD of the
     BIBFRAME entity
     """
-    ld_output = {"@context":{ "bibframe": "http://bibframe.org/vocab/",
+    ld_output = {"@context":{ "bf": "http://bibframe.org/vocab/",
                               "prov":"http://www.w3.org/ns/prov#",
                               "rda": "http://rdvocab.info",
                               "redis_key": None,
@@ -67,7 +67,9 @@ def get_json_linked_data(primary_redis, redis_key):
                               "schema":"http://schema.org/" }}
     ld_output['redis_key'] = redis_key
     for key, value in primary_redis.hgetall(redis_key).iteritems():
-        # Assumes all values not explictly starting with "rda" is part of the bibframe name-space
+        # Assumes all values not explictly starting with "rda", "prov",
+        # or "schema" is part of the bf (bibframe) name-space
+        ld_key = None
         if key == 'created_on':
             ld_output['prov:Generation'] = {'prov:atTime': value }
         if key.startswith('rda:')\
@@ -75,11 +77,12 @@ def get_json_linked_data(primary_redis, redis_key):
            or key.startswith('schema'):
             ld_key = key
         else:
-            ld_key = "bibframe:{0}".format(key)
-        try:
-            ld_output[ld_key] = unicode(value)
-        except UnicodeDecodeError, e:
-            ld_output[ld_key] = unicode(value, 'iso_8859_1')
+            ld_key = "bf:{0}".format(key)
+        if ld_key is not None:
+            try:
+                ld_output[ld_key] = unicode(value)
+            except UnicodeDecodeError, e:
+                ld_output[ld_key] = unicode(value, 'iso_8859_1')
     return ld_output
 
 

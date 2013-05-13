@@ -339,8 +339,7 @@ class BIBFRAMESearch(object):
         
 
     def number_med(self):
-                    else:
-            instance_key = self.instance_ds.hget('nlm-hash', self.query.strip())
+        instance_key = self.instance_ds.hget('nlm-hash', self.query.strip())
         if instance_key is not None:
             self.creative_work_keys.append(self.instance_ds.hget(instance_key, 
                                                                  'instanceOf'))
