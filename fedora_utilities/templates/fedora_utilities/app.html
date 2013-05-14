@@ -45,6 +45,11 @@
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#mover" data-bind="click: displayMover">PID Object Mover</a>
 	 </li>
+         <li>
+           <i class="icon-chevron-right pull-right"></i>
+           <a href="#add-obj-w-template" 
+              data-bind="click: displayStubObj">Add a Fedora Object using MODS</a>
+         </li>
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#index" data-bind="click: displaySolrIndex">Index into Solr</a>
@@ -125,6 +130,64 @@
    </div>
  {% comment %}END solrIndex DIV{% endcomment %}
   </div>
+  {# START addObjectFromTemplate DIV #}
+  <div class="well well-small" data-bind="visible: addStubObj">
+   <a name="add-obj-w-template"></a>
+   <h2>Adds Fedora Object using a Template</h2>
+   <p>Adds a Fedora Object using a MODS template of prefilled data
+      to the digital repository.</p>
+   <form method="POST" 
+         class="form-horizontal" 
+         action="/">
+    {% csrf_token %}
+    {# START Object Select #}
+    <div class="control-group">
+     <label class="control-label" 
+            for="object-template">Object Template</label>
+     <div class="controls">
+       <select name="object-template">
+         <option value="newsletter">Newsletter</option>
+         <option value="podcast">Podcast</option>
+         <option value="thesis">Thesis</option>
+         <option value="video">Video</option>     
+       </select>
+       <div class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action
+         <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+         <li><a href="#">Add</a></li>
+         <li><a href="#">Edit</a></li>
+         <li><a href="#">Delete</a></li>
+        </ul>
+       </div>
+     </div>
+    {# END Object Select #}
+    </div>
+    {# START num_objects #}
+    <div class="control-group">
+      <label class="control-label" for="num_objects">
+        Number of stub records
+      </label>
+      {# START num_objects controls #}
+      <div class="controls">
+       <input type="text" value="1" placeholder="1" name="num_objects">
+      {# END num_objects controls #}
+      </div>
+    {# END num_objects #}
+    </div>
+    {# START submit #}
+    <div class="control-group">
+     <div class="controls">
+      <input type="submit" class="btn btn-primary" value="Add Stub Record(s)">
+     </div>
+    {# END submit #}
+    </div>
+    </form>
+  </div>
+  {# END addObjectFromTemplate DIV #}
+  </div>
+
  {% comment %}END row-fluid DIV{% endcomment %}
  </div>
 {% comment %}END content DIV{% endcomment %}
@@ -136,6 +199,7 @@
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script>
  function FedoraBatchViewModel() {
+   this.addStubObj = ko.observable(false);
    this.batchIngest = ko.observable(false);
    this.batchModify = ko.observable(false);
    this.marcGenerate = ko.observable(false);
@@ -161,6 +225,11 @@
 
      }); 
 
+   }
+
+   this.displayAddStubObj = function() {
+    this.hideAll();
+    this.addStubObj(true);
    }
 
    this.displayIngest = function() {
