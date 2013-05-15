@@ -36,6 +36,12 @@ def default(request):
                                'object_mover_form': object_mover_form,
                                'solr_url': SOLR_URL})
 
+def add_stub_from_template(request):
+    """Handler for adding Fedora stub object using a template
+
+    This function takes different Fedora Object Content Models and
+    prefills a MODS XML stream for rapid ingestion of  different
+
 def batch_ingest(request):
     """
     Handler for batch ingest view in app

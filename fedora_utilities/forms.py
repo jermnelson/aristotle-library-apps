@@ -5,6 +5,16 @@ from eulfedora.util import RequestFailed
 
 repository = Repository()
 
+OBJECT_TEMPLATES = [(1, 'Newsletter'),
+                    (2, 'Podcast'),
+                    (3, 'Thesis'),
+                    (4, 'Video')]
+
+class AddFedoraObjectFromTempalte(forms.Form):
+    collection_pid = forms.CharField(max_length=20)
+    object_template = forms.SelectField(choices=OBJECT_TEMPLATES)
+                                        
+
 class BatchIngestForm(forms.Form):
     collection_pid = forms.CharField(max_length=20)
     compressed_file = forms.FileField(label="A .tar or .zip file",

@@ -134,11 +134,11 @@
   <div class="well well-small" data-bind="visible: addStubObj">
    <a name="add-obj-w-template"></a>
    <h2>Adds Fedora Object using a Template</h2>
-   <p>Adds a Fedora Object using a MODS template of prefilled data
+   <p>Adds a brief Fedora Object using a MODS template of prefilled data
       to the digital repository.</p>
    <form method="POST" 
          class="form-horizontal" 
-         action="/">
+         action="{% url 'add-obj-template' %}">
     {% csrf_token %}
     {# START Object Select #}
     <div class="control-group">
