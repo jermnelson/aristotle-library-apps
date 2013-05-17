@@ -18,6 +18,7 @@ from bibframe.redis_helpers import get_json_linked_data
 
 from discovery.forms import SearchForm
 from discovery.redis_helpers import get_facets, get_result_facets, BIBFRAMESearch
+from discovery.redis_helpers import get_news
 
 from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
 from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
@@ -48,7 +49,10 @@ def app(request):
 	        results.append(result)
 	    facet_list = get_result_facets(bibframe_search.creative_work_keys)
 	    message = 'Results for {0}'.format(query)
+	    if len(results) < 1:
+                message = 'No Results found for {0}'.format(query)
 	else:
+            message = 'No search terms provided'
             facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
     else:
         facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
@@ -66,6 +70,7 @@ def app(request):
                                'institution': INSTITUTION,
 			       'message':message,
                                'facet_list': facet_list,
+                               'news_feed': get_news(),
 			       'results':results,
 			       'search_form': SearchForm(),
 			       'search_query':search_query,
@@ -240,6 +245,7 @@ def facet_detail(request,facet_name,facet_item):
                                     ANNOTATION_REDIS.hget(label_key, facet_item))
     else:
         msg = "{0} {1}".format(msg, facet_item)
+    
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
@@ -331,7 +337,7 @@ def person(request,redis_id):
     :param request: HTTP Request
     :param redis_id": Redis integer for the Person
     """
-    redis_key = "bibframe:Person:{0}".format(redis_id)
+    redis_key = "bf:Person:{0}".format(redis_id)
     if AUTHORITY_REDIS.exists(redis_key):
         person = Person(primary_redis=AUTHORITY_REDIS,
 			redis_key=redis_key)

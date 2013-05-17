@@ -5,7 +5,10 @@ import json
 import time
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS
 from aristotle.settings import CREATIVE_WORK_REDIS, OPERATIONAL_REDIS
-
+try:
+    from aristotle.settings import RLSP_CLUSTER
+except ImportError, e:
+    RLSP_CLUSTER = None
 import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
 
@@ -360,6 +363,22 @@ class BIBFRAMESearch(object):
         self.creative_work_keys.extend(found_titles)
 
 
+def get_news():
+    news = []
+    # In demo mode, just create a news item regarding the
+    # statistics of the RLSP_CLUSTER
+    if RLSP_CLUSTER is not None:
+        item = {'heading': 'Current Statistics for RLSP Cluster',
+                'body': '''<p><strong>Totals:</strong>
+Works={0}<br>Instances={1}<br>Person={2}</p>
+<p>Number of keys={3}</p>'''.format(RLSP_CLUSTER.get('global bf:Work'),
+                                    RLSP_CLUSTER.get('global bf:Instance'),
+                                    RLSP_CLUSTER.get('global bf:Person'),
+                                    RLSP_CLUSTER.dbsize())}
+        news.append(item)
+    return news
+        
+
 def get_facets(annotation_ds, authority_ds):
     """
     Helper Function returns a list of Facets
@@ -375,6 +394,8 @@ def get_facets(annotation_ds, authority_ds):
 
     return facets
 
+
+
 def get_result_facets(work_keys):
     """
     Helper function takes a list of Creative Works keys and returns
@@ -384,5 +405,7 @@ def get_result_facets(work_keys):
     """
     facets = []
     return facets
+
+
 
 

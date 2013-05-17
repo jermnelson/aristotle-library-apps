@@ -3,6 +3,19 @@
  {# START prospector-news #}
  <div>
   <h1 class="prospector-news rounded-corners">Prospector News</h1>
+<ul class="media-list">
+  {% for item in news_feed %}
+ <li class="media">
+  <a class="pull-left" href="#">
+     <img class="media-object" src="{{ STATIC_URL}}img/{{ item.image }}" >
+  </a>
+  {# START Item-body #}
+  <div class="media-body">
+  <h4 class="media-heading">{{ item.heading }}</h4>
+   {{ item.body|safe }}  
+  {# END Item-body #}
+  </div>
+  {% endfor %}
  {# END prospector-news #}
  </div>
 {# END right-column #}
