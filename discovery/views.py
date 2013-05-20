@@ -61,10 +61,12 @@ def app(request):
 #			                 "work",
 #	                                 string(random.randint(0,
 #							       int(CREATIVE_WORK_REDIS.get('global bibframe:CreativeWork'))))}
+    featured_instances = {}
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
-                               'example':{},
+                               'example': {},
+                               'featured': featured_instances, 
 			       'feedback_form':FeedbackForm({'subject':'Discovery App Home'}),
 			       'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,

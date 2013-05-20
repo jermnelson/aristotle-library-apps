@@ -131,11 +131,11 @@ def OpenLibraryLCCNLinker(**kwargs):
                 for row in id_value:
                     cluster_ds.hsetnx(instance_key, id_name, row)
                     cluster_ds.hsetnx('{0}-hash'.format(id_name),
-                                      id_value,
+                                      row,
                                       instance_key)
                     cluster_ds.zadd('{0}-sorted-set'.format(id_name),
                                     0,
-                                    keyid_value)
+                                    row)
         if not counter%50:
             sys.stderr.write(str(counter))
         else:

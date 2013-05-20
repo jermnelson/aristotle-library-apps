@@ -5,7 +5,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <typeOfResource>{{ typeOfResource }}</typeOfResource>
 <originInfo>
- <dateCreated keyDate="yes">{{ year }}-</dateCreated>
+ <dateCreated keyDate="yes">{{ year }}</dateCreated>
 </originInfo>
 <genre authority="marcgt">{{ genre }}</genre>
 <physicalDescription>

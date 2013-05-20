@@ -1,8 +1,8 @@
 <div>
-{% for row in instances %}
+{% for row in featured %}
 <a class="btn" 
    href="/apps/discovery/instance/{{ row.redis_key }}">
-  {{ row }}
+  <img src="{{ row }}
 </a>
 {% endfor %}
 </div>

@@ -138,40 +138,57 @@
       to the digital repository.</p>
    <form method="POST" 
          class="form-horizontal" 
-         action="{% url 'add-obj-template' %}">
+         action="{% url add-obj-template %}">
     {% csrf_token %}
     {# START Object Select #}
     <div class="control-group">
      <label class="control-label" 
-            for="object-template">Object Template</label>
+            for="object_template">
+     {{ add_obj_form.object_template.label }}
+     </label>
      <div class="controls">
-       <select name="object-template">
-         <option value="newsletter">Newsletter</option>
-         <option value="podcast">Podcast</option>
-         <option value="thesis">Thesis</option>
-         <option value="video">Video</option>     
-       </select>
-       <div class="btn-group">
-        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Action
-         <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-         <li><a href="#">Add</a></li>
-         <li><a href="#">Edit</a></li>
-         <li><a href="#">Delete</a></li>
-        </ul>
-       </div>
+      {{ add_obj_form.object_template }}
      </div>
     {# END Object Select #}
     </div>
+    {# START Date Created #}
+    <div class="control-group">
+     <label class="control-label" for="date_created">
+       {{ add_obj_form.date_created.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.date_created }}
+     </div>
+    {# END Date Created #}
+    </div>
+    {# START Digital Origin #}
+    <div class="control-group">
+     <label class="control-label" for="digital_origin">
+      {{ add_obj_form.digital_origin.label }}
+     </label>
+     <div class="controls">
+      {{ add_obj_form.digital_origin }}
+     </div>
+    {# END digital origin #}
+    </div>
+    {# START Parent Collection PID #}
+    <div class="control-group">
+     <label class="control-label" for="collection_pid">
+       {{ add_obj_form.collection_pid.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.collection_pid }}
+     </div>
+    {# END Parent Collection PID #}
+    </div> 
     {# START num_objects #}
     <div class="control-group">
       <label class="control-label" for="num_objects">
-        Number of stub records
+      {{ add_obj_form.number_objects.label }}  
       </label>
       {# START num_objects controls #}
       <div class="controls">
-       <input type="text" value="1" placeholder="1" name="num_objects">
+        {{ add_obj_form.number_objects }}  
       {# END num_objects controls #}
       </div>
     {# END num_objects #}

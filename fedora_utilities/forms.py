@@ -1,3 +1,5 @@
+__author__ = "Jeremy Nelson"
+import datetime
 from django import forms
 from fedora_utilities.models import *
 from eulfedora.server import Repository
@@ -5,14 +7,30 @@ from eulfedora.util import RequestFailed
 
 repository = Repository()
 
+DIGITAL_ORIGIN = [(1, 'born digital'),
+                  (2, 'reformatted digital'),
+                  (3, 'digitized microfilm'),
+                  (4, 'digitized other analog')]
+
 OBJECT_TEMPLATES = [(1, 'Newsletter'),
                     (2, 'Podcast'),
                     (3, 'Thesis'),
                     (4, 'Video')]
 
-class AddFedoraObjectFromTempalte(forms.Form):
-    collection_pid = forms.CharField(max_length=20)
-    object_template = forms.SelectField(choices=OBJECT_TEMPLATES)
+class AddFedoraObjectFromTemplate(forms.Form):
+    collection_pid = forms.CharField(max_length=20,
+                                     label="PID of Parent Collection")
+    date_created = forms.CharField(max_length=5,
+                                   label='Date Created',
+                                   initial=datetime.datetime.utcnow().year)
+    digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
+                                       label='Digital Origin',
+                                       initial=1)
+    number_objects = forms.CharField(initial=1,
+                                     label='Number of stub records',
+                                     max_length=5)
+    object_template = forms.ChoiceField(choices=OBJECT_TEMPLATES,
+                                        label='Content Model Template')
                                         
 
 class BatchIngestForm(forms.Form):
