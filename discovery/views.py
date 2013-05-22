@@ -22,6 +22,7 @@ from discovery.redis_helpers import get_news
 
 from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
 from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
+from aristotle.settings import FEATURED_INSTANCES
 
 
 def app(request):
@@ -60,8 +61,27 @@ def app(request):
 #	                                 "discovery",
 #			                 "work",
 #	                                 string(random.randint(0,
-#							       int(CREATIVE_WORK_REDIS.get('global bibframe:CreativeWork'))))}
-    featured_instances = {}
+#   int(CREATIVE_WORK_REDIS.get('global bibframe:CreativeWork'))))}
+    featured_instances = []
+    for instance_key in FEATURED_INSTANCES:
+        cover_art_key = None
+        instance_link = '/apps/discovery/Instance/{0}'.format(
+            instance_key.split(":")[-1])
+        for annotation_key in INSTANCE_REDIS.smembers(
+            '{0}:hasAnnotation'.format(instance_key)):
+            if annotation_key.startswith('bf:CoverArt'):
+                cover_art_key = annotation_key
+        work_key = INSTANCE_REDIS.hget(instance_key,
+                                       'instanceOf')
+        cover_id = cover_art_key.split(":")[-1]
+        cover_url = '/apps/discovery/CoverArt/{0}-body.jpg'.format(cover_id)
+        featured_instances.append(
+            {'cover': cover_url,
+             'title': CREATIVE_WORK_REDIS.hget(
+                '{0}:title'.format(work_key),
+                'rda:preferredTitleForTheWork'),
+             'instance': instance_link})
+    
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,

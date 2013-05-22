@@ -4,7 +4,15 @@
  {# START featured-items #}
  <div>
   <h1 class="featured-items rounded-corners">Featured Items</h1>
-  {{ 2|get_featured_instances }}   
+  <div class="btn-group">
+  {% for item in featured %}
+   <a href="{{ item.instance }}" class="btn">
+     <img src="{{ item.cover }}" 
+          style="height: 119px"
+          alt="{{ item.title }}">
+   </a>
+  {% endfor %}
+  </div>
  {# END featured-items #}
  </div>
  {# START interesting-facts #}
