@@ -13,20 +13,44 @@ SINGLE_SERVER = True
 SECRET_KEY = ''
 
 # INSTITUTION settings
-INSTITUTION = {'background-logo': None,
-               'name': 'Aristotle Library Apps',
-               'logo': 'aristole-library-apps.png',
-               'url':''}
-# Settings to connect to BIBFRAME instance, setting all ports to 
-# the same Redis instance
-REDIS_HOST = '0.0.0.0'
-ANNOTATION_REDIS = redis.StrictRedis(host=REDIS_HOST,
-                                     port=6379)
-AUTHORITY_REDIS = redis.StrictRedis(host=REDIS_HOST,
-                                    port=6379)
-INSTANCE_REDIS = redis.StrictRedis(host=REDIS_HOST,
-                                   port=6379)
-OPERATIONAL_REDIS = redis.StrictRedis(host=REDIS_HOST,port=6379)
-TEST_REDIS = redis.StrictRedis(host=REDIS_HOST,port=6379)
-CREATIVE_WORK_REDIS = redis.StrictRedis(host=REDIS_HOST,
-                                        port=6379)
+INSTITUTION = {'background-logo': 'cc-logo-gold.png',
+               'name': 'Tutt Library',
+               'logo': 'tutt-library-spring.png',
+               'url':'http://www.coloradocollege.edu/library/xindex.dot'}
+# Creates RDA Redis Instances for use by the Aristotle Library Apps
+#
+if LOCAL is True:
+    REDIS_MASTER_HOST = '127.0.0.1'
+else:
+    REDIS_MASTER_HOST = '127.0.0.1'
+
+# Runs all Redis RDA instances on a single server
+if SINGLE_SERVER is True:
+    REDIS_ANNOTATION_HOST = REDIS_MASTER_HOST
+    REDIS_AUTHORITY_HOST = REDIS_MASTER_HOST
+    REDIS_CREATIVE_WORK_HOST = REDIS_MASTER_HOST
+    REDIS_INSTANCE_HOST = REDIS_MASTER_HOST
+    REDIS_CORPORATEBODY_HOST = REDIS_MASTER_HOST
+    REDIS_EXPRESSION_HOST = REDIS_MASTER_HOST
+    REDIS_ITEM_HOST = REDIS_MASTER_HOST
+    REDIS_MANIFESTION_HOST = REDIS_MASTER_HOST
+    REDIS_PERSON_HOST = REDIS_MASTER_HOST
+    REDIS_SUBJECT_HOST = REDIS_MASTER_HOST
+    REDIS_TITLE_HOST = REDIS_MASTER_HOST
+## Uncomment out next line to run on multiple servers after SINGLE_SERVER = False
+## else:
+##    REDIS_CORPORATEBODY_HOST = ''
+##    REDIS_EXPRESSION_HOST = ''
+##    REDIS_ITEM_HOST = ''
+##    REDIS_MANIFESTION_HOST = ''
+##    REDIS_PERSON_HOST = ''
+##    REDIS_SUBJECT_HOST = ''
+##    REDIS_TITLE_HOST = ''
+##    REDIS_WORK_HOST = ''
+
+ANNOTATION_REDIS = redis.StrictRedis(host=REDIS_ANNOTATION_HOST)
+AUTHORITY_REDIS = redis.StrictRedis(host=REDIS_AUTHORITY_HOST)
+CREATIVE_WORK_REDIS = redis.StrictRedis(host=REDIS_CREATIVE_WORK_HOST)
+INSTANCE_REDIS = redis.StrictRedis(host=REDIS_INSTANCE_HOST)
+OPERATIONAL_REDIS = redis.StrictRedis(host=REDIS_MASTER_HOST)
+TEST_REDIS = redis.StrictRedis(host=REDIS_MASTER_HOST)

@@ -993,7 +993,7 @@ class MARC21toBIBFRAME(Ingester):
             self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:preferredTitleOfWork')
                                                         
         self.marc2instance.instance.save()
-        self.creative_work_ds.sadd("{0}:bibframe:Instances".format(self.marc2creative_work.creative_work.redis_key),
+        self.creative_work_ds.sadd("{0}:bf:Instances".format(self.marc2creative_work.creative_work.redis_key),
                                    self.marc2instance.instance.redis_key)
         self.marc2library_holdings = MARC21toLibraryHolding(annotation_ds=self.annotation_ds,
                                                             authority_ds=self.authority_ds,
