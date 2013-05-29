@@ -22,6 +22,7 @@ def default(request):
 
     :param request: HTTP Request
     """
+    print("IN DEFAULT FOR FEDORA UTILTIES")
     add_obj_template_form = AddFedoraObjectFromTemplate()
     batch_ingest_form = BatchIngestForm()
     batch_modify_form = BatchModifyMetadataForm()
@@ -61,6 +62,7 @@ def add_stub_from_template(request):
                 'collection_pid']
             number_stub_recs = add_obj_template_form.cleaned_data[
                 'number_objects']
+            content_model = 'adr:adrBasicObject'
             for row in DIGITAL_ORIGIN:
                 if row[0] == int(digital_origin_id):
                     mods_context['digitalOrigin'] = row[1]
@@ -70,6 +72,7 @@ def add_stub_from_template(request):
             elif object_template == 2:
                 mods_context['typeOfResource'] = 'sound recording'
                 mods_context['genre'] = 'interview'
+                content_model = 'adr:adrETD'
             elif object_template == 3:
                 mods_context['typeOfResource'] = 'text'
                 mods_context['genre'] = 'thesis'
@@ -82,10 +85,15 @@ def add_stub_from_template(request):
             mods_xml_template = loader.get_template(
                 'fedora_utilities/mods-stub.xml')
             mods_xml = mods_xml_template.render(Context(mods_context))
-            request.session['msg'] =
-            'Created {0} stub records in collection {1}'.format(number_stub_recs,
-                                                                collection_pid)
-            return HttpResponse(mods_xml)
+            create_stubs(mods_xml,
+                         collection_pid,
+                         number_stub_recs,
+                         content_model)
+            request.session['msg'] = \
+                                   "Created {0} stub records in collection {1}".format(
+                                       number_stub_recs,
+                                       collection_pid)
+            # return HttpResponse(mods_xml)
                                 
     return redirect("/apps/fedora_utilities/")
                               
