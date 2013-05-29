@@ -7,8 +7,9 @@ from solr_helpers import SOLR_QUEUE, start_indexing
 from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
-from django.views.generic.simple import direct_to_template
-from django.shortcuts import redirect
+from django.http import HttpResponse
+from django.template import Context, loader
+from django.shortcuts import redirect, render
 from fedora_utilities.forms import *
 from fedora_utilities.models import *
 import os
@@ -21,20 +22,81 @@ def default(request):
 
     :param request: HTTP Request
     """
+    print("IN DEFAULT FOR FEDORA UTILTIES")
+    add_obj_template_form = AddFedoraObjectFromTemplate()
     batch_ingest_form = BatchIngestForm()
     batch_modify_form = BatchModifyMetadataForm()
     object_mover_form = ObjectMovementForm()
-    return direct_to_template(request,
-                              'fedora_utilities/app.html',
-                              {'app': APP,
-			       'feedback_form':FeedbackForm({'subject':'Fedora Utilities App'}),
-			       'feedback_context':request.get_full_path(),
-                               'ingest_form': batch_ingest_form,
-                               'institution': INSTITUTION,
-                               'message': request.session.get('msg'),
-                               'modify_form': batch_modify_form,
-                               'object_mover_form': object_mover_form,
-                               'solr_url': SOLR_URL})
+    context = {'add_obj_form': add_obj_template_form,
+               'app': APP,
+               'feedback_form':FeedbackForm({'subject':'Fedora Utilities App'}),
+               'feedback_context':request.get_full_path(),
+               'ingest_form': batch_ingest_form,
+               'institution': INSTITUTION,
+               'message': request.session.get('msg'),
+               'modify_form': batch_modify_form,
+               'object_mover_form': object_mover_form,
+               'solr_url': SOLR_URL}
+    return render(request,
+                  'fedora_utilities/app.html',
+                  context)
+    
+
+def add_stub_from_template(request):
+    """Handler for adding Fedora stub object using a template
+
+    This function takes different Fedora Object Content Models and
+    prefills a MODS XML stream for rapid ingestion of different
+    stub records that are then modified later with contents.
+    """
+    if request.method == 'POST':
+        add_obj_template_form = AddFedoraObjectFromTemplate(request.POST)
+        if add_obj_template_form.is_valid():
+            mods_context = {'year': add_obj_template_form.cleaned_data[
+                'date_created']}
+            digital_origin_id = add_obj_template_form.cleaned_data[
+                'digital_origin']
+            object_template = int(add_obj_template_form.cleaned_data[
+                'object_template'])
+            collection_pid = add_obj_template_form.cleaned_data[
+                'collection_pid']
+            number_stub_recs = add_obj_template_form.cleaned_data[
+                'number_objects']
+            content_model = 'adr:adrBasicObject'
+            for row in DIGITAL_ORIGIN:
+                if row[0] == int(digital_origin_id):
+                    mods_context['digitalOrigin'] = row[1]
+            if object_template == 1:
+                mods_context['typeOfResource'] = 'text'
+                mods_context['genre'] = 'newspaper'
+            elif object_template == 2:
+                mods_context['typeOfResource'] = 'sound recording'
+                mods_context['genre'] = 'interview'
+                content_model = 'adr:adrETD'
+            elif object_template == 3:
+                mods_context['typeOfResource'] = 'text'
+                mods_context['genre'] = 'thesis'
+            elif object_template == 4:
+                mods_context['typeOfResource'] = 'moving image'
+                mods_context['genre'] = 'videorecording'
+            else:
+                raise ValueError("Unknown Object Template={0}".format(
+                    object_template))
+            mods_xml_template = loader.get_template(
+                'fedora_utilities/mods-stub.xml')
+            mods_xml = mods_xml_template.render(Context(mods_context))
+            create_stubs(mods_xml,
+                         collection_pid,
+                         number_stub_recs,
+                         content_model)
+            request.session['msg'] = \
+                                   "Created {0} stub records in collection {1}".format(
+                                       number_stub_recs,
+                                       collection_pid)
+            # return HttpResponse(mods_xml)
+                                
+    return redirect("/apps/fedora_utilities/")
+                              
 
 def batch_ingest(request):
     """
@@ -53,7 +115,7 @@ def batch_ingest(request):
                 request.session['msg'] += "<p>{0}</p>".format(row)
             #! NEED TO LOG RESULTS
             output["msg"] = results
-            return redirect("/apps/fedora_batch/")
+            return redirect("/apps/fedora_utilities/")
         else:
             raise ValueError("{0} is not a compressed file".format(compressed_file.name))
         output['collection_pid'] = collection_pid
@@ -107,12 +169,12 @@ def object_mover(request):
             return redirect("/apps/fedora_utilities/")
     else:
         mover_form = ObjectMovementForm()
-    return direct_to_template(request,
-                              'fedora_utilities/app.html',
-                              {'history': RepositoryMovementLog.objects.all(),
-                               'message':message,
-                               'ingest_form':ingest_form,
-                               'institution':INSTITUTION,
-                               'modify_form':modify_form,
-                               'object_mover_form':ObjectMovementForm()})
+    return render(request,
+                  'fedora_utilities/app.html',
+                  {'history': RepositoryMovementLog.objects.all(),
+                   'message':message,
+                   'ingest_form':ingest_form,
+                   'institution':INSTITUTION,
+                   'modify_form':modify_form,
+                   'object_mover_form':ObjectMovementForm()})
 

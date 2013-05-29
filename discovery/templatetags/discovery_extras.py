@@ -56,10 +56,10 @@ def about_instance(instance):
             info.append((type_of.upper(),' '.join(number_ids)))
     facets = INSTANCE_REDIS.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
-        if key.startswith('bibframe:Annotation:Facet:Access'):
+        if key.startswith('bf:Annotation:Facet:Access'):
 	    info.append(('Access',key.split(":")[-1]))
-        if key.startswith('bibframe:Annotation:Facet:Location'):
-	    location = ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:Locations',
+        if key.startswith('bf:Annotation:Facet:Location'):
+	    location = ANNOTATION_REDIS.hget('bf:Annotation:Facet:Locations',
 		                             key.split(":")[-1])
 	    info.append(('Location in Library',location))
     #identifiers = getattr(instance,'rda:identifierForTheManifestation')
@@ -69,10 +69,10 @@ def about_instance(instance):
            continue
        if inspect.ismethod(getattr(instance,name)):
            continue
-       if OPERATIONAL_REDIS.hexists('bibframe:vocab:Instance:labels',
+       if OPERATIONAL_REDIS.hexists('bf:vocab:Instance:labels',
                                     name):
            if value is not None:
-               label = OPERATIONAL_REDIS.hget('bibframe:vocab:Instance:labels',
+               label = OPERATIONAL_REDIS.hget('bf:vocab:Instance:labels',
                                                name)
                instance_attribute = getattr(instance,name)
                if type(instance_attribute) == set:
@@ -133,30 +133,33 @@ def get_annotations(instance):
             facet_info = redis_key.split(":")
             facet_url = "/apps/discovery/facet/{0}/{1}".format(facet_info[-2],
                                                                facet_info[-1])
-        if redis_key.startswith('bibframe:CoverArt'):
+        if redis_key.startswith('bf:CoverArt'):
             continue
-        if redis_key.startswith('bibframe:Holding'):
+        if redis_key.startswith('bf:Holding'):
             holdings_info = []
             for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():
-                if OPERATIONAL_REDIS.hexists('bibframe:vocab:Holding:labels',
+                if OPERATIONAL_REDIS.hexists('bf:vocab:Holding:labels',
                                              key):
-                    name = OPERATIONAL_REDIS.hget('bibframe:vocab:Holding:labels',key)
+                    name = OPERATIONAL_REDIS.hget('bf:vocab:Holding:labels',key)
                 else:
                     name = key
-                if key != 'created_on' and key != 'annotates':
+                if key.startswith('schema:contentLocation'):
+                    holdings_info.append({"name":"Library",
+                                          "value": AUTHORITY_REDIS.hget(value, 'label')})
+                elif key != 'created_on' and key != 'annotates':
                     holdings_info.append({"name":name,
                                           "value":value})
             output += get_library_holdings(holdings_info)
         elif redis_key.find('Facet:Location') > -1:
             location_info = {'code':facet_info[-1],
-                             'label': ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:Locations',
+                             'label': ANNOTATION_REDIS.hget('bf:Annotation:Facet:Locations',
                                                             facet_info[-1]),
                              'url':facet_url}
             location_template = loader.get_template('location-icon.html')
             output += location_template.render(Context({'location':location_info}))
         elif redis_key.find('Facet:Format') > -1:
             format_template = loader.get_template('carrier-type-icon.html')
-            output += format_template.render(Context({'graphic':get_format_image(instance),
+            output += format_template.render(Context({'graphic':get_format_image(instance.redis_key),
                                                       'label':facet_info[-1],
                                                       'url':facet_url}))
         
@@ -188,7 +191,7 @@ def get_cover_art(instance):
     """
     output = ''
     for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
-        if redis_key.startswith('bibframe:CoverArt'):
+        if redis_key.startswith('bf:CoverArt'):
            cover_art = ANNOTATION_REDIS.hgetall(redis_key)
            cover_art_template = loader.get_template('cover-art-medium.html')
            redis_id = redis_key.split(":")[-1]
@@ -243,7 +246,7 @@ def get_creator_works(person):
         html_output += '<h3>Total Works: {0}</h3>'.format(len(creative_works))
     work_template = loader.get_template('work-thumbnail.html')
     for wrk_key in creative_works:
-        instance_keys = CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(wrk_key))
+        instance_keys = CREATIVE_WORK_REDIS.smembers("{0}:bf:Instances".format(wrk_key))
 	instances = []
         for key in instance_keys:
             carrier_type = INSTANCE_REDIS.hget(key,'rda:carrierTypeManifestation')
@@ -323,7 +326,7 @@ def get_ids(instance):
 def get_graphic(instance_key):
     annotations = INSTANCE_REDIS.smembers("{0}:hasAnnotation".format(instance_key))
     for annotation_key in annotations:
-        if annotation_key.startswith("bibframe:CoverArt"):
+        if annotation_key.startswith("bf:CoverArt"):
             if ANNOTATION_REDIS.hexists(annotation_key, "thumbnail"):
                 redis_id = annotation_key.split(":")[-1]
                 return mark_safe("/apps/discovery/CoverArt/{0}-thumbnail.jpg".format(redis_id))
@@ -352,7 +355,7 @@ def get_instances(creative_work):
     """
     html_output = ''
     instance_template = loader.get_template('instance-icon.html')
-    instances = list(CREATIVE_WORK_REDIS.smembers("{0}:bibframe:Instances".format(creative_work.redis_key)))
+    instances = list(CREATIVE_WORK_REDIS.smembers("{0}:bf:Instances".format(creative_work.redis_key)))
     for key in instances:
         context = None
 	instance = INSTANCE_REDIS.hgetall(key)
@@ -361,7 +364,7 @@ def get_instances(creative_work):
         annotations = INSTANCE_REDIS.smembers("{0}:hasAnnotation".format(key))
         graphic = get_graphic(key)
         for annotation_key in annotations:
-            if annotation_key.startswith('bibframe:CoverArt'):
+            if annotation_key.startswith('bf:CoverArt'):
                 if ANNOTATION_REDIS.hexists(annotation_key, "thumbnail"):
                     annotation_id = annotation_key.split(":")[-1]
                     context = {'graphic': '/apps/discovery/CoverArt/{0}-thumbnail.jpg'.format(annotation_id),
@@ -400,8 +403,8 @@ def get_location(instance):
     location = ''
     facets = INSTANCE_REDIS.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
-        if key.startswith('bibframe:Annotation:Facet:Location'):
-	    location = ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:Locations',
+        if key.startswith('bf:Annotation:Facet:Location'):
+	    location = ANNOTATION_REDIS.hget('bf:Annotation:Facet:Locations',
 		                             key.split(":")[-1])
     return mark_safe(location)
 
@@ -428,10 +431,10 @@ def get_subjects(creative_work):
     #! Using LOC Facet as proxy for subjects
     facets = list(CREATIVE_WORK_REDIS.smembers("{0}:hasAnnotation".format(creative_work.redis_key)))
     for facet in facets:
-        if facet.startswith("bibframe:Annotation:Facet:LOCFirstLetter"):
+        if facet.startswith("bf:Annotation:Facet:LOCFirstLetter"):
             subject_template = loader.get_template('subject-icon.html')
 	    loc_key = facet.split(":")[-1]
-	    context = {'name':ANNOTATION_REDIS.hget('bibframe:Annotation:Facet:LOCFirstLetters',
+	    context = {'name':ANNOTATION_REDIS.hget('bf:Annotation:Facet:LOCFirstLetters',
 		                                    loc_key),
                        'letter':loc_key}
 	    html_output += subject_template.render(Context(context))

@@ -12,8 +12,6 @@ MODS_NS = 'http://www.loc.gov/mods/v3'
 repository = Repository(root=settings.FEDORA_ROOT,
                         username=settings.FEDORA_USER,
                         password=settings.FEDORA_PASSWORD)
-
-repository = None
 RELS_EXT = open(os.path.join(settings.PROJECT_HOME,
                 "fedora_utilities",
                 "fixures",
@@ -59,6 +57,50 @@ def handle_uploaded_zip(file_request,parent_pid):
         #shutil.rmtree(full_path)
     #os.remove(zip_contents)
     return statuses
+
+def create_stubs(mods_xml,
+                 parent_pid,
+                 num_objects,
+                 content_model='adr:adrBasicObject'):
+    """Function creates 1-n number of basic Fedora Objects in a repository
+
+    Parameters:
+    mods_xml -- MODS XML used for all stub MODS datastreams
+    parent_pid -- PID of Parent collection
+    num_objects -- Number of stub records to create in the parent collection
+    """
+    for i in xrange(0, int(num_objects)):
+        # Retrieves the next available PID
+        new_pid = repository.api.ingest(text=None)
+        # Sets Stub Record Title
+        repository.api.modifyObject(pid=new_pid,
+                                    label="{0} of {1} objects in {2}".format(
+                                        i,
+                                        len(num_objects),
+                                        parent_pid),
+                                    ownerId=settings.FEDORA_USER,
+                                    state="A")
+        # Adds MODS datastream to the new object
+        repository.api.addDatastream(pid=new_pid,
+                                     dsID="MODS",
+                                     dsLabel="MODS",
+                                     mimeType="application/rdf+xml",
+                                     content=mods_xml)
+        # Add RELS-EXT datastream
+        rels_ext_template = Template(RELS_EXT)
+        rels_ext_context = Context({'object_pid':new_pid,
+                                    'content_model':content_model,
+                                    'parent_pid':parent_pid})
+        rels_ext = rels_ext_template.render(rels_ext_context)
+        repository.api.addDatastream(pid=new_pid,
+                                     dsID="RELS-EXT",
+                                     dsLabel="RELS-EXT",
+                                     mimeType="application/rdf+xml",
+                                     content=rels_ext)
+    return
+        
+        
+    
     
 
 def ingest_folder(file_path,

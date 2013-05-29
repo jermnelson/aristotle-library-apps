@@ -45,6 +45,11 @@
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#mover" data-bind="click: displayMover">PID Object Mover</a>
 	 </li>
+         <li>
+           <i class="icon-chevron-right pull-right"></i>
+           <a href="#add-obj-w-template" 
+              data-bind="click: displayStubObj">Add a Fedora Object using MODS</a>
+         </li>
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#index" data-bind="click: displaySolrIndex">Index into Solr</a>
@@ -125,6 +130,81 @@
    </div>
  {% comment %}END solrIndex DIV{% endcomment %}
   </div>
+  {# START addObjectFromTemplate DIV #}
+  <div class="well well-small" data-bind="visible: addStubObj">
+   <a name="add-obj-w-template"></a>
+   <h2>Adds Fedora Object using a Template</h2>
+   <p>Adds a brief Fedora Object using a MODS template of prefilled data
+      to the digital repository.</p>
+   <form method="POST" 
+         class="form-horizontal" 
+         action="{% url add-obj-template %}">
+    {% csrf_token %}
+    {# START Object Select #}
+    <div class="control-group">
+     <label class="control-label" 
+            for="object_template">
+     {{ add_obj_form.object_template.label }}
+     </label>
+     <div class="controls">
+      {{ add_obj_form.object_template }}
+     </div>
+    {# END Object Select #}
+    </div>
+    {# START Date Created #}
+    <div class="control-group">
+     <label class="control-label" for="date_created">
+       {{ add_obj_form.date_created.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.date_created }}
+     </div>
+    {# END Date Created #}
+    </div>
+    {# START Digital Origin #}
+    <div class="control-group">
+     <label class="control-label" for="digital_origin">
+      {{ add_obj_form.digital_origin.label }}
+     </label>
+     <div class="controls">
+      {{ add_obj_form.digital_origin }}
+     </div>
+    {# END digital origin #}
+    </div>
+    {# START Parent Collection PID #}
+    <div class="control-group">
+     <label class="control-label" for="collection_pid">
+       {{ add_obj_form.collection_pid.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.collection_pid }}
+     </div>
+    {# END Parent Collection PID #}
+    </div> 
+    {# START num_objects #}
+    <div class="control-group">
+      <label class="control-label" for="num_objects">
+      {{ add_obj_form.number_objects.label }}  
+      </label>
+      {# START num_objects controls #}
+      <div class="controls">
+        {{ add_obj_form.number_objects }}  
+      {# END num_objects controls #}
+      </div>
+    {# END num_objects #}
+    </div>
+    {# START submit #}
+    <div class="control-group">
+     <div class="controls">
+      <input type="submit" class="btn btn-primary" value="Add Stub Record(s)">
+     </div>
+    {# END submit #}
+    </div>
+    </form>
+  </div>
+  {# END addObjectFromTemplate DIV #}
+  </div>
+
  {% comment %}END row-fluid DIV{% endcomment %}
  </div>
 {% comment %}END content DIV{% endcomment %}
@@ -136,6 +216,7 @@
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script>
  function FedoraBatchViewModel() {
+   this.addStubObj = ko.observable(false);
    this.batchIngest = ko.observable(false);
    this.batchModify = ko.observable(false);
    this.marcGenerate = ko.observable(false);
@@ -161,6 +242,11 @@
 
      }); 
 
+   }
+
+   this.displayAddStubObj = function() {
+    this.hideAll();
+    this.addStubObj(true);
    }
 
    this.displayIngest = function() {

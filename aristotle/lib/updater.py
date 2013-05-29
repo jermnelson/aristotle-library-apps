@@ -57,18 +57,38 @@ def CorrectISSNtoISBN(instance_ds):
                 
 def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
                         annotation_ds=ANNOTATION_REDIS,
-                        start=1,
-                        end=None):
+                        cluster_ds=RLSP_CLUSTER,
+                        start=0,
+                        end=-1):
     start_time = datetime.datetime.now()
     print("Start at {0}".format(start_time.isoformat()))
+    if cluster_ds is not None:
+        # Uses lccn-sort-set instead
+        for lccn in cluster_ds.zrange('lccn-sort-set',
+                                      start,
+                                      end):
+            lccn = LCCN_REGEX.sub('', lccn).strip()
+            open_lib_rec = get_open_library_info(lccn)
+            if len(open_lib_rec) > 0:
+                info = open_lib_rec.get('LCCN:{0}'.format(lccn),
+                                        {})
+                if info.has_key('cover'):
+                    
+                    
+                
+    else:
+        # Do nothing 
+        return
     if end is None:
-        end = int(instance_ds.get('global bibframe:Instance'))
+        end = int(instance_ds.get('global bf:Instance'))
     for counter in range(start, end):
-        instance_key = 'bibframe:Instance:{0}'.format(counter)
+        instance_key = 'bf:Instance:{0}'.format(counter)
         already_exists = False
-        for annotation_key in instance_ds.smembers("{0}:hasAnnotation".format(instance_key)):
-            if annotation_key.startswith('bibframe:CoverArt'):
-                sys.stderr.write(" {0} already has cover art ".format(instance_key))
+        for annotation_key in instance_ds.smembers(
+            "{0}:hasAnnotation".format(instance_key)):
+            if annotation_key.startswith('bf:CoverArt'):
+                sys.stderr.write(
+                    " {0} already has cover art ".format(instance_key))
                 already_exists = True
         if already_exists is True:
             continue
@@ -125,7 +145,6 @@ def CheckAndAddCoverArt(instance_ds=INSTANCE_REDIS,
 def get_open_library_info(lccn=None, instance_key=None):
     def delay():
         return None
-    lccn = LCCN_REGEX.sub('', lccn).strip()
     open_lib_url = 'http://openlibrary.org/api/books?bibkeys=LCCN:{0}&format=json&jscmd=data'.format(lccn)
     try:
         open_lib_json = json.load(urllib2.urlopen(open_lib_url))
@@ -134,9 +153,9 @@ def get_open_library_info(lccn=None, instance_key=None):
     except ValueError, e:
         #print("Error opening {0} for LCCN={1}".format(open_lib_url,
         #                                              lccn))
-        error_log = open("open_library_errors.txt", "a")
-        error_log.write("{0}\t{1}\n".format(instance_key,open_lib_url))
-        error_log.close()
+##        error_log = open("open_library_errors.txt", "a")
+##        error_log.write("{0}\t{1}\n".format(instance_key,open_lib_url))
+##        error_log.close()
         #print(e)
         return {}
     open_lib_json['url'] = open_lib_url

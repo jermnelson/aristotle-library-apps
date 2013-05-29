@@ -14,6 +14,15 @@
   </div>
  {# END search Widget #}
  </div>
+ {% if message %}
+ {# START message #}
+ <div class="row-fluid">
+  <div class="span8 offset2">
+   {{ message }}
+  </div>
+ {# END message #}
+ </div>
+ {% endif %}
  {# START Facet and Content #}
  <div class="row-fluid">
    {% include 'carl-left-column.html' %}
