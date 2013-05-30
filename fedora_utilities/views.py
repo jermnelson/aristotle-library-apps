@@ -3,7 +3,8 @@
 """
 from app_settings import *
 from app_helpers import *
-from solr_helpers import SOLR_QUEUE, start_indexing
+##from solr_helpers import SOLR_QUEUE, start_indexing
+print("BEFORE settings")
 from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
@@ -22,13 +23,10 @@ def default(request):
 
     :param request: HTTP Request
     """
-    print("IN DEFAULT FOR FEDORA UTILTIES")
-    add_obj_template_form = AddFedoraObjectFromTemplate()
     batch_ingest_form = BatchIngestForm()
     batch_modify_form = BatchModifyMetadataForm()
     object_mover_form = ObjectMovementForm()
-    context = {'add_obj_form': add_obj_template_form,
-               'app': APP,
+    context = {'app': APP,
                'feedback_form':FeedbackForm({'subject':'Fedora Utilities App'}),
                'feedback_context':request.get_full_path(),
                'ingest_form': batch_ingest_form,
@@ -52,8 +50,26 @@ def add_stub_from_template(request):
     if request.method == 'POST':
         add_obj_template_form = AddFedoraObjectFromTemplate(request.POST)
         if add_obj_template_form.is_valid():
-            mods_context = {'year': add_obj_template_form.cleaned_data[
-                'date_created']}
+            mods_context = {'dateCreated': add_obj_template_form.cleaned_data[
+                'date_created'],
+                            'organizations': [],
+                            'topics': [],
+                            'title': add_obj_template_form.cleaned_data['title']
+                            }
+            
+            admin_note = add_obj_template_form.cleaned_data[
+                'admin_note']
+            if len(admin_note) > 0:
+                mods_context['admin_note'] = admin_note
+            description = add_obj_template_form.cleaned_data[
+                'description']
+            if len(description) > 0:
+                mods_context['description'] = description
+            rights_holder = add_obj_template_form.cleaned_data[
+                'rights_holder']                
+            if len(rights_holder) > 0:
+                mods_context['rights_holder'] = rights_holder
+            
             digital_origin_id = add_obj_template_form.cleaned_data[
                 'digital_origin']
             object_template = int(add_obj_template_form.cleaned_data[
@@ -67,15 +83,21 @@ def add_stub_from_template(request):
                 if row[0] == int(digital_origin_id):
                     mods_context['digitalOrigin'] = row[1]
             if object_template == 1:
+                mods_context['frequency'] = add_obj_template_form.cleaned_data[
+                    'frequency']
                 mods_context['typeOfResource'] = 'text'
-                mods_context['genre'] = 'newspaper'
+                mods_context['genre'] = 'periodical'
+                mods_context['language'] = 'English'
+                mods_context['place_publication'] = 'Colorado Springs'
+                mods_context['publisher'] = 'Colorado College'
+                mods_context['topics'] = ['College publications',]
             elif object_template == 2:
                 mods_context['typeOfResource'] = 'sound recording'
                 mods_context['genre'] = 'interview'
-                content_model = 'adr:adrETD'
             elif object_template == 3:
                 mods_context['typeOfResource'] = 'text'
                 mods_context['genre'] = 'thesis'
+                content_model = 'adr:adrETD'
             elif object_template == 4:
                 mods_context['typeOfResource'] = 'moving image'
                 mods_context['genre'] = 'videorecording'
@@ -86,6 +108,7 @@ def add_stub_from_template(request):
                 'fedora_utilities/mods-stub.xml')
             mods_xml = mods_xml_template.render(Context(mods_context))
             create_stubs(mods_xml,
+                         mods_context['title'],
                          collection_pid,
                          number_stub_recs,
                          content_model)
@@ -93,9 +116,21 @@ def add_stub_from_template(request):
                                    "Created {0} stub records in collection {1}".format(
                                        number_stub_recs,
                                        collection_pid)
-            # return HttpResponse(mods_xml)
+            return redirect("/apps/fedora_utilities/add_stub")
+    else:
+        add_obj_template_form = AddFedoraObjectFromTemplate()
+        context = {'active': 'add_stub',
+                   'add_obj_form': add_obj_template_form,
+                   'app': APP,
+                   'feedback_form':FeedbackForm({'subject':'Fedora Utilities App'}),
+                   'feedback_context':request.get_full_path(),
+                   'institution': INSTITUTION,
+                   'message': request.session.get('msg')}
+        return render(request,
+                      'fedora_utilities/add-object-from-template.html',
+                      context)
                                 
-    return redirect("/apps/fedora_utilities/")
+    
                               
 
 def batch_ingest(request):
@@ -129,11 +164,12 @@ def index_solr(request):
     """
     output = {}
     if request.REQUEST.has_key('start'):
-       start_indexing()
+##       start_indexing()
        output['msg'] = 'started indexing at {0}'.format(datetime.datetime.now().isoformat())
     else:
-       output['msg'] = "{0} {1}".format(datetime.datetime.now().isoformat(),
-                                        SOLR_QUEUE.get())
+        pass
+##       output['msg'] = "{0} {1}".format(datetime.datetime.now().isoformat(),
+##                                        SOLR_QUEUE.get())
     return output
 
 def object_mover(request):

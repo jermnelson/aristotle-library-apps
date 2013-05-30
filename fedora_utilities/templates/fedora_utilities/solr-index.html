@@ -1,0 +1,20 @@
+{% extends 'fedora_utilities/app.html' %}
+{% load i18n %}
+
+{% block fedora_form %}
+ {% comment %}START solrIndex DIV{% endcomment %}
+  <div class="well well-small" data-bind="visible: solrIndex">
+   <a name="index"></a>
+   <h2>Index into Solr</h2>
+   <p>Indexes Fedora Commons objects into Solr server at {{ solr_url }}</p>
+   <div id="solr-progress" data-bind="visible: indexProgress">
+     <h3>Messages</h3> 
+     <select multiple="multiple" style="width: 400px" data-bind="options: indexMessages"></select>
+   </div>
+   <div>
+    <a href="#" class="btn btn-primary" data-bind="click: startIndexing">Start Index indexing</a>
+   </div>
+ {% comment %}END solrIndex DIV{% endcomment %}
+  </div>
+{% endblock %]
+

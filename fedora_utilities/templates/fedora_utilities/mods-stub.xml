@@ -1,19 +1,55 @@
-<?xml version="1.0" encoding="UTF-8">
 <mods xmlns="http://www.loc.gov/mods/v3" 
       xmlns:mods="http://www.loc.gov/mods/v3" 
       xmlns:xlink="http://www.w3.org/1999/xlink" 
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<titleInfo>
+ <title>{{ title }}</title>
+</titleInfo>
 <typeOfResource>{{ typeOfResource }}</typeOfResource>
 <originInfo>
- <dateCreated keyDate="yes">{{ year }}</dateCreated>
+ <dateCreated keyDate="yes">{{ dateCreated }}</dateCreated>
+ {% if publisher %}
+ <publisher>{{ publisher }}</publisher>
+ {% endif %}
+ {% if place %}
+ <place>
+  <placeTerm>{{ place }}</placeTerm>
+ </place>
+ {% endif %}
+ {% if frequency %}
+ <frequency>{{ frequency }}</frequency>
+ {% endif %}
 </originInfo>
+{% if description %}
+<abstract>{{ description }}</abstract>
+{% endif %}
+{% if admin_note %}
+<note type="admin">{{ admin_note }}</note>
+{% endif %}
+{% if language %}
+<language type="text">
+ <languageTerm>{{ language }}</languageTerm>
+</language>
+{% endif %}
 <genre authority="marcgt">{{ genre }}</genre>
 <physicalDescription>
  <genre>{{ genre }}</genre>
  <digitalOrigin>{{ digitalOrigin }}</digitalOrigin>
 </physicalDescription>
+{% for topic in topics %}
+<subject>
+ <topic>{{ topic }}</topic>
+</subject>
+{% endfor %}
+{% for org in organizations %}
+<subject>
+ <name type="corporate">
+  <namePart>{{ org }}</namePart>
+ </name>
+</subject>
+{% endfor %}
 <accessCondition type="useAndReproduction">
- Copyright restrictions apply. Contact  
+ Copyright restrictions apply. Contact {{ rights_holder }}
  for permission to publish. 
 </accessCondition>
 <note type="admin">supplied by</note>

@@ -3,15 +3,18 @@
 """
 __author__ = "Jeremy Nelson"
 from lxml import etree
-from django.template import Context,Template
+from django.template import Context, Template
 import aristotle.settings as settings
+
 from eulfedora.server import Repository
 import os,mimetypes,shutil
 
 MODS_NS = 'http://www.loc.gov/mods/v3'
+
 repository = Repository(root=settings.FEDORA_ROOT,
                         username=settings.FEDORA_USER,
                         password=settings.FEDORA_PASSWORD)
+
 RELS_EXT = open(os.path.join(settings.PROJECT_HOME,
                 "fedora_utilities",
                 "fixures",
@@ -59,6 +62,7 @@ def handle_uploaded_zip(file_request,parent_pid):
     return statuses
 
 def create_stubs(mods_xml,
+                 title,
                  parent_pid,
                  num_objects,
                  content_model='adr:adrBasicObject'):
@@ -66,25 +70,25 @@ def create_stubs(mods_xml,
 
     Parameters:
     mods_xml -- MODS XML used for all stub MODS datastreams
+    title -- Title of Fedora Object
     parent_pid -- PID of Parent collection
     num_objects -- Number of stub records to create in the parent collection
+    content_model -- Content model for the stub records, defaults to
+                     adr:adrBasicObject
     """
     for i in xrange(0, int(num_objects)):
         # Retrieves the next available PID
         new_pid = repository.api.ingest(text=None)
         # Sets Stub Record Title
         repository.api.modifyObject(pid=new_pid,
-                                    label="{0} of {1} objects in {2}".format(
-                                        i,
-                                        len(num_objects),
-                                        parent_pid),
+                                    label=title,
                                     ownerId=settings.FEDORA_USER,
                                     state="A")
         # Adds MODS datastream to the new object
         repository.api.addDatastream(pid=new_pid,
                                      dsID="MODS",
                                      dsLabel="MODS",
-                                     mimeType="application/rdf+xml",
+                                     mimeType="text/xml",
                                      content=mods_xml)
         # Add RELS-EXT datastream
         rels_ext_template = Template(RELS_EXT)

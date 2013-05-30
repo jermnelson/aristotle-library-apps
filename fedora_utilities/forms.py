@@ -12,25 +12,62 @@ DIGITAL_ORIGIN = [(1, 'born digital'),
                   (3, 'digitized microfilm'),
                   (4, 'digitized other analog')]
 
-OBJECT_TEMPLATES = [(1, 'Newsletter'),
+MARC_FREQUENCY = [('choose', 'Choose...'),
+                  ('Semiweekly', 'Semiweekly - 2 times a week'),
+                  ('Three times a week', 'Three times a week'),
+                  ('Weekly', 'Weekly'),
+                  ('Biweekly', 'Biweekly - every 2 weeks'),
+                  ('Three times a month', 'Three times a month'),
+                  ('Semimonthly', 'Semimonthly - 2 times a month'),
+                  ('Monthly', 'Monthly'),
+                  ('Bimonthly', 'Bimonthly - every 2 months'),
+                  ('Quarterly', 'Quarterly'),
+                  ('Three times a year', 'Three times a year'),
+                  ('Semiannual', 'Semiannual - 2 times a year'),
+                  ('Annual', 'Annual'),
+                  ('Biennial', 'Biennial - every 2 years'),
+                  ('Triennial', 'Triennial - every 3 years'),
+                  ('Completely irregular', 'Completely irregular')]
+
+OBJECT_TEMPLATES = [(0, 'Choose model'),
+                    (1, 'Newsletter'),
                     (2, 'Podcast'),
                     (3, 'Thesis'),
                     (4, 'Video')]
 
 class AddFedoraObjectFromTemplate(forms.Form):
+    admin_note = forms.CharField(label='Administrative Notes',
+                                  max_length=1500,
+                                  widget=forms.Textarea(
+                                      attrs={'rows':5}))
     collection_pid = forms.CharField(max_length=20,
                                      label="PID of Parent Collection")
     date_created = forms.CharField(max_length=5,
-                                   label='Date Created',
-                                   initial=datetime.datetime.utcnow().year)
+                                   label='Date Created')
     digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
                                        label='Digital Origin',
                                        initial=1)
+    description = forms.CharField(label='Description',
+                                  max_length=1500,
+                                  widget=forms.Textarea(
+                                      attrs={'rows':5}))
+    frequency = forms.ChoiceField(choices=MARC_FREQUENCY,
+                                  label='Frequency')
     number_objects = forms.CharField(initial=1,
                                      label='Number of stub records',
                                      max_length=5)
-    object_template = forms.ChoiceField(choices=OBJECT_TEMPLATES,
-                                        label='Content Model Template')
+    object_template = forms.ChoiceField(label='Content Model Template',
+                                        choices=OBJECT_TEMPLATES,
+                                        widget=forms.Select(
+                                            attrs={'data-bind':'value: chosenContentModel, click: displayContentModel'}))
+    organizations = forms.CharField(max_length=255,
+                                    required=False)
+    rights_holder = forms.CharField(max_length=120,
+                                    label='Use and Reproduction Rights Holder',
+                                    initial='Colorado College')
+    title = forms.CharField(max_length=120,
+                            label='Title')
+
                                         
 
 class BatchIngestForm(forms.Form):

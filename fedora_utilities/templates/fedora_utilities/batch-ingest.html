@@ -1,0 +1,18 @@
+{% extends 'fedora_utilities/app.html' %}
+{% load i18n %}
+
+{% block fedora_form %}
+   <div class="well well-small" data-bind="visible: batchIngest">
+       <a name="ingest"></a>
+       <h2>Batch Ingest</h2>
+	<form method="POST" action="{% url fedora_utilities.views.batch_ingest %}" id="ingest_form" enctype="multipart/form-data" >
+	  {% csrf_token %}
+	 {{ ingest_form.as_p }}
+         <div class="btn-group">
+	  <a href="#" class="btn btn-primary" onclick="UploadCompressedFile()"><i class="icon-upload"></i> Ingest</a>
+          <a href="#" class="btn"><i class="icon-question-sign"></i> Help</a>
+         </div>
+	</form>
+   </div>
+{% endblock %}
+
