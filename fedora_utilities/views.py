@@ -179,8 +179,6 @@ def object_mover(request):
 
     :param request: Django request
     """
-    ingest_form = BatchIngestForm()
-    modify_form = BatchModifyMetadataForm()
     message = None
     if request.method == 'POST':
         mover_form = ObjectMovementForm(request.POST)
@@ -206,11 +204,10 @@ def object_mover(request):
     else:
         mover_form = ObjectMovementForm()
     return render(request,
-                  'fedora_utilities/app.html',
-                  {'history': RepositoryMovementLog.objects.all(),
+                  'fedora_utilities/pid-mover.html',
+                  {'app': APP,
+                   'history': ObjectMovementLog.objects.all(),
                    'message':message,
-                   'ingest_form':ingest_form,
                    'institution':INSTITUTION,
-                   'modify_form':modify_form,
                    'object_mover_form':ObjectMovementForm()})
 

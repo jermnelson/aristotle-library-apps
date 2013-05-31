@@ -1,0 +1,30 @@
+{% load i18n %}
+<div class="modal hide fade" id="prospector-contact-dlg">
+ <div class="modal-header">
+   <a class="close" data-dismiss="modal">&times;</a>
+   <h3>Contact Information</h3>
+ </div>
+ <div class="modal-body">
+  <p> 
+   This Pilot Prospector Redis Library Services Platform is a collaborative project of 
+   the Colorado Alliance of Research Libraries, Colorado College, University of Denver,
+   and Colorado State University.
+   </p>
+   <p>
+     Project leader - <a mailto="jeremy.nelson@coloradocollege.edu">Jeremy Nelson</a>, 
+     Metadata and Systems Librarian, Colorado College. Additional Colorado College staff,
+     Development and system administration - Jon Driscoll, Colorado College
+   </p>
+   <p>
+     <a href="http://www.coalliance.org/contact/george">George Machovec</a>,
+     Executive Director of the Colorado Alliance of Research Libraries
+   </p>
+   <p>
+     Sheila Yeh, Library Digital Infrastructure and Technology Coordinator, University of Denver.  
+   </p>
+ </div>
+ <div class="modal-footer">
+    <a href="#" onclick="$('#prospector-contact-dlg').modal('hide')" class="btn btn-primary">{% trans 'Close' %}</a>
+ </div>
+ </form>
+</div>  

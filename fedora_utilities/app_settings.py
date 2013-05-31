@@ -18,7 +18,7 @@ except:
     
 
 APP = {'current_view': {'title':'Fedora Utilities'},
-       'description': 'The Fedora Utilities App contains helper functions for assiting in the management of a Fedora Commons Repository.',
+       'description': 'The Fedora Utilities App contains helper functions for assisting in the management of a Fedora Commons Repository.',
        'icon_url':'fedora-commons.png',
        'productivity':True,
        'url':'fedora_utilities/'}
