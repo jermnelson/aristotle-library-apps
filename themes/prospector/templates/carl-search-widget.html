@@ -4,6 +4,7 @@
        method="POST" 
        action="/apps/discovery/">
   {% csrf_token %}
+  <input type="hidden" name="search_key" value="">
   <input type="text" class="span6 search-query"
    placeholder="Find books, movies, music, and more!"
    name="q">

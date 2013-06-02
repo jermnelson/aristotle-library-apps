@@ -81,7 +81,7 @@ class FormatFacet(Facet):
         kwargs['items'] = []
         # Formats are sorted by number of instances
         format_item_keys = kwargs['redis'].zrevrange(
-            'bibframe:Annotation:Facet:Formats',
+            'bf:Annotation:Facet:Formats',
             0,
             -1,
             withscores=True
@@ -147,112 +147,32 @@ class LocationFacet(Facet):
         super(LocationFacet, self).__init__(**kwargs)
 
 
-class ShardSearch(object):
-    """Base Shard Search Class
-
-    This class uses redis-shard python module and REDIS_SERVERS
-    settings to create a shard search
-    """
-
-    def __init__(self, **kwargs):
-        """Initializes a Redis Shard search object
-
-        Keyword Arguments:
-        q -- String query
-        servers -- Listing of search servers
-        """
-        self.q = kwargs.get('q')
-        self.client = RedisShardAPI(kwargs.get('servers', REDIS_SERVERS))
- 
-
-
-class BIBFRAMEShardSearch(ShardSearch):
-    """BIBFRAME Shard Search
-
-    Class uses    
-    """
-    search_types =  {'au': "Author",
-                     'cs': "Children Subject",
-                     'dw': "Dewey Call Number",
-                     'gov': "Government Document Call Number",
-                     'is': 'ISBN and ISSN',
-                     'kw': 'Keyword',
-                     'jt': 'Journal Title',
-                     'lc': 'Library of Congress Subject Heading',
-                     'lccn': "Library of Congress Call Number",
-                     'med': "Medical Subject",
-                     'medc': "Medical Call Number",
-                     'oclc': "OCLC Number",
-                     'ol': "Open Library Number", 
-                     'title': "Title"}
-
-    def __init__(self, **kwargs):
-        """Initializes a BIBFRAMEShardSearch 
-
-        Keyword Arguments:
-        type_of -- Type of BIBFRAME search, should be in the list of 
-                   search_types, defaults to kw
-        """
-        self.query_type = kwargs.get('type', "kw")
-        self.creator_keys = []
-
-    def run(self):
-        "Runs the query on Shard Client based on query string and type"
-        if self.query_type == "kw":
-            self.author()
-            self.title()
-        elif self.query_type == "au":
-            self.author()
-        elif self.query_type == 'is':
-            self.number_issn_isbn()
-        elif self.query_type == "t":
-            self.title()
-        self.client.zadd('bibframe-searches', 
-                         time.time(),
-                         self.__json__(with_results=False))
-
-
-    # Helper functions for specific types of searches
-    def author(self):
-        "Author search uses Person and Organization Apps for searching"
-        self.creator_keys.extend(person_app.shard_search(self.query,
-                                                         client=self.client))
-        self.creator_keys.extend(organization_app.shard_search(self.query,
-                                                               client=self.client))
-
-    def number_issn_isbn(self):
-        "Number search for ISSN and ISBN identifiers"
-        instances_keys = []
-        issn = self.client.hget('issn-hash', self.query.strip())
-        if issn is not None:
-            instance_keys.extend(issn)
-        isbn = self.client.hget('issn-hash', self.query.strip())
-        if isbn is not None:
-            instance_keys.extend(isbn)
-        for key in instance_keys:
-            self.creative_works.extend(self.client.hget(key,
-                                                        'isInstanceOf'))
-
-    def title(self):
-        "Title search uses the Creative Work titles"
-        self.creator_keys.extend(title_app.shard_search(self.query,
-                                                        self.creative_wrk_ds))
-
 class BIBFRAMESearch(object):
 
     def __init__(self,**kwargs):
         self.query = kwargs.get('q')
         self.type_of = kwargs.get('type_of', 'kw')
+        self.annotation_ds = kwargs.get('annotation_ds', ANNOTATION_REDIS)
 	self.authority_ds = kwargs.get('authority_ds', AUTHORITY_REDIS)
 	self.creative_wrk_ds = kwargs.get('creative_wrk_ds', CREATIVE_WORK_REDIS)
         self.instance_ds = kwargs.get('instance_ds', INSTANCE_REDIS)
         self.operational_ds = kwargs.get('operational_ds', OPERATIONAL_REDIS)
-        if 'servers' in kwargs:
-            self.shard_client = RedisShardAPI(kwargs.get('servers'), 
-                                              REDIS_SERVERS)
-        else:
-            self.shard_client = None
-	self.creative_work_keys, self.fails = [], []
+        search_key = kwargs.get('search_key', None)
+        if search_key is not None:
+            # Checks to see if history key exists in datastore
+            if not self.operational_ds.has_key(search_key):
+                # Search key has expired set to None to create a new search
+                # key
+                search_key = None
+            else:
+                self.search_key = search_key
+                # Reset search key expiration to 15 minutes
+                self.operational_ds.expire(self.search_key, 900)
+        if search_key is None:
+            self.search_key = 'rlsp-query:{0}'.format(
+                                   self.operational_ds.incr('global rlsp-query'))
+            self.operational_ds.expire(self.search_key, 900)
+	self.fails = []
 
     def __json__(self, with_results=True):
         """
@@ -264,11 +184,12 @@ class BIBFRAMESearch(object):
                         keys 
         """
         info = {"query":self.query,
-                "type": self.type_of}
-        if with_results is True:
-            info['works'] = list(set(self.creative_work_keys))
+                "type": self.type_of,
+                "query-key":self.search_key}
+        if with_results is True: 
+            info['works'] = list(self.operational_ds.smembers(self.search_key))
         else:
-            info['works'] = len(set(self.creative_work_keys))
+            info['works'] = self.operational_ds.scard(self.search_key)
         return json.dumps(info) 
 
 
@@ -299,19 +220,53 @@ class BIBFRAMESearch(object):
             self.number_med()
         elif self.type_of == 't':
             self.title()
+        self.generate_facets()
         self.operational_ds.zadd('bibframe-searches', 
                                  time.time(),
                                  self.__json__(with_results=False))
-        self.creative_work_keys = set(self.creative_work_keys)
 
 
     def author(self):
         found_creators = person_authority_app.person_search(self.query,
 			                                    authority_redis=self.authority_ds)
-        self.creative_work_keys.extend(list(found_creators))
+        for work_key in found_creators:
+             self.operational_ds.sadd(self.search_key,
+                                      work_key)
+
+
+    def creative_works(self):
+        works = []
+        for entity_key in self.operational_ds.smembers(self.search_key):
+            # If entity is bf:Instance, get entity's Creative Work
+            if entity_key.startswith('bf:Instance'):
+                work_key = self.instance_ds.hget(entity_key, 'instanceOf')
+            elif entity_key.startswith('bf:Work'):
+                work_key = entity_key  
+            works.append(Work(redis_key=work_key,
+                              primary_redis=self.creative_work_ds))
+        return works
+        
+
+    def generate_facets(self):
+        facet_keys = ['bf:Annotation:Facet:formats',
+                      'bf:Annotation:Facet:LOCFirstLetters:sort',
+                      'bf:Annotation:Facet:Languages',
+                      'bf:Annotation:Facet:PublicationDate']
+        facets = {'Formats': { 'items':{}, 'count':0}}
+
+        for format_key in self.annotation_ds.zrange('bf:Annotation:Facet:formats',
+                                                    0,
+                                                    -1):
+            pass
+
 
     def journal_title(self):
-        pass
+        self.title()
+        self.operational_ds.sinterstore(self.search_key, 
+                                        self.search_key,
+                                        'bf:Annotation:Facet:Format:Journal')
+
+
 
     def keyword(self):
         #! This should do a Solr search as the default
@@ -331,21 +286,20 @@ class BIBFRAMESearch(object):
         if isbn is not None:
             instance_keys.extend(isbn)
         for key in instance_keys:
-            self.creative_works
+            self.operational_ds.sadd(self.search_key, key)
+
 
 
     def number_lccn(self):
         instance_key = self.instance_ds.hget('lccn-hash', self.query.strip())
         if instance_key is not None:
-            self.creative_work_keys.append(self.instance_ds.hget(instance_key, 
-                                                                 'instanceOf'))
+            self.operational_ds.sadd(self.search_key, instance_key)
         
 
     def number_med(self):
         instance_key = self.instance_ds.hget('nlm-hash', self.query.strip())
         if instance_key is not None:
-            self.creative_work_keys.append(self.instance_ds.hget(instance_key, 
-                                                                 'instanceOf'))
+            self.operational_ds.sadd(self.search_key, instance_key)
       
 
     def number_oclc(self):
@@ -360,7 +314,9 @@ class BIBFRAMESearch(object):
     def title(self):
         # Search using Title App
         found_titles = title_app.search_title(self.query,self.creative_wrk_ds)
-        self.creative_work_keys.extend(found_titles)
+        for title_key in found_titles:
+            self.operational_ds.sadd(self.search_key,
+                                     title_key)
 
 
 def get_news():
@@ -376,6 +332,16 @@ Works={0}<br>Instances={1}<br>Person={2}</p>
                                     RLSP_CLUSTER.get('global bf:Person'),
                                     RLSP_CLUSTER.dbsize())}
         news.append(item)
+        body_html = '<ul>'
+        for i in xrange(1, 1 + int(RLSP_CLUSTER.get('global bf:Organization'))):
+            org_key = 'bf:Organization:{0}'.format(i)
+            body_html += '''<li>{0} Total Holdings={1}</li>'''.format(
+                             RLSP_CLUSTER.hget(org_key, 'label'),
+                             RLSP_CLUSTER.scard('{0}:bf:Holdings'.format(org_key)))
+        body_html += '</ul>'
+        item2 = {'heading': 'Institutional Collections',
+                 'body': body_html}
+        news.append(item2)
     return news
         
 

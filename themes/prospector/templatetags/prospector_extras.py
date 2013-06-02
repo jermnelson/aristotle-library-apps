@@ -26,7 +26,6 @@ def get_featured_instances(num_items=5):
     featured_keys = OPS_DS.smembers('prospector:featured')
     for key in featured_keys:
         info = {'redis_key': key}
-        INSTANCE_DS    
         featured_instances.append(info)
     featured_items_template = template.loader.get_template(
         'discovery/carl-featured-instances.html')
@@ -47,6 +46,15 @@ def get_news(num_items=5):
     news_template = template.loader.get_template('carl-news.html')
     return mark_safe(news_template.render(template.Context({'news':news})))
 
+@register.filter(is_safe=True)
+def get_facet(facet):
+    """Returns generated html for a CARL Prospector Facet
+
+    Parameters:
+    facet -- facet
+    """
+    facet_template = template.loader.get_template('carl-facet.html')
+    return mark_safe(facet_template.render(template.Context({'facet':facet})))
 ##register.filter('get_featured_instances',
 ##                get_featured_instances)
 ##register.filter('get_news',

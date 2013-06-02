@@ -43,13 +43,9 @@ def app(request):
                                              instance_ds=INSTANCE_REDIS)
 	    bibframe_search.run()
 	    search_query = bibframe_search.query
-	    for key in bibframe_search.creative_work_keys:
-                result = {'work': Work(redis_key=key,
-	                               primary_redis=CREATIVE_WORK_REDIS)}
-	    
-	        results.append(result)
-	    facet_list = get_result_facets(bibframe_search.creative_work_keys)
+
 	    message = 'Results for {0}'.format(query)
+            results = bibframe_search.creative_works()
 	    if len(results) < 1:
                 message = 'No Results found for {0}'.format(query)
 	else:
