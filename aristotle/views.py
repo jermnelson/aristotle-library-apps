@@ -110,7 +110,7 @@ def feedback(request):
     if request.POST.has_key('sender'):
         ops_redis.hset(feedback_key, "sender", request.POST.get('sender'))
     
-    return redirect(ops_redis.hget(feedback_key,"context"))
+    return redirect(ops_redis.hget(feedback_key, "context"))
     
     
 

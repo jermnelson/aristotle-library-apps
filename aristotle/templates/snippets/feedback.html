@@ -6,7 +6,7 @@
    <h2>Help us improve the {{ app.current_view.title }}</h2>
  </div>
  <form id="feedback-form" name="feedback-form" class="form-horizontal"
-       action="/aristotle/feedback" method="POST">
+       action="/feedback" method="POST">
    {% csrf_token %}
  <div class="modal-body">
   <img src="{{ STATIC_URL }}img/{{ app.icon_url }}" style="float:left">

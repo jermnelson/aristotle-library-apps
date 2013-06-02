@@ -28,10 +28,11 @@
  <div class="row-fluid">
   {% comment %}START fedora batch nav DIV{% endcomment %}
   <div class="span2">
-   <ul class="nav nav-stacked well well-small" >
-     <li class="active">
+   <ul class="nav nav-stacked" >
+     {% comment %}
+     <li>
       <i class="icon-chevron-right pull-right"></i>
-      <a href="#" data-bind="click: displayIngest">Batch Ingest</a>
+      <a href="#" >Batch Ingest</a>
      </li>
      <li>
 	  <i class="icon-chevron-right pull-right"></i>
@@ -41,169 +42,43 @@
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#generate-marc" data-bind="click: displayMARC">Generate MARC Record</a>
 	 </li>	 
+     {% endcomment %}
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#mover" data-bind="click: displayMover">PID Object Mover</a>
+	   <a href="{% url pid-mover %}">PID Object Mover</a>
 	 </li>
-         <li>
+         <li {% if active == 'add_stub' %} class="active"{% endif %}>
            <i class="icon-chevron-right pull-right"></i>
-           <a href="#add-obj-w-template" 
-              data-bind="click: displayStubObj">Add a Fedora Object using MODS</a>
+	   <a href="{% url add-obj-template %}">Add Fedora Objects from Template</a>
          </li>
+      {% comment %}
+
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
 	   <a href="#index" data-bind="click: displaySolrIndex">Index into Solr</a>
 	 </li>
+      {% endcomment %}
+
    </ul>
   {% comment %}END fedora batch nav DIV{% endcomment %}
   </div>
   {% comment %}START views DIV{% endcomment %}
   <div class="span7">
    
-   <div class="well well-small"> 
+   <div> 
    <h2>{{ app.current_view.title }} App</h2>
-    <div data-bind="visible: JobStatus"></div>
     {% if message %}
+     <div class="alert">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
       {% autoescape off %}
-      <p>{{ message }}</p>
+      <h3>{{ message }}</h3>
       {% endautoescape %}
+     </div>
     {% else %}
 	 <p>{{ app.description }}</p>
     {% endif %}
    </div>
-   <div class="well well-small" data-bind="visible: batchIngest">
-       <a name="ingest"></a>
-       <h2>Batch Ingest</h2>
-	<form method="POST" action="{% url fedora_utilities.views.batch_ingest %}" id="ingest_form" enctype="multipart/form-data" >
-	  {% csrf_token %}
-	 {{ ingest_form.as_p }}
-         <div class="btn-group">
-	  <a href="#" class="btn btn-primary" onclick="UploadCompressedFile()"><i class="icon-upload"></i> Ingest</a>
-          <a href="#" class="btn"><i class="icon-question-sign"></i> Help</a>
-         </div>
-	</form>
-   </div>
-   <div class="well well-small" data-bind="visible: batchModify">
-     <a name="modify"></a>
-     <h2>Batch Modify Metadata</h2>
-	 <p>With this form you'll be able to modify the existing metadata for one 
-	    or more objects in a Fedora Commons server.</p>
-	 <form>
-	  {{ modify_form.as_p }}
-	  <a href="#" class="btn btn-primary">Modify</a>
-	 </form>
-   </div>
-   <div class="well" data-bind="visible: marcGenerate">
-       <a name="generate-marc"></a>
-	<h2>Generate MARC record</h2>
-	
-	  <a href="#" class="btn btn-primary">Generate MARC</a>
-   </div>
-   <div class="well well-small" data-bind="visible: pidMover">
-     <a name="mover" ></a>
-     <h2>PID Mover</h2>
-	 <p>Moves a single object or collection in a Fedora Commons Server</p>
-         <form method="POST" action="{% url pid-mover %}">
-
-	 <p>
-	  {% csrf_token %}
-	    
-	   <strong>Move Source PID</strong> {{ object_mover_form.source_pid }} to <strong>Target PID</strong> 
-	   {{ object_mover_form.collection_pid }}
-	   <br />
-	   <input type="submit" class="btn btn-primary" value="Move" />
-	 </p>
-  {% comment %}END widget DIV{% endcomment %}
-  </div>
-  </form>
- {% comment %}START solrIndex DIV{% endcomment %}
-  <div class="well well-small" data-bind="visible: solrIndex">
-   <a name="index"></a>
-   <h2>Index into Solr</h2>
-   <p>Indexes Fedora Commons objects into Solr server at {{ solr_url }}</p>
-   <div id="solr-progress" data-bind="visible: indexProgress">
-     <h3>Messages</h3> 
-     <select multiple="multiple" style="width: 400px" data-bind="options: indexMessages"></select>
-   </div>
-   <div>
-    <a href="#" class="btn btn-primary" data-bind="click: startIndexing">Start Index indexing</a>
-   </div>
- {% comment %}END solrIndex DIV{% endcomment %}
-  </div>
-  {# START addObjectFromTemplate DIV #}
-  <div class="well well-small" data-bind="visible: addStubObj">
-   <a name="add-obj-w-template"></a>
-   <h2>Adds Fedora Object using a Template</h2>
-   <p>Adds a brief Fedora Object using a MODS template of prefilled data
-      to the digital repository.</p>
-   <form method="POST" 
-         class="form-horizontal" 
-         action="{% url add-obj-template %}">
-    {% csrf_token %}
-    {# START Object Select #}
-    <div class="control-group">
-     <label class="control-label" 
-            for="object_template">
-     {{ add_obj_form.object_template.label }}
-     </label>
-     <div class="controls">
-      {{ add_obj_form.object_template }}
-     </div>
-    {# END Object Select #}
-    </div>
-    {# START Date Created #}
-    <div class="control-group">
-     <label class="control-label" for="date_created">
-       {{ add_obj_form.date_created.label }}
-     </label>
-     <div class="controls">
-     {{ add_obj_form.date_created }}
-     </div>
-    {# END Date Created #}
-    </div>
-    {# START Digital Origin #}
-    <div class="control-group">
-     <label class="control-label" for="digital_origin">
-      {{ add_obj_form.digital_origin.label }}
-     </label>
-     <div class="controls">
-      {{ add_obj_form.digital_origin }}
-     </div>
-    {# END digital origin #}
-    </div>
-    {# START Parent Collection PID #}
-    <div class="control-group">
-     <label class="control-label" for="collection_pid">
-       {{ add_obj_form.collection_pid.label }}
-     </label>
-     <div class="controls">
-     {{ add_obj_form.collection_pid }}
-     </div>
-    {# END Parent Collection PID #}
-    </div> 
-    {# START num_objects #}
-    <div class="control-group">
-      <label class="control-label" for="num_objects">
-      {{ add_obj_form.number_objects.label }}  
-      </label>
-      {# START num_objects controls #}
-      <div class="controls">
-        {{ add_obj_form.number_objects }}  
-      {# END num_objects controls #}
-      </div>
-    {# END num_objects #}
-    </div>
-    {# START submit #}
-    <div class="control-group">
-     <div class="controls">
-      <input type="submit" class="btn btn-primary" value="Add Stub Record(s)">
-     </div>
-    {# END submit #}
-    </div>
-    </form>
-  </div>
-  {# END addObjectFromTemplate DIV #}
-  </div>
+   {% block fedora_form %}{% endblock %}
 
  {% comment %}END row-fluid DIV{% endcomment %}
  </div>
@@ -211,7 +86,9 @@
 </div>
 {% endblock %}
 
-{% block more-js %}
+
+
+{% comment  %}
 <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script>
@@ -309,4 +186,4 @@ function UploadCompressedFile() {
 ko.applyBindings(new FedoraBatchViewModel());
 // ko.applyBindings(PIDMoverViewModel);
 </script>
-{% endblock %}
+{% endcomment %}

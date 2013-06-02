@@ -5,6 +5,7 @@ import aristotle.settings as settings
 import sunburnt
 from app_helpers import repository
 from multiprocessing import Process, Queue
+print("AFTER IMPORT")
 
 SOLR_QUEUE = Queue(maxsize=5)
 

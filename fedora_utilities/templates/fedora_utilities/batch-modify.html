@@ -1,0 +1,16 @@
+{% extends 'fedora_utilities/app.html' %}
+{% load i18n %}
+
+{% block fedora_form %}
+   <div class="well well-small" data-bind="visible: batchModify">
+     <a name="modify"></a>
+     <h2>Batch Modify Metadata</h2>
+	 <p>With this form you'll be able to modify the existing metadata for one 
+	    or more objects in a Fedora Commons server.</p>
+	 <form>
+	  {{ modify_form.as_p }}
+	  <a href="#" class="btn btn-primary">Modify</a>
+	 </form>
+   </div>
+{% endblock %}
+

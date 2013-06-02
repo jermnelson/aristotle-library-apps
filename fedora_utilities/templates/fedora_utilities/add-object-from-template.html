@@ -1,0 +1,171 @@
+{% extends 'fedora_utilities/app.html' %}
+{% load i18n %}
+
+{% block fedora_form %}
+{# START addObjectFromTemplate DIV #}
+<div class="well well-small">
+   <a name="add-obj-w-template"></a>
+   <h2>Add Fedora Object(s) using a Template</h2>
+   <p>Adds one or more brief Fedora Objects using a MODS 
+      template of prefilled data to the digital repository.</p>
+   <form method="POST" 
+         class="form-horizontal" 
+         action="{% url add-obj-template %}">
+    {% csrf_token %}
+    {# START Object Select #}
+    <div class="control-group">
+     <label class="control-label" 
+            for="object_template">
+      {{ add_obj_form.object_template.label }}
+     </label>
+     <div class="controls">
+      {{ add_obj_form.object_template }}
+     </div>
+    {# END Object Select #}
+    </div>
+    {# START title #}
+     <div class="control-group">
+     <label class="control-label" 
+            for="title">
+     {{ add_obj_form.title.label }}
+     </label>
+     <div class="controls"> 
+      {{ add_obj_form.title }}
+     </div>
+    {# END title #}
+    </div>
+    {# START Date Created #}
+    <div class="control-group">
+     <label class="control-label" for="date_created">
+       {{ add_obj_form.date_created.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.date_created }}
+     </div>
+    {# END Date Created #}
+    </div>
+    {# START Digital Origin #}
+    <div class="control-group">
+     <label class="control-label" for="digital_origin">
+      {{ add_obj_form.digital_origin.label }}
+     </label>
+     <div class="controls">
+      {{ add_obj_form.digital_origin }}
+     </div>
+    {# END digital origin #}
+    </div>
+    {# START description #}
+    <div class="control-group">
+     <label class="control-label" for="digital_origin">
+     {{ add_obj_form.description.label }}
+     </label>
+     <div class="controls">
+     {{  add_obj_form.description }}
+     </div>
+    {# END description #}
+    </div>
+    {# START admin_note #}
+    <div class="control-group">
+     <label class="control-label" for="admin_note">
+     {{ add_obj_form.admin_note.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.admin_note }}
+     </div>
+    {# END admin_note #}
+    </div>
+    {# START Use and Reproduction Rights Holder #}
+    <div class="control-group">
+     <label class="control-label" for="rights_holder">
+     {{ add_obj_form.rights_holder.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.rights_holder }}
+     </div>
+    {# END Use and Reproduction Rights Holder #}
+    </div>
+    {# START organizations #}
+    <div class="control-group">
+     <label class="control-label" for="organizations">
+     {{ add_obj_form.organizations.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.organizations }}
+     </div>
+    {# END organizations #}
+    </div>
+    {# START frequency #}
+    <div class="control-group" data-bind="visible: newsletterTemplate">
+      <label class="control-label" for="frequency">
+      {{ add_obj_form.frequency.label }}
+      </label>  
+      <div class="controls">
+      {{ add_obj_form.frequency }}
+      </div>
+    </div>
+    {# END frequency #}
+
+    {# START Parent Collection PID #}
+    <div class="control-group">
+     <label class="control-label" for="collection_pid">
+       {{ add_obj_form.collection_pid.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.collection_pid }}
+     </div>
+    {# END Parent Collection PID #}
+    </div> 
+    {# START num_objects #}
+    <div class="control-group">
+      <label class="control-label" for="num_objects">
+      {{ add_obj_form.number_objects.label }}  
+      </label>
+      {# START num_objects controls #}
+      <div class="controls">
+        {{ add_obj_form.number_objects }}  
+      {# END num_objects controls #}
+      </div>
+    {# END num_objects #}
+    </div>
+    {# START submit #}
+    <div class="control-group">
+     <div class="controls">
+      <input type="submit" class="btn btn-primary" value="Add Stub Record(s)">
+     </div>
+    {# END submit #}
+    </div>
+    </form>
+  </div>
+  {# END addObjectFromTemplate DIV #}
+  </div>
+{% endblock %}
+
+{% block more_js %}
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script>
+ function AddStubViewModel() {
+   var self = this;
+   self.chosenContentModel = ko.observable();
+   self.newsletterTemplate = ko.observable(false);
+   self.displayContentModel = function() {
+     switch(self.chosenContentModel()) {
+        case '1':
+          self.resetForm();
+          self.newsletterTemplate(true);
+          break;
+
+        default:
+          self.resetForm();
+    }
+
+   }
+   self.resetForm = function() {
+     self.newsletterTemplate(false);
+
+
+   }
+ } 
+ ko.applyBindings(new AddStubViewModel());
+</script>
+{% endblock %}
