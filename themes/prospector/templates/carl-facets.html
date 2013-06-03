@@ -2,10 +2,9 @@
 {% load prospector_extras %}
 <div class="accordion" id="facets">
  {# Found In Facet #}
- {{ facet_list.found_in|get_facet }}
- {{ facet_list.carrier_type|get_facet }}
- {{ facet_list.language|get_facet }}
- {{ facet_list.publish_date|get_facet }}
+ {% for facet in facet_list %}
+ {{ facet|get_facet }}
+ {% endfor %}
 </div>
 
 

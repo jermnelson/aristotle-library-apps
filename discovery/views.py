@@ -46,6 +46,7 @@ def app(request):
 
 	    message = 'Results for {0}'.format(query)
             results = bibframe_search.creative_works()
+            facet_list = bibframe_search.facets
 	    if len(results) < 1:
                 message = 'No Results found for {0}'.format(query)
 	else:

@@ -11,6 +11,7 @@ except ImportError, e:
     RLSP_CLUSTER = None
 import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
+from bibframe.models import Work
 
 __author__ = "Jeremy Nelson"
 
@@ -58,13 +59,13 @@ class AccessFacet(Facet):
         kwargs['name'] = 'Access'
         kwargs['items'] = [
             FacetItem(
-                key='bibframe:Annotation:Facet:Access:In the Library',
+                key='bf:Annotation:Facet:Access:In the Library',
                 redis=kwargs['redis']),
             FacetItem(
-                key='bibframe:Annotation:Facet:Access:Online',
+                key='bf:Annotation:Facet:Access:Online',
                 redis=kwargs['redis'])]
         super(AccessFacet, self).__init__(**kwargs)
-        #self.location_codes = kwargs.get('location_codes',[])
+        #self.location_codxes = kwargs.get('location_codes',[])
         #for code in self.location_codes:
             #code_key = "bibframe:Annotation:Facet:Location:{0}".format(code)
             #child_facet = Facet(redis=self.redis_ds,
@@ -154,7 +155,7 @@ class BIBFRAMESearch(object):
         self.type_of = kwargs.get('type_of', 'kw')
         self.annotation_ds = kwargs.get('annotation_ds', ANNOTATION_REDIS)
 	self.authority_ds = kwargs.get('authority_ds', AUTHORITY_REDIS)
-	self.creative_wrk_ds = kwargs.get('creative_wrk_ds', CREATIVE_WORK_REDIS)
+	self.creative_work_ds = kwargs.get('creative_wrk_ds', CREATIVE_WORK_REDIS)
         self.instance_ds = kwargs.get('instance_ds', INSTANCE_REDIS)
         self.operational_ds = kwargs.get('operational_ds', OPERATIONAL_REDIS)
         search_key = kwargs.get('search_key', None)
@@ -172,7 +173,7 @@ class BIBFRAMESearch(object):
             self.search_key = 'rlsp-query:{0}'.format(
                                    self.operational_ds.incr('global rlsp-query'))
             self.operational_ds.expire(self.search_key, 900)
-	self.fails = []
+	self.facets, self.fails = [], []
 
     def __json__(self, with_results=True):
         """
@@ -232,6 +233,10 @@ class BIBFRAMESearch(object):
         for work_key in found_creators:
              self.operational_ds.sadd(self.search_key,
                                       work_key)
+             for instance_key in list(self.creative_work_ds.smembers(
+                                          '{0}:bf:Instances'.format(work_key))):
+                 self.operational_ds.sadd(self.search_key, 
+                                          instance_key)
 
 
     def creative_works(self):
@@ -252,12 +257,20 @@ class BIBFRAMESearch(object):
                       'bf:Annotation:Facet:LOCFirstLetters:sort',
                       'bf:Annotation:Facet:Languages',
                       'bf:Annotation:Facet:PublicationDate']
-        facets = {'Formats': { 'items':{}, 'count':0}}
-
-        for format_key in self.annotation_ds.zrange('bf:Annotation:Facet:formats',
+        format_facet = {'name':'Formats',
+                       'items': [], 
+                       'count': 0}
+        for format_key in self.annotation_ds.zrange('bf:Annotation:Facet:Formats',
                                                     0,
                                                     -1):
-            pass
+            entity_keys = self.operational_ds.sinter(format_key, self.search_key)
+            entity_count = len(entity_keys)
+            format_facet['items'].append(
+                {'name': format_key.split(":")[-1],
+                 'count': entity_count})
+            format_facet['count'] += entity_count
+            #NEED TO SORT ITEMS BY COUNT format_facet['items'].sort(key='count)
+        self.facets.append(format_facet)
 
 
     def journal_title(self):
@@ -313,10 +326,16 @@ class BIBFRAMESearch(object):
 
     def title(self):
         # Search using Title App
-        found_titles = title_app.search_title(self.query,self.creative_wrk_ds)
+        found_titles = title_app.search_title(self.query,
+                                              self.creative_work_ds)
         for title_key in found_titles:
             self.operational_ds.sadd(self.search_key,
                                      title_key)
+            for instance_key in list(self.creative_work_ds.smembers(
+                                          '{0}:bf:Instances'.format(title_key))):
+                 self.operational_ds.sadd(self.search_key, 
+                                          instance_key)
+
 
 
 def get_news():
