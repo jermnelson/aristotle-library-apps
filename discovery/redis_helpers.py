@@ -252,25 +252,57 @@ class BIBFRAMESearch(object):
         return works
         
 
+    def __generate_facet__(self, name, sort_key):
+        facet = {'name': name,
+                 'items': [],
+                 'count': 0}
+        for facet_key in self.annotation_ds.zrevrange(sort_key,
+                                                      0,
+                                                      -1):
+            entity_keys = self.operational_ds.sinter(facet_key, 
+                                                     self.search_key)
+            entity_count = len(entity_keys)
+            if entity_count > 0:
+                facet['items'].append(
+                    {'name': facet_key.split(":")[-1],
+                     'count': entity_count})
+                facet['count'] += entity_count
+        return facet
+            
+
+
     def generate_facets(self):
         facet_keys = ['bf:Annotation:Facet:formats',
                       'bf:Annotation:Facet:LOCFirstLetters:sort',
                       'bf:Annotation:Facet:Languages',
                       'bf:Annotation:Facet:PublicationDate']
-        format_facet = {'name':'Formats',
-                       'items': [], 
-                       'count': 0}
-        for format_key in self.annotation_ds.zrange('bf:Annotation:Facet:Formats',
-                                                    0,
-                                                    -1):
-            entity_keys = self.operational_ds.sinter(format_key, self.search_key)
-            entity_count = len(entity_keys)
-            format_facet['items'].append(
-                {'name': format_key.split(":")[-1],
-                 'count': entity_count})
-            format_facet['count'] += entity_count
-            #NEED TO SORT ITEMS BY COUNT format_facet['items'].sort(key='count)
-        self.facets.append(format_facet)
+        self.facets.append(self.__generate_facet__('Formats',
+                                                   'bf:Annotation:Facet:Formats'))
+        self.facets.append(self.__generate_facet__('Languages',
+                                                   'bf:Annotation:Facet:Languages'))
+        lib_location = {'name': 'Libraries',
+                        'items': [],
+                        'count': 0}
+        for lib_key in  self.operational_ds.hvals('prospector-institution-codes'):
+            holdings = self.annotation_ds.smembers("{0}:bf:Holdings".format(lib_key))
+            instance_keys = set()
+            for holding_key in holdings:
+                instance_keys.add(self.annotation_ds.hget(holding_key,
+                                                          'annotates'))
+            search_set = self.operational_ds.smembers(self.search_key)
+            lib_results = instance_keys.intersection(search_set)
+            if len(lib_results) > 0:
+                lib_location['items'].append({'name': self.authority_ds.hget(lib_key, 
+                                                                             'label'),
+                                              'count': len(lib_results)})
+            lib_location['count'] += len(lib_results)
+        lib_location['items'].sort(key=lambda x: x.get('count', 0))
+        lib_location['items'].reverse()
+        self.facets.append(lib_location)
+                
+            
+        
+            
 
 
     def journal_title(self):
@@ -352,8 +384,10 @@ Works={0}<br>Instances={1}<br>Person={2}</p>
                                     RLSP_CLUSTER.dbsize())}
         news.append(item)
         body_html = '<ul>'
-        for i in xrange(1, 1 + int(RLSP_CLUSTER.get('global bf:Organization'))):
-            org_key = 'bf:Organization:{0}'.format(i)
+        for org_key in  RLSP_CLUSTER.zrevrange('prospector-holdings',
+                                               0,
+                                               -1):
+
             body_html += '''<li>{0} Total Holdings={1}</li>'''.format(
                              RLSP_CLUSTER.hget(org_key, 'label'),
                              RLSP_CLUSTER.scard('{0}:bf:Holdings'.format(org_key)))
