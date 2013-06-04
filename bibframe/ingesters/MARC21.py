@@ -1008,7 +1008,7 @@ class MARC21toBIBFRAME(MARC21Ingester):
         finish_instance = datetime.datetime.utcnow()
         self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
         if self.marc2creative_work.creative_work.title is not None:
-            self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:preferredTitleOfWork')
+            self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:title')
                                                         
         self.marc2instance.instance.save()
         work_instances_key = "{0}:bf:Instances".format(self.marc2creative_work.creative_work.redis_key)
@@ -1674,7 +1674,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             raw_title += ' {0}'.format(subfield_b)
             if raw_title.startswith("..."):
                 raw_title = raw_title.replace("...","")
-            self.entity_info['title'] = {'rda:preferredTitleForTheWork':raw_title,
+            self.entity_info['title'] = {'rda:title':raw_title,
 			'sort':raw_title.lower()}
             indicator_one = title_field.indicators[1]
             try:

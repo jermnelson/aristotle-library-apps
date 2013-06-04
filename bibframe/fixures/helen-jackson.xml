@@ -1,0 +1,155 @@
+
+<mods:mods xmlns="http://www.loc.gov/mods/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <mods:titleInfo>
+    <mods:title>Jackson, Helen</mods:title>
+  </mods:titleInfo>
+  <mods:name type="personal">
+    <mods:namePart>Finley, Judith Reid, 1936-</mods:namePart>
+    <mods:role>
+      <mods:roleTerm authority="marcrelator" type="text">creator</mods:roleTerm>
+    </mods:role>
+  </mods:name>
+  <mods:typeOfResource>mixed material</mods:typeOfResource>
+  <mods:originInfo>
+    <mods:place>
+      <mods:placeTerm>Colorado Springs, Colorado</mods:placeTerm>
+    </mods:place>
+    <mods:publisher>Colorado College</mods:publisher>
+    <mods:dateCreated keyDate="yes">1977-10-25</mods:dateCreated>
+    <mods:dateCaptured>2010-04-07</mods:dateCaptured>
+    <mods:place>
+      <mods:placeTerm type="text"></mods:placeTerm>
+    </mods:place>
+    <mods:dateIssued></mods:dateIssued>
+    <mods:copyrightDate></mods:copyrightDate>
+    <mods:dateOther></mods:dateOther>
+    <mods:frequency></mods:frequency>
+  </mods:originInfo>
+  <mods:language type="text">
+    <mods:languageTerm>eng</mods:languageTerm>
+  </mods:language>
+  <mods:physicalDescription>
+    <mods:extent></mods:extent>
+    <mods:digitalOrigin>reformatted digital</mods:digitalOrigin>
+    <mods:form></mods:form>
+    <mods:note></mods:note>
+  </mods:physicalDescription>
+  <mods:abstract>Helen Jackson, born in Colorado Springs in 1890, gave this interview at the age of 87. Her father, William Sharpless Jackson, was a close associate of General Palmer, and he served on the Colorado College Board of Trustees between 1874 and 1917. Her brother, William S. Jackson, Jr., served as a trustee for 50 years between 1925 and 1975. One of seven children, Miss Jackson was the daughter of William S. Jackson, Sr.&apos;s second wife, Helen Fisk Banfield, and a great-niece of his first wife, the writer Helen Hunt. Miss Jackson graduated from Cutler Academy in 1907, received her B.A. at Vassar in 1912, and an M.A. from Colorado College in 1915. She taught school for many years at the Dudley Road School in Massachusetts, before returning to Colorado Springs around 1942 to become custodian of the Jackson family home at 228 East Kiowa. When the home was torn down in 1961 and reconstructed at the Pioneer Museum, Miss Jackson became the interpreter of its history to thousands of museum visitors, especially area school children.</mods:abstract>
+  <mods:targetAudience></mods:targetAudience>
+  <mods:note></mods:note>
+  <mods:note type="admin">Digitized from the original Special Collections Audio tape R20. This interview is part of a larger collection totaling 89 individuals. Interview transcripts converted to PDF/A from Microsoft Word. Other file materials, biographical data sheets, indexes, legal releases scanned from originals and converted to text searchable PDF/A using Fujitsu 4150 scanner and Scandallpro software version 1.5. Scanned at 400 dpi. Photos scanned at 500 dpi and saved as jpeg. There are 131 preservation wave files (44.1 kHz, 16-bit) and 131 delivery mp3 files (128 kbps) in the set. Each file represents up to an hour of material, equivalent to one side of a reel-to-reel tape or both sides of a cassette tape. The 262 files are now located on both of two hard drives in Special Collections, the master drive (A1) formatted for Mac and a backup drive (B1) formatted for PC. (.wav preservation masters created by Tom Sanny using Final Cut Pro. Analog tapes digitized as QuickTime 44k16b .mov files. Dead air edited out and sound levels adjusted ; .wav files exported using FCP QuickTime Conversion tool ; .mp3 files created from .wav files using Switch.) All files are monaural.</mods:note>
+  <mods:subject>
+    <mods:topic>Oral history</mods:topic>
+  </mods:subject>
+  <mods:subject>
+    <mods:topic>Universities and colleges</mods:topic>
+  </mods:subject>
+  <mods:subject>
+    <mods:topic>College students</mods:topic>
+  </mods:subject>
+  <mods:subject>
+    <mods:topic>Alumni</mods:topic>
+  </mods:subject>
+  <mods:subject>
+    <mods:name type="corporate">
+      <mods:namePart>Colorado College</mods:namePart>
+    </mods:name>
+  </mods:subject>
+  <mods:subject>
+    <mods:name type="corporate">
+      <mods:namePart>Colorado College. Cutler Academy</mods:namePart>
+    </mods:name>
+  </mods:subject>
+  <mods:subject>
+    <mods:name type="personal">
+      <mods:namePart>Jackson, Helen, 1890-1987</mods:namePart>
+    </mods:name>
+  </mods:subject>
+  <mods:subject>
+    <mods:name type="personal">
+      <mods:namePart>Jackson, William Sharpless, 1836-1919</mods:namePart>
+    </mods:name>
+  </mods:subject>
+  <mods:subject>
+    <mods:name type="personal">
+      <mods:namePart>Jackson, William Sharpless, 1889-1981</mods:namePart>
+    </mods:name>
+  </mods:subject>
+  <mods:subject>
+    <mods:temporal>1910-1919</mods:temporal>
+  </mods:subject>
+  <mods:subject>
+    <mods:geographic>Colorado</mods:geographic>
+  </mods:subject>
+  <mods:subject>
+    <mods:geographic>Colorado Springs (Colo.)</mods:geographic>
+  </mods:subject>
+  <mods:subject>
+    <mods:genre>Personal narratives</mods:genre>
+  </mods:subject>
+  <mods:subject>
+    <mods:genre>Audio recording</mods:genre>
+  </mods:subject>
+  <mods:relatedItem type="series">
+    <mods:titleInfo>
+      <mods:title>Colorado College Oral History Collection</mods:title>
+    </mods:titleInfo>
+  </mods:relatedItem>
+  <mods:location>
+    <mods:url usage="primary display">http://hdl.handle.net/10176/coccc:3015</mods:url>
+  </mods:location>
+  <mods:accessCondition type="useAndReproduction">Portions of this interview may only be used for educational or scholarly purposes. All rights in the manuscript and recording, including the right to publish, are reserved to the Colorado College Tutt Library. PERMISSION TO PUBLISH IN ANY FORMAT MUST BE REQUESTED from Special Collections, Colorado College Tutt Library.</mods:accessCondition>
+  <mods:recordInfo>
+    <mods:languageOfCataloging>
+      <mods:languageTerm authority="iso639-2b" type="text">English</mods:languageTerm>
+      <mods:languageTerm authority="iso639-2b" type="code">eng</mods:languageTerm>
+    </mods:languageOfCataloging>
+  </mods:recordInfo>
+  <mods:titleInfo type="alternative">
+    <mods:title></mods:title>
+  </mods:titleInfo>
+  <mods:name type="personal">
+    <mods:namePart></mods:namePart>
+    <mods:role>
+      <mods:roleTerm authority="marcrelator" type="text">contributor</mods:roleTerm>
+    </mods:role>
+  </mods:name>
+  <mods:name type="corporate">
+    <mods:namePart></mods:namePart>
+    <mods:role>
+      <mods:roleTerm authority="marcrelator" type="text">creator</mods:roleTerm>
+    </mods:role>
+  </mods:name>
+  <mods:name type="corporate">
+    <mods:namePart></mods:namePart>
+    <mods:role>
+      <mods:roleTerm authority="marcrelator" type="text">contributor</mods:roleTerm>
+    </mods:role>
+  </mods:name>
+  <mods:genre authority="marcgt"></mods:genre>
+  <mods:note></mods:note>
+  <mods:note type="funding"></mods:note>
+  <mods:relatedItem type="host">
+    <mods:titleInfo>
+      <mods:title></mods:title>
+    </mods:titleInfo>
+  </mods:relatedItem>
+  <mods:relatedItem type="constituent">
+    <mods:titleInfo>
+      <mods:title></mods:title>
+    </mods:titleInfo>
+  </mods:relatedItem>
+  <mods:relatedItem type="preceding">
+    <mods:titleInfo>
+      <mods:title></mods:title>
+    </mods:titleInfo>
+  </mods:relatedItem>
+  <mods:relatedItem type="succeeding">
+    <mods:titleInfo>
+      <mods:title></mods:title>
+    </mods:titleInfo>
+  </mods:relatedItem>
+  <mods:identifier type="local"></mods:identifier>
+  <mods:identifier type="isbn"></mods:identifier>
+  <mods:identifier type="issn"></mods:identifier>
+</mods:mods>

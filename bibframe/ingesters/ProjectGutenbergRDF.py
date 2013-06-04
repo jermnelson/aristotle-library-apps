@@ -118,7 +118,7 @@ class ProjectGutenbergIngester(Ingester):
         ebook = rdf_xml.find('{{{0}}}ebook'.format(PGTERMS))
         dc_title = ebook.find('{{{0}}}title'.format(DCTERMS))
         if dc_title is not None:
-            return {'rda:preferredTitleForTheWork': dc_title.text}
+            return {'rda:title': dc_title.text}
         else:
             raise ValueError("Title not found")
 
@@ -154,5 +154,5 @@ class ProjectGutenbergIngester(Ingester):
                     work_key)
             instances = self.__create_instances__(rdf_xml, work_key)
             for instance_key in instances:
-                self.creative_work_ds.sadd('{0}:bibframe:Instances'.format(work_key),
+                self.creative_work_ds.sadd('{0}:bf:Instances'.format(work_key),
                                            instance_key)

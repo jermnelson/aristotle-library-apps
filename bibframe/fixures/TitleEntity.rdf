@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+            The BIBFRAME Vocabulary is a draft and under development.  It is subject to change.
+                -->
+<rdf:RDF
+  xmlns:bfabstract="http://bibframe.org/model-abstract/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/TitleEntity">
+    <dcterms:modified>2013-03-29 (Updated)</dcterms:modified>
+    <bfabstract:marcField>240, 245, 246, 247</bfabstract:marcField>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/partTitle">
+        <bfabstract:marcField>130,730,830,245,246,247,242 $p</bfabstract:marcField>
+        <rdfs:label>Part title</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/titleSource">
+        <bfabstract:marcField>210 $2</bfabstract:marcField>
+        <rdfs:label>Title source</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/titleValue">
+        <bfabstract:marcField>730,830 $t</bfabstract:marcField>
+        <bfabstract:marcField>130,245,246,247,242,222,210 $a</bfabstract:marcField>
+        <rdfs:label>Title on Instance</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/subtitle">
+        <bfabstract:marcField>245,246,247,242 $b</bfabstract:marcField>
+        <rdfs:label>Subtitle</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/titleQualifier">
+        <bfabstract:marcField>222,210 $b</bfabstract:marcField>
+        <rdfs:label>Title qualifier</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/titleDate">
+        <bfabstract:marcField>246,247 $f</bfabstract:marcField>
+        <rdfs:label>Title date</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/partEnumeration">
+        <bfabstract:marcField>130,730,830,245,246,247,242 $n</bfabstract:marcField>
+        <rdfs:label>Part enumeration</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/titleType">
+        <bfabstract:marcField>246,247 242</bfabstract:marcField>
+        <rdfs:label>Title type</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:label>Title Entity</rdfs:label>
+  </rdfs:Class>
+</rdf:RDF>
