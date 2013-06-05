@@ -38,13 +38,12 @@
   <hr>
   <div class="row-fluid">
    <div class="span3">
-    Refine by:
-    {# NEED facets include here #}    
+   {% include 'carl-facets.html' %}
    </div>
    <div class="span6">
    {% for result in results %} 
    <div>
-   {{ result.work|get_brief_heading }}
+   {{ result|get_brief_heading }}
    </div>
    {% endfor %}
    </div>

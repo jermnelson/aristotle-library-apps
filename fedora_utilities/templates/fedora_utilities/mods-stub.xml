@@ -1,7 +1,9 @@
 <mods xmlns="http://www.loc.gov/mods/v3" 
       xmlns:mods="http://www.loc.gov/mods/v3" 
       xmlns:xlink="http://www.w3.org/1999/xlink" 
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:schema="http://schema.org/"
+      schema:itemtype="{{ schema_type }}">
 <titleInfo>
  <title>{{ title }}</title>
 </titleInfo>

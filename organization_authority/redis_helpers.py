@@ -55,7 +55,7 @@ def get_or_add_organization(org_attributes,
                                 org_attributes, 
                                 authority_redis)
     else:
-        return Organization(redis_key=existing_org_keys[0],
+        return Organization(redis_key=list(existing_org_keys)[0],
                             primary_redis=authority_redis)
         	
 

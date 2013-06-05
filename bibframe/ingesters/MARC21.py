@@ -26,20 +26,13 @@ from rdflib import RDF, RDFS, Namespace
 
 from bibframe.classifiers import simple_fuzzy
 
-try:
-    import aristotle.settings as settings
-    CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
-    INSTANCE_REDIS = settings.INSTANCE_REDIS
-    AUTHORITY_REDIS = settings.AUTHORITY_REDIS
-    ANNOTATION_REDIS = settings.ANNOTATION_REDIS
-    OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
-except ImportError, e:
-    redis_host = '0.0.0.0'
-    CREATIVE_WORK_REDIS = redis.StrictRedis(port=6380)
-    INSTANCE_REDIS = redis.StrictRedis(port=6381)
-    AUTHORITY_REDIS = redis.StrictRedis(port=6382)
-    ANNOTATION_REDIS = redis.StrictRedis(port=6383)
-    OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
+
+import aristotle.settings as settings
+CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
+INSTANCE_REDIS = settings.INSTANCE_REDIS
+AUTHORITY_REDIS = settings.AUTHORITY_REDIS
+ANNOTATION_REDIS = settings.ANNOTATION_REDIS
+OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
 
 
 field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
@@ -49,6 +42,19 @@ field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
 
                                 "rb"))
 
+
+class MARC21toBIBFRAMETitleEntity(MARC21Ingester):
+
+    def ingest(self):
+        for attribute, marc_fields in TitleEntity.marc_map.iteritems():
+            for row in marc_fields:
+                fields, subfield = row.split(" $")
+                for tag in fields:
+                    marc_fields = self.record.get_fields(tag)
+                    if len(marc_fields) > 0:
+                        for field in marc_fields:
+                            if field[subfield] is not None:
+                                self.info[attribute].append(field[subfield])
 
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
@@ -1008,7 +1014,7 @@ class MARC21toBIBFRAME(MARC21Ingester):
         finish_instance = datetime.datetime.utcnow()
         self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
         if self.marc2creative_work.creative_work.title is not None:
-            self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:preferredTitleOfWork')
+            self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:title')
                                                         
         self.marc2instance.instance.save()
         work_instances_key = "{0}:bf:Instances".format(self.marc2creative_work.creative_work.redis_key)
@@ -1674,7 +1680,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             raw_title += ' {0}'.format(subfield_b)
             if raw_title.startswith("..."):
                 raw_title = raw_title.replace("...","")
-            self.entity_info['title'] = {'rda:preferredTitleForTheWork':raw_title,
+            self.entity_info['title'] = {'rda:title':raw_title,
 			'sort':raw_title.lower()}
             indicator_one = title_field.indicators[1]
             try:

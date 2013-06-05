@@ -59,8 +59,8 @@ def CheckAndAddCoverArt(covers,
                         cluster_ds=RLSP_CLUSTER):
     annotationBody, thumbnail = None, None
     def __get_image__(url):
-        if not cluster_ds.ismember('bf:CoverArt:urls',
-                                   url):
+        if not cluster_ds.sismember('bf:CoverArt:urls',
+                                    url):
             try:
                 if urllib2.urlopen(url).getcode() != 404:
                     image = urllib2.urlopen(url).read()

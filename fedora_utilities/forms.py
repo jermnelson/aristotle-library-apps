@@ -37,22 +37,24 @@ OBJECT_TEMPLATES = [(0, 'Choose model'),
 
 class AddFedoraObjectFromTemplate(forms.Form):
     admin_note = forms.CharField(label='Administrative Notes',
-                                  max_length=1500,
-                                  widget=forms.Textarea(
+                                 max_length=1500,
+                                 required=False,
+                                 widget=forms.Textarea(
                                       attrs={'rows':5}))
     collection_pid = forms.CharField(max_length=20,
                                      label="PID of Parent Collection")
-    date_created = forms.CharField(max_length=5,
-                                   label='Date Created')
+    date_created = forms.CharField(label='Date Created')
     digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
                                        label='Digital Origin',
                                        initial=1)
     description = forms.CharField(label='Description',
                                   max_length=1500,
                                   widget=forms.Textarea(
-                                      attrs={'rows':5}))
+                                      attrs={'rows':5}),
+                                  required=False)
     frequency = forms.ChoiceField(choices=MARC_FREQUENCY,
-                                  label='Frequency')
+                                  label='Frequency',
+                                  required=False)
     number_objects = forms.CharField(initial=1,
                                      label='Number of stub records',
                                      max_length=5)

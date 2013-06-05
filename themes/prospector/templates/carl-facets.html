@@ -1,0 +1,11 @@
+{% load discovery_extras %}
+{% load prospector_extras %}
+<div class="accordion" id="facets">
+ {# Found In Facet #}
+ {% for facet in facet_list %}
+ {{ facet|get_facet }}
+ {% endfor %}
+</div>
+
+
+

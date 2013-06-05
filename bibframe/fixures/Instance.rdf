@@ -1,391 +1,558 @@
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Instance">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting an individual, material embodiment of the Work.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Instance</ns0:label>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/stock-number">
-        <rdfs:label>stock number for acquisition</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">037--/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<?xml version="1.0" encoding="utf-8"?><!--
+            The BIBFRAME Vocabulary is a draft and under development.  It is subject to change.
+                -->
+<rdf:RDF
+  xmlns:bfabstract="http://bibframe.org/model-abstract/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Authority">
+    <rdfs:label>Authority</rdfs:label>
+    <bfabstract:definition>A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Annotation">
+    <bfabstract:marcField>856</bfabstract:marcField>
+    <bfabstract:definition>A resource that adds additional information to or about other BIBFRAME resources when knowing 'who' annotated it is important.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <rdfs:label>Annotation</rdfs:label>
+    <dcterms:modified>2013-04-12 (Updated definition)</dcterms:modified>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Work">
+    <rdfs:label>Work</rdfs:label>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
+    <bfabstract:definition>A resource reflecting a conceptual essence of the cataloging resource.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Instance">
+    <bfabstract:marcField>856...</bfabstract:marcField>
+    <bfabstract:marcField>260</bfabstract:marcField>
+    <bfabstract:definition>A resource reflecting an individual, material embodiment of the Work.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bfabstract:pipeline-edit>2013-04-17 (Updated 856 instance)</bfabstract:pipeline-edit>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11737193"/>
+    <bfabstract:note>An instance can be generated from an 856 pointing to a digital version of the work.For example, if $ind1=4 and $ind2=1</bfabstract:note>
+    <rdfs:label>Instance</rdfs:label>
+    <dcterms:modified>2013-04-17 (Updated)</dcterms:modified>
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/coden">
         <rdfs:label>CODEN</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">030--/a,z</bfabstract:marcField>
+        <bfabstract:marcField>030--/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/creditsNote">
-        <rdfs:label>Credits note</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">508,precede text with "Credits:</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/videorecording-identifier">
-        <rdfs:label>publisher assigned videorecording number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0284-/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/supplementaryContentNote">
-        <rdfs:label>Supplementary content note</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">504--/a+b(precede info in b with References:</bfabstract:marcField>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">525</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/lc-overseas-acq">
-        <rdfs:label>Library of Congress Overseas Acquisition Program number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">025--/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/sici">
-        <rdfs:label>Serial Item and Contribution Identifier</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">024-4/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/nbn">
-        <rdfs:label>National Bibliography Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">015--/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/variantTitle">
-        <rdfs:label>Variant title</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/associatedAgent">
-        <rdfs:label>Associated Agent</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/upc">
-        <rdfs:label>Universal Product Code</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">024-1/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/study-number">
-        <rdfs:label>original study number assigned by the producer of a computer file</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">036--/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/publisher-number">
-        <rdfs:label>other publisher assigned number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0285-/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/contentAccessabilityNote">
-        <rdfs:label>Content accessibility note</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">??</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/report-number">
-        <rdfs:label>technical report number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">088--/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/urn">
-        <rdfs:label>Uniform Resource Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0247-+2"urn"/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/music-plate">
-        <rdfs:label>music publication number assigned by publisher</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0282-/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/formatOfMusic">
-        <rdfs:label>Format of music</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">008/03 MU</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/lccn">
-        <rdfs:label>Library of Congress Control Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">010--/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/nban">
         <rdfs:label>National bibliography agency control number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">016--/a,z</bfabstract:marcField>
+        <bfabstract:marcField>016--/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/hdl">
-        <rdfs:label>handle for a resource</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">856--/u("hdl" in URI)</bfabstract:marcField>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/serialFirstIssue">
+        <rdfs:label>Serial first issue</rdfs:label>
+        <bfabstract:marcField>362 $a, if i1=0, text before the hyphen</bfabstract:marcField>
+        <bfabstract:marcField>if i1=1, transcribe content of $a</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/postal-registration">
-        <rdfs:label>postal registration number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">032--/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/iso">
-        <rdfs:label>International Organization for Standardization standard number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0247-+2"iso"/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/aspectRatio">
-        <rdfs:label>Aspect ratio</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">007/04(m)</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/instanceOf">
-        <rdfs:label>Instance of</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/issn">
-        <rdfs:label>International Standard Serial Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">022--/a,z,y</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/abbreviatedTitle">
-        <rdfs:label>Abbreviated title</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/fingerprint">
-        <rdfs:label>fingerprint identifier</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">026--/e</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/isrc">
-        <rdfs:label>International Standard Recording Code</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">024-0/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/note">
-        <rdfs:label>Note</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">500--/3+a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/system-number">
-        <rdfs:label>system control number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">035--/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/performerNote">
-        <rdfs:label>Performer note</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">511, precede text with "Cast:"</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/ansi">
         <rdfs:label>American National Standard Institute Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0247-+2"ansi"/a,z</bfabstract:marcField>
+        <bfabstract:marcField>0247-+2"ansi"/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/ismn">
-        <rdfs:label>International Standard Music Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">024-2/a,z</bfabstract:marcField>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/urn">
+        <rdfs:label>Uniform Resource Number</rdfs:label>
+        <bfabstract:marcField>0247-+2"urn"/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/report-number">
+        <rdfs:label>technical report number</rdfs:label>
+        <bfabstract:marcField>088--/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/responsibilityStatement">
+        <rdfs:label>Responsibility statement</rdfs:label>
+        <bfabstract:marcField>245 $c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/hdl">
+        <rdfs:label>handle for a resource</rdfs:label>
+        <bfabstract:marcField>555</bfabstract:marcField>
+        <bfabstract:marcField>856--/u("hdl" in URI)</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/hasAnnotation">
         <rdfs:label>Has Annotation</rdfs:label>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/mediumOfMusic">
-        <rdfs:label>Medium of music</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">382--/a</bfabstract:marcField>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/associatedAgent">
+        <rdfs:label>Associated Agent</rdfs:label>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/pubDate">
-        <rdfs:label>Publication Date</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/issue-number">
-        <rdfs:label>sound recording publisher issue number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0280-/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/ean">
-        <rdfs:label>International Article Identifier (EAN)</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">024-3/a,z,d(sep by -)</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/uri">
-        <rdfs:label>Uniform Resource Identifier</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0247-+2"uri"/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/isbn">
-        <rdfs:label>International Standard Bibliographic Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">020--/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/local">
         <rdfs:label>local identifier</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0247-+2"local"/a,z</bfabstract:marcField>
+        <bfabstract:marcField>0247-+2"local"/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/soundContent">
-        <rdfs:label>Sound content</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">007/05(c),007/05+06(m,g,v)</bfabstract:marcField>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/sici">
+        <rdfs:label>Serial Item and Contribution Identifier</rdfs:label>
+        <bfabstract:marcField>024-4/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/illustrativeContentNote">
-        <rdfs:label>Illustrative content note</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">008/18-21 BK</bfabstract:marcField>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">300--/b</bfabstract:marcField>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/dimensions">
+        <rdfs:label>Dimensions</rdfs:label>
+        <bfabstract:marcField>300--/c</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/title">
-        <rdfs:label>Title of Resource</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/titlePart">
-        <rdfs:label>Part of title</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/colorContent">
-        <rdfs:label>Color content</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">007/03(if /00=a,c,d,g,k,c,v) 007/09(if /00=h)</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/organizationSystem">
-        <rdfs:label>Organization System</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">351--/3+a+b=+c</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/music-publisher">
-        <rdfs:label>other publisher number for music</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0283-/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/intendedAudience">
-        <rdfs:label>Intended Audience</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">008/22MU+BK+CF+VM</bfabstract:marcField>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">521--</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/doi">
-        <rdfs:label>Digital Object Identifier</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">856--/u("doi" in URI)</bfabstract:marcField>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0247-+2"doi"/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/matrix-number">
-        <rdfs:label>sound recording publisher matrix master number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">0281-/a</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/legal-deposit">
-        <rdfs:label>copyright or legal deposit number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">017--/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/duration">
         <rdfs:label>Duration</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">306--/a</bfabstract:marcField>
+        <bfabstract:marcField>306--/a</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/statementOfResponsibility">
-        <rdfs:label>Statement of responsibility</rdfs:label>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/note">
+        <rdfs:label>Note</rdfs:label>
+        <bfabstract:marcField>500--/3+a</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/keyTitle">
+        <rdfs:label>Key title</rdfs:label>
+        <bfabstract:marcField>222 $a+$b</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/philatelicIssue">
+        <rdfs:label>Philatelic issue</rdfs:label>
+        <bfabstract:marcField>258 $a+$b</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/nbn">
+        <rdfs:label>National Bibliography Number</rdfs:label>
+        <bfabstract:marcField>015--/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/mediumOfMusic">
+        <rdfs:label>Medium of music</rdfs:label>
+        <bfabstract:marcField>382--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/system-number">
+        <rdfs:label>system control number</rdfs:label>
+        <bfabstract:marcField>$0</bfabstract:marcField>
+        <bfabstract:marcField>035--/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/custodialHistory">
+        <rdfs:label>Custodial history</rdfs:label>
+        <bfabstract:marcField>561 $a + $u</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/notation">
+        <rdfs:label>missingLabel</rdfs:label>
+        <bfabstract:marcField>008/29 value f MP, VM</bfabstract:marcField>
+        <bfabstract:marcField>546--/b</bfabstract:marcField>
+        <bfabstract:marcField>008/23 value f BK, MM, CR</bfabstract:marcField>
+        <bfabstract:marcField>007/01(f)values a,b,c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/provider">
+        <rdfs:label>Provider</rdfs:label>
+        <bfabstract:marcField>260 $a+$b+$c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/instanceOf">
+        <rdfs:label>Instance of</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/lc-overseas-acq">
+        <rdfs:label>Library of Congress Overseas Acquisition Program number</rdfs:label>
+        <bfabstract:marcField>025--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/music-plate">
+        <rdfs:label>music publication number assigned by publisher</rdfs:label>
+        <bfabstract:marcField>0282-/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/soundContent">
+        <rdfs:label>Sound content</rdfs:label>
+        <bfabstract:marcField>007/05(c),007/05+06(m,g,v)</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/awardNote">
+        <rdfs:label>Award note</rdfs:label>
+        <bfabstract:marcField>586--/3+a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/intendedAudience">
+        <rdfs:label>Intended Audience</rdfs:label>
+        <bfabstract:marcField>521--</bfabstract:marcField>
+        <bfabstract:marcField>008/22MU+BK+CF+VM</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/modeOfIssuance">
+        <rdfs:label>Mode of issuance</rdfs:label>
+        <bfabstract:marcField>LDR/07,19</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/abbreviatedTitle">
+        <rdfs:label>Abbreviated title</rdfs:label>
+        <bfabstract:marcField>210 $a+$b</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/legal-deposit">
+        <rdfs:label>copyright or legal deposit number</rdfs:label>
+        <bfabstract:marcField>017--/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/summary">
+        <rdfs:label>Summary</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/derivedFromLccn">
+        <rdfs:label>Library of Congress Control Number</rdfs:label>
+        <bfabstract:marcField>010--/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/colorContent">
+        <rdfs:label>Color content</rdfs:label>
+        <bfabstract:marcField>007/03(if /00=a,c,d,g,k,c,v) 007/09(if /00=h)</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/frequencyNote">
+        <rdfs:label>Frequency note</rdfs:label>
+        <bfabstract:marcField>310 $a + $b</bfabstract:marcField>
+        <bfabstract:marcField>321 $a + $b</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/isbn10">
+        <rdfs:label>International Standard Bibliographic Number</rdfs:label>
+        <bfabstract:marcField>020--/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/fingerprint">
+        <rdfs:label>fingerprint identifier</rdfs:label>
+        <bfabstract:marcField>026--/e</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/preferredCitation">
+        <rdfs:label>Preferred citation</rdfs:label>
+        <bfabstract:marcField>524 $a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/illustrativeContentNote">
+        <rdfs:label>Illustrative content note</rdfs:label>
+        <bfabstract:marcField>008/18-21 BK</bfabstract:marcField>
+        <bfabstract:marcField>300--/b</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/isbn13">
+        <rdfs:label>International Standard Bibliographic Number</rdfs:label>
+        <bfabstract:marcField>020--/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/production">
+        <rdfs:label>Production</rdfs:label>
+        <bfabstract:marcField>264 if i2=0 $a+$b+$c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/editionStatement">
+        <rdfs:label>Edition statement</rdfs:label>
+        <bfabstract:marcField>250--/a+b</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/aspectRatio">
+        <rdfs:label>Aspect ratio</rdfs:label>
+        <bfabstract:marcField>007/04(m)</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/formatOfMusic">
+        <rdfs:label>Format of music</rdfs:label>
+        <bfabstract:marcField>008/03 MU</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/stock-number">
+        <rdfs:label>stock number for acquisition</rdfs:label>
+        <bfabstract:marcField>037--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/postal-registration">
+        <rdfs:label>postal registration number</rdfs:label>
+        <bfabstract:marcField>032--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/supplementaryContentNote">
+        <rdfs:label>Supplementary content note</rdfs:label>
+        <bfabstract:marcField>525</bfabstract:marcField>
+        <bfabstract:marcField>504--/a+b(precede info in b with References:</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/relatedInstance">
+        <rdfs:label>Related Instance</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/distribution">
+        <rdfs:label>Distribution</rdfs:label>
+        <bfabstract:marcField>264 if i2=2 $a+$b+$c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/iso">
+        <rdfs:label>International Organization for Standardization standard number</rdfs:label>
+        <bfabstract:marcField>0247-+2"iso"/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/frequency">
+        <rdfs:label>Frequency</rdfs:label>
+        <bfabstract:marcField>310 $a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/manufacture">
+        <rdfs:label>Manufacture</rdfs:label>
+        <bfabstract:marcField>260 $e+$f+$g</bfabstract:marcField>
+        <bfabstract:marcField>264 if i2=3 $a+$b+$c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/immediateAcquisition">
+        <rdfs:label>Immediate acquisition</rdfs:label>
+        <bfabstract:marcField>541</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/serialLastIssue">
+        <rdfs:label>Serial last issue</rdfs:label>
+        <bfabstract:marcField>362 $a, if i=0, text after the hyphen</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/isrc">
+        <rdfs:label>International Standard Recording Code</rdfs:label>
+        <bfabstract:marcField>024-0/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/extent">
+        <rdfs:label>Extent</rdfs:label>
+        <bfabstract:marcField>300--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/videorecording-identifier">
+        <rdfs:label>publisher assigned videorecording number</rdfs:label>
+        <bfabstract:marcField>0284-/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/titleVariation">
+        <rdfs:label>Title variation</rdfs:label>
+        <bfabstract:marcField>246, 247</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/mediaType">
+        <rdfs:label>Media type</rdfs:label>
+        <bfabstract:marcField>007/00</bfabstract:marcField>
+        <bfabstract:marcField>337 $a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/organizationSystem">
+        <rdfs:label>Organization System</rdfs:label>
+        <bfabstract:marcField>351--/3+a+b=+c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/strn">
         <rdfs:label>Standard Technical Report Number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">027--/a,z</bfabstract:marcField>
+        <bfabstract:marcField>027--/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting an individual, material embodiment of the Work.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Instance</ns0:label>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/issue-number">
+        <rdfs:label>sound recording publisher issue number</rdfs:label>
+        <bfabstract:marcField>0280-/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/language">
+        <rdfs:label>Language</rdfs:label>
+        <bfabstract:marcField>008/35-37</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/creditsNote">
+        <rdfs:label>Credits note</rdfs:label>
+        <bfabstract:marcField>508, precede text with "Credits:</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/music-publisher">
+        <rdfs:label>other publisher number for music</rdfs:label>
+        <bfabstract:marcField>0283-/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/issn">
+        <rdfs:label>International Standard Serial Number</rdfs:label>
+        <bfabstract:marcField>022--/a,z,y</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/publisher-number">
+        <rdfs:label>other publisher assigned number</rdfs:label>
+        <bfabstract:marcField>0285-/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/contentAccessabilityNote">
+        <rdfs:label>Content accessibility note</rdfs:label>
+        <bfabstract:marcField>??</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/ean">
+        <rdfs:label>International Article Identifier (EAN)</rdfs:label>
+        <bfabstract:marcField>024-3/a,z,d(sep by -)</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/title">
+        <rdfs:label>Title</rdfs:label>
+        <bfabstract:marcField>245 $a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/performerNote">
+        <rdfs:label>Performer note</rdfs:label>
+        <bfabstract:marcField>511, precede text with "Cast:"</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/matrix-number">
+        <rdfs:label>sound recording publisher matrix master number</rdfs:label>
+        <bfabstract:marcField>0281-/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/uri">
+        <rdfs:label>Uniform Resource Identifier</rdfs:label>
+        <bfabstract:marcField>0247-+2"uri"/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/publication">
+        <rdfs:label>Publication</rdfs:label>
+        <bfabstract:marcField>264 if i2=1 $a+$b+$c</bfabstract:marcField>
+        <bfabstract:marcField>260 $a+$b+$c</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/upc">
+        <rdfs:label>Universal Product Code</rdfs:label>
+        <bfabstract:marcField>024-1/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/carrierType">
+        <rdfs:label>Carrier type</rdfs:label>
+        <bfabstract:marcField>338 $a</bfabstract:marcField>
+        <bfabstract:marcField>007/01</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/ismn">
+        <rdfs:label>International Standard Music Number</rdfs:label>
+        <bfabstract:marcField>024-2/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/doi">
+        <rdfs:label>Digital Object Identifier</rdfs:label>
+        <bfabstract:marcField>856--/u("doi" in URI)</bfabstract:marcField>
+        <bfabstract:marcField>0247-+2"doi"/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/study-number">
+        <rdfs:label>original study number assigned by the producer of a computer file</rdfs:label>
+        <bfabstract:marcField>036--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+  </rdfs:Class>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/description">
+    <rdfs:label>Description of resource</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Cartographic">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Instance"/>
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Work"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Cartographic</ns0:label>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/authorizedAccessPoint">
+    <rdfs:label>Authorized access point</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Resource">
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Resource</ns0:label>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/description">
-        <rdfs:label>Description of resource</rdfs:label>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Resource">
+    <rdfs:label>Resource</rdfs:label>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/relatedResource">
+        <rdfs:label>Related resource</rdfs:label>
+        <bfabstract:marcField>787</bfabstract:marcField>
+        <bfabstract:marcField>730,740, and i2 not 2</bfabstract:marcField>
+        <bfabstract:marcField>700,710,711, with $t and i2 not 2</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/authorizedAccessPoint">
-        <rdfs:label>Authorized access point</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/identifier">
-        <rdfs:label>identifier</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/authorizedAccessPoint"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/description"/>
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/label">
         <rdfs:label>Label for resource</rdfs:label>
       </rdf:Description>
     </rdfs:range>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Annotation">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource that decorates other BIBFRAME resources with additional information.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Annotation</ns0:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Work">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting a conceptual essence of the cataloging resource.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Work</ns0:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Authority">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Authority</ns0:label>
-  </rdf:Description>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/identifier">
+        <rdfs:label>identifier</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+  </rdfs:Class>
 </rdf:RDF>

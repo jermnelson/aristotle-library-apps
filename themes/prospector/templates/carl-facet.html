@@ -1,0 +1,23 @@
+<div class="accordion-group">
+ <div class="accordion-heading">
+  <a class="accordion-toggle"
+     data-toggle="collapse"
+     data-parent="#facets"
+     href="#{{ facet.name|slugify }}-results">
+   <i class="icon-chevron-down"></i>
+   {{ facet.name }}
+ </a>
+ </div>
+ <div id="{{ facet.name|slugify }}-results" class="accordion-body collapse in">
+  <div class="accordion-inner">
+   <ul class="unstyled">
+   {% for item in facet.items %}
+    <li><a 
+         href="/apps/discovery/facet/{{ facet.name|slugify }}/{{ item.name|slugify }}">
+       {{ item.name }} ({{ item.count }})</a>
+    </li>
+   {% endfor %}
+   </ul>
+  </div>
+ </div>
+</div>
