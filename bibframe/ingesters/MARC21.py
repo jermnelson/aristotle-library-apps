@@ -26,20 +26,13 @@ from rdflib import RDF, RDFS, Namespace
 
 from bibframe.classifiers import simple_fuzzy
 
-try:
-    import aristotle.settings as settings
-    CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
-    INSTANCE_REDIS = settings.INSTANCE_REDIS
-    AUTHORITY_REDIS = settings.AUTHORITY_REDIS
-    ANNOTATION_REDIS = settings.ANNOTATION_REDIS
-    OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
-except ImportError, e:
-    redis_host = '0.0.0.0'
-    CREATIVE_WORK_REDIS = redis.StrictRedis(port=6380)
-    INSTANCE_REDIS = redis.StrictRedis(port=6381)
-    AUTHORITY_REDIS = redis.StrictRedis(port=6382)
-    ANNOTATION_REDIS = redis.StrictRedis(port=6383)
-    OPERATIONAL_REDIS = redis.StrictRedis(port=6379)
+
+import aristotle.settings as settings
+CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
+INSTANCE_REDIS = settings.INSTANCE_REDIS
+AUTHORITY_REDIS = settings.AUTHORITY_REDIS
+ANNOTATION_REDIS = settings.ANNOTATION_REDIS
+OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
 
 
 field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
@@ -49,6 +42,19 @@ field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
 
                                 "rb"))
 
+
+class MARC21toBIBFRAMETitleEntity(MARC21Ingester):
+
+    def ingest(self):
+        for attribute, marc_fields in TitleEntity.marc_map.iteritems():
+            for row in marc_fields:
+                fields, subfield = row.split(" $")
+                for tag in fields:
+                    marc_fields = self.record.get_fields(tag)
+                    if len(marc_fields) > 0:
+                        for field in marc_fields:
+                            if field[subfield] is not None:
+                                self.info[attribute].append(field[subfield])
 
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")

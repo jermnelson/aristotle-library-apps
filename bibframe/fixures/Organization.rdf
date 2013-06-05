@@ -1,167 +1,178 @@
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Organization">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Agent"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Organization</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">110,410,610,710,810 I1=0 or 2</ns0:marcField>
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Agent"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Organization</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">110,410,610,710,810 I1=0 or 2</ns0:marcField>
+<?xml version="1.0" encoding="utf-8"?><!--
+            The BIBFRAME Vocabulary is a draft and under development.  It is subject to change.
+                -->
+<rdf:RDF
+  xmlns:bfabstract="http://bibframe.org/model-abstract/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/TemporalConcept">
+    <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <bfabstract:marcField>648</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15599751"/>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <rdfs:label>Temporal Concept</rdfs:label>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Person">
+    <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <bfabstract:marcField>100,400,600,700,800 I1=0 or 1</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15798171"/>
+    <bfabstract:pipeline-edit>2012-11-30 (New)</bfabstract:pipeline-edit>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:label>Person</rdfs:label>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Family">
+    <rdfs:label>Family</rdfs:label>
+    <bfabstract:marcField>100,400,600,700,800 I1=2</bfabstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Place">
+    <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <bfabstract:marcField>651</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15599751"/>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <rdfs:label>Place</rdfs:label>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Annotation">
+    <dcterms:modified>2013-04-12 (Updated definition)</dcterms:modified>
+    <bfabstract:marcField>856</bfabstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bfabstract:definition>A resource that adds additional information to or about other BIBFRAME resources when knowing 'who' annotated it is important.</bfabstract:definition>
+    <rdfs:label>Annotation</rdfs:label>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Instance">
+    <dcterms:modified>2013-04-17 (Updated)</dcterms:modified>
+    <bfabstract:marcField>260</bfabstract:marcField>
+    <bfabstract:marcField>856...</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11737193"/>
+    <bfabstract:note>An instance can be generated from an 856 pointing to a digital version of the work.For example, if $ind1=4 and $ind2=1</bfabstract:note>
+    <bfabstract:pipeline-edit>2013-04-17 (Updated 856 instance)</bfabstract:pipeline-edit>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bfabstract:definition>A resource reflecting an individual, material embodiment of the Work.</bfabstract:definition>
+    <rdfs:label>Instance</rdfs:label>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/ClassificationEntity">
+    <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <bfabstract:marcField>050,051,055,060,061,070,071,080,082,083,084,086--/a</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15798171"/>
+    <bfabstract:pipeline-edit>2013-04-10 (New)</bfabstract:pipeline-edit>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <rdfs:label>Classification Entity</rdfs:label>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Meeting">
+    <rdfs:label>Meeting</rdfs:label>
+    <bfabstract:marcField>111,411,611,711,811</bfabstract:marcField>
+    <bfabstract:note>RDA corporate conference</bfabstract:note>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Jurisdiction">
+    <rdfs:label>Jurisdiction</rdfs:label>
+    <bfabstract:marcField>110,410,610,710,810 I1=3</bfabstract:marcField>
+    <bfabstract:note>RDA corporate jurisdiction</bfabstract:note>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Topic">
+    <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <bfabstract:marcField>650</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15875548"/>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <rdfs:label>Topical Concept</rdfs:label>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Organization">
+    <rdfs:label>Organization</rdfs:label>
+    <bfabstract:marcField>110,410,610,710,810 I1=0 or 2</bfabstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Work">
+    <bfabstract:definition>A resource reflecting a conceptual essence of the cataloging resource.</bfabstract:definition>
+    <rdfs:label>Work</rdfs:label>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+  </rdfs:Class>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/hasAuthority">
+    <bfabstract:marcField>$0, 035</bfabstract:marcField>
+    <rdfs:label>Has Authority</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Agent">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Authority"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Agent</ns0:label>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/resourceRole">
-        <rdfs:label>Role with respect to resource.</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">if 111,411,611,711,811--j,4</bfabstract:marcField>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">100,400,600,700,800, 110,410,610,710,810--/e,4</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/orcid">
-        <rdfs:label>Open Researcher and Contributor Identifier</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">authority:0247-+2"orcid"/a,z</bfabstract:marcField>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Agent">
+    <dcterms:modified>2013-05-09 (Added example)</dcterms:modified>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17159572"/>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/viaf">
+        <bfabstract:marcField>authority:0247-+2"via,zf"/a,z</bfabstract:marcField>
         <rdfs:label>Virtual International Authority File number</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">authority:0247-+2"via,zf"/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/isni">
+        <bfabstract:marcField>authority:0247-+2"isni"/a,z</bfabstract:marcField>
         <rdfs:label>International Standard Name Identifier</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">authority:0247-+2"isni"/a,z</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/orcid">
+        <bfabstract:marcField>authority:0247-+2"orcid"/a,z</bfabstract:marcField>
+        <rdfs:label>Open Researcher and Contributor Identifier</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/resourceRole">
+        <bfabstract:marcField>if 111,411,611,711,811--j,4</bfabstract:marcField>
+        <bfabstract:marcField>100,400,600,700,800, 110,410,610,710,810--/e,4</bfabstract:marcField>
+        <rdfs:label>Role with respect to resource.</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/descriptionRole">
+        <bfabstract:marcField>If 100,110,111 then = "primary"</bfabstract:marcField>
         <rdfs:label>Role with respect to the description.</rdfs:label>
-        <bfabstract:marcField xmlns:bfabstract="http://bibframe.org/model-abstract/">If 100,110,111 then = "primary"</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Authority"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Agent</ns0:label>
+    <rdfs:label>Agent</rdfs:label>
+  </rdfs:Class>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/authorizedAccessPoint">
+    <rdfs:label>Authorized access point</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Family">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Agent"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Family</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">100,400,600,700,800 I1=2</ns0:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Meeting">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Agent"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">RDA corporate conference</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Meeting</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">111411611711811</ns0:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Jurisdiction">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Agent"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">RDA corporate jurisdiction</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Jurisdiction</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">110,410,610,710,810 I1=3</ns0:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Person">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Agent"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Person</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">100,400,600,700,800 I1=0 or 1</ns0:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Authority">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Authority</ns0:label>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Authority">
+    <bfabstract:definition>A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</bfabstract:definition>
+    <rdfs:label>Authority</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/hasAuthority"/>
+    <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/hasAnnotation">
         <rdfs:label>Has Annotation</rdfs:label>
       </rdf:Description>
     </rdfs:range>
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Authority</ns0:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/ClassificationEntity">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Authority"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Classification Entity</ns0:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/TopicalConcept">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/IndexEntity"/>
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Authority"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BIBFRAME Topical Concept</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFClass"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Topic Concept</ns0:label>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Topical Concept</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">650</ns0:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Place">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Authority"/>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Place</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">651</ns0:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/TemporalConcept">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/IndexEntity"/>
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Authority"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BIBFRAME Temporal Concept</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFClass"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temporal Concept</ns0:label>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">TemporalConcept</ns0:label>
-    <ns0:marcField xmlns:ns0="http://bibframe.org/model-abstract/">648</ns0:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Resource">
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Resource</ns0:label>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/description">
-        <rdfs:label>Description of resource</rdfs:label>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/system-number">
+        <bfabstract:marcField>035--/a,z</bfabstract:marcField>
+        <bfabstract:marcField>$0</bfabstract:marcField>
+        <rdfs:label>system control number</rdfs:label>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/authorizedAccessPoint">
-        <rdfs:label>Authorized access point</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/identifier">
-        <rdfs:label>identifier</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-      <rdf:Description rdf:about="http://bibframe.org/vocab/label">
-        <rdfs:label>Label for resource</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+  </rdfs:Class>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/relatedResource">
+    <bfabstract:marcField>700,710,711, with $t and i2 not 2</bfabstract:marcField>
+    <bfabstract:marcField>787</bfabstract:marcField>
+    <bfabstract:marcField>730,740, and i2 not 2</bfabstract:marcField>
+    <rdfs:label>Related resource</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Annotation">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource that decorates other BIBFRAME resources with additional information.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Annotation</ns0:label>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/description">
+    <rdfs:label>Description of resource</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Work">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting a conceptual essence of the cataloging resource.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Work</ns0:label>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/label">
+    <rdfs:label>Label for resource</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/Instance">
-    <ns0:subClassOf xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#" rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <ns0:comment xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">A resource reflecting an individual, material embodiment of the Work.</ns0:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <ns0:label xmlns:ns0="http://www.w3.org/2000/01/rdf-schema#">Instance</ns0:label>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/identifier">
+    <rdfs:label>identifier</rdfs:label>
   </rdf:Description>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Resource">
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/authorizedAccessPoint"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/label"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/identifier"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/description"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/relatedResource"/>
+    <rdfs:label>Resource</rdfs:label>
+  </rdfs:Class>
 </rdf:RDF>

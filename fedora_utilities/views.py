@@ -53,6 +53,7 @@ def add_stub_from_template(request):
             mods_context = {'dateCreated': add_obj_template_form.cleaned_data[
                 'date_created'],
                             'organizations': [],
+                            'schema_type': 'CreativeWork', # Default
                             'topics': [],
                             'title': add_obj_template_form.cleaned_data['title']
                             }
@@ -94,13 +95,16 @@ def add_stub_from_template(request):
             elif object_template == 2:
                 mods_context['typeOfResource'] = 'sound recording'
                 mods_context['genre'] = 'interview'
+                mods_context['schema_type'] = 'AudioObject'
             elif object_template == 3:
                 mods_context['typeOfResource'] = 'text'
                 mods_context['genre'] = 'thesis'
                 content_model = 'adr:adrETD'
+                mods_context['schema_type'] = 'ScholarlyArticle'
             elif object_template == 4:
                 mods_context['typeOfResource'] = 'moving image'
                 mods_context['genre'] = 'videorecording'
+                mods_context['schema_type'] = 'VideoObject'
             else:
                 raise ValueError("Unknown Object Template={0}".format(
                     object_template))
