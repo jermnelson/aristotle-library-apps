@@ -3,7 +3,46 @@ import pymarc
 from unittest import TestCase
 from bibframe.ingesters.MARC21 import *
 
-class MARC21toCreativeWorkTest(TestCase):
+class TestMARC21RegularExpressions(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_conditional_id(self):
+        """Tests MARC matching for such strings as:
+
+        '0247-+2"uri"/a,z'
+        """
+        result1 = CONDITIONAL_SUBFLD_ID_RE.search('0247-+2"uri"/a,z')
+        self.assert_(result1)
+        # Subfield 
+        self.assertEquals(result1.groups()[0],
+                          '2')
+        # Subfield value
+        self.assertEquals(result1.groups()[1],
+                          'uri')
+        result2 = CONDITIONAL_SUBFLD_ID_RE.search('0247-+2"ansi"/a,z')
+        self.assertEquals(result2.groups()[0],
+                          '2')
+        self.assertEquals(result2.groups()[1],
+                          'ansi')
+
+    def test_precede(self):
+        result1 = PRECEDE_RE.search('508, precede text with "Credits:')
+        self.assert_(result1)        
+        result2 = PRECEDE_RE.search('504--/a+b(precede info in b with References:')
+        self.assert_(result2 is None)
+
+    def test_subfield(self):
+        result1 = SUBFLD_RE.findall('020--/a,z')
+        self.assert_(result1)
+        self.assertEquals(result1[0], 'a')
+        self.assertEquals(result1[1], 'z')
+
+    def tearDown(self):
+        pass
+
+class TestMARC21toCreativeWork(TestCase):
 
     def setUp(self):
         marc_record = pymarc.Record()

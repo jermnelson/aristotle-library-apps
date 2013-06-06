@@ -24,7 +24,42 @@ AUTHORITY_REDIS = settings.AUTHORITY_REDIS
 ANNOTATION_REDIS = settings.ANNOTATION_REDIS
 OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
 
-
+ACTIVE_ENTITIES = ['Agent',
+                   'Annotation',
+                   'Article',
+                   'Audio',
+                   'Authority',
+                   'Book',
+                   'ClassificationEntity',
+                   'CoverArt',
+                   'Dataset',
+                   'Dissertation',
+                   'Family',
+                   'Globe',
+                   'Holding',
+                   'Instance',
+                   'Jurisdiction',
+                   'Legislation',
+                   'Manuscript',
+                   'Map',
+                   'Meeting',
+                   'MixedMaterial',
+                   'MovingImage',
+                   'NotatedMovement',
+                   'Organization',
+                   'Person',
+                   'Place',
+                   'RemoteSensingImage',
+                   'Review',
+                   'Serial',
+                   'SoftwareOrMultimedia',
+                   'StillImage',
+                   'Tactile',
+                   'TemporalConcept',
+                   'ThreeDimensionalObject',
+                   'TitleEntity',
+                   'TopicalConcept',
+                   'Work']
 #
 def load_rdf():
     """
@@ -74,44 +109,8 @@ def load_rdf():
 
 def update_rdf():
     "Helper function downloads the latest RDF documents from bibframe"
-    bf_entities = ['Agent',
-                   'Annotation',
-                   'Article',
-                   'Audio',
-                   'Authority',
-                   'Book',
-                   'ClassificationEntity',
-                   'CoverArt',
-                   'Dataset',
-                   'Dissertation',
-                   'Family',
-                   'Globe',
-                   'Holding',
-                   'Instance',
-                   'Jurisdiction',
-                   'Legislation',
-                   'Manuscript',
-                   'Map',
-                   'Meeting',
-                   'MixedMaterial',
-                   'MovingImage',
-                   'NotatedMovement',
-                   'Organization',
-                   'Person',
-                   'Place',
-                   'RemoteSensingImage',
-                   'Review',
-                   'Serial',
-                   'SoftwareOrMultimedia',
-                   'StillImage',
-                   'Tactile',
-                   'TemporalConcept',
-                   'ThreeDimensionalObject',
-                   'TitleEntity',
-                   'TopicalConcept',
-                   'Work']
     bf_base_url = 'http://bibframe.org/vocab/{0}.rdf'
-    for name in bf_entities:
+    for name in ACTIVE_ENTITIES:
         bf_url = bf_base_url.format(name)
         bf_rdf = urllib2.urlopen(bf_url).read()
         rdf_file = open(os.path.join(settings.PROJECT_HOME,
@@ -228,8 +227,11 @@ class RedisBibframeInterface(object):
 
         :param primary_redis: Redis instance used for primary 
         """
-        self.primary_redis = kwargs.pop('primary_redis')
-        self.redis_key = kwargs.pop('redis_key')
+        self.primary_redis, self.redis_key = None, None
+        if kwargs.has_key('primary_redis'):
+            self.primary_redis = kwargs.pop('primary_redis')
+        if kwargs.has_key('redis_key'):
+            self.redis_key = kwargs.pop('redis_key')
         self.__load__(**kwargs)
         
     

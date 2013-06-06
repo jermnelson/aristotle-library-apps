@@ -43,18 +43,14 @@ field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
                                 "rb"))
 
 
-class MARC21toBIBFRAMETitleEntity(MARC21Ingester):
+CONDITIONAL_SUBFLD_ID_RE = re.compile(r'[+](\w)"(\w+)"')
+IND_CONDITIONAL_RE = re.compile(r'if i(\w)=(\w)')
+PRECEDE_RE = re.compile(r'precede \w+ with "(\w+:*)')
+COMBINED_SUBFLD_RE = re.compile(r'[$](\w)[+]*')
+SUBFLD_RE = re.compile(r"[$|/|,](\w)")
+SINGLE_TAG_IND_RE = re.compile(r'(\d{3})(\d|[-])(\d|[-])')
+TAGS_RE = re.compile(r"(\d{3}),*-*")
 
-    def ingest(self):
-        for attribute, marc_fields in TitleEntity.marc_map.iteritems():
-            for row in marc_fields:
-                fields, subfield = row.split(" $")
-                for tag in fields:
-                    marc_fields = self.record.get_fields(tag)
-                    if len(marc_fields) > 0:
-                        for field in marc_fields:
-                            if field[subfield] is not None:
-                                self.info[attribute].append(field[subfield])
 
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
