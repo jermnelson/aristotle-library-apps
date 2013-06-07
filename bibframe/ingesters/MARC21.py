@@ -43,13 +43,13 @@ field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
                                 "rb"))
 
 
-CONDITIONAL_SUBFLD_ID_RE = re.compile(r'[+](\w)"(\w+)"')
-IND_CONDITIONAL_RE = re.compile(r'if i(\w)=(\w)')
-PRECEDE_RE = re.compile(r'precede \w+ with "(\w+:*)')
-COMBINED_SUBFLD_RE = re.compile(r'[$](\w)[+]*')
-SUBFLD_RE = re.compile(r"[$|/|,](\w)")
+CONDITIONAL_SUBFLD_ID_RE = re.compile(r'[+](?P<indicator2>\w)"(?P<fld_value>\w+)"')
+IND_CONDITIONAL_RE = re.compile(r'if i(?P<indicator>\w)=(?P<test>\w)')
+PRECEDE_RE = re.compile(r'precede \w+ with "(?P<prepend>\w+:*)')
+COMBINED_SUBFLD_RE = re.compile(r'[$](?P<subfld>\w)[+]*')
+SUBFLD_RE = re.compile(r"[$|/|,](?P<subfld>\w)")
 SINGLE_TAG_IND_RE = re.compile(r'(\d{3})(\d|[-])(\d|[-])')
-TAGS_RE = re.compile(r"(\d{3}),*-*")
+TAGS_RE = re.compile(r"(?P<tag>\d{3}),*-*")
 
 
 
