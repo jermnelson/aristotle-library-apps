@@ -45,7 +45,9 @@ ACTIVE_ENTITIES = ['Agent',
                    'Meeting',
                    'MixedMaterial',
                    'MovingImage',
+                   'NonmusicalAudio',
                    'NotatedMovement',
+                   'NotatedMusic',
                    'Organization',
                    'Person',
                    'Place',
@@ -60,8 +62,57 @@ ACTIVE_ENTITIES = ['Agent',
                    'TitleEntity',
                    'TopicalConcept',
                    'Work']
-#
+
 def load_rdf():
+    "Helper funcition creates BIBFRAME classes from vocab.rdf"
+    vocab_rdf = etree.parse(os.path.join(settings.PROJECT_HOME,
+                                         'bibframe',
+                                         'fixures',
+                                         'vocab.rdf'))
+    rdf_classes = {}
+    rdf_class_order = []
+    rdfs_class_elems = vocab_rdf.findall('{{{0}}}Class'.format(RDFS))
+    for row in rdfs_class_elems:
+        class_name = os.path.split(
+            row.attrib.get('{{{0}}}about'.format(RDF)))[-1]
+        rdf_class_order.append(class_name)
+        parent_class = row.find("{{{0}}}subClassOf".format(RDFS))
+        if parent_class is not None:
+            parent_name = os.path.split(
+                parent_class.attrib.get('{{{0}}Resource'.format(RDFS)))[-1]
+        else:
+            parent_name = None
+        rdf_classes[class_name] = {'attributes': {},
+                                   'children': [],
+                                   'parent': parent_name}
+    rdfs_resources_elems = bibframe_xml.findall("{{{0}}}Resource".format(RDFS))
+    for row in rdfs_resources:
+        attribute_uri = row.attrib.get('{{{0}}}about'.format(RDF))
+        attrib_name = os.path.split(attribute_uri)[-1]
+        marc_fields = row.findall('{{{0}}}marcField'.format(BF_ABSTRACT))
+        for field in marc_fields:
+            if marc_mapping.has_key(attrib_name):
+                marc_mapping[attrib_name].append(field.text)
+            else:
+                marc_mapping[attrib_name] = [field.text,]        
+        domains = row.findall('{{{0}}}domain'.format(RDFS))
+        for domain in domains:
+            domain_name = os.path.split(
+                domain.attrib.get('{{{0}}}resource'.format(RDF)))[-1]
+            if rdf_classes.has_key(domain_name) is False:
+                raise ValueError("Unknown BIBFRAME class {0}".format(
+                    domain_name))
+            rdf_classes[domain_name]['attributes'][attrib_name] = {
+                'uri': attribute_uri}
+    
+        
+        
+    
+    
+
+
+#
+def old_load_rdf():
     """
     Helper function loads all rdf files in the Fixures directory, creating
     attributes that are associated with each class

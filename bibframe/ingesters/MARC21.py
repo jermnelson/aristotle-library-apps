@@ -15,6 +15,9 @@ import redis
 import sys
 import time
 from bibframe.models import Annotation, Organization, Work, Holding, Instance, Person
+from bibframe.models import Book, Cartography, MovingImage, MusicalAudio 
+from bibframe.models import NonmusicalAudio, NotatedMusic, SoftwareOrMultimedia
+from bibframe.models import StillImage, ThreeDimensionalObject
 from bibframe.ingesters.Ingester import Ingester, ClusterIngester
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
@@ -1393,359 +1396,451 @@ class MARC21toSubjects(MARC21Ingester):
         self.extract_genre()
         self.extract_topical()
 
+class MARC21BIBFRAMEIngester(object):
+    "Base RLSP BIBFRAME Ingester class for a MARC21 Record"
 
-class MARC21toCreativeWork(MARC21Ingester):
-    """
-    MARC21toWork ingests a MARC21 record into the BIBFRAME Redis datastore
-    """
+    def __init__(self, **kwargs):
+        """Creates an Ingester with basic parameters
 
-    def __init__(self,**kwargs):
+        Keywords:
+        record -- MARC21 Record
+        redis_datastore -- Single Redis instance or Redis Cluster 
         """
-        Creates a MARC21toWork Ingester
-        """
-        super(MARC21toCreativeWork,self).__init__(**kwargs)
-        self.creative_work = None
-
-    def extract_classification(self):
-        """
-        Extracts classification from MARC
-        """
-        class_vals = []
-        fields = self.record.get_fields('084','086')
-        for field in fields:
-            if field.tag == '084':
-                class_vals.append(field.value())
-            if field.tag == '086':
-                class_vals.append(field['a'])
-        if len(class_vals) > 1:
-            self.entity_info['classification'] = set(class_vals)
-        elif len(class_vals) == 1:
-            self.entity_info['classification'] = class_vals[0]
-
-    def extract_class_ddc(self):
-        """
-        Extracts Dewey Decimal Classification from MARC record
-        """
-        ddc_vals = []
-        fields = self.record.get_fields('082','083')
-        for field in fields:
-            if field.tag == '083':
-                ddc_vals.append('-'.join(field.get_subfields('a','c')))
-            if field.tag == '082':
-                ddc_vals.append(''.join(field.get_subfields('a')))
-        if len(ddc_vals) > 0:
-            self.entity_info['class-ddc'] = set(ddc_vals)
-
-    def extract_class_lcc(self):
-        """
-        Extracts Library of Congress Classification from MARC record
-        """
-        lcc_vals = []
-        fields = self.record.get_fields('050','051','055','060','061','070','071')
-        for field in fields:
-            if field['a'] is not None:
-                lcc_vals.append(field['a'])
-        if len(lcc_vals) > 0:
-            self.entity_info['class-lcc'] = set(lcc_vals)
-
-    def extract_class_udc(self):
-        """
-        Extracts Universal Decimal Classification Number
-        """
-        udc_values = []
-        fields = self.record.get_fields('080')
-        for field in fields:
-            udc_values.append(field.value())
-        if len(udc_values) > 0:
-            self.entity_info['class-udc'] = set(udc_values)
-
-    def extract_contentCoverage(self):
-        """
-        Extracts Nature of Content
-        """
-        coverages = []
-        fields = self.record.get_fields('518','513','522')
-        for field in fields:
-            if field.tag == '518':
-                if field['a'] is not None:
-                    coverages.append(field['a'])
-            if field.tag == '513':
-                if field['b'] is not None:
-                    coverages.append(field['b'])
-            if field.tag == '522':
-                if field['a'] is not None:
-                    coverages.append(field['a'])
-        if len(fields) > 0:
-            self.entity_info['contentCoverage'] = set(fields)
-
-
-
-    def extract_contentNature(self):
-        """
-        Extracts Nature of Content
-        """
-        content_natures = []
-        fields = self.record.get_fields('245','513','008','336')
-        for field in fields:
-            if field.tag == '245':
-                if field['k'] is not None:
-                    content_natures.append(field['k'])
-            if field.tag == '513':
-                if field['a'] is not None:
-                    content_natures.append(field['a'])
-            if field.tag == '008':
-                pass #! TODO need a look-up on 008 BK and CR
-            if field.tag == '336':
-                if field['a'] is not None:
-                    content_natures.append("{0}(term)".format(field['a']))
-                if field['b'] is not None:
-                    content_natures.append("{0}(code)".format(field['b']))
-        if len(content_natures) > 0:
-            self.entity_info['contentNature'] = set(content_natures)
-                                            
-            
-
-        
-    def extract_creditNotes(self):
-        """
-        Extracts creditNotes from MARC
-        """
-        credit_notes = []
-        fields = self.record.get_fields('508')
-        for field in fields:
-            credit_notes.append("Credits: {0}".format(field['a']))
-        if len(credit_notes) > 0:
-            self.entity_info['creditNote'] = set(credit_notes)
-
-    def extract_creators(self):
-        """
-        Extracts and associates bf:Authority:Person entities creators
-        work.
-        """
-        people_keys = []
-        for field in self.record.get_fields('100','700','800'):
-            if field is not None:
-                people_ingester = MARC21toPerson(cluster=self.cluster_ds,
-                                                 field=field)
-                people_ingester.ingest()
-                for person in people_ingester.people:
-                    people_keys.append(person.redis_key)
-        for person_key in people_keys:
-            if not self.entity_info.has_key('associatedAgent'):
-                self.entity_info['associatedAgent'] = set()
-            self.entity_info['associatedAgent'].add(person_key)
-            if not self.entity_info.has_key('rda:isCreatedBy'):
-                self.entity_info['rda:isCreatedBy'] = set()
-            self.entity_info['rda:isCreatedBy'].add(person_key)
-
-    def __extract_other_std_id__(self,
-                                 tag,
-                                 source_code):
-        """
-        Helper function for isan, istc and other standard fields 
-
-        :param tag: Required MARC field number
-        :param indicator1: Value of indicator, defaults to 7
-        """
-        output = []
-        fields = self.record.get_fields(tag)
-        for field in fields:    
-            if field.indicator1 == '7':
-                extracted_code = field['2']
-                if extracted_code == source_code:
-                    for subfield in field.get_subfields('a','z'):
-                        output.append(subfield)
-        return output
-                                      
-    def extract_intendedAudience(self):
-        """
-        Extracts intendedAudience
-        """
-        audiences = []
-        fields = self.record.get_fields('008','521')
-        for field in fields:
-            if field.tag == '008':
-                pass #! TODO extract type and do look up for value
-            if field.tag == '521':
-                subfield_a_lst = field.get_subfields('a')
-                for subfield in subfield_a_lst:
-                    if field.indicator1 == '0':
-                        audiences.append("Reading grade level {0}".format(subfield))
-                    elif field.indicator1 == '1':
-                        audiences.append("Interest age level {0}".format(subfield))
-                    elif field.indicator1 == '2':
-                        audiences.append("Interest grade level {0}".format(subfield))
-                    elif field.indicator1 == '3':
-                        audiences.append("Special audiences {0}".format(subfield))
-                    elif field.indicator1 == '4':
-                        audiences.append("Motivation/interest level {0}".format(subfield))
-        if len(audiences) > 0:
-            self.entity_info['intendedAudience'] = set(audiences)
-                    
-                
-
-    def extract_isan(self):
-        """
-        Extracts International Standard Audiovisual Number (isan)
-        """
-        isan_vals = self.__extract_other_std_id__('024','isan')
-        if len(isan_vals) > 1:
-            self.entity_info["isan"] = set(isan_vals)
-        elif len(isan_vals) == 1:
-            self.entity_info["isan"] = isan_vals[0]
+        self.record = kwargs.get('record', None)
+        self.redis_ds = kwargs.get('redis_datastore', None)
         
 
-    def extract_istc(self):
-        """
-        Extracts International Standard Text code (istc)
-        """
-        isan_vals = self.__extract_other_std_id__('024','istc')
-        if len(isan_vals) > 1:
-            self.entity_info["istc"] = set(isan_vals)
-        elif len(isan_vals) == 1:
-            self.entity_info["istc"] = isan_vals[0]
+        
 
-    def extract_iswc(self):
-        """
-        Extracts International Standard Mustic Work Code (iswc)
-        """
-        isan_vals = self.__extract_other_std_id__('024','iswc')
-        if len(isan_vals) > 1:
-            self.entity_info["iswc"] = set(isan_vals)
-        elif len(isan_vals) == 1:
-            self.entity_info["iswc"] = isan_vals[0]
-    
-    def extract_issnl(self):
-        """
-        Extracts linking International Standard Serial Number
-        """
-        issnl_nums = []
-        fields = self.record.get_fields('022')
-        for field in fields:
-            for subfield in field.get_subfields('1','m'):
-                issnl_nums.append(subfield)
-        if len(issnl_nums) > 0:
-            self.entity_info["issn-l"] = set(issnl_nums)
-                                           
-    def extract_note(self):
-        """
-        Extracts the note for the work
-        """
-        notes = []
-        fields = self.record.get_fields('500')
-        for field in fields:
-            subfield3 = field['3']
-            if subfield3 is not None:
-                notes.append("{0} {1}".format(subfield3,
-                                              ''.join(field.get_subfields('a'))))
-        if len(notes) > 0:
-            self.entity_info["note"] = set(notes)
-            
-    def extract_performerNote(self):
-        """
-        Extracts performerNote
-        """
-        notes = []
-        fields = self.record.get_fields('511')
-        for field in fields:
-            notes.append("Cast: {0}".format(''.join(field.get_subfields('a'))))
-        if len(notes) > 0:
-            self.entity_info["performerNote"] = set(notes)
+class MARC21toCreativeWork(MARC21BIBFRAMEIngester):
+    "RLSP ingester takes a MARC21 record, creates/gets CreativeWork + children"
 
-    def extract_subjects(self):
-        """
-        Extracts amd associates bf:Authority:rda:Subjects entities
-        with the creators work.
-        """
-        subject_keys = []
+    def __init__(self, **kwargs):
+        """Creates a MARC21toCreativeWork Ingester instance.
 
-
-    def extract_title(self):
+        Keywords:
+        record -- MARC21 record
         """
-        Extracts rda:titleProper from MARC21 record
-        """
-        slash_re = re.compile(r"/$")
-        title_field = self.record['245']
-        if title_field is not None:
-            raw_title = ''.join(title_field.get_subfields('a'))
-            if slash_re.search(raw_title):
-                raw_title = slash_re.sub("",raw_title).strip()
-            subfield_b = ' '.join(title_field.get_subfields('b'))
-            if slash_re.search(subfield_b):
-                subfield_b = slash_re.sub("",subfield_b).strip()
-            raw_title += ' {0}'.format(subfield_b)
-            if raw_title.startswith("..."):
-                raw_title = raw_title.replace("...","")
-            self.entity_info['title'] = {'rda:title':raw_title,
-			'sort':raw_title.lower()}
-            indicator_one = title_field.indicators[1]
-            try:
-                indicator_one = int(indicator_one)
-            except ValueError:
-                indicator_one = 0
-            if int(indicator_one) > 0:
-                self.entity_info['variantTitle'] = raw_title[indicator_one:]
-                self.entity_info['title']['sort'] = self.entity_info['variantTitle']
+        super(MARC21toCreativeWork, self).__init__(**kwargs)
+        self.creative_work, self.work_classes = None, []
 
-              
-
-    def get_or_add_work(self,
-                        classifer=simple_fuzzy.WorkClassifier):
-        """
-        Method either returns a new Work or an existing work based
-        on a similarity metric, basic similarity is 100% match
-        (i.e. all fields must match or a new work is created)
-
-        This method could use other Machine Learning techniques to improve
-        the existing match with mutliple and complex rule sets. 
-        """
-        if self.entity_info.has_key('bibframe:Instances'):
-            self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
-        # If the title matches an existing Work's title and the creative work's creators, 
-        # assumes that the Creative Work is the same.
-        work_classifier = classifer(annotation_ds = self.annotation_ds,
-                                    authority_ds = self.authority_ds,
-                                    creative_work_ds = self.creative_work_ds,
-                                    instance_ds = self.instance_ds,
-                                    entity_info = self.entity_info)
-        work_classifier.classify()
-        self.creative_work = work_classifier.creative_work
-        if self.creative_work is not None:
-            self.creative_work.save()
+    def __classify_work_class__(self):
+        "Classifies the work as specific Work class based on BIBFRAME website"
+        leader = self.record.leader
+        field007 = self.record['007']
+        field336 = self.record['336']
+        if leader[6] == 'a':
+            # Book is the default for Language Material
+            self.work_classes.append(Book)
+        elif leader[6] == 'c':
+            self.work_classes.append(NotatedMusic)
+        elif leader[6] == 'd':
+            self.work_classes.append(Manuscript,
+                                     NotatedMusic)
+                                     
+        elif leader[6] == 'e' or leader[6] == 'f':
+            # Cartography is the default
+            self.work_classes.append(Cartography)
+            if leader[6] == 'f':
+                self.work_classes.append(Manuscript)
+            if field007.data[0] == 'a':
+                self.work_classes.append(Map)
+            elif field007.data[0] == 'd':
+                self.work_classes.append(Globe)
+            elif field007.data[0] == 'r':
+                self.work_classes.append(RemoteSensingImage)
+        elif leader[6] == 'g':
+            self.work_classes.append(MovingImage)
+        elif leader[6] == 'i':
+            self.work_classes.append(NonmusicalAudio)
+        elif leader[6] == 'j':
+            self.work_classes.append(MusicalAudio)
+        elif leader[6] == 'k':
+            self.work_classes.append(StillImage)
+        elif leader[6] == 'm':
+            self.work_classes.append(SoftwareOrMultimedia)
+        elif leader[6] == 'p':
+            self.work_classes.append(MixedMaterial)
+        elif leader[6] == 'r':
+            self.work_classes.append(ThreeDimensionalObject)
+        elif leader[6] == 't':
+            self.work_classes.append(Manuscript)
+    self.work_classes = list(set(self.work_classes))
 
     def ingest(self):
-        """
-        Method ingests a MARC21 record into the BIBFRAME datastore
+        "Method ingests MARC Record into RLSP"
+        self.__classify_work_class__()
+        if len(self.work_classes) == 0:
+            self.creative_work = CreativeWork()
+        elif len(self.work_classes) == 1:
+            self.creative_work = self.work_classes[0]()
+        for attribute, rule in self.creative_work.marc_map.iteritems():
+            if SUBFLD_RE.search(rule) is not None and\
+               TAGS_RE.search(SUBFIELD_RED.sub('',rule)) is not None:
+                
+            
+            if MARC21toCreativeWork
+            
+        
+        
 
-        :param record: MARC21 record
-        """
-        self.extract_classification()
-        self.extract_class_ddc()
-        self.extract_class_lcc()
-        self.extract_class_udc()
-        self.extract_contentCoverage()
-        self.extract_contentNature()
-        self.extract_creditNotes()
-        self.extract_intendedAudience()
-        self.extract_isan()
-        self.extract_istc()
-        self.extract_iswc()
-        self.extract_issnl()
-        self.extract_title()
-        self.extract_creators()
-        self.extract_note()
-        self.extract_performerNote()
-        self.get_or_add_work()
-        # Adds work to creators
-        if self.creative_work is not None:
-            if self.creative_work.associatedAgent is not None:
-                for creator_key in list(self.creative_work.associatedAgent):
-                    creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
-                    self.authority_ds.sadd(creator_set_key,
-                                           self.creative_work.redis_key)
-            self.creative_work.save()
-            generate_title_app(self.creative_work,self.creative_work_ds)
-        super(MARC21toCreativeWork, self).ingest()
+        
+        
+            
+        
+
+##class MARC21toCreativeWork(MARC21Ingester):
+##    """
+##    MARC21toWork ingests a MARC21 record into the BIBFRAME Redis datastore
+##    """
+##
+##    def __init__(self,**kwargs):
+##        """
+##        Creates a MARC21toWork Ingester
+##        """
+##        super(MARC21toCreativeWork,self).__init__(**kwargs)
+##        self.creative_work = None
+##
+##    def extract_classification(self):
+##        """
+##        Extracts classification from MARC
+##        """
+##        class_vals = []
+##        fields = self.record.get_fields('084','086')
+##        for field in fields:
+##            if field.tag == '084':
+##                class_vals.append(field.value())
+##            if field.tag == '086':
+##                class_vals.append(field['a'])
+##        if len(class_vals) > 1:
+##            self.entity_info['classification'] = set(class_vals)
+##        elif len(class_vals) == 1:
+##            self.entity_info['classification'] = class_vals[0]
+##
+##    def extract_class_ddc(self):
+##        """
+##        Extracts Dewey Decimal Classification from MARC record
+##        """
+##        ddc_vals = []
+##        fields = self.record.get_fields('082','083')
+##        for field in fields:
+##            if field.tag == '083':
+##                ddc_vals.append('-'.join(field.get_subfields('a','c')))
+##            if field.tag == '082':
+##                ddc_vals.append(''.join(field.get_subfields('a')))
+##        if len(ddc_vals) > 0:
+##            self.entity_info['class-ddc'] = set(ddc_vals)
+##
+##    def extract_class_lcc(self):
+##        """
+##        Extracts Library of Congress Classification from MARC record
+##        """
+##        lcc_vals = []
+##        fields = self.record.get_fields('050','051','055','060','061','070','071')
+##        for field in fields:
+##            if field['a'] is not None:
+##                lcc_vals.append(field['a'])
+##        if len(lcc_vals) > 0:
+##            self.entity_info['class-lcc'] = set(lcc_vals)
+##
+##    def extract_class_udc(self):
+##        """
+##        Extracts Universal Decimal Classification Number
+##        """
+##        udc_values = []
+##        fields = self.record.get_fields('080')
+##        for field in fields:
+##            udc_values.append(field.value())
+##        if len(udc_values) > 0:
+##            self.entity_info['class-udc'] = set(udc_values)
+##
+##    def extract_contentCoverage(self):
+##        """
+##        Extracts Nature of Content
+##        """
+##        coverages = []
+##        fields = self.record.get_fields('518','513','522')
+##        for field in fields:
+##            if field.tag == '518':
+##                if field['a'] is not None:
+##                    coverages.append(field['a'])
+##            if field.tag == '513':
+##                if field['b'] is not None:
+##                    coverages.append(field['b'])
+##            if field.tag == '522':
+##                if field['a'] is not None:
+##                    coverages.append(field['a'])
+##        if len(fields) > 0:
+##            self.entity_info['contentCoverage'] = set(fields)
+##
+##
+##
+##    def extract_contentNature(self):
+##        """
+##        Extracts Nature of Content
+##        """
+##        content_natures = []
+##        fields = self.record.get_fields('245','513','008','336')
+##        for field in fields:
+##            if field.tag == '245':
+##                if field['k'] is not None:
+##                    content_natures.append(field['k'])
+##            if field.tag == '513':
+##                if field['a'] is not None:
+##                    content_natures.append(field['a'])
+##            if field.tag == '008':
+##                pass #! TODO need a look-up on 008 BK and CR
+##            if field.tag == '336':
+##                if field['a'] is not None:
+##                    content_natures.append("{0}(term)".format(field['a']))
+##                if field['b'] is not None:
+##                    content_natures.append("{0}(code)".format(field['b']))
+##        if len(content_natures) > 0:
+##            self.entity_info['contentNature'] = set(content_natures)
+##                                            
+##            
+##
+##        
+##    def extract_creditNotes(self):
+##        """
+##        Extracts creditNotes from MARC
+##        """
+##        credit_notes = []
+##        fields = self.record.get_fields('508')
+##        for field in fields:
+##            credit_notes.append("Credits: {0}".format(field['a']))
+##        if len(credit_notes) > 0:
+##            self.entity_info['creditNote'] = set(credit_notes)
+##
+##    def extract_creators(self):
+##        """
+##        Extracts and associates bf:Authority:Person entities creators
+##        work.
+##        """
+##        people_keys = []
+##        for field in self.record.get_fields('100','700','800'):
+##            if field is not None:
+##                people_ingester = MARC21toPerson(cluster=self.cluster_ds,
+##                                                 field=field)
+##                people_ingester.ingest()
+##                for person in people_ingester.people:
+##                    people_keys.append(person.redis_key)
+##        for person_key in people_keys:
+##            if not self.entity_info.has_key('associatedAgent'):
+##                self.entity_info['associatedAgent'] = set()
+##            self.entity_info['associatedAgent'].add(person_key)
+##            if not self.entity_info.has_key('rda:isCreatedBy'):
+##                self.entity_info['rda:isCreatedBy'] = set()
+##            self.entity_info['rda:isCreatedBy'].add(person_key)
+##
+##    def __extract_other_std_id__(self,
+##                                 tag,
+##                                 source_code):
+##        """
+##        Helper function for isan, istc and other standard fields 
+##
+##        :param tag: Required MARC field number
+##        :param indicator1: Value of indicator, defaults to 7
+##        """
+##        output = []
+##        fields = self.record.get_fields(tag)
+##        for field in fields:    
+##            if field.indicator1 == '7':
+##                extracted_code = field['2']
+##                if extracted_code == source_code:
+##                    for subfield in field.get_subfields('a','z'):
+##                        output.append(subfield)
+##        return output
+##                                      
+##    def extract_intendedAudience(self):
+##        """
+##        Extracts intendedAudience
+##        """
+##        audiences = []
+##        fields = self.record.get_fields('008','521')
+##        for field in fields:
+##            if field.tag == '008':
+##                pass #! TODO extract type and do look up for value
+##            if field.tag == '521':
+##                subfield_a_lst = field.get_subfields('a')
+##                for subfield in subfield_a_lst:
+##                    if field.indicator1 == '0':
+##                        audiences.append("Reading grade level {0}".format(subfield))
+##                    elif field.indicator1 == '1':
+##                        audiences.append("Interest age level {0}".format(subfield))
+##                    elif field.indicator1 == '2':
+##                        audiences.append("Interest grade level {0}".format(subfield))
+##                    elif field.indicator1 == '3':
+##                        audiences.append("Special audiences {0}".format(subfield))
+##                    elif field.indicator1 == '4':
+##                        audiences.append("Motivation/interest level {0}".format(subfield))
+##        if len(audiences) > 0:
+##            self.entity_info['intendedAudience'] = set(audiences)
+##                    
+##                
+##
+##    def extract_isan(self):
+##        """
+##        Extracts International Standard Audiovisual Number (isan)
+##        """
+##        isan_vals = self.__extract_other_std_id__('024','isan')
+##        if len(isan_vals) > 1:
+##            self.entity_info["isan"] = set(isan_vals)
+##        elif len(isan_vals) == 1:
+##            self.entity_info["isan"] = isan_vals[0]
+##        
+##
+##    def extract_istc(self):
+##        """
+##        Extracts International Standard Text code (istc)
+##        """
+##        isan_vals = self.__extract_other_std_id__('024','istc')
+##        if len(isan_vals) > 1:
+##            self.entity_info["istc"] = set(isan_vals)
+##        elif len(isan_vals) == 1:
+##            self.entity_info["istc"] = isan_vals[0]
+##
+##    def extract_iswc(self):
+##        """
+##        Extracts International Standard Mustic Work Code (iswc)
+##        """
+##        isan_vals = self.__extract_other_std_id__('024','iswc')
+##        if len(isan_vals) > 1:
+##            self.entity_info["iswc"] = set(isan_vals)
+##        elif len(isan_vals) == 1:
+##            self.entity_info["iswc"] = isan_vals[0]
+##    
+##    def extract_issnl(self):
+##        """
+##        Extracts linking International Standard Serial Number
+##        """
+##        issnl_nums = []
+##        fields = self.record.get_fields('022')
+##        for field in fields:
+##            for subfield in field.get_subfields('1','m'):
+##                issnl_nums.append(subfield)
+##        if len(issnl_nums) > 0:
+##            self.entity_info["issn-l"] = set(issnl_nums)
+##                                           
+##    def extract_note(self):
+##        """
+##        Extracts the note for the work
+##        """
+##        notes = []
+##        fields = self.record.get_fields('500')
+##        for field in fields:
+##            subfield3 = field['3']
+##            if subfield3 is not None:
+##                notes.append("{0} {1}".format(subfield3,
+##                                              ''.join(field.get_subfields('a'))))
+##        if len(notes) > 0:
+##            self.entity_info["note"] = set(notes)
+##            
+##    def extract_performerNote(self):
+##        """
+##        Extracts performerNote
+##        """
+##        notes = []
+##        fields = self.record.get_fields('511')
+##        for field in fields:
+##            notes.append("Cast: {0}".format(''.join(field.get_subfields('a'))))
+##        if len(notes) > 0:
+##            self.entity_info["performerNote"] = set(notes)
+##
+##    def extract_subjects(self):
+##        """
+##        Extracts amd associates bf:Authority:rda:Subjects entities
+##        with the creators work.
+##        """
+##        subject_keys = []
+##
+##
+##    def extract_title(self):
+##        """
+##        Extracts rda:titleProper from MARC21 record
+##        """
+##        slash_re = re.compile(r"/$")
+##        title_field = self.record['245']
+##        if title_field is not None:
+##            raw_title = ''.join(title_field.get_subfields('a'))
+##            if slash_re.search(raw_title):
+##                raw_title = slash_re.sub("",raw_title).strip()
+##            subfield_b = ' '.join(title_field.get_subfields('b'))
+##            if slash_re.search(subfield_b):
+##                subfield_b = slash_re.sub("",subfield_b).strip()
+##            raw_title += ' {0}'.format(subfield_b)
+##            if raw_title.startswith("..."):
+##                raw_title = raw_title.replace("...","")
+##            self.entity_info['title'] = {'rda:title':raw_title,
+##			'sort':raw_title.lower()}
+##            indicator_one = title_field.indicators[1]
+##            try:
+##                indicator_one = int(indicator_one)
+##            except ValueError:
+##                indicator_one = 0
+##            if int(indicator_one) > 0:
+##                self.entity_info['variantTitle'] = raw_title[indicator_one:]
+##                self.entity_info['title']['sort'] = self.entity_info['variantTitle']
+##
+##              
+##
+##    def get_or_add_work(self,
+##                        classifer=simple_fuzzy.WorkClassifier):
+##        """
+##        Method either returns a new Work or an existing work based
+##        on a similarity metric, basic similarity is 100% match
+##        (i.e. all fields must match or a new work is created)
+##
+##        This method could use other Machine Learning techniques to improve
+##        the existing match with mutliple and complex rule sets. 
+##        """
+##        if self.entity_info.has_key('bibframe:Instances'):
+##            self.entity_info['bibframe:Instances'] = set(self.entity_info['bibframe:Instances'])
+##        # If the title matches an existing Work's title and the creative work's creators, 
+##        # assumes that the Creative Work is the same.
+##        work_classifier = classifer(annotation_ds = self.annotation_ds,
+##                                    authority_ds = self.authority_ds,
+##                                    creative_work_ds = self.creative_work_ds,
+##                                    instance_ds = self.instance_ds,
+##                                    entity_info = self.entity_info)
+##        work_classifier.classify()
+##        self.creative_work = work_classifier.creative_work
+##        if self.creative_work is not None:
+##            self.creative_work.save()
+##
+##    def ingest(self):
+##        """
+##        Method ingests a MARC21 record into the BIBFRAME datastore
+##
+##        :param record: MARC21 record
+##        """
+##        self.extract_classification()
+##        self.extract_class_ddc()
+##        self.extract_class_lcc()
+##        self.extract_class_udc()
+##        self.extract_contentCoverage()
+##        self.extract_contentNature()
+##        self.extract_creditNotes()
+##        self.extract_intendedAudience()
+##        self.extract_isan()
+##        self.extract_istc()
+##        self.extract_iswc()
+##        self.extract_issnl()
+##        self.extract_title()
+##        self.extract_creators()
+##        self.extract_note()
+##        self.extract_performerNote()
+##        self.get_or_add_work()
+##        # Adds work to creators
+##        if self.creative_work is not None:
+##            if self.creative_work.associatedAgent is not None:
+##                for creator_key in list(self.creative_work.associatedAgent):
+##                    creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
+##                    self.authority_ds.sadd(creator_set_key,
+##                                           self.creative_work.redis_key)
+##            self.creative_work.save()
+##            generate_title_app(self.creative_work,self.creative_work_ds)
+##        super(MARC21toCreativeWork, self).ingest()
 
 
 
