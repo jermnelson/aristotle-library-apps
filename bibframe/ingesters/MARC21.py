@@ -17,12 +17,13 @@ import time
 from bibframe.models import Annotation, Organization, Work, Holding, Instance, Person
 from bibframe.models import Book, Cartography, MovingImage, MusicalAudio 
 from bibframe.models import NonmusicalAudio, NotatedMusic, SoftwareOrMultimedia
-from bibframe.models import StillImage, ThreeDimensionalObject
+from bibframe.models import StillImage, TitleEntity, ThreeDimensionalObject
 from bibframe.ingesters.Ingester import Ingester, ClusterIngester
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
-from title_search.redis_helpers import generate_title_app, search_title
+from title_search.redis_helpers import generate_title_app, process_title
+from title_search.redis_helpers import search_title
 
 from lxml import etree
 from rdflib import RDF, RDFS, Namespace
@@ -52,9 +53,8 @@ PRECEDE_RE = re.compile(r'precede \w+ with "(?P<prepend>\w+:*)')
 COMBINED_SUBFLD_RE = re.compile(r'[$](?P<subfld>\w)[+]*')
 SUBFLD_RE = re.compile(r"[$|/|,](?P<subfld>\w)")
 SINGLE_TAG_IND_RE = re.compile(r'(\d{3})(\d|[-])(\d|[-])')
+RULE_ONE_RE = re.compile(r"\d{3},* [$|/|,](?P<subfld>\w)")
 TAGS_RE = re.compile(r"(?P<tag>\d{3}),*-*")
-
-
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
 class MARC21Helpers(object):
@@ -1398,6 +1398,7 @@ class MARC21toSubjects(MARC21Ingester):
 
 class MARC21BIBFRAMEIngester(object):
     "Base RLSP BIBFRAME Ingester class for a MARC21 Record"
+    
 
     def __init__(self, **kwargs):
         """Creates an Ingester with basic parameters
@@ -1408,7 +1409,33 @@ class MARC21BIBFRAMEIngester(object):
         """
         self.record = kwargs.get('record', None)
         self.redis_ds = kwargs.get('redis_datastore', None)
+        self.entity_info = {}
+        self.title_info = None
+
+    def __rule_one__(self, rule):
+        """Helper method for MARC rule matching
+
+        For MARC21 Rule patterns like:
+        '130,730,830,245,246,247,242 $n'
+        '222,210 $b'
+
+        Parameters:
+        rule -- Text string of MARC21 to BIBFRAME rule
+        """
         
+        values = []
+        rule_result = RULE_ONE_RE.search(rule)
+        if rule_result is not None:
+            subfield = rule_result.group('subfld')
+            tags = TAGS_RE.findall(rule)
+            for tag in tags:
+                marc_fields = self.record.get_fields(tag)
+                if marc_fields is not None:
+                    for marc_field in marc_fields:
+                        tag_value = marc_field[subfield]
+                        if tag_value is not None:
+                            values.append(tag_value)
+        return values
 
         
 
@@ -1422,7 +1449,7 @@ class MARC21toCreativeWork(MARC21BIBFRAMEIngester):
         record -- MARC21 record
         """
         super(MARC21toCreativeWork, self).__init__(**kwargs)
-        self.creative_work, self.work_classes = None, []
+        self.creative_work, self.work_classes  = None, []
 
     def __classify_work_class__(self):
         "Classifies the work as specific Work class based on BIBFRAME website"
@@ -1465,7 +1492,7 @@ class MARC21toCreativeWork(MARC21BIBFRAMEIngester):
             self.work_classes.append(ThreeDimensionalObject)
         elif leader[6] == 't':
             self.work_classes.append(Manuscript)
-    self.work_classes = list(set(self.work_classes))
+        self.work_classes = list(set(self.work_classes))
 
     def ingest(self):
         "Method ingests MARC Record into RLSP"
@@ -1474,12 +1501,132 @@ class MARC21toCreativeWork(MARC21BIBFRAMEIngester):
             self.creative_work = CreativeWork()
         elif len(self.work_classes) == 1:
             self.creative_work = self.work_classes[0]()
-        for attribute, rule in self.creative_work.marc_map.iteritems():
-            if SUBFLD_RE.search(rule) is not None and\
-               TAGS_RE.search(SUBFIELD_RED.sub('',rule)) is not None:
-                
+        for attribute, rules in self.creative_work.marc_map.iteritems():
+            values = []
+            if attribute == 'title':
+                title_ingester = MARC21toTitleEntity(
+                    redis_datastore=self.redis_ds,
+                    record=self.record)
+                title_ingester.ingest()
+                if title_ingester.title_entity is not None:
+                    title_ingester.title_entity.save()
+                    values = [title_ingester.title_entity.redis_key,]
+                continue
+            for rule in rules:
+                values.extend(self.__rule_one__(rule))
+            if len(values) > 0:
+                self.entity_info[attribute] = values
+        self.get_or_add_work()    
             
-            if MARC21toCreativeWork
+    def get_or_add_work(self,
+                        classifer=simple_fuzzy.WorkClassifier):
+        """Method returns a new Work or an existing work
+         
+        Default classifer does a similarity metric, basic similarity is 100% match
+        (i.e. all fields must match or a new work is created)
+
+        This method could use other Machine Learning techniques to improve
+        the existing match with mutliple and complex rule sets.
+
+        Keywords
+        classifier -- Classifer, default is the Simple Fuzzy Work Classifer 
+        """
+        # Assumes if 
+        if self.entity_info.has_key('bf:Instances'):
+            self.entity_info['bf:Instances'] = set(self.entity_info['bf:Instances'])
+        # If the title matches an existing Work's title and the creative work's creators, 
+        # assumes that the Creative Work is the same.
+        work_classifier = classifer(annotation_ds = self.annotation_ds,
+                                    authority_ds = self.authority_ds,
+                                    creative_work_ds = self.creative_work_ds,
+                                    instance_ds = self.instance_ds,
+                                    entity_info = self.entity_info)
+        work_classifier.classify()
+        self.creative_work = work_classifier.creative_work
+        if self.creative_work is not None:
+            self.creative_work.save()             
+                
+                
+class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
+    "Extracts BIBFRAME TitleEntity info from MARC21 record"
+
+    def __init__(self, **kwargs):
+        """Initializes MARC21toTitleEntity object
+
+        Parameters:
+        """
+        super(MARC21toTitleEntity, self).__init__(**kwargs)
+        self.title_entity = None
+
+    def __get_or_add_title_entity__(self):
+        "Helper method returns new or existing TitleEntity"
+        existing_titles = []
+        for title in self.entity_info.get('titleValue'):
+            title_string = title
+            if self.entity_info.get('subtitle') is not None:
+                title_string += " {0}".format(
+                    self.entity_info.get('subtitle'))
+            terms, normed_title = process_title(title_string)
+            print("{0} {1} {2}".format(title_string,
+                                       terms,
+                                       normed_title))            
+            title_key = 'title-normed:{0}'.format(normed_title)
+            title_members = list(self.redis_ds.smembers(title_key))
+            
+            # Returns existing TitleEntity for an exclusive match
+            if len(title_members) == 1:
+                title_entity_key = list(self.redis.smembers())[0]
+                self.title_entity = TitleEntity(
+                    redis_datastore = self.redis_ds,
+                    redis_key=title_entity_key)
+            else:
+                existing_titles.extend(title_members)
+            title_keys = ["title-normed:{0}".format(
+                x.encode('utf-8', 'ignore')) for x in terms]
+            if self.title_entity is None:
+                # Iterates through title_keys sets
+                existing_titles.extend(
+                    list(self.redis_ds.sinter(title_keys)))
+                # Multiple title keys for this title, tests equality for all attributes
+                if len(existing_titles) > 0:
+                    for title_key in existing_titles:
+                        if self.redis_ds.hgetall(title_key) == self.entity_info:
+                            self.title_entity = TitleEntity(
+                                redis_datastore=self.redis_ds,
+                                redis_key=title_key)
+                        break
+            # If title_entity is still None, create a new TitleEntity
+            if self.title_entity is None:
+                self.title_entity = TitleEntity(redis_datastore=self.redis_ds,
+                                                **self.entity_info)
+                self.title_entity.save()
+                title_keys.extend(title_key)
+                for normed_key in title_keys:
+                    self.redis_ds.sadd(normed_key,
+                                       self.title_entity.redis_key)
+                self.redis_ds.zadd('z-titles-alpha',
+                                   0,
+                                   normed_title)    
+                                    
+
+    def ingest(self):
+        "Method finds or creates a TitleEntity in RLSP"
+        for attribute, rules in TitleEntity.marc_map.iteritems():
+            values = []
+            for rule in rules:
+                values.extend(self.__rule_one__(rule))
+            if len(values) > 0:
+                self.entity_info[attribute] = values
+        
+        
+            
+            
+        
+        
+                                            
+            
+        
+   
             
         
         

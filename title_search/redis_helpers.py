@@ -138,13 +138,14 @@ def process_title(raw_title):
     raw_terms, terms = raw_title.split(" "), []
     for term in raw_terms:
         if term.lower() not in STOPWORDS: 
-	    for punc in [",",".",";",":","'",'"']:
+	    for punc in [",",".",";",":","'",'"',"/"]:
 	        term = term.replace(punc,"")
             try:
                 term = term.decode('utf-8', 'ignore')
             except UnicodeEncodeError, e:
                 pass
-            terms.append(term.upper())
+            if len(term.strip()) > 0:
+                terms.append(term.strip().upper())
     title_key = ''.join(terms)
     return terms, title_key
 

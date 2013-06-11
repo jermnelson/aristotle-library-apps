@@ -64,7 +64,7 @@ ACTIVE_ENTITIES = ['Agent',
                    'Work']
 
 def load_rdf():
-    "Helper funcition creates BIBFRAME classes from vocab.rdf"
+    "Helper function creates BIBFRAME classes from vocab.rdf"
     vocab_rdf = etree.parse(os.path.join(settings.PROJECT_HOME,
                                          'bibframe',
                                          'fixures',
@@ -78,18 +78,26 @@ def load_rdf():
         rdf_class_order.append(class_name)
         parent_class = row.find("{{{0}}}subClassOf".format(RDFS))
         if parent_class is not None:
-            parent_name = os.path.split(
-                parent_class.attrib.get('{{{0}}Resource'.format(RDFS)))[-1]
+            parent_url = parent_class.attrib.get('{{{0}}}resource'.format(RDF))
+            parent_name = os.path.split(parent_url)[-1]
+            if rdf_classes.has_key(parent_name):
+                rdf_classes[parent_name]['children'].append(class_name)
+            else:
+                rdf_classes[parent_name] = {'children': [class_name,],
+                                            'attributes': {},
+                                            'parent': None}
         else:
             parent_name = None
-        rdf_classes[class_name] = {'attributes': {},
-                                   'children': [],
-                                   'parent': parent_name}
-    rdfs_resources_elems = bibframe_xml.findall("{{{0}}}Resource".format(RDFS))
-    for row in rdfs_resources:
+        if not rdf_classes.has_key(class_name):
+            rdf_classes[class_name] = {'attributes': {'name': class_name},
+                                       'children': [],
+                                       'parent': parent_name}
+    rdfs_resources_elems = vocab_rdf.findall("{{{0}}}Resource".format(RDFS))
+    for row in rdfs_resources_elems:
         attribute_uri = row.attrib.get('{{{0}}}about'.format(RDF))
         attrib_name = os.path.split(attribute_uri)[-1]
         marc_fields = row.findall('{{{0}}}marcField'.format(BF_ABSTRACT))
+        marc_mapping = {}
         for field in marc_fields:
             if marc_mapping.has_key(attrib_name):
                 marc_mapping[attrib_name].append(field.text)
@@ -102,9 +110,27 @@ def load_rdf():
             if rdf_classes.has_key(domain_name) is False:
                 raise ValueError("Unknown BIBFRAME class {0}".format(
                     domain_name))
-            rdf_classes[domain_name]['attributes'][attrib_name] = {
-                'uri': attribute_uri}
-    
+            rdf_classes[domain_name]['attributes'][attrib_name] = None
+            if marc_mapping is not None:
+                if rdf_classes[domain_name]['attributes'].has_key('marc_map'):
+                    rdf_classes[domain_name]['attributes']['marc_map'].update(
+                        marc_mapping)
+                else:
+                    rdf_classes[domain_name]['attributes']['marc_map'] = marc_mapping
+    # Creates Classes with class hiearchy
+    for class_name in rdf_class_order:
+        parent_class = RedisBibframeInterface
+        if rdf_classes[class_name]['parent'] is not None:
+            parent_class = getattr(sys.modules[__name__],
+                                   rdf_classes[class_name]['parent'])
+                                   
+        new_class = type(class_name,
+                         (parent_class,),
+                         rdf_classes[class_name].get('attributes'))
+        setattr(sys.modules[__name__],
+                class_name,
+                new_class)
+        
         
         
     
@@ -237,8 +263,6 @@ def save_keys(entity_key,
                 redis_object.sadd(new_redis_key,
                                   member)
     elif type(value) is dict:
-        redis_object.sadd(all_keys_key,
-                          new_redis_key)
         for new_key, new_value in value.iteritems():
             redis_object.hset(new_redis_key,
                               new_key,
@@ -276,11 +300,11 @@ class RedisBibframeInterface(object):
         Initializes a RedisBibframeInterface class provides Redis support for a 
         BIBFRAME class. 
 
-        :param primary_redis: Redis instance used for primary 
+        :param redis_datastore: Redis instance used for primary 
         """
-        self.primary_redis, self.redis_key = None, None
-        if kwargs.has_key('primary_redis'):
-            self.primary_redis = kwargs.pop('primary_redis')
+        self.redis_datastore, self.redis_key = None, None
+        if kwargs.has_key('redis_datastore'):
+            self.redis_datastore = kwargs.pop('redis_datastore')
         if kwargs.has_key('redis_key'):
             self.redis_key = kwargs.pop('redis_key')
         self.__load__(**kwargs)
@@ -294,7 +318,7 @@ class RedisBibframeInterface(object):
         """
         if self.redis_key is not None:
             kwargs.update(process_key(self.redis_key,
-                                      self.primary_redis))
+                                      self.redis_datastore))
         for key, value in kwargs.iteritems():
             setattr(self,
                     key,
@@ -330,30 +354,28 @@ class RedisBibframeInterface(object):
         class's primary redis or creates a new root Redis key 
         and supporting keys to the primary redis datastore.
         """
-        if self.primary_redis is None:
-            raise ValueError("Cannot save, no primary_redis")
+        if self.redis_datastore is None:
+            raise ValueError("Cannot save, no redis_datastore")
         if self.redis_key is None:
-            count = self.primary_redis.incr("global bf:{0}".format(self.name))
+            count = self.redis_datastore.incr("global bf:{0}".format(self.name))
             self.redis_key = "bf:{0}:{1}".format(self.name,
                                                  count)
-            self.primary_redis.hset(self.redis_key,
+            self.redis_datastore.hset(self.redis_key,
                                     'created_on',
                                     datetime.datetime.utcnow().isoformat())
         else:
-            if not self.primary_redis.exists(self.redis_key):
+            if not self.redis_datastore.exists(self.redis_key):
                 error_msg = """Save failed {0} doesn't exist in
 primary redis""".format(self.redis_key)
                 raise RedisBibframeModelError(error_msg)
         # If property_name is None, save everything
         if property_name is None:
             all_properties = dir(self)
-            #redis_pipeline = self.primary_redis.pipeline()
+            #redis_pipeline = self.redis_datastore.pipeline()
             for prop in all_properties:
                 if prop.startswith("__"):
                     continue
-                elif ['name',
-                      'primary_redis',
-                      'redis_key'].count(prop) > 0:
+                elif prop == 'name' or prop.find('redis') > -1:
                     continue
                 elif inspect.ismethod(getattr(self, prop)):
                     continue
@@ -362,7 +384,7 @@ primary redis""".format(self.redis_key)
                     save_keys(self.redis_key,
                               prop,
                               prop_value,
-                              self.primary_redis)
+                              self.redis_datastore)
               #      redis_pipeline.execute()
         # Specific redis key structure to save instead of entire object, checks
         # both the instance and the instance's attributes dictionary
@@ -378,6 +400,6 @@ primary redis""".format(self.redis_key)
             save_keys(self.redis_key, 
                       property_name, 
                       prop_value, 
-                      self.primary_redis)
+                      self.redis_datastore)
 
 load_rdf()
