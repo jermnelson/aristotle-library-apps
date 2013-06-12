@@ -1,12 +1,15 @@
 # Django settings for aristotle project.
 import os.path
 
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_HOME = os.path.split(PROJECT_ROOT)[0]
 DEFAULT_CHARSET = 'utf-8'
 DEBUG = True
-DOTCLOUD = False
 TEMPLATE_DEBUG = DEBUG
+# Determines if Aristotle Library System runs with a Redis Cluster or
+# run as a single Redis Instance
+REDIS_CLUSTER_MODE = False 
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -205,8 +208,15 @@ LOGGING = {
         
     }
 }
+
 try:
     from local_settings import *
     INSTALLED_APPS.extend(ACTIVE_APPS)
+    if REDIS_CLUSTER_MODE is True:
+        REDIS_DATASTORE = REDIS_CLUSTER
+    else:
+        import redis
+        REDIS_DATASTORE = redis.StrictRedis(host=REDIS_MASTER_HOST,
+                                            port=REDIS_MASTER_PORT) 
 except ImportError:
     pass

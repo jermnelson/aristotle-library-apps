@@ -8,6 +8,7 @@ print("BEFORE settings")
 from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.shortcuts import redirect, render
@@ -17,6 +18,7 @@ import os
 import datetime
 
 
+@login_required
 def default(request):
     """
     Default view for `Fedora Batch App`_
@@ -39,7 +41,7 @@ def default(request):
                   'fedora_utilities/app.html',
                   context)
     
-
+@login_required
 def add_stub_from_template(request):
     """Handler for adding Fedora stub object using a template
 
@@ -136,7 +138,7 @@ def add_stub_from_template(request):
                                 
     
                               
-
+@login_required
 def batch_ingest(request):
     """
     Handler for batch ingest view in app
@@ -176,6 +178,7 @@ def index_solr(request):
 ##                                        SOLR_QUEUE.get())
     return output
 
+@login_required
 def object_mover(request):
     """
     Displays and process form for moving objects by their PID to

@@ -1,11 +1,18 @@
 """
  Module takes a MODS xml document and ingests into Redis Library Services
- Platform's BIBFRAME LinkedData models. 
+ Platform's BIBFRAME LinkedData models.
+
+ This module uses the following rule chaining to create BIBFRAME entities:
+ MODS->MARC21->BIBFRAME using the MODStoMARC mapping at
+ http://www.loc.gov/standards/mods/v3/mods2marc-mapping.html
+ and the MARC21toBIBFRAME mapping at bibframe.org. Additional MODS elements
+ are mapped directly to BIBFRAME if there are not equalivant mappings.
 """
 __author__ = "Jeremy Nelson"
 
 import lxml.etree as etree
 import urllib2
+from aristotle.settings import REDIS_DATASTORE
 from bibframe.classifiers import simple_fuzzy
 from bibframe.ingesters.Ingester import personal_name_parser, Ingester
 from bibframe.ingesters.Ingester import HONORIFIC_PREFIXES, HONORIFIC_SUFFIXES
@@ -119,13 +126,27 @@ class MODSIngester(Ingester):
 
     def __extract_title__(self):
         "Helper function extracts title information from MODS"
-        titles = self.mods_xml.findall(
-            '{{{0}}}titleInfo/{{{0}}}title'.format(MODS_NS))
-        title = ''
-        for row in titles:
-            if row.text is not None:
-                title += '{0} '.format(row.text)
-        return {'rda:title': title.strip()}
+        title_entities = []
+        titlesInfos = self.mods_xml.findall('{{{0}}}titleInfo'.format(MODS_NS))
+        for titleInfo in titleInfos:
+            output = {}
+            if titleInfo.attrib.get('type')is None:
+                # equalvant to MARC 245 $a
+                titleValue = titleInfo.find('{{{0}}}title'.format(MODS_NS))
+                if titleValue is not None:
+                    output['titleValue'] = titleValue.text
+                # equalvant to MARC 245 $b
+                subtitle = titleInfo.find('{{{0}}}subTitle'.format(MODS_NS))
+                if subtitle is not None:
+                    output['subtitle'] = subtitle.text
+                # equalivant to MARC 245 $p
+                partTitle = titleInfo.find('{{{0}}}partName'.format(MODS_NS))
+                if partTitle is not None:
+                    output['partTitle'] = partTitle.text
+                
+                
+                
+        
         
         
         

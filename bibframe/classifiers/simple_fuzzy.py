@@ -22,17 +22,11 @@ class SimpleFuzzyClassifier(object):
         """
         Initalizes an instance of SimpleFuzzyClassifer
 
-        :keyword annotation_ds: Annotation Redis Datastore
-        :keyword authority_ds: Authority Redis Datastore
-        :keyword creative_work_ds: Creative Work Redis Datstore
-        :keyword entity_info: A dictionary of values extracted from a record
-        :keyword instance_ds: Instance Redis Datastore
+        Keywords:
+        redis_datastore -- Redis Datastore can be a cluster
         """
-        self.annotation_ds = kwargs.get('annotation_ds', None)
-        self.authority_ds = kwargs.get('authority_ds', None)
-        self.creative_work_ds = kwargs.get('creative_work_ds', None)
-        self.instance_ds = kwargs.get('instance_ds', None)
-        self.entity_info = kwargs.get('entity_info', None)
+        self.redis_ds = kwargs.get('redis_datastore')
+
 
 
 class WorkClassifier(SimpleFuzzyClassifier):
@@ -62,8 +56,9 @@ class WorkClassifier(SimpleFuzzyClassifier):
         """
         if self.entity_info.has_key('title'):
             # Searches Redis
+            
             cw_title_keys = search_title(self.entity_info['title']['rda:preferredTitleForTheWork'],
-                                         self.creative_work_ds)
+                                         self.redis_ds)
             for creative_wrk_key in cw_title_keys:
                 if self.creative_work_ds.hexists(creative_wrk_key,
                                                  'associatedAgent'):

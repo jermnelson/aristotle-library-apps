@@ -1,7 +1,7 @@
 __author__ = "Jeremy Nelson"
 
 import json, redis, os, csv
-from bibframe.models import Instance, Holding, Work, TopicalConcept
+from bibframe.models import Instance, Holding, Work, Topic
 from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS, CREATIVE_WORK_REDIS, PROJECT_HOME
 
 alt_titles = json.load(open(os.path.join(PROJECT_HOME,
@@ -153,9 +153,9 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                                                   work_key):
                         authority_ds.sadd(subject_key, work_key)
                 else: # Assume this subject doesn't exist in the datastore
-                    new_topic = TopicalConcept(primary_redis=authority_ds,
-                                               description="Topic Used for Database-by-Subject view in dbfinder",
-                                               label=name)
+                    new_topic = Topic(primary_redis=authority_ds,
+                                      description="Topic Used for Database-by-Subject view in dbfinder",
+                                      label=name)
                     setattr(new_topic, "bibframe:Works", work_key)
                     setattr(new_topic, "prov:PrimarySource", "local")
                     new_topic.save()
