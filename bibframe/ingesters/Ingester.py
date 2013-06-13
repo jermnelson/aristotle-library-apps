@@ -94,8 +94,8 @@ class Ingester(object):
         Keywords:
         redis_datastore -- StrictRedis or RedisCluster instance
         """
-        self.redis_ds = kwargs.get('redis_datastore',
-                                   REDIS_DATASTORE)
+        self.redis_datastore = kwargs.get('redis_datastore',
+                                          REDIS_DATASTORE)
 
     def ingest(self):
         pass # Should be overridden by child classes

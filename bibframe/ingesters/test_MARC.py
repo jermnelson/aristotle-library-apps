@@ -111,7 +111,7 @@ class TestMARC21Ingester(TestCase):
     def test_rule_one(self):
         rule = '130,245,246,247,242,222,210 $a'
         values_one = self.ingester.__rule_one__(rule)
-        self.assertEquals(values_one,
+        self.assertEquals(values_one[0],
                           'Pride and prejudice /')
 
     def tearDown(self):

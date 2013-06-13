@@ -16,6 +16,7 @@ from aristotle.settings import REDIS_DATASTORE
 from bibframe.classifiers import simple_fuzzy
 from bibframe.ingesters.Ingester import personal_name_parser, Ingester
 from bibframe.ingesters.Ingester import HONORIFIC_PREFIXES, HONORIFIC_SUFFIXES
+from bibframe.models import Person, TitleEntity
 from person_authority.redis_helpers import get_or_generate_person
 from rdflib import Namespace
 
@@ -122,12 +123,12 @@ class MODSIngester(Ingester):
                 person = self.__extract_creator__(name_parts)
             if person is not None:
                 self.creators.append(get_or_generate_person(person,
-                                                            self.authority_ds))
+                                                            self.redis_datastore))
 
     def __extract_title__(self):
         "Helper function extracts title information from MODS"
         title_entities = []
-        titlesInfos = self.mods_xml.findall('{{{0}}}titleInfo'.format(MODS_NS))
+        titleInfos = self.mods_xml.findall('{{{0}}}titleInfo'.format(MODS_NS))
         for titleInfo in titleInfos:
             output = {}
             if titleInfo.attrib.get('type')is None:
@@ -143,6 +144,10 @@ class MODSIngester(Ingester):
                 partTitle = titleInfo.find('{{{0}}}partName'.format(MODS_NS))
                 if partTitle is not None:
                     output['partTitle'] = partTitle.text
+            title_entity = TitleEntity(redis_datastore=self.redis_datastore,
+                                       **output)
+            title_entity.save()
+            title_entities.append(title_entity)
                 
                 
                 
@@ -165,19 +170,20 @@ class MODSIngester(Ingester):
             work['title'] = self.__extract_title__()
         except ValueError:
             return
-        classifier = self.classifier(creative_work_ds=self.creative_work_ds,
-                                     entity_info=work)
+        
+        classifier = self.classifier(creative_work=work,
+                                     redis_datastore=self.redis_datastore)
         classifier.classify()
         if classifier.creative_work is not None:
             classifier.creative_work.save()
             work_key = classifier.creative_work.redis_key
             for creator_key in work['rda:isCreatedBy']:
-                self.authority_ds.sadd(
+                self.redis_datastore.sadd(
                     '{0}:rda:isCreatorPersonOf'.format(creator_key),
                     work_key)
             instances = self.__create_instances__(work_key)
             for instance_key in instances:
-                self.creative_work_ds.sadd(
+                self.redis_datastore.sadd(
                     "{0}:bf:Instances".format(instance_key))
             
         

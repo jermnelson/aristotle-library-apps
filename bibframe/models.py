@@ -301,7 +301,7 @@ primary redis""".format(self.redis_key)
             all_properties = dir(self)
             #redis_pipeline = self.redis_datastore.pipeline()
             for prop in all_properties:
-                if prop.startswith("__"):
+                if prop.startswith("__") or prop.startswith('marc_map'):
                     continue
                 elif prop == 'name' or prop.find('redis') > -1:
                     continue

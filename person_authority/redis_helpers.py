@@ -21,7 +21,7 @@ def add_person(person_attributes,
     person_metaphones_keys -- Metaphones for Person's name
     redis_datastore -- Redis datastore, defaults to None
     """
-    new_person = Person(primary_redis=redis_datastore)
+    new_person = Person(redis_datastore=redis_datastore)
     for key, value in person_attributes.iteritems():
         setattr(new_person, key, value)
     new_person.save()

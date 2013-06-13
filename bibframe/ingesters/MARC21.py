@@ -129,26 +129,29 @@ class MARC21Ingester(Ingester):
         :kwarg indict2: A rule for indicator 2
         :kwarg subfields: A list of subfields
         """
-        output = []
-        tags = kwargs.get('tags',None)
+        output, fields = [], []
+        tags = kwargs.get('tags', None)
         if tags is None:
             raise MARC21IngesterException("__extract__ helper function requires at least one MARC21 field tag")
-        indicator1_rule = kwargs.get('indict1',None)
-        indicator2_rule = kwargs.get('indict2',None)
-        subfields = kwargs.get('subfields',None)
-        fields = self.record.get_fields(tags)
+        indicator1_rule = kwargs.get('indict1', None)
+        indicator2_rule = kwargs.get('indict2', None)
+        subfields = kwargs.get('subfields', None)
+        for tag in tags:
+            fields.extend(self.record.get_fields(tag))
         for field in fields:
             if indicator1_rule is not None:
                 if not eval(indicator1_rule,field.indicator1):
                    continue
             if indicator2_rule is not None:
                 if not eval(indicator2_rule,field.indicator2):
-                    continue 
-            for subfield in field.get_subfields(subfields):
-                output.append(subfield)
+                    continue
+            
+            for subfield in subfields:
+                output.extend(field.get_subfields(subfield))
         if len(output) == 1:
             return output[0]
         elif len(output) > 1:
+            
             return set(output)    
 
     def __rule_one__(self, rule, in_order=True):
@@ -165,7 +168,7 @@ class MARC21Ingester(Ingester):
         
         values = []
         rule_result = RULE_ONE_RE.search(rule)
-        print("re result={0}".format(rule_result))
+        
         if rule_result is not None:
             subfield = rule_result.group('subfld')
             tags = TAGS_RE.findall(rule)
@@ -174,14 +177,15 @@ class MARC21Ingester(Ingester):
                     if len(tags) < 1:
                         break
                     tag = tags.pop(0)
+                    
                     marc_fields = self.record.get_fields(tag)
-                    if marc_fields is not None:
+                    if len(marc_fields) > 0:
                         break
             else:
                 marc_fields = []
                 for tag in tags:
                     marc_fields.extend(self.record.get_fields(tag))
-            if marc_fields is not None:
+            if len(marc_fields) > 0:
                 for marc_field in marc_fields:
                     tag_value = marc_field[subfield]
                     if tag_value is not None:
@@ -1037,7 +1041,13 @@ class MARC21toBIBFRAME(MARC21Ingester):
     def ingest(self):
         "Method runs a complete ingestion of a MARC21 record into RLSP"
         # Start with either a new or existing Creative Work or subclass
-        # like Book, Article, MusicalAudio, or MovingImage 
+        # like Book, Article, MusicalAudio, or MovingImage
+        self.marc2title_entity = MARC21toTitleEntity(
+            redis_datastore=self.redis_datastore,
+            marc_record=self.record)
+        self.marc2title_entity.save()
+        index_title(self.marc2title_entity.title_entity,
+                    self.redis_datastore)
         self.marc2creative_work = MARC21toCreativeWork(
             redis_datastore=self.redis_datastore,
             marc_record=self.record)
@@ -1055,6 +1065,10 @@ class MARC21toBIBFRAME(MARC21Ingester):
         self.marc2instance.instance.save()
         finish_instance = datetime.datetime.utcnow()
         instance_key = self.marc2instance.instance.redis_key
+        self.redis_datastore.sadd(
+            "{0}:relatedResources".format(
+                self.marc2title_entity.title_entity),
+            instance_key)
         work_instances_key = "{0}:hasInstance".format(work_key)
         if self.redis_datastore.exists(work_instances_key):
             self.redis_datastore.sadd(work_instances_key,
@@ -1507,7 +1521,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         record -- MARC21 record
         """
         super(MARC21toCreativeWork, self).__init__(**kwargs)
-        self.creative_work, self.work_classes  = None, []
+        self.creative_work, self.work_class  = None, None
 
     def __classify_work_class__(self):
         "Classifies the work as specific Work class based on BIBFRAME website"
@@ -1516,52 +1530,49 @@ class MARC21toCreativeWork(MARC21Ingester):
         field336 = self.record['336']
         if leader[6] == 'a':
             # Book is the default for Language Material
-            self.work_classes.append(Book)
+            self.work_class = Book
         elif leader[6] == 'c':
-            self.work_classes.append(NotatedMusic)
+            self.work_class = NotatedMusic
         elif leader[6] == 'd':
-            self.work_classes.append(Manuscript,
-                                     NotatedMusic)
-                                     
+            self.work_class = Manuscript
         elif leader[6] == 'e' or leader[6] == 'f':
             # Cartography is the default
-            self.work_classes.append(Cartography)
+            self.work_class = Cartography
             if leader[6] == 'f':
-                self.work_classes.append(Manuscript)
+                self.work_class = Manuscript
             if field007.data[0] == 'a':
-                self.work_classes.append(Map)
+                self.work_class = Map
             elif field007.data[0] == 'd':
-                self.work_classes.append(Globe)
+                self.work_class = Globe
             elif field007.data[0] == 'r':
-                self.work_classes.append(RemoteSensingImage)
+                self.work_class = RemoteSensingImage
         elif leader[6] == 'g':
-            self.work_classes.append(MovingImage)
+            self.work_class = MovingImage
         elif leader[6] == 'i':
-            self.work_classes.append(NonmusicalAudio)
+            self.work_class = NonmusicalAudio
         elif leader[6] == 'j':
-            self.work_classes.append(MusicalAudio)
+            self.work_class = MusicalAudio
         elif leader[6] == 'k':
-            self.work_classes.append(StillImage)
+            self.work_class = StillImage
         elif leader[6] == 'm':
-            self.work_classes.append(SoftwareOrMultimedia)
+            self.work_class = SoftwareOrMultimedia
         elif leader[6] == 'p':
-            self.work_classes.append(MixedMaterial)
+            self.work_class = MixedMaterial
         elif leader[6] == 'r':
-            self.work_classes.append(ThreeDimensionalObject)
+            self.work_class = ThreeDimensionalObject
         elif leader[6] == 't':
-            self.work_classes.append(Manuscript)
-        self.work_classes = list(set(self.work_classes))
+            self.work_class = Manuscript
+        if self.work_class is None:
+            self.work_class = Work
 
     def ingest(self):
         "Method ingests MARC Record into RLSP"
         self.__classify_work_class__()
-        if len(self.work_classes) == 0:
-            self.creative_work = CreativeWork()
-        elif len(self.work_classes) == 1:
-            self.creative_work = self.work_classes[0]()
+        self.creative_work = self.work_class(
+            redis_datastore=self.redis_datastore)
         for attribute, rules in self.creative_work.marc_map.iteritems():
             values = []
-            if attribute == 'title':
+            if attribute == 'uniformTitle':
                 title_ingester = MARC21toTitleEntity(
                     redis_datastore=self.redis_datastore,
                     record=self.record)
@@ -1595,7 +1606,8 @@ class MARC21toCreativeWork(MARC21Ingester):
         # If the title matches an existing Work's title and the creative work's creators, 
         # assumes that the Creative Work is the same.
         work_classifier = classifer(entity_info = self.entity_info,
-                                    redis_datastore=self.redis_datastore)
+                                    redis_datastore=self.redis_datastore,
+                                    work_class=self.work_class)
         work_classifier.classify()
         self.creative_work = work_classifier.creative_work
         if self.creative_work is not None:
@@ -1616,52 +1628,14 @@ class MARC21toTitleEntity(MARC21Ingester):
     def __get_or_add_title_entity__(self):
         "Helper method returns new or existing TitleEntity"
         existing_titles = []
-        for title in self.entity_info.get('titleValue'):
+        if self.entity_info.get('titleValue') is not None:
             title_string = title
             if self.entity_info.get('subtitle') is not None:
                 title_string += " {0}".format(
                     self.entity_info.get('subtitle'))
-            terms, normed_title = process_title(title_string)
-            print("{0} {1} {2}".format(title_string,
-                                       terms,
-                                       normed_title))            
-            title_key = 'title-normed:{0}'.format(normed_title)
-            title_members = list(self.redis_datastore.smembers(title_key))
+            self.entity_info['label'] = title_string
             
-            # Returns existing TitleEntity for an exclusive match
-            if len(title_members) == 1:
-                title_entity_key = list(self.redis.smembers())[0]
-                self.title_entity = TitleEntity(
-                    redis_datastore = self.redis_datastore,
-                    redis_key=title_entity_key)
-            else:
-                existing_titles.extend(title_members)
-            title_keys = ["title-normed:{0}".format(
-                x.encode('utf-8', 'ignore')) for x in terms]
-            if self.title_entity is None:
-                # Iterates through title_keys sets
-                existing_titles.extend(
-                    list(self.redis_datastore.sinter(title_keys)))
-                # Multiple title keys for this title, tests equality for all attributes
-                if len(existing_titles) > 0:
-                    for title_key in existing_titles:
-                        if self.redis_datastore.hgetall(title_key) == self.entity_info:
-                            self.title_entity = TitleEntity(
-                                redis_datastore=self.redis_datastore,
-                                redis_key=title_key)
-                        break
-            # If title_entity is still None, create a new TitleEntity
-            if self.title_entity is None:
-                self.title_entity = TitleEntity(redis_datastore=self.redis_datastore,
-                                                **self.entity_info)
-                self.title_entity.save()
-                title_keys.extend(title_key)
-                for normed_key in title_keys:
-                    self.redis_datastore.sadd(normed_key,
-                                       self.title_entity.redis_key)
-                self.redis_datastore.zadd('z-titles-alpha',
-                                   0,
-                                   normed_title)    
+                
                                     
 
     def ingest(self):

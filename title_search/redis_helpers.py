@@ -208,7 +208,29 @@ def typeahead_search_title(user_input,redis_server):
     all_keys = set(title_keys)
     return list(all_keys)
 
-def search_title(user_input,redis_server):
+def index_title(title_entity, redis_datastore):
+    """Takes a TitleEntity, process title, and indexes into datastore
+
+    Parameters:
+    title_entity -- bibframe.models.TitleEntity
+    redis_datastore -- Redis instance or Redis Cluster
+    """
+    if title_entity.redis_key is None:
+        title_entity.save()
+    terms, normed_title = process_title(title_entity.label)
+    title_normed_key = 'title-normed:{0}'.format(normed_title)
+    redis_datastore.sadd(title_normed_key, title_entity.redis_key)
+    redis_datastore.zadd('z-titles-alpha',
+                         0,
+                         normed_title)
+    title_keys = ["title-normed:{0}".format(x.encode('utf-8', 'ignore'))
+                  for x in terms]
+    for key in list(set(title_keys)):
+        redis_datastore.sadd(key, title_entity.redis_key)
+    
+                             
+
+def search_title(user_input, redis_server):
     work_keys = []
     terms, normed_title = process_title(user_input)
     # Exact match on normed title, return work keys
@@ -222,8 +244,11 @@ def search_title(user_input,redis_server):
         title_keys = ["title-normed:{0}".format(user_input.lower().strip()), ]        
     else:
         title_keys = ["title-normed:{0}".format(x.encode('utf-8', 'ignore')) for x in terms]
-    for work_key in redis_server.sinter(title_keys):
-        work_keys.append(work_key)
+    for title_key in redis_server.sinter(title_keys):        
+        instance_keys = redis_server.smembers("{0}:relatedResources".format(title_key))
+        for instance_key in instance_keys:
+            work_keys.append(redis_server.hget(instance_key,
+                                               'instanceOf'))
     return work_keys
 
 def search_title_metaphone(user_input,redis_server):
