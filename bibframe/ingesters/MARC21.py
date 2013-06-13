@@ -165,6 +165,7 @@ class MARC21Ingester(Ingester):
         
         values = []
         rule_result = RULE_ONE_RE.search(rule)
+        print("re result={0}".format(rule_result))
         if rule_result is not None:
             subfield = rule_result.group('subfld')
             tags = TAGS_RE.findall(rule)
