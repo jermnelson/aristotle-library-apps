@@ -11,7 +11,7 @@ from django.contrib.auth.forms import AuthenticationForm
 import django.utils.simplejson as json
 from django.shortcuts import redirect
 from fixures import json_loader,rst_loader
-from aristotle.settings import OPERATIONAL_REDIS as ops_redis
+from aristotle.settings import REDIS_DATASTORE
 
 def background(request):
     """
@@ -100,17 +100,19 @@ def feedback(request):
     if request.method != 'POST':
         return Http404
     today = datetime.datetime.utcnow()
-    feedback_id = ops_redis.incr("global feedback:{0}:{1}".format(today.year,today.month))
+    feedback_id = REDIS_DATASTORE.incr(
+        "global feedback:{0}:{1}".format(today.year,
+                                         today.month))
     feedback_key = "feedback:{0}:{1}:{2}".format(today.year, 
 		                                 today.month, 
 						 feedback_id)
-    ops_redis.hset(feedback_key, "created", today.isoformat())
-    ops_redis.hset(feedback_key, "comment", request.POST.get('comment'))
-    ops_redis.hset(feedback_key, "context", request.POST.get('context'))
+    REDIS_DATASTORE.hset(feedback_key, "created", today.isoformat())
+    REDIS_DATASTORE.hset(feedback_key, "comment", request.POST.get('comment'))
+    REDIS_DATASTORE.hset(feedback_key, "context", request.POST.get('context'))
     if request.POST.has_key('sender'):
-        ops_redis.hset(feedback_key, "sender", request.POST.get('sender'))
+        REDIS_DATASTORE.hset(feedback_key, "sender", request.POST.get('sender'))
     
-    return redirect(ops_redis.hget(feedback_key, "context"))
+    return redirect(REDIS_DATASTORE.hget(feedback_key, "context"))
     
     
 

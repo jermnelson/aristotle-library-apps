@@ -1,6 +1,7 @@
 __author__ = "Jeremy Nelson"
 import pymarc
 from unittest import TestCase
+from aristotle.settings import TEST_REDIS
 from bibframe.ingesters.MARC21 import *
 
 class TestMARC21RegularExpressions(TestCase):
@@ -77,6 +78,47 @@ class TestMARC21RegularExpressions(TestCase):
 
     def tearDown(self):
         pass
+
+class TestMARC21Ingester(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(
+            pymarc.Field(tag='100',
+                         indicators=['0','1'],
+                         subfields=['a', 'Austen, Jane',
+                                    'd', '1781-1836']),
+            pymarc.Field(tag='245',
+                         indicators=['1', '0'],
+                         subfields=['a', 'Pride and prejudice /',
+                                    'c', 'Jane Austen']))
+        self.ingester = MARC21Ingester(redis_datastore=TEST_REDIS,
+                                       record=marc_record)
+        
+
+    def test_init(self):
+        self.assert_(self.ingester is not None)
+        self.assertEquals(self.ingester.entity_info,
+                          {})
+
+    def test_extract(self):
+        value_one = self.ingester.__extract__(tags=['100'],
+                                              subfields=['a'])
+                                              
+        self.assertEquals(value_one,
+                          'Austen, Jane')
+
+    def test_rule_one(self):
+        rule = '130,245,246,247,242,222,210 $a'
+        values_one = self.ingester.__rule_one__(rule)
+        self.assertEquals(values_one,
+                          'Pride and prejudice /')
+
+    def tearDown(self):
+        TEST_REDIS.flushdb()
+        
+
+        
 
 class TestMARC21toCreativeWork(TestCase):
 

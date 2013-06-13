@@ -17,12 +17,8 @@ from rdflib import RDF, RDFS, Namespace
 BF_ABSTRACT = Namespace('http://bibframe.org/model-abstract/')
 
 import aristotle.settings as settings
+from aristotle.settings import REDIS_DATASTORE
 
-CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
-INSTANCE_REDIS = settings.INSTANCE_REDIS
-AUTHORITY_REDIS = settings.AUTHORITY_REDIS
-ANNOTATION_REDIS = settings.ANNOTATION_REDIS
-OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
 
 ACTIVE_ENTITIES = ['Agent',
                    'Annotation',
@@ -130,74 +126,6 @@ def load_rdf():
         setattr(sys.modules[__name__],
                 class_name,
                 new_class)
-        
-        
-        
-    
-    
-
-
-#
-def old_load_rdf():
-    """
-    Helper function loads all rdf files in the Fixures directory, creating
-    attributes that are associated with each class
-    """
-    range_xpath = "{{{1}}}Class/{{{1}}}range/{{{0}}}Description".format(
-        RDF,
-        RDFS)
-    bibframe_rdf_dir = os.path.join(settings.PROJECT_HOME,
-                                    "bibframe",
-                                    "fixures")
-    bibframe_files = next(os.walk(bibframe_rdf_dir))[2]
-    for filename in bibframe_files:
-        class_name, ext = os.path.splitext(filename)
-        if ext == '.rdf':
-            rdf_xml = etree.parse(os.path.join(bibframe_rdf_dir,
-                                               filename))
-            all_ranges = rdf_xml.findall(range_xpath)
-            params = {'name': class_name}
-            marc_mapping = {}
-            for desc in all_ranges:
-                attribute = os.path.split(
-                    desc.attrib.get("{{{0}}}about".format(RDF)))[1]
-                params[attribute] = None
-                label = desc.find("{{{0}}}label".format(RDFS))
-                if label is not None:
-                    OPERATIONAL_REDIS.hsetnx(
-                        'bf:vocab:{0}:labels'.format(class_name),
-                        attribute,
-                        label.text)
-                marc_fields = desc.findall(
-                    '{{{0}}}marcField'.format(BF_ABSTRACT))
-                for field in marc_fields:
-                    if marc_mapping.has_key(attribute):
-                        marc_mapping[attribute].append(field.text)
-                    else:
-                        marc_mapping[attribute] = [field.text,]
-                params['marc_map'] = marc_mapping
-                                           
-            new_class = type(class_name,
-                             (RedisBibframeInterface,),
-                             params)
-            setattr(sys.modules[__name__],
-                    class_name,
-                    new_class)
-
-def update_rdf():
-    "Helper function downloads the latest RDF documents from bibframe"
-    bf_base_url = 'http://bibframe.org/vocab/{0}.rdf'
-    for name in ACTIVE_ENTITIES:
-        bf_url = bf_base_url.format(name)
-        bf_rdf = urllib2.urlopen(bf_url).read()
-        rdf_file = open(os.path.join(settings.PROJECT_HOME,
-                                     "bibframe",
-                                     "fixures",
-                                     "{0}.rdf".format(name)),
-                        "wb")
-        rdf_file.write(bf_rdf)
-        rdf_file.close()
-        print("Updated RDF for {0}".format(name))
                    
 
 def process_key(bibframe_key,

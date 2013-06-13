@@ -3,12 +3,7 @@
 """
 import json
 import time
-from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS
-from aristotle.settings import CREATIVE_WORK_REDIS, OPERATIONAL_REDIS
-try:
-    from aristotle.settings import RLSP_CLUSTER
-except ImportError, e:
-    RLSP_CLUSTER = None
+from aristotle.settings import REDIS_DATASTORE
 import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
 from bibframe.models import Work
@@ -153,26 +148,23 @@ class BIBFRAMESearch(object):
     def __init__(self,**kwargs):
         self.query = kwargs.get('q')
         self.type_of = kwargs.get('type_of', 'kw')
-        self.annotation_ds = kwargs.get('annotation_ds', ANNOTATION_REDIS)
-	self.authority_ds = kwargs.get('authority_ds', AUTHORITY_REDIS)
-	self.creative_work_ds = kwargs.get('creative_wrk_ds', CREATIVE_WORK_REDIS)
-        self.instance_ds = kwargs.get('instance_ds', INSTANCE_REDIS)
-        self.operational_ds = kwargs.get('operational_ds', OPERATIONAL_REDIS)
+        self.redis_datastore = kwargs.get('redis_datastore',
+                                          REDIS_DATASTORE)
         search_key = kwargs.get('search_key', None)
         if search_key is not None:
             # Checks to see if history key exists in datastore
-            if not self.operational_ds.has_key(search_key):
+            if not self.redis_datastore.has_key(search_key):
                 # Search key has expired set to None to create a new search
                 # key
                 search_key = None
             else:
                 self.search_key = search_key
                 # Reset search key expiration to 15 minutes
-                self.operational_ds.expire(self.search_key, 900)
+                self.redis_datastore.expire(self.search_key, 900)
         if search_key is None:
             self.search_key = 'rlsp-query:{0}'.format(
-                                   self.operational_ds.incr('global rlsp-query'))
-            self.operational_ds.expire(self.search_key, 900)
+                                   self.redis_datastore.incr('global rlsp-query'))
+            self.redis_datastore.expire(self.search_key, 900)
 	self.facets, self.fails = [], []
 
     def __json__(self, with_results=True):
@@ -188,9 +180,9 @@ class BIBFRAMESearch(object):
                 "type": self.type_of,
                 "query-key":self.search_key}
         if with_results is True: 
-            info['works'] = list(self.operational_ds.smembers(self.search_key))
+            info['works'] = list(self.redis_datastore.smembers(self.search_key))
         else:
-            info['works'] = self.operational_ds.scard(self.search_key)
+            info['works'] = self.redis_datastore.scard(self.search_key)
         return json.dumps(info) 
 
 
@@ -222,33 +214,43 @@ class BIBFRAMESearch(object):
         elif self.type_of == 't':
             self.title()
         self.generate_facets()
-        self.operational_ds.zadd('bibframe-searches', 
+        self.redis_datastore.zadd('bibframe-searches', 
                                  time.time(),
                                  self.__json__(with_results=False))
 
 
     def author(self):
         found_creators = person_authority_app.person_search(self.query,
-			                                    authority_redis=self.authority_ds)
+			                                    authority_redis=self.redis_datastore)
         for work_key in found_creators:
-             self.operational_ds.sadd(self.search_key,
-                                      work_key)
-             for instance_key in list(self.creative_work_ds.smembers(
-                                          '{0}:bf:Instances'.format(work_key))):
-                 self.operational_ds.sadd(self.search_key, 
-                                          instance_key)
+             self.redis_datastore.sadd(self.search_key,
+                                       work_key)
+             for instance_key in list(
+                 self.redis_datastore.smembers(
+                     '{0}:hasInstance'.format(work_key))):
+                 self.redis_datastore.sadd(self.search_key,
+                                           instance_key)
 
 
     def creative_works(self):
         works = []
-        for entity_key in self.operational_ds.smembers(self.search_key):
+        for entity_key in self.redis_datastore.smembers(self.search_key):
+            work_key = None
             # If entity is bf:Instance, get entity's Creative Work
             if entity_key.startswith('bf:Instance'):
-                work_key = self.instance_ds.hget(entity_key, 'instanceOf')
-            elif entity_key.startswith('bf:Work'):
-                work_key = entity_key  
-            works.append(Work(redis_key=work_key,
-                              primary_redis=self.creative_work_ds))
+                work_key = self.redis_datastore.hget(entity_key,
+                                                     'instanceOf')
+            # Checks to see if entity_key is a Creative Work or child
+            else:
+                for prefix in ['bf:Work',
+                               'bf:Book',
+                               'bf:StillImage',
+                               'bf:MovingImage']:
+                  if entity_key.startswith(prefix):
+                      work_key = entity_key
+            if work_key is not None:
+                works.append(Work(redis_key=work_key,
+                                  redis_datastore=self.redis_datastore))
         return works
         
 
@@ -256,10 +258,10 @@ class BIBFRAMESearch(object):
         facet = {'name': name,
                  'items': [],
                  'count': 0}
-        for facet_key in self.annotation_ds.zrevrange(sort_key,
+        for facet_key in self.redis_datastore.zrevrange(sort_key,
                                                       0,
                                                       -1):
-            entity_keys = self.operational_ds.sinter(facet_key, 
+            entity_keys = self.redis_datastore.sinter(facet_key, 
                                                      self.search_key)
             entity_count = len(entity_keys)
             if entity_count > 0:
@@ -283,16 +285,16 @@ class BIBFRAMESearch(object):
         lib_location = {'name': 'Libraries',
                         'items': [],
                         'count': 0}
-        for lib_key in  self.operational_ds.hvals('prospector-institution-codes'):
-            holdings = self.annotation_ds.smembers("{0}:bf:Holdings".format(lib_key))
+        for lib_key in  self.redis_datastore.hvals('prospector-institution-codes'):
+            holdings = self.redis_datastore.smembers("{0}:bf:Holdings".format(lib_key))
             instance_keys = set()
             for holding_key in holdings:
-                instance_keys.add(self.annotation_ds.hget(holding_key,
+                instance_keys.add(self.redis_datastore.hget(holding_key,
                                                           'annotates'))
-            search_set = self.operational_ds.smembers(self.search_key)
+            search_set = self.redis_datastore.smembers(self.search_key)
             lib_results = instance_keys.intersection(search_set)
             if len(lib_results) > 0:
-                lib_location['items'].append({'name': self.authority_ds.hget(lib_key, 
+                lib_location['items'].append({'name': self.redis_datastore.hget(lib_key, 
                                                                              'label'),
                                               'count': len(lib_results)})
             lib_location['count'] += len(lib_results)
@@ -307,7 +309,7 @@ class BIBFRAMESearch(object):
 
     def journal_title(self):
         self.title()
-        self.operational_ds.sinterstore(self.search_key, 
+        self.redis_datastore.sinterstore(self.search_key, 
                                         self.search_key,
                                         'bf:Annotation:Facet:Format:Journal')
 
@@ -331,20 +333,20 @@ class BIBFRAMESearch(object):
         if isbn is not None:
             instance_keys.extend(isbn)
         for key in instance_keys:
-            self.operational_ds.sadd(self.search_key, key)
+            self.redis_datastore.sadd(self.search_key, key)
 
 
 
     def number_lccn(self):
-        instance_key = self.instance_ds.hget('lccn-hash', self.query.strip())
+        instance_key = self.redis_datastore.hget('lccn-hash', self.query.strip())
         if instance_key is not None:
-            self.operational_ds.sadd(self.search_key, instance_key)
+            self.redis_datastore.sadd(self.search_key, instance_key)
         
 
     def number_med(self):
-        instance_key = self.instance_ds.hget('nlm-hash', self.query.strip())
+        instance_key = self.redis_datastore.hget('nlm-hash', self.query.strip())
         if instance_key is not None:
-            self.operational_ds.sadd(self.search_key, instance_key)
+            self.redis_datastore.sadd(self.search_key, instance_key)
       
 
     def number_oclc(self):
@@ -359,13 +361,13 @@ class BIBFRAMESearch(object):
     def title(self):
         # Search using Title App
         found_titles = title_app.search_title(self.query,
-                                              self.creative_work_ds)
+                                              self.redis_datastore)
         for title_key in found_titles:
-            self.operational_ds.sadd(self.search_key,
+            self.redis_datastore.sadd(self.search_key,
                                      title_key)
-            for instance_key in list(self.creative_work_ds.smembers(
+            for instance_key in list(self.redis_datastore.smembers(
                                           '{0}:bf:Instances'.format(title_key))):
-                 self.operational_ds.sadd(self.search_key, 
+                 self.redis_datastore.sadd(self.search_key, 
                                           instance_key)
 
 

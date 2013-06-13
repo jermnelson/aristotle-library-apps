@@ -18,7 +18,7 @@ from bibframe.models import Annotation, Organization, Work, Holding, Instance, P
 from bibframe.models import Book, Cartography, MovingImage, MusicalAudio 
 from bibframe.models import NonmusicalAudio, NotatedMusic, SoftwareOrMultimedia
 from bibframe.models import StillImage, TitleEntity, ThreeDimensionalObject
-from bibframe.ingesters.Ingester import Ingester, ClusterIngester
+from bibframe.ingesters.Ingester import Ingester
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
@@ -32,11 +32,7 @@ from bibframe.classifiers import simple_fuzzy
 
 
 import aristotle.settings as settings
-CREATIVE_WORK_REDIS = settings.CREATIVE_WORK_REDIS
-INSTANCE_REDIS = settings.INSTANCE_REDIS
-AUTHORITY_REDIS = settings.AUTHORITY_REDIS
-ANNOTATION_REDIS = settings.ANNOTATION_REDIS
-OPERATIONAL_REDIS = settings.OPERATIONAL_REDIS
+from aristotle.settings import REDIS_DATASTORE
 
 
 field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
@@ -57,6 +53,7 @@ RULE_ONE_RE = re.compile(r"\d{3},* [$|/|,](?P<subfld>\w)")
 TAGS_RE = re.compile(r"(?P<tag>\d{3}),*-*")
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
+
 class MARC21Helpers(object):
     """
     MARC21 Helpers for MARC21 Ingester classes
@@ -107,19 +104,20 @@ class MARC21IngesterException(Exception):
         return "MARC21IngesterException Error={0}".format(self.value)
 
 
-class MARC21Ingester(ClusterIngester):
+class MARC21Ingester(Ingester):
+    "Base RLSP BIBFRAME Ingester class for a MARC21 Record"
+    
 
     def __init__(self, **kwargs):
-        super(MARC21Ingester,self).__init__(**kwargs)
+        """Creates an Ingester with basic parameters
+
+        Keywords:
+        record -- MARC21 Record
+        redis_datastore -- Single Redis instance or Redis Cluster 
+        """
+        self.record = kwargs.get('record', None)
+        self.redis_datastore = kwargs.get('redis_datastore', None)
         self.entity_info = {}
-        self.record = kwargs.get('marc_record',None)
-        # To maintain backward compatbility with MARC21Ingester subclasses,
-        # annotation_ds, authority_ds, creative_work_ds, and instance_ds are
-        # set to the same Redis cluster instance
-        self.annotation_ds=self.cluster_ds 
-        self.authority_ds=self.cluster_ds
-        self.creative_work_ds=self.cluster_ds
-        self.instance_ds=self.cluster_ds
 
     def __extract__(self,**kwargs):
         """
@@ -151,7 +149,43 @@ class MARC21Ingester(ClusterIngester):
         if len(output) == 1:
             return output[0]
         elif len(output) > 1:
-            return set(output)
+            return set(output)    
+
+    def __rule_one__(self, rule, in_order=True):
+        """Helper method for MARC rule matching
+
+        For MARC21 Rule patterns like:
+        '130,730,830,245,246,247,242 $n'
+        '222,210 $b'
+
+        Parameters:
+        rule -- Text string of MARC21 to BIBFRAME rule
+        in_order -- Returns first 
+        """
+        
+        values = []
+        rule_result = RULE_ONE_RE.search(rule)
+        if rule_result is not None:
+            subfield = rule_result.group('subfld')
+            tags = TAGS_RE.findall(rule)
+            if in_order is True:
+                while 1:
+                    if len(tags) < 1:
+                        break
+                    tag = tags.pop(0)
+                    marc_fields = self.record.get_fields(tag)
+                    if marc_fields is not None:
+                        break
+            else:
+                marc_fields = []
+                for tag in tags:
+                    marc_fields.extend(self.record.get_fields(tag))
+            if marc_fields is not None:
+                for marc_field in marc_fields:
+                    tag_value = marc_field[subfield]
+                    if tag_value is not None:
+                        values.append(tag_value)
+        return values
 
 
 class MARC21toFacets(MARC21Ingester):
@@ -179,7 +213,7 @@ class MARC21toFacets(MARC21Ingester):
         access = marc21_facets.get_access(record)
         facet_key = "bf:Annotation:Facet:Access:{0}".format(access)
         self.annotation_ds.sadd(facet_key, instance.redis_key)
-        self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
+        self.redis_datastore.sadd("{0}:hasAnnotation".format(instance.redis_key),
                               facet_key)
 
     def add_format_facet(self, **kwargs):
@@ -201,7 +235,7 @@ class MARC21toFacets(MARC21Ingester):
             float(self.annotation_ds.scard(facet_key)),
             facet_key)
         instance_annotation_key = "{0}:hasAnnotation".format(instance.redis_key)
-        self.instance_ds.sadd("{0}:hasAnnotation".format(
+        self.redis_datastore.sadd("{0}:hasAnnotation".format(
             instance.redis_key),
                 facet_key)
 
@@ -264,10 +298,10 @@ class MARC21toFacets(MARC21Ingester):
                 redis_key = "bf:Annotation:Location:{0}".format(
                     output.get("site-code"))
                 self.annotation_ds.sadd(redis_key, instance.redis_key)
-                self.instance_ds.hset(instance.redis_key,
+                self.redis_datastore.hset(instance.redis_key,
                                       "ils-bib-number",
                                       output.get('ils-bib-number'))
-                self.instance_ds.hset(instance.redis_key,
+                self.redis_datastore.hset(instance.redis_key,
                                       "ils-item-number",
                                       output.get('ils-item-number'))
                 self.annotation_ds.zadd("bf:Annotation:Facet:Locations:sort",
@@ -291,7 +325,7 @@ class MARC21toFacets(MARC21Ingester):
                         "bibframe:Annotation:Facet:Locations:sort",
                         float(self.annotation_ds.scard(redis_key)),
                         redis_key)
-                    self.instance_ds.sadd("{0}:hasAnnotation".format(instance.redis_key),
+                    self.redis_datastore.sadd("{0}:hasAnnotation".format(instance.redis_key),
                                           redis_key)
 
     def add_publish_date_facet(instance, record):
@@ -337,7 +371,7 @@ class MARC21toInstance(MARC21Ingester):
         """
         Method creates an marcr:Instance based on values for the entity
         """
-        self.instance = Instance(primary_redis=self.instance_ds)
+        self.instance = Instance(primary_redis=self.redis_datastore)
         for key,value in self.entity_info.iteritems():
             if key is not None and value is not None:
                 setattr(self.instance,key,value)
@@ -381,7 +415,7 @@ class MARC21toInstance(MARC21Ingester):
                     self.entity_info[source_code].append(subfield)
                 for subfield in z_subfields:
                     self.entity_info[source_code].append(subfield)
-                    self.instance_ds.sadd('identifiers:{0}:invalid'.format(source_code),
+                    self.redis_datastore.sadd('identifiers:{0}:invalid'.format(source_code),
                                           subfield)
         for name in names:
              if self.entity_info.has_key(name):
@@ -507,7 +541,7 @@ class MARC21toInstance(MARC21Ingester):
                 output.append(subfield)
             for subfield in field.get_subfields('z'):
                 output.append(subfield)
-                self.instance_ds.sadd('identifiers:CODEN:invalid',subfield)
+                self.redis_datastore.sadd('identifiers:CODEN:invalid',subfield)
         if len(output) > 0:
             self.entity_info['coden'] = set(output)
 
@@ -538,7 +572,8 @@ class MARC21toInstance(MARC21Ingester):
                 ean = a_subfield
                 if z_subfield is not None:
                     ean = '{0}-{1}'.format(ean,z_subfield)
-                    self.instance_ds.sadd('identifiers:ean:invalid',z_subfield)
+                    self.redis_datastore.sadd('identifiers:ean:invalid',
+                                          z_subfield)
                 if d_subfield is not None:
                     ean = '{0}-{1}'.format(ean,d_subfield)
                 output.append(ean)
@@ -622,7 +657,7 @@ class MARC21toInstance(MARC21Ingester):
                 isbn_values.append(subfield)
             for subfield in isbn_field.get_subfields('z'):
                 isbn_values.append(subfield)
-                self.instance_ds.sadd("identifiers:isbn:invalid",subfield)
+                self.redis_datastore.sadd("identifiers:isbn:invalid",subfield)
         if len(isbn_values) > 0:
             self.entity_info['isbn'] = set(isbn_values)
 
@@ -638,7 +673,7 @@ class MARC21toInstance(MARC21Ingester):
                 issn_values.append(subfield)
             for subfield in field.get_subfields('z'):
                 issn_values.append(subfield)
-                self.instance_ds.sadd("identifiers:issn:invalid",subfield)
+                self.redis_datastore.sadd("identifiers:issn:invalid",subfield)
         if len(issn_values) > 0:
             self.entity_info['issn'] = set(issn_values)
 
@@ -669,7 +704,7 @@ class MARC21toInstance(MARC21Ingester):
             elif subfield_a is None and subfield_z is not None:
                 self.entity_info['lccn'] = subfield_z
             if subfield_z is not None:
-                self.instance_ds.sadd('identifiers:lccn:invalid',subfield_z)
+                self.redis_datastore.sadd('identifiers:lccn:invalid',subfield_z)
 
 
     def extract_lc_overseas_acq(self):
@@ -696,7 +731,7 @@ class MARC21toInstance(MARC21Ingester):
                 output.append(subfield)
             for subfield in z_subfields:
                 output.append(subfield)
-                self.instance_ds.sadd("identifiers:legal-deposit:invalid",subfield)
+                self.redis_datastore.sadd("identifiers:legal-deposit:invalid",subfield)
         if len(output) > 0:
            self.entity_info['legal-deposit'] = set(output)
 
@@ -738,7 +773,7 @@ class MARC21toInstance(MARC21Ingester):
             subfields = field.get_subfields('z')
             for subfield in subfields:
                 output.append(subfield)
-                self.instance_ds.sadd('identifiers:nban:invalid',subfield)
+                self.redis_datastore.sadd('identifiers:nban:invalid',subfield)
         if len(output) > 0:
             self.entity_info['nban'] = set(output)
 
@@ -754,7 +789,7 @@ class MARC21toInstance(MARC21Ingester):
                 output.append(subfield)
             for subfield in field.get_subfields('z'):
                 output.append(subfield)
-                self.instance_ds.sadd("identifers:nbn:invalid",subfield)
+                self.redis_datastore.sadd("identifers:nbn:invalid",subfield)
         if len(output) > 0:
             self.entity_info['nbn'] = set(output)
  
@@ -818,7 +853,7 @@ class MARC21toInstance(MARC21Ingester):
             invalid_subfields = field.get_subfields('z')
             for subfield in invalid_subfields:
                 output.append(subfield)
-                self.instance_ds.sadd("identifiers:report-number:invalid",
+                self.redis_datastore.sadd("identifiers:report-number:invalid",
                                       subfield)
         if len(output) > 0:
             self.entity_info['report-number'] = set(output)
@@ -862,7 +897,7 @@ class MARC21toInstance(MARC21Ingester):
                 output.append(subfield)
             for subfield in field.get_subfields('z'):
                 output.append(subfield)
-                self.instance_ds.sadd("identifiers:strn:invalid",subfield)
+                self.redis_datastore.sadd("identifiers:strn:invalid",subfield)
         if len(output) > 0:
             self.entity_info['strn'] = set(output)
 
@@ -929,7 +964,7 @@ class MARC21toInstance(MARC21Ingester):
                 output.append(subfield)
             for subfield in field.get_subfields('z'):
                 output.append(subfield)
-                self.instance_ds.sadd("identifiers:system-number:invalid",subfield)
+                self.redis_datastore.sadd("identifiers:system-number:invalid",subfield)
         if len(output) > 0:
             self.entity_info['system-number'] = set(output)
 
@@ -999,46 +1034,70 @@ class MARC21toBIBFRAME(MARC21Ingester):
         self.record = marc_record
 
     def ingest(self):
+        "Method runs a complete ingestion of a MARC21 record into RLSP"
+        # Start with either a new or existing Creative Work or subclass
+        # like Book, Article, MusicalAudio, or MovingImage 
         self.marc2creative_work = MARC21toCreativeWork(
-            cluster=self.cluster_ds,
+            redis_datastore=self.redis_datastore,
             marc_record=self.record)
         self.marc2creative_work.ingest()
         # Exit ingest if a creative work is missing
         if self.marc2creative_work.creative_work is None:
             return
+        work_key = self.marc2creative_work.creative_work.redis_key
+        # Extract Instance
         self.marc2instance = MARC21toInstance(
-            cluster=self.cluster_ds,
-            marc_record=self.record)
+            instanceOf=work_key,
+            marc_record=self.record,
+            redis_datastore=self.redis_datastore,)
         self.marc2instance.ingest()
-        finish_instance = datetime.datetime.utcnow()
-        self.marc2instance.instance.instanceOf = self.marc2creative_work.creative_work.redis_key
-        if self.marc2creative_work.creative_work.title is not None:
-            self.marc2instance.instance.title = self.marc2creative_work.creative_work.title.get('rda:title')
-                                                        
         self.marc2instance.instance.save()
-        work_instances_key = "{0}:bf:Instances".format(self.marc2creative_work.creative_work.redis_key)
-        self.creative_work_ds.sadd(work_instances_key,
-                                   self.marc2instance.instance.redis_key)
-        self.marc2library_holdings = MARC21toLibraryHolding(cluster=self.cluster_ds,
-                                                            marc_record=self.record,
-                                                            instance=self.marc2instance.instance)
+        finish_instance = datetime.datetime.utcnow()
+        instance_key = self.marc2instance.instance.redis_key
+        work_instances_key = "{0}:hasInstance".format(work_key)
+        if self.redis_datastore.exists(work_instances_key):
+            self.redis_datastore.sadd(work_instances_key,
+                                      self.marc2instance.instance.redis_key)
+        else:
+            existing_instance_key = self.redis_datastore.hget(
+                work_key,
+                'hasInstance')
+            # Convert hash value to a set if instance_keys are
+            # different
+            if existing_instance_key is not None:
+                if instance_key != existing_instance_key:
+                    # Remove existing instance key from work_key
+                    self.redis_datastore.hdel(work_key, 'instanceOf')
+                    # Add both instance keys to new work set key
+                    self.redis_datastore.sadd(work_instances_key,
+                                              instance_key,
+                                              existing_instance_key)
+            # Set hash value for hasInstance singleton
+            else:
+                self.redis_datastore.hset(work_key,
+                                          'hasInstance',
+                                          instance_key)
+        self.marc2library_holdings = MARC21toLibraryHolding(
+            redis_datastore=self.redis_datastore,
+            marc_record=self.record,
+            instance=self.marc2instance.instance)
         self.marc2library_holdings.ingest()
-        if self.instance_ds.hexists("{0}:rda:identifierForTheManifestation".format(self.marc2instance.instance.redis_key),
-                                    "ils-bib-number"):
-            bib_number = self.instance_ds.hget("{0}:rda:identifierForTheManifestation".format(self.marc2instance.instance.redis_key),
-                                               "ils-bib-number") 
-            self.instance_ds.hset("ils-bib-numbers", bib_number, self.marc2instance.instance.redis_key)
-        if self.instance_ds.hexists(self.marc2instance.instance.redis_key,
+        # Adds the library holding
+        if bib_number is not None:
+            # Adds bib number to ils bib number hash
+            self.redis_datastore.hset("ils-bib-numbers",
+                                      bib_number,
+                                      instance_key)
+        if self.redis_datastore.hexists(self.marc2instance.instance.redis_key,
                                     'hasAnnotation'):
             annotation = self.marc2instance.instance.hasAnnotation
-            self.instance_ds.hdel(self.marc2instance.instance.redis_key,
+            self.redis_datastore.hdel(self.marc2instance.instance.redis_key,
                                   'hasAnnotation')
-            self.instance_ds.sadd("{0}:hasAnnotation".format(self.marc2instance.instance.redis_key),
+            self.redis_datastore.sadd("{0}:hasAnnotation".format(self.marc2instance.instance.redis_key),
                                   annotation)
         generate_call_number_app(self.marc2instance.instance, 
-                                 self.instance_ds,
-                                 self.annotation_ds)
-        self.marc2facets = MARC21toFacets(cluster=self.cluster_ds,
+                                 self.redis_datastore)
+        self.marc2facets = MARC21toFacets(redis_datastore=self.redis_datastore,
                                           marc_record=self.record,
                                           creative_work=self.marc2creative_work.creative_work,
                                           instance=self.marc2instance.instance)
@@ -1046,28 +1105,43 @@ class MARC21toBIBFRAME(MARC21Ingester):
 
 
 class MARC21toLibraryHolding(MARC21Ingester):
-    """
-    MARC21toLibraryHolding ingests a MARC record into the BIBFRAME Redis datastore
-    """
+    "Ingests a MARC record into the Redis Library Services Platform"
+    
 
     def __init__(self,**kwargs):
         super(MARC21toLibraryHolding,self).__init__(**kwargs)
         self.holdings = []
         self.instance = kwargs.get('instance', None)
 
+    def __add_cc_holdings__(self):
+        "Helper function for Colorado College MARC Records"
+        # Assumes hybrid environment
+        cc_key = self.redis_datastore.hget('prospector-institution-codes',
+                                           '9cocp')
+        holding = Holding(redis_datastore=self.redis_datastore)
+        for key, value in self.entity_info.iteritems():
+            setattr(holding, key, value)
+        setattr(holding, 'schema:contentLocation', cc_key)
+        holding.save()
+        self.redis_datastore.sadd("{0}:resourceRole:own".format(cc_key),
+                                  holding.redis_key)
+        if hasattr(holding, 'ils-bib-number'):
+            self.redis_datastore.hadd('ils-bib-numbers',
+                                      getattr(holding, 'ils-bib-number'),
+                                      holding.redis_key)
+        
+        
 
-    def add_holdings(self):
-        """
-        Creates one or more Library Holdings based on values in the entity
-        """
+    def __add_consortium_holdings__(self):
+        "Helper function for CARL Alliance MARC records"
         all945s = self.record.get_fields('945')
         for field in all945s:
             a_subfields = field.get_subfields('a')
             for subfield in a_subfields:
-                holding = Holding(primary_redis=self.annotation_ds)
+                holding = Holding(redis_datastore=self.redis_datastore)
                 data = subfield.split(" ")
                 institution_code = data[0]
-                org_key = self.authority_ds.hget(
+                org_key = self.redis_datstore.hget(
                     'prospector-institution-codes',
                      institution_code)
                 setattr(holding, 'schema:contentLocation', org_key)
@@ -1078,14 +1152,36 @@ class MARC21toLibraryHolding(MARC21Ingester):
                 if self.instance is not None:
                     holding.annotates = self.instance.redis_key
                 holding.save()
+                self.redis_datastore.hadd(
+                    'ils-bib-numbers',
+                    getattr(holding, 'ils-bib-number'),
+                    holding.redis_key)
                 if self.instance is not None:
                     instance_annotation_key = "{0}:hasAnnotation".format(
                         self.instance.redis_key)
-                    self.instance_ds.sadd(instance_annotation_key,
+                    self.redis_datastore.sadd(instance_annotation_key,
                                           holding.redis_key)
-                    self.instance_ds.sadd("{0}:keys".format(self.instance.redis_key),
+                    self.redis_datastore.sadd("{0}:keys".format(self.instance.redis_key),
                                           instance_annotation_key)
-                self.authority_ds.sadd("{0}:bf:Holdings".format(org_key),holding.redis_key)
+                # Use MARC Relator Code for set key 
+                self.redis_datastore.sadd("{0}:resourceRole:own".format(org_key),
+                                          holding.redis_key)
+
+
+    def add_holdings(self):
+        """
+        Creates one or more Library Holdings based on values in the entity
+        """
+        
+        if settings.IS_CONSORTIUM is True:
+            self.__add_consortium_holdings__()
+        else:
+            # CC specific III MARC record format, should be modified to be more
+            # generic
+            self.__add_cc_holdings__()
+ 
+
+    
             
 
 
@@ -1213,7 +1309,7 @@ class MARC21toPerson(MARC21Ingester):
                         output.append(field['a'])
                     for subfield in field.get_subfields('z'):
                         output.append(subfield)
-                        self.authority_ds.sadd("identifiers:{0}:invalid".format(feature)) 
+                        self.redis_datastore.sadd("identifiers:{0}:invalid".format(feature)) 
         if len(output) > 0:
             if len(output) == 1:
                 self.entity_info[feature] = output[0]
@@ -1313,7 +1409,7 @@ class MARC21toPerson(MARC21Ingester):
         self.extract_viaf()
         self.extractDates()
         result = get_or_generate_person(self.entity_info,
-                                        self.authority_ds)
+                                        self.redis_datastore)
         if type(result) == list:
             self.people = result
         else:
@@ -1343,7 +1439,7 @@ class MARC21toSubjects(MARC21Ingester):
         :param subject_key: Base subject key used to create subdivision
                             set keys for each subdivision
         """
-        redis_pipeline = self.authority_ds.pipeline()
+        redis_pipeline = self.redis_datastore.pipeline()
 
         def add_subdivision(subfield, type_of):
             subdivision_key = "{0}:{1}".format(subfield[0],subfield[1])
@@ -1367,7 +1463,7 @@ class MARC21toSubjects(MARC21Ingester):
         if self.field.tag == '651':
             subject_key = 'bf:Authority:Subject:Genre:{0}'.format(
                 ''.join(self.field.get_subfields('a')))
-            self.authority_ds.sadd(subject_key,
+            self.redis_datastore.sadd(subject_key,
                 self.creative_work.redis_key)
             self.subjects.append(subject_key)
 
@@ -1396,50 +1492,11 @@ class MARC21toSubjects(MARC21Ingester):
         self.extract_genre()
         self.extract_topical()
 
-class MARC21BIBFRAMEIngester(object):
-    "Base RLSP BIBFRAME Ingester class for a MARC21 Record"
-    
 
-    def __init__(self, **kwargs):
-        """Creates an Ingester with basic parameters
-
-        Keywords:
-        record -- MARC21 Record
-        redis_datastore -- Single Redis instance or Redis Cluster 
-        """
-        self.record = kwargs.get('record', None)
-        self.redis_ds = kwargs.get('redis_datastore', None)
-        self.entity_info = {}
-        self.title_info = None
-
-    def __rule_one__(self, rule):
-        """Helper method for MARC rule matching
-
-        For MARC21 Rule patterns like:
-        '130,730,830,245,246,247,242 $n'
-        '222,210 $b'
-
-        Parameters:
-        rule -- Text string of MARC21 to BIBFRAME rule
-        """
-        
-        values = []
-        rule_result = RULE_ONE_RE.search(rule)
-        if rule_result is not None:
-            subfield = rule_result.group('subfld')
-            tags = TAGS_RE.findall(rule)
-            for tag in tags:
-                marc_fields = self.record.get_fields(tag)
-                if marc_fields is not None:
-                    for marc_field in marc_fields:
-                        tag_value = marc_field[subfield]
-                        if tag_value is not None:
-                            values.append(tag_value)
-        return values
 
         
 
-class MARC21toCreativeWork(MARC21BIBFRAMEIngester):
+class MARC21toCreativeWork(MARC21Ingester):
     "RLSP ingester takes a MARC21 record, creates/gets CreativeWork + children"
 
     def __init__(self, **kwargs):
@@ -1505,7 +1562,7 @@ class MARC21toCreativeWork(MARC21BIBFRAMEIngester):
             values = []
             if attribute == 'title':
                 title_ingester = MARC21toTitleEntity(
-                    redis_datastore=self.redis_ds,
+                    redis_datastore=self.redis_datastore,
                     record=self.record)
                 title_ingester.ingest()
                 if title_ingester.title_entity is not None:
@@ -1526,28 +1583,25 @@ class MARC21toCreativeWork(MARC21BIBFRAMEIngester):
         (i.e. all fields must match or a new work is created)
 
         This method could use other Machine Learning techniques to improve
-        the existing match with mutliple and complex rule sets.
+        the existing match with multiple and complex rule sets.
 
         Keywords
         classifier -- Classifer, default is the Simple Fuzzy Work Classifer 
         """
         # Assumes if 
-        if self.entity_info.has_key('bf:Instances'):
-            self.entity_info['bf:Instances'] = set(self.entity_info['bf:Instances'])
+        if self.entity_info.has_key('instanceOf'):
+            self.entity_info['instanceOf'] = set(self.entity_info['instanceOf'])
         # If the title matches an existing Work's title and the creative work's creators, 
         # assumes that the Creative Work is the same.
-        work_classifier = classifer(annotation_ds = self.annotation_ds,
-                                    authority_ds = self.authority_ds,
-                                    creative_work_ds = self.creative_work_ds,
-                                    instance_ds = self.instance_ds,
-                                    entity_info = self.entity_info)
+        work_classifier = classifer(entity_info = self.entity_info,
+                                    redis_datastore=self.redis_datastore)
         work_classifier.classify()
         self.creative_work = work_classifier.creative_work
         if self.creative_work is not None:
             self.creative_work.save()             
                 
                 
-class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
+class MARC21toTitleEntity(MARC21Ingester):
     "Extracts BIBFRAME TitleEntity info from MARC21 record"
 
     def __init__(self, **kwargs):
@@ -1571,13 +1625,13 @@ class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
                                        terms,
                                        normed_title))            
             title_key = 'title-normed:{0}'.format(normed_title)
-            title_members = list(self.redis_ds.smembers(title_key))
+            title_members = list(self.redis_datastore.smembers(title_key))
             
             # Returns existing TitleEntity for an exclusive match
             if len(title_members) == 1:
                 title_entity_key = list(self.redis.smembers())[0]
                 self.title_entity = TitleEntity(
-                    redis_datastore = self.redis_ds,
+                    redis_datastore = self.redis_datastore,
                     redis_key=title_entity_key)
             else:
                 existing_titles.extend(title_members)
@@ -1586,25 +1640,25 @@ class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
             if self.title_entity is None:
                 # Iterates through title_keys sets
                 existing_titles.extend(
-                    list(self.redis_ds.sinter(title_keys)))
+                    list(self.redis_datastore.sinter(title_keys)))
                 # Multiple title keys for this title, tests equality for all attributes
                 if len(existing_titles) > 0:
                     for title_key in existing_titles:
-                        if self.redis_ds.hgetall(title_key) == self.entity_info:
+                        if self.redis_datastore.hgetall(title_key) == self.entity_info:
                             self.title_entity = TitleEntity(
-                                redis_datastore=self.redis_ds,
+                                redis_datastore=self.redis_datastore,
                                 redis_key=title_key)
                         break
             # If title_entity is still None, create a new TitleEntity
             if self.title_entity is None:
-                self.title_entity = TitleEntity(redis_datastore=self.redis_ds,
+                self.title_entity = TitleEntity(redis_datastore=self.redis_datastore,
                                                 **self.entity_info)
                 self.title_entity.save()
                 title_keys.extend(title_key)
                 for normed_key in title_keys:
-                    self.redis_ds.sadd(normed_key,
+                    self.redis_datastore.sadd(normed_key,
                                        self.title_entity.redis_key)
-                self.redis_ds.zadd('z-titles-alpha',
+                self.redis_datastore.zadd('z-titles-alpha',
                                    0,
                                    normed_title)    
                                     
@@ -1617,21 +1671,6 @@ class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
                 values.extend(self.__rule_one__(rule))
             if len(values) > 0:
                 self.entity_info[attribute] = values
-        
-        
-            
-            
-        
-        
-                                            
-            
-        
-   
-            
-        
-        
-
-        
         
             
         
@@ -1767,7 +1806,7 @@ class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
 ##        people_keys = []
 ##        for field in self.record.get_fields('100','700','800'):
 ##            if field is not None:
-##                people_ingester = MARC21toPerson(cluster=self.cluster_ds,
+##                people_ingester = MARC21toPerson(redis_datastore=self.redis_datastore,
 ##                                                 field=field)
 ##                people_ingester.ingest()
 ##                for person in people_ingester.people:
@@ -1946,9 +1985,9 @@ class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
 ##        # If the title matches an existing Work's title and the creative work's creators, 
 ##        # assumes that the Creative Work is the same.
 ##        work_classifier = classifer(annotation_ds = self.annotation_ds,
-##                                    authority_ds = self.authority_ds,
+##                                    authority_ds = self.redis_datastore,
 ##                                    creative_work_ds = self.creative_work_ds,
-##                                    instance_ds = self.instance_ds,
+##                                    instance_ds = self.redis_datastore,
 ##                                    entity_info = self.entity_info)
 ##        work_classifier.classify()
 ##        self.creative_work = work_classifier.creative_work
@@ -1983,7 +2022,7 @@ class MARC21toTitleEntity(MARC21BIBFRAMEIngester):
 ##            if self.creative_work.associatedAgent is not None:
 ##                for creator_key in list(self.creative_work.associatedAgent):
 ##                    creator_set_key = "{0}:rda:isCreatorPersonOf".format(creator_key)
-##                    self.authority_ds.sadd(creator_set_key,
+##                    self.redis_datastore.sadd(creator_set_key,
 ##                                           self.creative_work.redis_key)
 ##            self.creative_work.save()
 ##            generate_title_app(self.creative_work,self.creative_work_ds)
