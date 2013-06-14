@@ -36,59 +36,61 @@ class TestProjectGutenbergIngester(unittest.TestCase):
                           'bf:Person:1')
         self.assertEquals(TEST_REDIS.smembers(
             'bf:SoftwareOrMultimedia:1:hasInstance'),
-                          set(['bibframe:Instance:1',
-                               'bibframe:Instance:2']))
+                          set(['bf:Instance:1',
+                               'bf:Instance:2']))
 
     def test_create_instances(self):
         self.assertEquals(TEST_REDIS.hget('bf:Instance:1',
                                           'instanceOf'),
                           'bf:SoftwareOrMultimedia:1')
-        self.assertEquals(TEST_REDIS.hget('bibframe:Instance:2',
+        self.assertEquals(TEST_REDIS.hget('bf:Instance:2',
                                           'instanceOf'),
                           'bf:SoftwareOrMultimedia:1')
 
 
 
     def test_extract_creator(self):
-        self.assertEquals(TEST_REDIS.hget('bibframe:Person:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:1',
                                           'rda:dateOfBirth'),
                           '1804')
-        self.assertEquals(TEST_REDIS.hget('bibframe:Person:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:1',
                                           'rda:dateOfDeath'),
                           '1864')
-        self.assertEquals(TEST_REDIS.hget('bibframe:Person:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:1',
                                           'rda:preferredNameForThePerson'),
                           "Hawthorne, Nathaniel")
-        self.assertEquals(TEST_REDIS.hget('bibframe:Person:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:1',
                                           'schema:givenName'),
                           "Nathaniel")
-        self.assertEquals(TEST_REDIS.hget('bibframe:Person:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:1',
                                           'schema:familyName'),
                           "Hawthorne")
 
     def test_extract_title(self):
-        self.assertEquals(TEST_REDIS.hget('bibframe:Work:1:title',
-                                          'rda:preferredTitleForTheWork'),
+        title_key = TEST_REDIS.hget('bf:SoftwareOrMultimedia:1',
+                                    'title')
+        self.assertEquals(TEST_REDIS.hget(title_key,
+                                          'titleValue'),
                           'The Scarlet Letter')
 
     def test_multiple_creators(self):
-       ## TEST_REDIS.flushdb()
+        TEST_REDIS.flushdb()
         self.ingester.ingest(os.path.join(PROJECT_HOME,
                                              'bibframe',
                                              'fixures',
                                              'pg',
                                              'pg1682.rdf'))
-        self.assertEquals(TEST_REDIS.hget('bibframe:Person:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:1',
                                           'schema:familyName'),
                           'Plato')
-        self.assertEquals(TEST_REDIS.hget('bibframe:Person:2',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:2',
                                           'rda:preferredNameForThePerson'),
                           'Jowett, Benjamin')
 
 
 
     def tearDown(self):
-        ## TEST_REDIS.flushdb()
-        pass
+        TEST_REDIS.flushdb()
+        
 
                 

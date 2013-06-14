@@ -18,7 +18,6 @@ class TestWorkClassifier(unittest.TestCase):
                          title='Pride and Prejudice')
         setattr(self.work, 'rda:isCreatedBy', 'bf:Person:1')
         self.work.save()
-        print("Book title is {0}".format(self.work.title))
 
     def test_init(self):
         entity_info = {'title': 'Pride and Prejudice',
@@ -49,7 +48,8 @@ class TestWorkClassifier(unittest.TestCase):
                           self.work.redis_key)
 
     def tearDown(self):
-        ## TEST_REDIS.flushdb()
+##        TEST_REDIS.flushdb()
         pass
+        
                         
         

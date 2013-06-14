@@ -68,12 +68,11 @@ class WorkClassifier(SimpleFuzzyClassifier):
                 # Sets by retrieving the literal title value
                 title_label = redis_title
             if title_label is not None:
-                print("Title is {0}".format(title_label))
                 cw_title_keys = search_title(title_label,
                                              self.redis_datastore)
-            print("Creative work keys={0}".format(cw_title_keys))
             for creative_wrk_key in cw_title_keys:
-                if not creative_wrk_key.name.startswith(self.class_name.name):
+                if not creative_wrk_key.startswith(
+                    'bf:{0}'.format(self.work_class.name)):
                     continue
                 if self.redis_datastore.hexists(creative_wrk_key,
                                                 'associatedAgent'):
@@ -93,7 +92,6 @@ class WorkClassifier(SimpleFuzzyClassifier):
                             datetime.datetime.utcnow().isoformat(),
                             creative_wrk_key,
                             self.entity_info.get('title'))
-                        print(msg)
                         logger.info(msg)
                         self.creative_work = self.work_class(redis_datastore=self.redis_datastore,
                                                              redis_key=creative_wrk_key)

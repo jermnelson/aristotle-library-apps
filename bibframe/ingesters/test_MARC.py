@@ -2,6 +2,7 @@ __author__ = "Jeremy Nelson"
 import pymarc
 from unittest import TestCase
 from aristotle.settings import TEST_REDIS
+from bibframe.models import Book
 from bibframe.ingesters.MARC21 import *
 
 class TestMARC21RegularExpressions(TestCase):
@@ -158,15 +159,21 @@ class TestMARC21toCreativeWork(TestCase):
              pymarc.Field(tag='511',
                 indicators=[' ',' '],
                 subfields=['a','Cutter, Charles']))
-        self.work_ingester = MARC21toCreativeWork(annotation_ds=test_redis,
-                                                  authority_ds=test_redis,
-                                                  instance_ds=test_redis,
-                                                  marc_record=marc_record,
-                                                  creative_work_ds=test_redis)
+        self.work_ingester = MARC21toCreativeWork(redis_datastore=TEST_REDIS,
+                                                  record=marc_record)
         self.work_ingester.ingest()
 
     def test_init(self):
         self.assert_(self.work_ingester.creative_work.redis_key)
+
+    def test_classify_work_class(self):
+        book_rec = pymarc.Record()
+        book_rec.leader = '      a   '
+        book_ingester = MARC21toCreativeWork(redis_datastore=TEST_REDIS,
+                                             record=book_rec)
+        book_ingester.__classify_work_class__()
+        self.assertEquals(book_ingester.work_class,
+                          Book)
 
     def test_extract_classification(self):
         self.assertEquals(list(self.work_ingester.creative_work.classification)[1],

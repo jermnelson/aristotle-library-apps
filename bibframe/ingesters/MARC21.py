@@ -23,7 +23,7 @@ from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import PROJECT_HOME
 from title_search.redis_helpers import generate_title_app, process_title
-from title_search.redis_helpers import search_title
+from title_search.redis_helpers import index_title, search_title
 
 from lxml import etree
 from rdflib import RDF, RDFS, Namespace
@@ -62,28 +62,8 @@ class MARC21Helpers(object):
 
     def __init__(self,marc_record):
         self.record = marc_record
-
-##    def getMARCValuebyRDF(self,marcField):
-##        """
-##  Extracts rule from the text of a bibframe.org/vocab/ rdf file
-##  and applies the rule to the marc_record, and returns the 
-##  value. This should be developed further as grammer of
-##  RDF bfabstract:marcField becomes known.
-##
-##  :param marcField: etree marcField element
-##  """
-##        output = None
-##  rule_txt = marcField.text
-##  if marc_fld_re.search(rule_txt):
-##            output = []
-##            rules = marc_fld_re.findall(rule_txt)
-##            for rule in rules:
-##                marc_field,indicators,subfields = rule[0],rule[1],rule[2]
+      
                 
-            
-            
-        
-
     def getSubfields(self,tag,*subfields):
         """
         Extracts values from a MARC Variable Field
@@ -1042,12 +1022,6 @@ class MARC21toBIBFRAME(MARC21Ingester):
         "Method runs a complete ingestion of a MARC21 record into RLSP"
         # Start with either a new or existing Creative Work or subclass
         # like Book, Article, MusicalAudio, or MovingImage
-        self.marc2title_entity = MARC21toTitleEntity(
-            redis_datastore=self.redis_datastore,
-            marc_record=self.record)
-        self.marc2title_entity.save()
-        index_title(self.marc2title_entity.title_entity,
-                    self.redis_datastore)
         self.marc2creative_work = MARC21toCreativeWork(
             redis_datastore=self.redis_datastore,
             marc_record=self.record)
@@ -1570,22 +1544,30 @@ class MARC21toCreativeWork(MARC21Ingester):
         self.__classify_work_class__()
         self.creative_work = self.work_class(
             redis_datastore=self.redis_datastore)
+        work_titles = []
         for attribute, rules in self.creative_work.marc_map.iteritems():
             values = []
-            if attribute == 'uniformTitle':
-                title_ingester = MARC21toTitleEntity(
-                    redis_datastore=self.redis_datastore,
-                    record=self.record)
-                title_ingester.ingest()
-                if title_ingester.title_entity is not None:
-                    title_ingester.title_entity.save()
-                    values = [title_ingester.title_entity.redis_key,]
+            if ['uniformTitle', 'title'].count(attribute) > 0:
+                rule = rules[0]
+                titleValue = ' '.join(self.__rule_one__(rule))
+                title_entity = TitleEntity(redis_datastore=self.redis_datastore,
+                                           titleValue=titleValue,
+                                           label=self.record.title())
+                title_entity.save()
+                index_title(title_entity, self.redis_datastore)
+                self.entity_info[attribute] = title_entity.redis_key
+                work_titles.append(title_entity.redis_key)
                 continue
             for rule in rules:
                 values.extend(self.__rule_one__(rule))
             if len(values) > 0:
                 self.entity_info[attribute] = values
-        self.get_or_add_work()    
+        self.get_or_add_work()
+        if self.creative_work is not None:
+            for title_key in work_titles: 
+                self.redis_datastore.sadd(
+                    "{0}:relatedResources".format(title_key),
+                    self.creative_work.redis_key)
             
     def get_or_add_work(self,
                         classifer=simple_fuzzy.WorkClassifier):
@@ -1650,17 +1632,7 @@ class MARC21toTitleEntity(MARC21Ingester):
             
         
 
-##class MARC21toCreativeWork(MARC21Ingester):
-##    """
-##    MARC21toWork ingests a MARC21 record into the BIBFRAME Redis datastore
-##    """
-##
-##    def __init__(self,**kwargs):
-##        """
-##        Creates a MARC21toWork Ingester
-##        """
-##        super(MARC21toCreativeWork,self).__init__(**kwargs)
-##        self.creative_work = None
+
 ##
 ##    def extract_classification(self):
 ##        """

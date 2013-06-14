@@ -165,3 +165,7 @@ class ProjectGutenbergIngester(Ingester):
             for instance_key in instances:
                 self.redis_datastore.sadd('{0}:hasInstance'.format(work_key),
                                            instance_key)
+            title_key = self.redis_datastore.hget(work_key,
+                                                  'title')
+            self.redis_datastore.sadd('{0}:relatedResource'.format(title_key),
+                                      work_key)

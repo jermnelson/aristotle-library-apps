@@ -245,10 +245,9 @@ def search_title(user_input, redis_server):
     else:
         title_keys = ["title-normed:{0}".format(x.encode('utf-8', 'ignore')) for x in terms]
     for title_key in redis_server.sinter(title_keys):        
-        instance_keys = redis_server.smembers("{0}:relatedResources".format(title_key))
-        for instance_key in instance_keys:
-            work_keys.append(redis_server.hget(instance_key,
-                                               'instanceOf'))
+        related_works = redis_server.smembers("{0}:relatedResources".format(title_key))
+        for work_key in related_works:
+            work_keys.append(work_key)
     return work_keys
 
 def search_title_metaphone(user_input,redis_server):

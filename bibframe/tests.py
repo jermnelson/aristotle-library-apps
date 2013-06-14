@@ -68,7 +68,7 @@ class RedisBibframeInterfaceTest(TestCase):
         self.minimal_instance = RedisBibframeInterface()
 
     def test_init(self):
-        self.assert_(not self.minimal_instance.primary_redis)
+        self.assert_(not self.minimal_instance.redis_datastore)
 	self.assert_(not self.minimal_instance.redis_key)
 
     def test_save_execeptions(self):
@@ -92,25 +92,25 @@ class TestResource(TestCase):
 class TestAuthority(TestCase):
 
     def setUp(self):
-        self.new_base_authority = Authority(primary_redis=test_redis)
+        self.new_base_authority = Authority(redis_datastore=test_redis)
 	self.created_on = datetime.datetime.utcnow().isoformat()
-	test_redis.hset('bibframe:Authority:1','created_on',self.created_on)
-        self.base_authority = Authority(primary_redis=test_redis,
-                                        redis_key="bibframe:Authority:1",
-                                        hasAnnotation=set('bibframe:Annotation:1'))
+	test_redis.hset('bf:Authority:1','created_on',self.created_on)
+        self.base_authority = Authority(redis_datastore=test_redis,
+                                        redis_key="bf:Authority:1",
+                                        hasAnnotation=set('bf:Annotation:1'))
 	self.base_authority.save()
 
     def test_init(self):
-	self.assert_(self.new_base_authority.primary_redis is not None)
+	self.assert_(self.new_base_authority.redis_datastore is not None)
 	self.assert_(test_redis.exists(self.base_authority.redis_key))
         self.assertEquals(self.base_authority.redis_key,
-                          "bibframe:Authority:1")
+                          "bf:Authority:1")
 
     def test_hasAnnotation(self):
         self.assertEquals(self.base_authority.hasAnnotation,
-                          set('bibframe:Annotation:1'))
-	self.assertEquals(test_redis.smembers('bibframe:Authority:1:hasAnnotation'),
-			  set('bibframe:Annotation:1'))
+                          set('bf:Annotation:1'))
+	self.assertEquals(test_redis.smembers('bf:Authority:1:hasAnnotation'),
+			  set('bf:Annotation:1'))
 
     def tearDown(self):
         test_redis.flushdb()
@@ -118,17 +118,18 @@ class TestAuthority(TestCase):
 class TestPersonAuthority(TestCase):
 
     def setUp(self):
-        self.person = Person(primary_redis=test_redis,
+        self.person = Person(redis_datastore=test_redis,
                              identifier={'loc':'http://id.loc.gov/authorities/names/n86001949'},
                              label="David Foster Wallace",
-                             hasAnnotation=set('bibframe:Annotation:1'),
+                             hasAnnotation=set('bf:Annotation:1'),
                              isni='0000 0001 1768 6131')
         setattr(self.person,'rda:dateOfBirth','1962-04-21')
         setattr(self.person,'rda:dateOfDeath','2008-09-12')
         setattr(self.person,'rda:gender','male')
-        setattr(self.person,'foaf:familyName','Wallace')
-        setattr(self.person,'foaf:givenName','David')
-        setattr(self.person,'rda:preferredNameForThePerson','Wallace, David Foster')
+        setattr(self.person,'schema:familyName','Wallace')
+        setattr(self.person,'schema:givenName','David')
+        setattr(self.person,'rda:preferredNameForThePerson',
+                'Wallace, David Foster')
         self.person.save()
 
     def test_dateOfBirth(self):
@@ -142,26 +143,26 @@ class TestPersonAuthority(TestCase):
                                           'rda:dateOfDeath'))
     def test_hasAnnotation(self):
         self.assertEquals(self.person.hasAnnotation,
-                          set('bibframe:Annotation:1'))
+                          set('bf:Annotation:1'))
 
     def test_init(self):
-        self.assert_(self.person.primary_redis is not None)
+        self.assert_(self.person.redis_datastore is not None)
 
     def test_isni(self):
         self.assertEquals(self.person.isni,
                           '0000 0001 1768 6131')
 
-    def test_foaf(self):
-        self.assertEquals(getattr(self.person,'foaf:givenName'),
+    def test_schema(self):
+        self.assertEquals(getattr(self.person,'schema:givenName'),
                           'David')
-        self.assertEquals(getattr(self.person,'foaf:givenName'),
+        self.assertEquals(getattr(self.person,'schema:givenName'),
                           test_redis.hget(self.person.redis_key,
-                                          'foaf:givenName'))
-        self.assertEquals(getattr(self.person,'foaf:familyName'),
+                                          'schema:givenName'))
+        self.assertEquals(getattr(self.person,'schema:familyName'),
                           'Wallace')
-        self.assertEquals(getattr(self.person,'foaf:familyName'),
+        self.assertEquals(getattr(self.person,'schema:familyName'),
                           test_redis.hget(self.person.redis_key,
-                                          'foaf:familyName'))
+                                          'schema:familyName'))
       
 
     def test_gender(self):
@@ -195,7 +196,7 @@ class TestPersonAuthority(TestCase):
 class TestInstance(TestCase):
 
     def setUp(self):
-        self.holding = Holding(primary_redis=test_redis,
+        self.holding = Holding(redis_datastore=test_redis,
                                annotates=set(["bf:Instance:1"]))
         setattr(self.holding,'callno-local','Video 6716')
         setattr(self.holding,'callno-lcc','C1.D11')
@@ -204,15 +205,15 @@ class TestInstance(TestCase):
         test_redis.hset(self.existing_redis_key,
                         'created_on',
                         datetime.datetime.utcnow().isoformat())
-        self.instance = Instance(primary_redis=test_redis,
+        self.instance = Instance(redis_datastore=test_redis,
                                  redis_key=self.existing_redis_key,
                                  associatedAgent={'rda:publisher':set(['bf:Organization:1'])},
                                  hasAnnotation=set([self.holding.redis_key,]),
                                  instanceOf="bf:Work:1")
-        self.new_holding = Holding(primary_redis=test_redis)
+        self.new_holding = Holding(redis_datastore=test_redis)
         setattr(self.new_holding,"callno-sudoc",'HD1695.C7C55 2007')
         self.new_holding.save()
-        self.new_instance = Instance(primary_redis=test_redis,
+        self.new_instance = Instance(redis_datastore=test_redis,
                                      associatedAgent={'rda:publisher':set(['bf:Organization:2'])},
                                      hasAnnotation=set([self.new_holding.redis_key,]),
                                      instanceOf="bf:Work:2")
@@ -227,10 +228,10 @@ class TestInstance(TestCase):
                                           "system-number"))
 
     def test_init(self):
-        self.assert_(self.new_instance.primary_redis)
+        self.assert_(self.new_instance.redis_datastore)
         self.assertEquals(self.new_instance.redis_key,
                           'bf:Instance:2')
-        self.assert_(self.instance.primary_redis)
+        self.assert_(self.instance.redis_datastore)
         self.assertEquals(self.instance.redis_key,
                           "bf:Instance:1")
 
@@ -276,7 +277,7 @@ class TestCreativeWork(TestCase):
 
     def setUp(self):
         # Test work w/o Redis key (new Work)
-        self.new_creative_work = Work(primary_redis=test_redis,
+        self.new_creative_work = Work(redis_datastore=test_redis,
                                       associatedAgent={'rda:isCreatedBy':set(["bf:Person:1"])},
                                       languageOfWork="eng",
                                       note=["This is a note for a new creative work",])
@@ -287,17 +288,17 @@ class TestCreativeWork(TestCase):
 	self.existing_key = 'bf:Work:2'
         test_redis.hset(self.existing_key,'created','2013-01-07')
         test_redis.hset(self.existing_key,'rda:dateOfWork',1999)
-        self.creative_work = Work(primary_redis=test_redis,
+        self.creative_work = Work(redis_datastore=test_redis,
                                   redis_key=self.existing_key,
                                   associatedAgent={'rda:isCreatedBy':set(["bf:Organization:1"])})
         self.creative_work.save()
 
 
     def test_init_(self):
-        self.assert_(self.new_creative_work.primary_redis)
+        self.assert_(self.new_creative_work.redis_datastore)
         self.assertEquals(self.new_creative_work.redis_key,
                           'bf:Work:1')
-        self.assert_(self.creative_work.primary_redis)
+        self.assert_(self.creative_work.redis_datastore)
         self.assertEquals(self.creative_work.redis_key,
                           "bf:Work:2")
 
@@ -323,7 +324,7 @@ class TestCreativeWork(TestCase):
 class TestLibraryHolding(TestCase):
 
     def setUp(self):
-        self.new_holding = Holding(primary_redis=test_redis,
+        self.new_holding = Holding(redis_datastore=test_redis,
                                    annotates='bf:Instance:1')
         setattr(self.new_holding,
                 'callno-lcc',
@@ -361,7 +362,7 @@ class TestLibraryHolding(TestCase):
 class TestTitleInfo(TestCase):
 
     def setUp(self):
-        self.new_title = TitleEntity(primary_redis=TEST_REDIS,
+        self.new_title = TitleEntity(redis_datastore=TEST_REDIS,
                                      titleDate=1813,
                                      titleValue='Pride and Prejudice')
         self.new_title.save()
