@@ -20,10 +20,7 @@ PGTERMS = Namespace("http://www.gutenberg.org/2009/pgterms/")
 class TestProjectGutenbergIngester(unittest.TestCase):
 
     def setUp(self):
-        self.ingester = ProjectGutenbergIngester(annotation_ds=TEST_REDIS,
-                                                 authority_ds=TEST_REDIS,
-                                                 creative_work_ds=TEST_REDIS,
-                                                 instance_ds=TEST_REDIS)
+        self.ingester = ProjectGutenbergIngester(redis_datastore=TEST_REDIS)
         self.ingester.ingest(os.path.join(PROJECT_HOME,
                                              'bibframe',
                                              'fixures',
@@ -34,20 +31,21 @@ class TestProjectGutenbergIngester(unittest.TestCase):
         self.assert_(self.ingester)
 
     def test_association_work_creator(self):
-        self.assertEquals(TEST_REDIS.hget('bibframe:Work:1',
+        self.assertEquals(TEST_REDIS.hget('bf:SoftwareOrMultimedia:1',
                                           'rda:isCreatedBy'),
-                          'bibframe:Person:1')
-        self.assertEquals(TEST_REDIS.smembers('bibframe:Work:1:bibframe:Instances'),
+                          'bf:Person:1')
+        self.assertEquals(TEST_REDIS.smembers(
+            'bf:SoftwareOrMultimedia:1:hasInstance'),
                           set(['bibframe:Instance:1',
                                'bibframe:Instance:2']))
 
     def test_create_instances(self):
-        self.assertEquals(TEST_REDIS.hget('bibframe:Instance:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Instance:1',
                                           'instanceOf'),
-                          'bibframe:Work:1')
+                          'bf:SoftwareOrMultimedia:1')
         self.assertEquals(TEST_REDIS.hget('bibframe:Instance:2',
                                           'instanceOf'),
-                          'bibframe:Work:1')
+                          'bf:SoftwareOrMultimedia:1')
 
 
 
@@ -74,7 +72,7 @@ class TestProjectGutenbergIngester(unittest.TestCase):
                           'The Scarlet Letter')
 
     def test_multiple_creators(self):
-        TEST_REDIS.flushdb()
+       ## TEST_REDIS.flushdb()
         self.ingester.ingest(os.path.join(PROJECT_HOME,
                                              'bibframe',
                                              'fixures',
@@ -90,7 +88,7 @@ class TestProjectGutenbergIngester(unittest.TestCase):
 
 
     def tearDown(self):
-        TEST_REDIS.flushdb()
-        #pass
+        ## TEST_REDIS.flushdb()
+        pass
 
                 

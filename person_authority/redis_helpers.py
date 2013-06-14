@@ -58,7 +58,7 @@ def get_person(person_redis_key,
                              
 
 def get_or_generate_person(person_attributes, 
-                           redis_datastore=REDIS_DATASTORE):
+                           redis_datastore):
     """
     Method either returns a new Person or an existing Person based
     on a similarity metric.

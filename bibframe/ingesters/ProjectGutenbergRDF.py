@@ -13,12 +13,13 @@ from bibframe.models import SoftwareOrMultimedia
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.classifiers import simple_fuzzy
 
+
 from person_authority.redis_helpers import get_or_generate_person
 
 from rdflib import RDF, RDFS
 from rdflib import Namespace
 
-from title_search.redis_helpers import search_title
+from title_search.redis_helpers import index_title, search_title
 
 DCTERMS = Namespace("http://purl.org/dc/terms/")
 PGTERMS = Namespace("http://www.gutenberg.org/2009/pgterms/")
@@ -102,8 +103,9 @@ class ProjectGutenbergIngester(Ingester):
                     person['rda:dateOfBirth'] = element.text
                 if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
                     person['rda:dateOfDeath'] = element.text
-            person_result = get_or_generate_person(person,
-                                                   self.redis_datastore)
+            person_result = get_or_generate_person(
+                person,
+                redis_datastore=self.redis_datastore)
             if type(person_result) == list:
                 creators.extend(person_result)
             else:
@@ -119,7 +121,7 @@ class ProjectGutenbergIngester(Ingester):
         ebook = rdf_xml.find('{{{0}}}ebook'.format(PGTERMS))
         dc_title = ebook.find('{{{0}}}title'.format(DCTERMS))
         if dc_title is not None:
-            title_entity = TitleEntity(redis_datastore=redis_datastore,
+            title_entity = TitleEntity(redis_datastore=self.redis_datastore,
                                        label=dc_title.text,
                                        titleValue=dc_title.text)
             title_entity.save()
