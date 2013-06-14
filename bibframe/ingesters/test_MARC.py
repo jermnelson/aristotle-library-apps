@@ -643,15 +643,16 @@ class MARC21toLibraryHoldingTest(TestCase):
 class MARC21toPersonTest(TestCase):
 
     def setUp(self):
-        field100 = pymarc.Field(tag='100',
-                                indicators=['1','0'],
-                                subfields=['a','Austen, Jane',
-                                           'd','1775-1817'])
-        self.person_ingester = MARC21toPerson(annotation_ds=test_redis,
-                                              authority_ds=test_redis,
-                                              field=field100,
-                                              instance_ds=test_redis,
-                                              creative_work_ds=test_redis)
+        self.marc_record = pymarc.Record()
+        self.marc_record.add_field(
+            pymarc.Field(
+                tag='100',
+                indicators=['1','0'],
+                subfields=['a','Austen, Jane',
+                           'd','1775-1817']))
+        self.person_ingester = MARC21toPerson(record=self.marc_record,
+                                              redis_datastore=TEST_REDIS)
+                                              
         self.person_ingester.ingest()
 
     def test_init(self):

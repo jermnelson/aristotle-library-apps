@@ -244,7 +244,8 @@ def search_title(user_input, redis_server):
         title_keys = ["title-normed:{0}".format(user_input.lower().strip()), ]        
     else:
         title_keys = ["title-normed:{0}".format(x.encode('utf-8', 'ignore')) for x in terms]
-    for title_key in redis_server.sinter(title_keys):        
+    for title_key in redis_server.sinter(title_keys):
+        print("IN LOOP {0}".format(title_key))
         related_works = redis_server.smembers("{0}:relatedResources".format(title_key))
         for work_key in related_works:
             work_keys.append(work_key)

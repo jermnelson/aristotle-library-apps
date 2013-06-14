@@ -394,6 +394,6 @@ Tries to import all classifiers and ingester tests
 """
 from bibframe.classifiers.tests import TestWorkClassifier
 from bibframe.ingesters.test_ProjectGutenbergRDF import TestProjectGutenbergIngester
-from bibframe.ingesters.test_MODS import TestMODSforOralHistoryIngester
+from bibframe.ingesters.test_MODS import *
 from bibframe.ingesters.test_Ingester import TestPersonalNameParser
 from bibframe.ingesters.test_MARC import *

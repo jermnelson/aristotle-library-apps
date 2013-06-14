@@ -13,11 +13,19 @@ from aristotle.settings import TEST_REDIS
 class TestWorkClassifier(unittest.TestCase):
 
     def setUp(self):
+        self.title_entity = TitleEntity(redis_datastore = TEST_REDIS,
+                                        label='Pride and Prejudice',
+                                        titleValue='Pride and Prejudice')
+        self.title_entity.save()
+        index_title(self.title_entity, TEST_REDIS)
         self.work = Book(redis_datastore=TEST_REDIS,
-                         associatedAgent=set(["bibframe:Person:1"]),
-                         title='Pride and Prejudice')
+                         associatedAgent=set(["bf:Person:1"]),
+                         title=self.title_entity.redis_key)
         setattr(self.work, 'rda:isCreatedBy', 'bf:Person:1')
         self.work.save()
+        TEST_REDIS.sadd(
+            "{0}:relatedResources".format(self.title_entity.redis_key),
+            self.work.redis_key)
 
     def test_init(self):
         entity_info = {'title': 'Pride and Prejudice',
@@ -33,13 +41,8 @@ class TestWorkClassifier(unittest.TestCase):
 
 
     def test_exact_match(self):
-        title_entity = TitleEntity(redis_datastore = TEST_REDIS,
-                                   label='Pride and Prejudice',
-                                   titleValue='Pride and Prejudice')
-        title_entity.save()
-        index_title(title_entity, TEST_REDIS)
-        entity_info = {'title': title_entity.redis_key,
-                       'rda:isCreatedBy': set(['bf:Person:1'])}
+        entity_info = {'rda:isCreatedBy': set(['bf:Person:1']),
+                       'title': self.title_entity.redis_key,}
         classifier = simple_fuzzy.WorkClassifier(redis_datastore = TEST_REDIS,
                                                  entity_info = entity_info,
                                                  work_class=Book)
@@ -48,8 +51,8 @@ class TestWorkClassifier(unittest.TestCase):
                           self.work.redis_key)
 
     def tearDown(self):
-##        TEST_REDIS.flushdb()
-        pass
+        TEST_REDIS.flushdb()
+##        pass
         
                         
         

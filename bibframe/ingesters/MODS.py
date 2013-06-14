@@ -16,7 +16,11 @@ from aristotle.settings import REDIS_DATASTORE
 from bibframe.classifiers import simple_fuzzy
 from bibframe.ingesters.Ingester import personal_name_parser, Ingester
 from bibframe.ingesters.Ingester import HONORIFIC_PREFIXES, HONORIFIC_SUFFIXES
-from bibframe.models import Person, TitleEntity
+from bibframe.models import Annotation, Organization, Work, Holding, Instance 
+from bibframe.models import Person, Audio, Book, Cartography, MixedMaterial  
+from bibframe.models import MovingImage, MusicalAudio, NonmusicalAudio, NotatedMusic 
+from bibframe.models import SoftwareOrMultimedia, StillImage, TitleEntity
+from bibframe.models import ThreeDimensionalObject
 from person_authority.redis_helpers import get_or_generate_person
 from rdflib import Namespace
 
@@ -43,8 +47,42 @@ class MODSIngester(Ingester):
         super(MODSIngester, self).__init__(**kwargs)
         self.classifier = kwargs.get('classifier',
                                      simple_fuzzy.WorkClassifier)
+        self.work_class = kwargs.get('work_class',
+                                     Work)
         self.creators = []
         self.mods_xml = None
+
+    def __classify_work_class__(self):
+        "Helper function classifies a work based on typeOfResource"
+        type_of_resource = self.mods_xml.find(
+            "{{{0}}}typeOfResource".format(MODS_NS))
+        type_of = type_of_resource.text
+        # List of enumerated typeOfResource comes from the following website:
+        # http://www.loc.gov/standards/mods/mods-outline.html#typeOfResource
+        if type_of == "text":
+            self.work_class = LanguageMaterial
+        elif type_of == "cartographic":
+            self.work_class = Cartography
+        elif type_of == "notated music":
+            self.work_class = NotatedMusic
+        elif type_of == "sound recording-musical":
+            self.work_class = MusicalAudio
+        elif type_of == "sound recording-nonmusical":
+            self.work_class = NonmusicalAudio
+        elif type_of == "sound recording":
+            self.work_class = Audio
+        elif type_of == "still image":
+            self.work_class = StillImage
+        elif type_of == "moving image":
+            self.work_class = MovingImage
+        elif type_of== "three dimensional object":
+            self.work_class = ThreeDimensionalObject
+        elif type_of == "software, multimedia":
+            self.work_class = SoftwareOrMultimedia
+        elif type_of == "mixed material":
+            self.work_class = MixedMaterial
+        else:
+            self.work_class = Work
 
     def __create_instances__(self, work_key):
         """Helper function creates specific instance(s) from MODS
@@ -67,7 +105,11 @@ class MODSIngester(Ingester):
             if extent is not None:
                 if extent.text is not None:
                     instance_of['extent'] = extent.text
-            instances.append(instance_of)
+            new_instance = Instance(redis_datastore=self.redis_datastore,
+                                    **instance_of)
+            new_instance.save()
+            instances.append(new_instance.redis_key)
+        return instances
 
 
     def __extract_creator__(self, name_parts):
@@ -134,27 +176,22 @@ class MODSIngester(Ingester):
             if titleInfo.attrib.get('type')is None:
                 # equalvant to MARC 245 $a
                 titleValue = titleInfo.find('{{{0}}}title'.format(MODS_NS))
-                if titleValue is not None:
+                if titleValue is not None and len(titleValue.text) > 0:
                     output['titleValue'] = titleValue.text
                 # equalvant to MARC 245 $b
                 subtitle = titleInfo.find('{{{0}}}subTitle'.format(MODS_NS))
-                if subtitle is not None:
+                if subtitle is not None and len(subtitle.text) > 0:
                     output['subtitle'] = subtitle.text
                 # equalivant to MARC 245 $p
                 partTitle = titleInfo.find('{{{0}}}partName'.format(MODS_NS))
-                if partTitle is not None:
+                if partTitle is not None and len(partTitle.text) > 0:
                     output['partTitle'] = partTitle.text
-            title_entity = TitleEntity(redis_datastore=self.redis_datastore,
-                                       **output)
-            title_entity.save()
-            title_entities.append(title_entity)
-                
-                
-                
-        
-        
-        
-        
+            if len(output) > 0:
+                title_entity = TitleEntity(redis_datastore=self.redis_datastore,
+                                           **output)
+                title_entity.save()
+                title_entities.append(title_entity.redis_key)
+        return title_entities
         
     def __ingest__(self):
         "Helper function extracts info from MODS and ingests into RLSP"
@@ -167,11 +204,15 @@ class MODSIngester(Ingester):
                                        for creator in self.creators]
             work['associatedAgents'] = work['rda:isCreatedBy']
         try:
-            work['title'] = self.__extract_title__()
+            title_entities = self.__extract_title__()
+            if len(title_entities) == 1:
+                work['title'] = title_entities[0]
+            else:
+                work['title'] = ' '.join(title_entities)
         except ValueError:
             return
-        
-        classifier = self.classifier(creative_work=work,
+        work_class = self.__classify_work_class__()
+        classifier = self.classifier(entity_info=work,
                                      redis_datastore=self.redis_datastore)
         classifier.classify()
         if classifier.creative_work is not None:
@@ -184,7 +225,8 @@ class MODSIngester(Ingester):
             instances = self.__create_instances__(work_key)
             for instance_key in instances:
                 self.redis_datastore.sadd(
-                    "{0}:bf:Instances".format(instance_key))
+                    "{0}:hasInstance".format(work_key),
+                    instance_key)
             
         
 
