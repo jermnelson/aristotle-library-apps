@@ -28,7 +28,13 @@
           </tr>
           <tr>
          {% endif %}
+         {% if app.productivity  %}
+           {% if user.is_authenticated %}
+           {{ app|create_app_td }}
+           {% endif %}
+         {% else %}
          {{ app|create_app_td }}
+         {% endif %}
          {% endfor %}
          </tr>
    </table>

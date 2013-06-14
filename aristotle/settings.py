@@ -1,12 +1,15 @@
 # Django settings for aristotle project.
 import os.path
 
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_HOME = os.path.split(PROJECT_ROOT)[0]
 DEFAULT_CHARSET = 'utf-8'
 DEBUG = True
-DOTCLOUD = False
 TEMPLATE_DEBUG = DEBUG
+# Determines if Aristotle Library System runs with a Redis Cluster or
+# run as a single Redis Instance
+REDIS_CLUSTER_MODE = False 
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -59,15 +62,6 @@ MEDIA_ROOT = os.path.join(PROJECT_HOME,"uploads")
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = ''
-
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-if DOTCLOUD is True:
-    STATIC_ROOT = '/home/dotcloud/volatile/static/'
-else:
-    STATIC_ROOT = os.path.join(PROJECT_ROOT,'static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -205,8 +199,15 @@ LOGGING = {
         
     }
 }
+
 try:
     from local_settings import *
     INSTALLED_APPS.extend(ACTIVE_APPS)
+    if REDIS_CLUSTER_MODE is True:
+        REDIS_DATASTORE = REDIS_CLUSTER
+    else:
+        import redis
+        REDIS_DATASTORE = redis.StrictRedis(host=REDIS_MASTER_HOST,
+                                            port=REDIS_MASTER_PORT) 
 except ImportError:
     pass

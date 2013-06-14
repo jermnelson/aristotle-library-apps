@@ -1,9 +1,126 @@
 __author__ = "Jeremy Nelson"
 import pymarc
 from unittest import TestCase
+from aristotle.settings import TEST_REDIS
 from bibframe.ingesters.MARC21 import *
 
-class MARC21toCreativeWorkTest(TestCase):
+class TestMARC21RegularExpressions(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_conditional_id(self):
+        """Tests MARC matching for such strings as:
+
+        '0247-+2"uri"/a,z'
+        """
+        result1 = CONDITIONAL_SUBFLD_ID_RE.search('0247-+2"uri"/a,z')
+        self.assert_(result1)
+        # Subfield 
+        self.assertEquals(result1.group('indicator2'),
+                          '2')
+        # Subfield value
+        self.assertEquals(result1.group('fld_value'),
+                          'uri')
+        result2 = CONDITIONAL_SUBFLD_ID_RE.search('0247-+2"ansi"/a,z')
+        self.assertEquals(result2.group('indicator2'),
+                          '2')
+        self.assertEquals(result2.group('fld_value'),
+                          'ansi')
+
+    def test_indicator_conditional(self):
+        """Tests MARC matching for conditional indicator strings
+
+        '264 if i2=2 $a+$b+$c'
+        'if i1=1, transcribe content of $a'
+        """
+        result1 = IND_CONDITIONAL_RE.search('264 if i2=2 $a+$b+$c')
+        self.assert_(result1)
+        self.assertEquals(result1.group('indicator'), '2')
+        self.assertEquals(result1.group('test'), '2')
+        result2 = IND_CONDITIONAL_RE.search('if i1=1, transcribe content of $a')
+        self.assert_(result2)
+        self.assertEquals(result2.group('indicator'), '1')
+        self.assertEquals(result2.group('test'), '1')
+    
+
+    def test_precede(self):
+        result1 = PRECEDE_RE.search('508, precede text with "Credits:')
+        self.assert_(result1)        
+        result2 = PRECEDE_RE.search('504--/a+b(precede info in b with References:')
+        self.assert_(result2 is None)
+
+    def test_subfield(self):
+        result1 = SUBFLD_RE.findall('020--/a,z')
+        self.assert_(result1)
+        self.assertEquals(result1[0], 'a')
+        self.assertEquals(result1[1], 'z')
+        # SUBFLD_RE is meant to run after extracting tags first,
+        # matches ,2 in the following string instead of $a
+        result2 = SUBFLD_RE.search('130,245,246,247,242,222,210 $a')
+        self.assertEquals(result2.group('subfld'),
+                          '2')
+        result3 = SUBFLD_RE.findall('504--/a+b(precede info in b with References:')
+        self.assertEquals(result3[0],
+                          'a')
+
+    def test_tags(self):
+        result1 = TAGS_RE.findall('130,245,246,247,242,222,210 $a')
+        self.assert_(result1)
+        self.assertEquals(len(result1), 7)
+        self.assertEquals(result1[0],
+                          '130')
+        self.assertEquals(result1[-1],
+                          '210')
+        result2 = TAGS_RE.findall('700,710,711, with $t and i2 not 2')
+        self.assertEquals(len(result2), 3)
+        self.assertEquals(result2, ['700', '710', '711'])
+
+    def tearDown(self):
+        pass
+
+class TestMARC21Ingester(TestCase):
+
+    def setUp(self):
+        marc_record = pymarc.Record()
+        marc_record.add_field(
+            pymarc.Field(tag='100',
+                         indicators=['0','1'],
+                         subfields=['a', 'Austen, Jane',
+                                    'd', '1781-1836']),
+            pymarc.Field(tag='245',
+                         indicators=['1', '0'],
+                         subfields=['a', 'Pride and prejudice /',
+                                    'c', 'Jane Austen']))
+        self.ingester = MARC21Ingester(redis_datastore=TEST_REDIS,
+                                       record=marc_record)
+        
+
+    def test_init(self):
+        self.assert_(self.ingester is not None)
+        self.assertEquals(self.ingester.entity_info,
+                          {})
+
+    def test_extract(self):
+        value_one = self.ingester.__extract__(tags=['100'],
+                                              subfields=['a'])
+                                              
+        self.assertEquals(value_one,
+                          'Austen, Jane')
+
+    def test_rule_one(self):
+        rule = '130,245,246,247,242,222,210 $a'
+        values_one = self.ingester.__rule_one__(rule)
+        self.assertEquals(values_one[0],
+                          'Pride and prejudice /')
+
+    def tearDown(self):
+        TEST_REDIS.flushdb()
+        
+
+        
+
+class TestMARC21toCreativeWork(TestCase):
 
     def setUp(self):
         marc_record = pymarc.Record()

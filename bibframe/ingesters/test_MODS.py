@@ -14,10 +14,7 @@ MODS_NS = Namespace('http://www.loc.gov/mods/v3')
 class TestMODSforOralHistoryIngester(unittest.TestCase):
 
     def setUp(self):
-        self.ingester = MODSIngester(annotation_ds=TEST_REDIS,
-                                     authority_ds=TEST_REDIS,
-                                     creative_work_ds=TEST_REDIS,
-                                     instance_ds=TEST_REDIS)
+        self.ingester = MODSIngester(redis_datastore=TEST_REDIS)
         self.ingester.ingest_file(os.path.join(PROJECT_HOME,
                                                'bibframe',
                                                'fixures',

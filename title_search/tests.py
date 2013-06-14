@@ -7,7 +7,7 @@ __author__ = "Jeremy Nelson"
 from django.test import TestCase
 from aristotle.settings import TEST_REDIS
 from redis_helpers import *
-import bibframe.bibframe_models as models
+import bibframe.models as models
 
 test_ds = TEST_REDIS
 

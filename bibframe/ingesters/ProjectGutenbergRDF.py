@@ -8,7 +8,8 @@ import os
 
 from lxml import etree
 
-from bibframe.models import Instance, Person, Work
+from bibframe.models import Instance, Person, Work, TitleEntity
+from bibframe.models import SoftwareOrMultimedia
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.classifiers import simple_fuzzy
 
@@ -32,7 +33,7 @@ class ProjectGutenbergIngester(Ingester):
     >>> local_redis = redis.StrictRedis()
     >>> ingester = ProjectGutenbergIngester(annotation_ds=local_redis,
                                             authority_ds=local_redis,
-                                            creative_work_ds=local_redis,
+                                            redis_datastore=local_redis,
                                             instance_ds=local_redis)
     >>> ingester.ingest('C:\\ProjectGutenberg\epub\pg01.rdf')
     """                              
@@ -66,10 +67,10 @@ class ProjectGutenbergIngester(Ingester):
                               "{{{0}}}Description/{{{0}}}value".format(RDF))
             if format_value.text == 'text/html':
                 instance_info['rda:carrierTypeManifestation'] = 'online resource'
-                new_instance = Instance(primary_redis=self.instance_ds)
+                new_instance = Instance(redis_datastore=self.redis_datastore)
             if format_value.text == 'text/plain; charset=us-ascii':
                 instance_info['rda:carrierTypeManifestation'] = 'online resource'
-                new_instance = Instance(primary_redis=self.instance_ds)
+                new_instance = Instance(redis_datastore=self.redis_datastore)
             if new_instance is not None:
                 for key, value in instance_info.iteritems():
                     setattr(new_instance, key, value)
@@ -102,7 +103,7 @@ class ProjectGutenbergIngester(Ingester):
                 if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
                     person['rda:dateOfDeath'] = element.text
             person_result = get_or_generate_person(person,
-                                                   self.authority_ds)
+                                                   self.redis_datastore)
             if type(person_result) == list:
                 creators.extend(person_result)
             else:
@@ -118,7 +119,12 @@ class ProjectGutenbergIngester(Ingester):
         ebook = rdf_xml.find('{{{0}}}ebook'.format(PGTERMS))
         dc_title = ebook.find('{{{0}}}title'.format(DCTERMS))
         if dc_title is not None:
-            return {'rda:title': dc_title.text}
+            title_entity = TitleEntity(redis_datastore=redis_datastore,
+                                       label=dc_title.text,
+                                       titleValue=dc_title.text)
+            title_entity.save()
+            index_title(title_entity, self.redis_datastore)
+            return title_entity.redis_key
         else:
             raise ValueError("Title not found")
 
@@ -142,17 +148,18 @@ class ProjectGutenbergIngester(Ingester):
             work['title'] = self.__extract_title__(rdf_xml)
         except ValueError, e:
             return
-        classifier = self.classifier(creative_work_ds=self.creative_work_ds,
-                                     entity_info=work)
+        classifier = self.classifier(redis_datastore=self.redis_datastore,
+                                     entity_info=work,
+                                     work_class=SoftwareOrMultimedia)
         classifier.classify()
         if classifier.creative_work is not None:
             classifier.creative_work.save()
             work_key = classifier.creative_work.redis_key
             for creator_key in work['rda:isCreatedBy']:
-                self.authority_ds.sadd(
+                self.redis_datastore.sadd(
                     '{0}:rda:isCreatorPersonOf'.format(creator_key),
                     work_key)
             instances = self.__create_instances__(rdf_xml, work_key)
             for instance_key in instances:
-                self.creative_work_ds.sadd('{0}:bf:Instances'.format(work_key),
+                self.redis_datastore.sadd('{0}:hasInstance'.format(work_key),
                                            instance_key)

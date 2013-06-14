@@ -186,7 +186,7 @@ class TestPersonAuthority(TestCase):
 
     def test_save(self):
         self.assertEquals(self.person.redis_key,
-                          "bibframe:Person:1")
+                          "bf:Person:1")
 
     def tearDown(self):
         test_redis.flushdb()
@@ -196,26 +196,26 @@ class TestInstance(TestCase):
 
     def setUp(self):
         self.holding = Holding(primary_redis=test_redis,
-                               annotates=set(["bibframe:Instance:1"]))
+                               annotates=set(["bf:Instance:1"]))
         setattr(self.holding,'callno-local','Video 6716')
         setattr(self.holding,'callno-lcc','C1.D11')
         self.holding.save()
-        self.existing_redis_key = "bibframe:Instance:{0}".format(test_redis.incr('global bibframe:Instance'))
+        self.existing_redis_key = "bf:Instance:{0}".format(test_redis.incr('global bf:Instance'))
         test_redis.hset(self.existing_redis_key,
                         'created_on',
                         datetime.datetime.utcnow().isoformat())
         self.instance = Instance(primary_redis=test_redis,
                                  redis_key=self.existing_redis_key,
-                                 associatedAgent={'rda:publisher':set(['bibframe:Organization:1'])},
+                                 associatedAgent={'rda:publisher':set(['bf:Organization:1'])},
                                  hasAnnotation=set([self.holding.redis_key,]),
-                                 instanceOf="bibframe:Work:1")
+                                 instanceOf="bf:Work:1")
         self.new_holding = Holding(primary_redis=test_redis)
         setattr(self.new_holding,"callno-sudoc",'HD1695.C7C55 2007')
         self.new_holding.save()
         self.new_instance = Instance(primary_redis=test_redis,
-                                     associatedAgent={'rda:publisher':set(['bibframe:Organization:2'])},
+                                     associatedAgent={'rda:publisher':set(['bf:Organization:2'])},
                                      hasAnnotation=set([self.new_holding.redis_key,]),
-                                     instanceOf="bibframe:Work:2")
+                                     instanceOf="bf:Work:2")
         setattr(self.new_instance,'system-number','b1762075')
         self.new_instance.save()
         setattr(self.new_holding,'annotates',set([self.new_instance.redis_key,]))
@@ -229,10 +229,10 @@ class TestInstance(TestCase):
     def test_init(self):
         self.assert_(self.new_instance.primary_redis)
         self.assertEquals(self.new_instance.redis_key,
-                          'bibframe:Instance:2')
+                          'bf:Instance:2')
         self.assert_(self.instance.primary_redis)
         self.assertEquals(self.instance.redis_key,
-                          "bibframe:Instance:1")
+                          "bf:Instance:1")
 
     def test_lccn_callnumber(self):
         self.assertEquals(list(self.instance.hasAnnotation)[0],
@@ -257,9 +257,9 @@ class TestInstance(TestCase):
 
     def test_publisher(self):
         self.assertEquals(list(self.new_instance.associatedAgent['rda:publisher'])[0],
-                          'bibframe:Organization:2')
+                          'bf:Organization:2')
         self.assertEquals(list(self.instance.associatedAgent['rda:publisher'])[0],
-                          'bibframe:Organization:1')
+                          'bf:Organization:1')
 
     def test_sudoc_callnumber(self):
         self.assertEquals(list(self.new_instance.hasAnnotation)[0],
@@ -277,29 +277,29 @@ class TestCreativeWork(TestCase):
     def setUp(self):
         # Test work w/o Redis key (new Work)
         self.new_creative_work = Work(primary_redis=test_redis,
-                                      associatedAgent={'rda:isCreatedBy':set(["bibframe:Person:1"])},
+                                      associatedAgent={'rda:isCreatedBy':set(["bf:Person:1"])},
                                       languageOfWork="eng",
                                       note=["This is a note for a new creative work",])
         setattr(self.new_creative_work,'rda:dateOfWork',2012)
 
         self.new_creative_work.save()
         # Tests work w/pre-existing Redis 
-	self.existing_key = 'bibframe:Work:2'
+	self.existing_key = 'bf:Work:2'
         test_redis.hset(self.existing_key,'created','2013-01-07')
         test_redis.hset(self.existing_key,'rda:dateOfWork',1999)
         self.creative_work = Work(primary_redis=test_redis,
                                   redis_key=self.existing_key,
-                                  associatedAgent={'rda:isCreatedBy':set(["bibframe:Organization:1"])})
+                                  associatedAgent={'rda:isCreatedBy':set(["bf:Organization:1"])})
         self.creative_work.save()
 
 
     def test_init_(self):
         self.assert_(self.new_creative_work.primary_redis)
         self.assertEquals(self.new_creative_work.redis_key,
-                          'bibframe:Work:1')
+                          'bf:Work:1')
         self.assert_(self.creative_work.primary_redis)
         self.assertEquals(self.creative_work.redis_key,
-                          "bibframe:Work:2")
+                          "bf:Work:2")
 
     def test_dateOfWork(self):
         self.assertEquals(str(getattr(self.new_creative_work,'rda:dateOfWork')),
@@ -311,9 +311,9 @@ class TestCreativeWork(TestCase):
 
     def test_isCreatedBy(self):
         self.assertEquals(list(self.new_creative_work.associatedAgent['rda:isCreatedBy'])[0],
-		          'bibframe:Person:1')
+		          'bf:Person:1')
         self.assertEquals(list(self.creative_work.associatedAgent['rda:isCreatedBy'])[0],
-                          'bibframe:Organization:1')
+                          'bf:Organization:1')
 
 
     def tearDown(self):
@@ -324,9 +324,13 @@ class TestLibraryHolding(TestCase):
 
     def setUp(self):
         self.new_holding = Holding(primary_redis=test_redis,
-                                   annotates='bibframe:Instance:1')
-        setattr(self.new_holding,'callno-lcc','PS3602.E267 M38 2008')
-        setattr(self.new_holding,'callno-udc','631.321:631.411.3')
+                                   annotates='bf:Instance:1')
+        setattr(self.new_holding,
+                'callno-lcc',
+                'PS3602.E267 M38 2008')
+        setattr(self.new_holding,
+                'callno-udc',
+                '631.321:631.411.3')
         setattr(self.new_holding,'callno-ddc','388/.0919')
         self.new_holding.save()
 
@@ -335,7 +339,7 @@ class TestLibraryHolding(TestCase):
 
     def test_annotates(self):
         self.assertEquals(self.new_holding.annotates,
-                          'bibframe:Instance:1')
+                          'bf:Instance:1')
   
     def test_callno_ddc(self):
         self.assertEquals(self.new_holding.feature('callno-ddc'),
@@ -357,7 +361,28 @@ class TestLibraryHolding(TestCase):
 class TestTitleInfo(TestCase):
 
     def setUp(self):
-        pass
+        self.new_title = TitleEntity(primary_redis=TEST_REDIS,
+                                     titleDate=1813,
+                                     titleValue='Pride and Prejudice')
+        self.new_title.save()
+        
+    def test_init(self):
+        self.assert_(self.new_title is not None)
+        self.assertEquals(self.new_title.redis_key,
+                          'bf:TitleEntity:1')
+
+    def test_titleDate(self):
+        self.assertEquals(TEST_REDIS.hget(self.new_title.redis_key,
+                                          'titleDate'),
+                          '1813')
+
+    def test_titleValue(self):
+        self.assertEquals(TEST_REDIS.hget(self.new_title.redis_key,
+                                          'titleValue'),
+                          'Pride and Prejudice')
+        
+
+        
 
     def tearDown(self):
         test_redis.flushdb()

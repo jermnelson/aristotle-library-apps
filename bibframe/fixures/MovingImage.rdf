@@ -3,253 +3,175 @@
                 -->
 <rdf:RDF
   xmlns:bfabstract="http://bibframe.org/model-abstract/"
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 >
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/ThreeDimensionalObject">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16574557"/>
-    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>A Resource in a form intended to be perceived visually in three-dimensions. Includes man-made objects such as models, sculptures, clothing, and toys, as well as naturally occurring objects such as specimens mounted for viewing.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
-    <rdfs:label>Three-dimensional Object</rdfs:label>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Cartography">
+    <bfabstract:pipeline-edit>2013-04-09 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Cartography</rdfs:label>
+    <bfabstract:note>This is often called "cartographic" but is not chosen because it is an adjective and all the other types are nouns.</bfabstract:note>
+    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <bfabstract:definition>Resources that show spatial information, including maps, atlases, globes, digital maps, and other cartographic items</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/Instance">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11737193"/>
-    <bfabstract:pipeline-edit>2013-04-17 (Updated 856 instance)</bfabstract:pipeline-edit>
-    <bfabstract:definition>A resource reflecting an individual, material embodiment of the Work.</bfabstract:definition>
-    <bfabstract:note>An instance can be generated from an 856 pointing to a digital version of the work.For example, if $ind1=4 and $ind2=1</bfabstract:note>
-    <bfabstract:marcField>856...</bfabstract:marcField>
-    <bfabstract:marcField>260</bfabstract:marcField>
-    <dcterms:modified>2013-04-17 (Updated)</dcterms:modified>
-    <rdfs:label>Instance</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5485844"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Annotation">
-    <bfabstract:definition>A resource that adds additional information to or about other BIBFRAME resources when knowing 'who' annotated it is important.</bfabstract:definition>
-    <bfabstract:marcField>856</bfabstract:marcField>
-    <dcterms:modified>2013-04-12 (Updated definition)</dcterms:modified>
     <rdfs:label>Annotation</rdfs:label>
+    <dcterms:modified>2013-04-12 (Updated definition)</dcterms:modified>
+    <bfabstract:definition>A resource that adds additional information to or about other BIBFRAME resources when knowing 'who' annotated it is important.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/Authority">
-    <rdfs:label>Authority</rdfs:label>
-    <bfabstract:definition>A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</bfabstract:definition>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/SoftwareOrMultimedia">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17432593"/>
-    <bfabstract:pipeline-edit>2013-04-12 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>An electronic resource that is a computer program (i.e. digitally encoded instructions intended to be processed and performed by a computer) or which consist of multiple media types that are software driven. Examples include videogames and websites.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
-    <rdfs:label>Software or Multimedia</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/LanguageMaterial">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16484626"/>
-    <bfabstract:pipeline-edit>2013-04-09 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>A form of notation for language intended to be perceived visually and understood through the use of language, i.e. text in written or spoken form.</bfabstract:definition>
-    <bfabstract:note>although the term comes from MARC Leader/06 it expresses what we want here better than "text". This allows an audio book to be considered as language material and text/html (for a webpage, which can have image and other formats embedded) as multimedia. Subtypes: book, serial, newspaper, article, letter, dissertation, etc.</bfabstract:note>
-    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
-    <rdfs:label>Language Material</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/Tactile">
-    <bfabstract:pipeline-edit>2013-04-12 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>A resources that is intended to be perceived by touch.</bfabstract:definition>
-    <bfabstract:marcField>007, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
-    <rdfs:label>Tactile Expression</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/StillImage">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16891726"/>
-    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>A resource expressed through line, shape, shading, etc., intended to be perceived visually as a still image or images in two dimensions. Includes two-dimensional images and slides and transparencies.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
-    <rdfs:label>Still Image</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/MovingImage">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11515605"/>
-    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>Images intended to be perceived as moving, including motion pictures (using live action and/or animation), film and video recordings of performances, events, etc.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
-    <rdfs:label>Moving Image</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/Cartography">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5485844"/>
-    <bfabstract:pipeline-edit>2013-04-09 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>Resources that show spatial information, including maps, atlases, globes, digital maps, and other cartographic items</bfabstract:definition>
-    <bfabstract:note>This is often called "cartographic" but is not chosen because it is an adjective and all the other types are nouns.</bfabstract:note>
-    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
-    <rdfs:label>Cartography</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>856</bfabstract:marcField>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/NotatedMusic">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16997191"/>
     <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>Graphic, non-realized representations of musical works intended to be perceived visually.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
     <rdfs:label>Notated Music</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
+    <bfabstract:definition>Graphic, non-realized representations of musical works intended to be perceived visually.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16997191"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Authority">
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <rdfs:label>Authority</rdfs:label>
+    <bfabstract:definition>A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</bfabstract:definition>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/StillImage">
+    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Still Image</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
+    <bfabstract:definition>A resource expressed through line, shape, shading, etc., intended to be perceived visually as a still image or images in two dimensions. Includes two-dimensional images and slides and transparencies.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16891726"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Dataset">
+    <bfabstract:pipeline-edit>2013-04-11 (Updated example)</bfabstract:pipeline-edit>
+    <rdfs:label>Dataset</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <bfabstract:definition>Data encoded in a defined structure. Includes numeric data, environmental data, etc., used by applications software to calculate averages, correlations, etc., or to produce models, etc., but not normally displayed in its raw form.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/NotatedMovement">
     <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>Graphic, non-realized representations of movement intended to be perceived visually, e.g. dance.</bfabstract:definition>
-    <bfabstract:marcField>336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
     <rdfs:label>Notated Movement</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <bfabstract:definition>Graphic, non-realized representations of movement intended to be perceived visually, e.g. dance.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>336</bfabstract:marcField>
   </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/Audio">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14480689"/>
-    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>Resources expressed in an audible form, including music or other sounds.</bfabstract:definition>
-    <bfabstract:note>Subtypes: musical, nonmusical</bfabstract:note>
-    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/SoftwareOrMultimedia">
+    <bfabstract:pipeline-edit>2013-04-12 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Software or Multimedia</rdfs:label>
     <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
-    <rdfs:label>Audio</rdfs:label>
+    <bfabstract:definition>An electronic resource that is a computer program (i.e. digitally encoded instructions intended to be processed and performed by a computer) or which consist of multiple media types that are software driven. Examples include videogames and websites.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17432593"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Manuscript">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13294949"/>
     <bfabstract:pipeline-edit>2013-04-12 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>A resource that is written in handwriting or typescript. These are generally unique resources.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated); 2013-04-30 (Added example)</dcterms:modified>
     <rdfs:label>Manuscript</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated); 2013-04-30 (Added example)</dcterms:modified>
+    <bfabstract:definition>A resource that is written in handwriting or typescript. These are generally unique resources.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13294949"/>
   </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/Dataset">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
-    <bfabstract:pipeline-edit>2013-04-11 (Updated example)</bfabstract:pipeline-edit>
-    <bfabstract:definition>Data encoded in a defined structure. Includes numeric data, environmental data, etc., used by applications software to calculate averages, correlations, etc., or to produce models, etc., but not normally displayed in its raw form.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
-    <rdfs:label>Dataset</rdfs:label>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/ThreeDimensionalObject">
+    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Three-dimensional Object</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
+    <bfabstract:definition>A Resource in a form intended to be perceived visually in three-dimensions. Includes man-made objects such as models, sculptures, clothing, and toys, as well as naturally occurring objects such as specimens mounted for viewing.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16574557"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Tactile">
+    <bfabstract:pipeline-edit>2013-04-12 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Tactile Expression</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <bfabstract:definition>A resources that is intended to be perceived by touch.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>007, 336</bfabstract:marcField>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/MovingImage">
+    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Moving Image</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
+    <bfabstract:definition>Images intended to be perceived as moving, including motion pictures (using live action and/or animation), film and video recordings of performances, events, etc.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11515605"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Instance">
+    <bfabstract:pipeline-edit>2013-04-17 (Updated 856 instance)</bfabstract:pipeline-edit>
+    <rdfs:label>Instance</rdfs:label>
+    <bfabstract:note>An instance can be generated from an 856 pointing to a digital version of the work.For example, if $ind1=4 and $ind2=1</bfabstract:note>
+    <dcterms:modified>2013-04-17 (Updated)</dcterms:modified>
+    <bfabstract:definition>A resource reflecting an individual, material embodiment of the Work.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bfabstract:marcField>856...</bfabstract:marcField>
+    <bfabstract:marcField>260</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11737193"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Audio">
+    <bfabstract:pipeline-edit>2013-04-11 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Audio</rdfs:label>
+    <bfabstract:note>Subtypes: musical, nonmusical</bfabstract:note>
+    <dcterms:modified>2013-04-09 (Updated); 2013-04-24 (Added example)</dcterms:modified>
+    <bfabstract:definition>Resources expressed in an audible form, including music or other sounds.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14480689"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/MixedMaterial">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14923309"/>
     <bfabstract:pipeline-edit>2013-04-12 (Updated)</bfabstract:pipeline-edit>
-    <bfabstract:definition>A resource comprised of multiple types which are not driven by software. This may include materials in two or more forms that are related by virtue of their having been accumulated by or about a person or body, e.g. archival forms.</bfabstract:definition>
-    <bfabstract:marcField>Ldr/06, 007</bfabstract:marcField>
-    <dcterms:modified>2013-04-09 (Updated);2013-05-01 (Added example)</dcterms:modified>
     <rdfs:label>Mixed Material</rdfs:label>
+    <dcterms:modified>2013-04-09 (Updated);2013-05-01 (Added example)</dcterms:modified>
+    <bfabstract:definition>A resource comprised of multiple types which are not driven by software. This may include materials in two or more forms that are related by virtue of their having been accumulated by or about a person or body, e.g. archival forms.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 007</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14923309"/>
   </rdfs:Class>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/summary">
-    <rdfs:label>Summary</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/abbreviatedTitle">
-    <rdfs:label>Abbreviated title</rdfs:label>
-    <bfabstract:marcField>210 $a+$b</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/associatedAgent">
-    <rdfs:label>Associated Agent</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/issn-l">
-    <rdfs:label>linking International Standard Serial Number</rdfs:label>
-    <bfabstract:marcField>022--/l,m</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/class-lcc">
-    <rdfs:label>LCC Classification</rdfs:label>
-    <bfabstract:marcField>050,051,055,060,061,070,071--/a</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/contentNature">
-    <rdfs:label>Nature of Content</rdfs:label>
-    <bfabstract:marcField>245--/k, 513--/a, 516--/a,008/24-27BK+CR(codes)</bfabstract:marcField>
-    <bfabstract:marcField>336--/a(term)</bfabstract:marcField>
-    <bfabstract:marcField>336--/b(code)</bfabstract:marcField>
-  </rdf:Description>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/LanguageMaterial">
+    <bfabstract:pipeline-edit>2013-04-09 (Updated)</bfabstract:pipeline-edit>
+    <rdfs:label>Language Material</rdfs:label>
+    <bfabstract:note>although the term comes from MARC Leader/06 it expresses what we want here better than "text". This allows an audio book to be considered as language material and text/html (for a webpage, which can have image and other formats embedded) as multimedia. Subtypes: book, serial, newspaper, article, letter, dissertation, etc.</bfabstract:note>
+    <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <bfabstract:definition>A form of notation for language intended to be perceived visually and understood through the use of language, i.e. text in written or spoken form.</bfabstract:definition>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bfabstract:marcField>Ldr/06, 007, 336</bfabstract:marcField>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16484626"/>
+  </rdfs:Class>
   <rdf:Description rdf:about="http://bibframe.org/vocab/expressionOf">
     <rdfs:label>Expression of</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/relatedResource">
-    <rdfs:label>Related resource</rdfs:label>
-    <bfabstract:marcField>787</bfabstract:marcField>
-    <bfabstract:marcField>700,710,711, with $t and i2 not 2</bfabstract:marcField>
-    <bfabstract:marcField>730,740, and i2 not 2</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/hasAnnotation">
-    <rdfs:label>Has Annotation</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/class-ddc">
-    <rdfs:label>DDC Classification</rdfs:label>
-    <bfabstract:marcField>083--/a"hyphen"c</bfabstract:marcField>
-    <bfabstract:marcField>082--/a</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/uniformTitle">
-    <rdfs:label>Controlled title</rdfs:label>
-    <bfabstract:marcField>130,240 $a</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/label">
-    <rdfs:label>Label for resource</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/isan">
-    <rdfs:label>International Standard Audiovisual Number</rdfs:label>
-    <bfabstract:marcField>0247-+2"isan"/a,z</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/class-udc">
-    <rdfs:label>UDC Classification</rdfs:label>
-    <bfabstract:marcField>080--/a+c</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/performerNote">
-    <rdfs:label>Performer note</rdfs:label>
-    <bfabstract:marcField>511, precede text with "Cast:"</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/intendedAudience">
-    <rdfs:label>Intended Audience</rdfs:label>
-    <bfabstract:marcField>008/22MU+BK+CF+VM</bfabstract:marcField>
-    <bfabstract:marcField>521--</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/class">
-    <rdfs:label>classification</rdfs:label>
-    <bfabstract:marcField>084,086--/a</bfabstract:marcField>
   </rdf:Description>
   <rdf:Description rdf:about="http://bibframe.org/vocab/iswc">
     <rdfs:label>International Standard Musical Work Code</rdfs:label>
     <bfabstract:marcField>0247-+2"iswc"/a,z</bfabstract:marcField>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/creditsNote">
-    <rdfs:label>Credits note</rdfs:label>
-    <bfabstract:marcField>508, precede text with "Credits:</bfabstract:marcField>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/class-lcc">
+    <rdfs:label>LCC Classification</rdfs:label>
+    <bfabstract:marcField>050,051,055,060,061,070,071--/a</bfabstract:marcField>
   </rdf:Description>
   <rdf:Description rdf:about="http://bibframe.org/vocab/geographicSubject">
     <rdfs:label>Geographic Subject</rdfs:label>
     <bfabstract:marcField>043--/a</bfabstract:marcField>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/subject">
-    <rdfs:label>Subject</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/istc">
-    <rdfs:label>International Standard Text Code</rdfs:label>
-    <bfabstract:marcField>0247-+2"istc"/a,z</bfabstract:marcField>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/language">
-    <rdfs:label>Language</rdfs:label>
-    <bfabstract:marcField>008/35-37</bfabstract:marcField>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/note">
+    <rdfs:label>Note</rdfs:label>
+    <bfabstract:marcField>500--/3+a</bfabstract:marcField>
   </rdf:Description>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Resource">
     <rdfs:label>Resource</rdfs:label>
     <rdfs:range>
-      <rdf:Description rdf:about="http://bibframe.org/vocab/authorizedAccessPoint">
-        <rdfs:label>Authorized access point</rdfs:label>
-      </rdf:Description>
-    </rdfs:range>
-    <rdfs:range>
-      <rdf:Description rdf:about="http://bibframe.org/vocab/description">
-        <rdfs:label>Description of resource</rdfs:label>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/label">
+        <rdfs:label>Label for resource</rdfs:label>
       </rdf:Description>
     </rdfs:range>
     <rdfs:range>
@@ -257,73 +179,163 @@
         <rdfs:label>identifier</rdfs:label>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/relatedResource"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/label"/>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/authorizedAccessPoint">
+        <rdfs:label>Authorized access point</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/relatedResource">
+        <rdfs:label>Related resource</rdfs:label>
+        <bfabstract:marcField>700,710,711, with $t and i2 not 2</bfabstract:marcField>
+        <bfabstract:marcField>730,740, and i2 not 2</bfabstract:marcField>
+        <bfabstract:marcField>787</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/description">
+        <rdfs:label>Description of resource</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
   </rdfs:Class>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/mediumOfMusic">
-    <rdfs:label>Medium of music</rdfs:label>
-    <bfabstract:marcField>382--/a</bfabstract:marcField>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/creditsNote">
+    <rdfs:label>Credits note</rdfs:label>
+    <bfabstract:marcField>508, precede text with "Credits:</bfabstract:marcField>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/relatedWork">
-    <rdfs:label>Related work</rdfs:label>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/subject">
+    <rdfs:label>Subject</rdfs:label>
   </rdf:Description>
   <rdf:Description rdf:about="http://bibframe.org/vocab/hasExpression">
     <rdfs:label>Expressed as</rdfs:label>
   </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/isan">
+    <rdfs:label>International Standard Audiovisual Number</rdfs:label>
+    <bfabstract:marcField>0247-+2"isan"/a,z</bfabstract:marcField>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/relatedWork">
+    <rdfs:label>Related work</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/contentNature">
+    <rdfs:label>Nature of Content</rdfs:label>
+    <bfabstract:marcField>245--/k, 513--/a, 516--/a,008/24-27BK+CR(codes)</bfabstract:marcField>
+    <bfabstract:marcField>336--/b(code)</bfabstract:marcField>
+    <bfabstract:marcField>336--/a(term)</bfabstract:marcField>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/abbreviatedTitle">
+    <rdfs:label>Abbreviated title</rdfs:label>
+    <bfabstract:marcField>210 $a+$b</bfabstract:marcField>
+  </rdf:Description>
   <rdf:Description rdf:about="http://bibframe.org/vocab/hasInstance">
     <rdfs:label>Instantiated as</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/languageOfWork">
-    <rdfs:label>Language of work</rdfs:label>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/class">
+    <rdfs:label>classification</rdfs:label>
+    <bfabstract:marcField>084,086--/a</bfabstract:marcField>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/contentCoverage">
-    <rdfs:label>Coverage of Content</rdfs:label>
-    <bfabstract:marcField>513--/b</bfabstract:marcField>
-    <bfabstract:marcField>522--/a</bfabstract:marcField>
-    <bfabstract:marcField>518--/a</bfabstract:marcField>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/intendedAudience">
+    <rdfs:label>Intended Audience</rdfs:label>
+    <bfabstract:marcField>008/22MU+BK+CF+VM</bfabstract:marcField>
+    <bfabstract:marcField>521--</bfabstract:marcField>
   </rdf:Description>
-  <rdf:Description rdf:about="http://bibframe.org/vocab/note">
-    <rdfs:label>Note</rdfs:label>
-    <bfabstract:marcField>500--/3+a</bfabstract:marcField>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/class-udc">
+    <rdfs:label>UDC Classification</rdfs:label>
+    <bfabstract:marcField>080--/a+c</bfabstract:marcField>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/language">
+    <rdfs:label>Language</rdfs:label>
+    <bfabstract:marcField>008/35-37</bfabstract:marcField>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://bibframe.org/vocab/class-ddc">
+    <rdfs:label>DDC Classification</rdfs:label>
+    <bfabstract:marcField>083--/a"hyphen"c</bfabstract:marcField>
+    <bfabstract:marcField>082--/a</bfabstract:marcField>
   </rdf:Description>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Work">
-    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
-    <bfabstract:definition>A resource reflecting a conceptual essence of the cataloging resource.</bfabstract:definition>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/summary"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/abbreviatedTitle"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/associatedAgent"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/issn-l"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/class-lcc"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/contentNature"/>
+    <rdfs:label>Work</rdfs:label>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/expressionOf"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/hasAnnotation"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/class-ddc"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/uniformTitle"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/isan"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/class-udc"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/performerNote"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/intendedAudience"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/class"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/iswc"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/creditsNote"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/class-lcc"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/geographicSubject"/>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/contentCoverage">
+        <rdfs:label>Coverage of Content</rdfs:label>
+        <bfabstract:marcField>522--/a</bfabstract:marcField>
+        <bfabstract:marcField>513--/b</bfabstract:marcField>
+        <bfabstract:marcField>518--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/creditsNote"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/subject"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/istc"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/language"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/mediumOfMusic"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/relatedWork"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/hasExpression"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/isan"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/relatedWork"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/contentNature"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/abbreviatedTitle"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/hasInstance"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/languageOfWork"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/contentCoverage"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/class"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/intendedAudience"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/class-udc"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/language"/>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/class-ddc"/>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/mediumOfMusic">
+        <rdfs:label>Medium of music</rdfs:label>
+        <bfabstract:marcField>382--/a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/uniformTitle">
+        <rdfs:label>Controlled title</rdfs:label>
+        <bfabstract:marcField>130,240 $a</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/associatedAgent">
+        <rdfs:label>Associated Agent</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/summary">
+        <rdfs:label>Summary</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/hasAnnotation">
+        <rdfs:label>Has Annotation</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/performerNote">
+        <rdfs:label>Performer note</rdfs:label>
+        <bfabstract:marcField>511, precede text with "Cast:"</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/note"/>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/languageOfWork">
+        <rdfs:label>Language of work</rdfs:label>
+      </rdf:Description>
+    </rdfs:range>
     <rdfs:range>
       <rdf:Description rdf:about="http://bibframe.org/vocab/index">
         <rdfs:label>Has index</rdfs:label>
         <bfabstract:marcField>555</bfabstract:marcField>
       </rdf:Description>
     </rdfs:range>
-    <rdfs:label>Work</rdfs:label>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/issn-l">
+        <rdfs:label>linking International Standard Serial Number</rdfs:label>
+        <bfabstract:marcField>022--/l,m</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <rdfs:range>
+      <rdf:Description rdf:about="http://bibframe.org/vocab/istc">
+        <rdfs:label>International Standard Text Code</rdfs:label>
+        <bfabstract:marcField>0247-+2"istc"/a,z</bfabstract:marcField>
+      </rdf:Description>
+    </rdfs:range>
+    <bfabstract:definition>A resource reflecting a conceptual essence of the cataloging resource.</bfabstract:definition>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bfabstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
   </rdfs:Class>
 </rdf:RDF>

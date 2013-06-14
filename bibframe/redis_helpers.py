@@ -5,50 +5,61 @@
 __author__ = "Jeremy Nelson"
 
 import csv
-from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS
-from aristotle.settings import CREATIVE_WORK_REDIS, INSTANCE_REDIS
+from aristotle.settings import REDIS_DATASTORE
 
 def get_brief(**kwargs):
     """
     Searches datastore and returns brief record from bibframe:CreativeWork,
     bibframe:Instance, and bibframe:Authority datastores
 
-    :param redis_work: Redis bibframe:Work datastore
-    :param redis_instance: Redis bibframe:Instance datastore
-    :param redis_authority; Redis bibframe:Authority datastore
+    :param redis_datastore: Redis bibframe:Work datastore
+    :param redis_datastore: Redis bibframe:Instance datastore
+    :param redis_datastore; Redis bibframe:Authority datastore
     :param creative_work_key: Redis bibframe:CreativeWork key
     :param instance_key: Redis bibframe:Instance key
     """
-    output,work_key,instance_keys = {},None,[]
-    redis_authority = kwargs.get('redis_authority',AUTHORITY_REDIS)
-    redis_instance = kwargs.get('redis_instance',INSTANCE_REDIS)
-    redis_work = kwargs.get('redis_work',CREATIVE_WORK_REDIS)
+    output, work_key, instance_keys = {},None,[]
+    redis_datastore = kwargs.get('redis_datastore',
+                                 REDIS_DATASTORE)
     if kwargs.has_key('creative_work_key'):
         work_key = kwargs.get('creative_work_key')
     if kwargs.has_key('instance_key'):
         instance_keys.append(kwargs.get('instance_key'))
         if work_key is None:
-            work_key = redis_instance.hget(instance_keys[0],'bibframe:CreativeWork')
-            
-        for instance_key in instance_keys:
-            if redis_instance.hget(instance_key,'bibframe:Work') != work_key:
-                return {"result":"error",
-                           "msg":"{0} is not assocated as a work with {1}".format(work_key,
-                                                                                  instance_key)}
-            work_key = redis_instance.hget(instance_key,'marcr:Work')
+            work_key = redis_datastore.hget(instance_keys[0],
+                                            'instanceOf')
     else:
-        instance_keys = redis_work.smembers("{0}:bibframe:Instances".format(work_key))
-    output["title"] = unicode(redis_work.hget("{0}:rda:Title".format(work_key),
-                                              "rda:preferredTitleForTheWork"),
-                              errors="ignore")
+        if redis_datastore.hexists(work_key, 'hasInstance'):
+            instance_keys = [redis_datastore.hget(work_key, 'hasInstance'), ]
+        elif redis_datastore.exists("{0}:hasInstance".format(work_key)):
+            instance_keys = redis_datastore.smembers("{0}:hasInstance".format(work_key))
+        else:
+            raise ValueError("Work doesn't have an Instance")
+    work_title_key = redis_datastore.hget(instance_keys[0],
+                                          'title')
+    # Instance has a Title Entity linked to it
+    if redis_datastore.exists(work_title_key):
+        title_entity = redis_datastore.hgetall(work_title_key)
+        raw_title = title_entity.get('titleValue')
+        if title_entity.has_key('subtitle'):
+            raw_title = "{0} {1}".format(raw_title,
+                                         title_entity.get('subtitle'))
+        output["title"] = unicode(raw_title,
+                                  errors="ignore")
+    # Title may be stored as a literal
+    elif redis_datastore.hexists(instance_keys[0], "title"):
+        output["title"] = unicode(redis_datastore.hget(instance_keys[0],
+                                                       "title"),
+                                  errors="ignore")
+            
     output['ils-bib-numbers'] = []
     for instance_key in instance_keys:
-        output['ils-bib-numbers'].append(redis_instance.hget("{0}:rda:identifierForTheManifestation".format(instance_key),
+        output['ils-bib-numbers'].append(redis_datastore.hget("{0}:rda:identifierForTheManifestation".format(instance_key),
                                                              'ils-bib-number'))
     output['creators'] = []
-    creator_keys = redis_work.smembers("{0}:rda:creator".format(work_key))
+    creator_keys = redis_datastore.smembers("{0}:rda:creator".format(work_key))
     for creator_key in creator_keys:
-        output['creators'].append(unicode(redis_authority.hget(creator_key,
+        output['creators'].append(unicode(redis_datastore.hget(creator_key,
                                                                "rda:preferredNameForThePerson"),
                                           errors="ignore"))
     return output
