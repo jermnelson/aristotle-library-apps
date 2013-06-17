@@ -7,15 +7,28 @@
 <titleInfo>
  <title>{{ title }}</title>
 </titleInfo>
+{% if alt_title %}
+<titleInfo type="alternative">
+ <title>{{ alt_title }}</title>
+</titleInfo>
+{% endif %}
+{% for creator in creators %}
+<name type="personal"
+ <namePart>{{ creator }}</namePart>
+ <role>
+  <roleTerm type="text">creator</roleTerm>
+ </role>
+</name>
+{% endfor %}
 <typeOfResource>{{ typeOfResource }}</typeOfResource>
 <originInfo>
  <dateCreated keyDate="yes">{{ dateCreated }}</dateCreated>
  {% if publisher %}
  <publisher>{{ publisher }}</publisher>
  {% endif %}
- {% if place %}
+ {% if publication_place %}
  <place>
-  <placeTerm>{{ place }}</placeTerm>
+  <placeTerm>{{ publication_place }}</placeTerm>
  </place>
  {% endif %}
  {% if frequency %}
@@ -37,10 +50,20 @@
 <physicalDescription>
  <genre>{{ genre }}</genre>
  <digitalOrigin>{{ digitalOrigin }}</digitalOrigin>
+ {% if extent %}
+ <extent>{{ extent }}</extent>
+ {% endif %}
 </physicalDescription>
 {% for topic in topics %}
 <subject>
  <topic>{{ topic }}</topic>
+</subject>
+{% endfor %}
+{% for topic in subject_people %}
+<subject>
+ <name type="person">
+  <namePart>{{ topic }}</namePart>
+ </name>
 </subject>
 {% endfor %}
 {% for org in organizations %}
@@ -50,9 +73,13 @@
  </name>
 </subject>
 {% endfor %}
+{% for topic in subject_places %}
+<subject>
+ <geographic>{{ topic }}</geographic>
+</subject>
+{% endfor %}
 <accessCondition type="useAndReproduction">
- Copyright restrictions apply. Contact {{ rights_holder }}
- for permission to publish. 
+ {{ rights_statement }}
 </accessCondition>
 <note type="admin">supplied by</note>
 </mods>  
