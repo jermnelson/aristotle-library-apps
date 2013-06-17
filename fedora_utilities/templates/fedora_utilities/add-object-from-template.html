@@ -34,6 +34,16 @@
      </div>
     {# END title #}
     </div>
+    {# START alternate title #}
+    <div class="control-group" data-bind="visible: meetingMinutesTemplate">
+     <label class="control-label" for="alt_title">
+       {{ add_obj_form.alt_title.label }}
+     </label>
+     <div class="controls">
+       {{ add_obj_form.alt_title }}
+     </div>
+    {# END alternate title #}
+    </div>
     {# START Date Created #}
     <div class="control-group">
      <label class="control-label" for="date_created">
@@ -64,6 +74,17 @@
      </div>
     {# END description #}
     </div>
+    {# START extent #}
+    <div class="control-group" 
+         data-bind="visible: meetingMinutesTemplate">
+      <label class="control-label" for="extent">
+       {{ add_obj_form.extent.label }}
+      </label>
+      <div class="controls">
+       {{ add_obj_form.extent }}
+      </div> 
+    {# END extent #}
+    </div>
     {# START admin_note #}
     <div class="control-group">
      <label class="control-label" for="admin_note">
@@ -84,6 +105,16 @@
      </div>
     {# END Use and Reproduction Rights Holder #}
     </div>
+    {# START people subjects #}
+    <div class="control-group" data-bind="visible: meetingMinutesTemplate">
+     <label class="control-label" for="sub_people">
+     {{ add_obj_form.sub_people.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.sub_people }}
+     </div>
+    {# END people subjects #}
+    </div>
     {# START organizations #}
     <div class="control-group">
      <label class="control-label" for="organizations">
@@ -91,6 +122,7 @@
      </label>
      <div class="controls">
      {{ add_obj_form.organizations }}
+     <a href="#" data-bind><i class="icon-plus-sign"></i></a>
      </div>
     {# END organizations #}
     </div>
@@ -147,10 +179,16 @@
  function AddStubViewModel() {
    var self = this;
    self.chosenContentModel = ko.observable();
+   self.meetingMinutesTemplate = ko.observable(false);
    self.newsletterTemplate = ko.observable(false);
    self.displayContentModel = function() {
      switch(self.chosenContentModel()) {
         case '1':
+            self.resetForm();
+            self.meetingMinutesTemplate(true);
+            break;
+
+        case '2':
           self.resetForm();
           self.newsletterTemplate(true);
           break;
@@ -162,7 +200,7 @@
    }
    self.resetForm = function() {
      self.newsletterTemplate(false);
-
+     self.meetingMinutesTemplate(false);
 
    }
  } 

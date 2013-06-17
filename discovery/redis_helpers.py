@@ -1,6 +1,7 @@
 """
 `mod`: redis_helpers - Redis Helpers for Discovery App
 """
+__author__ = "Jeremy Nelson"
 import json
 import time
 from aristotle.settings import REDIS_DATASTORE
@@ -8,7 +9,7 @@ import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
 from bibframe.models import Work
 
-__author__ = "Jeremy Nelson"
+
 
 class Facet(object):
 

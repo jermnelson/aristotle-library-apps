@@ -30,10 +30,13 @@ MARC_FREQUENCY = [('choose', 'Choose...'),
                   ('Completely irregular', 'Completely irregular')]
 
 OBJECT_TEMPLATES = [(0, 'Choose model'),
-                    (1, 'Newsletter'),
-                    (2, 'Podcast'),
-                    (3, 'Thesis'),
-                    (4, 'Video')]
+                    (1, 'Meeting Minutes'),
+                    (2, 'Newsletter'),
+                    (3, 'Podcast'),
+                    (4, 'Thesis'),
+                    (5, 'Video')]
+
+RIGHTS_STATEMENT = "Copyright restrictions apply. Contact Colorado College for permission to publish."
 
 class AddFedoraObjectFromTemplate(forms.Form):
     admin_note = forms.CharField(label='Administrative Notes',
@@ -41,8 +44,11 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                  required=False,
                                  widget=forms.Textarea(
                                       attrs={'rows':5}))
+    alt_title = forms.CharField(label='Alternative Title',
+                                required=False)
     collection_pid = forms.CharField(max_length=20,
                                      label="PID of Parent Collection")
+    creators = forms.CharField(required=False)
     date_created = forms.CharField(label='Date Created')
     digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
                                        label='Digital Origin',
@@ -52,6 +58,10 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                   widget=forms.Textarea(
                                       attrs={'rows':5}),
                                   required=False)
+    extent = forms.CharField(label='Extent',
+                             max_length=1500,
+                             widget=forms.Textarea(attrs={'rows':5}),
+                             required=False)
     frequency = forms.ChoiceField(choices=MARC_FREQUENCY,
                                   label='Frequency',
                                   required=False)
@@ -64,9 +74,13 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                             attrs={'data-bind':'value: chosenContentModel, click: displayContentModel'}))
     organizations = forms.CharField(max_length=255,
                                     required=False)
-    rights_holder = forms.CharField(max_length=120,
-                                    label='Use and Reproduction Rights Holder',
-                                    initial='Colorado College')
+    rights_holder = forms.CharField(max_length=255,
+                                    label='Rights Statement',
+                                    initial=RIGHTS_STATEMENT,
+                                    widget=forms.Textarea(
+                                        attrs={'rows': 3}))
+    sub_people = forms.CharField(label='Subject -- People',
+                                 required=False)
     title = forms.CharField(max_length=120,
                             label='Title')
 

@@ -71,7 +71,7 @@ def add_stub_from_template(request):
             rights_holder = add_obj_template_form.cleaned_data[
                 'rights_holder']                
             if len(rights_holder) > 0:
-                mods_context['rights_holder'] = rights_holder
+                mods_context['rights_statement'] = rights_holder
             
             digital_origin_id = add_obj_template_form.cleaned_data[
                 'digital_origin']
@@ -85,25 +85,44 @@ def add_stub_from_template(request):
             for row in DIGITAL_ORIGIN:
                 if row[0] == int(digital_origin_id):
                     mods_context['digitalOrigin'] = row[1]
+            mods_context['language'] = 'English'
+            mods_context['place_publication'] = 'Colorado Springs'
+            mods_context['publisher'] = 'Colorado College'
             if object_template == 1:
+                mods_context['alt_title'] = add_obj_template_form.cleaned_data[
+                    'alt_title']
+                mods_context['extent'] = add_obj_template_form.cleaned_data[
+                    'extent']
+                mods_context['subject_places'] = mods_context[
+                    'place_publication']
+                mods_context['typeOfResource'] = 'text'
+                mods_context['topics'] = ['meeting minutes',
+                                          'universities and colleges']
+                mods_context['subject_places'] = [mods_context[
+                    'place_publication'],]
+                mods_context['subject_people'] = [add_obj_template_form.cleaned_data[
+                    'sub_people'],]
+                
+                
+                                          
+            elif object_template == 2:
                 mods_context['frequency'] = add_obj_template_form.cleaned_data[
                     'frequency']
                 mods_context['typeOfResource'] = 'text'
                 mods_context['genre'] = 'periodical'
-                mods_context['language'] = 'English'
                 mods_context['place_publication'] = 'Colorado Springs'
                 mods_context['publisher'] = 'Colorado College'
                 mods_context['topics'] = ['College publications',]
-            elif object_template == 2:
+            elif object_template == 3:
                 mods_context['typeOfResource'] = 'sound recording'
                 mods_context['genre'] = 'interview'
                 mods_context['schema_type'] = 'AudioObject'
-            elif object_template == 3:
+            elif object_template == 4:
                 mods_context['typeOfResource'] = 'text'
                 mods_context['genre'] = 'thesis'
                 content_model = 'adr:adrETD'
                 mods_context['schema_type'] = 'ScholarlyArticle'
-            elif object_template == 4:
+            elif object_template == 5:
                 mods_context['typeOfResource'] = 'moving image'
                 mods_context['genre'] = 'videorecording'
                 mods_context['schema_type'] = 'VideoObject'

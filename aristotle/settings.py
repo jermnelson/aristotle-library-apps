@@ -104,7 +104,6 @@ TEMPLATE_LOADERS = (
 )
 
 AUTHENTICATION_BACKENDS = [
-    "aristotle.backends.IIIUserBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -208,6 +207,9 @@ try:
     else:
         import redis
         REDIS_DATASTORE = redis.StrictRedis(host=REDIS_MASTER_HOST,
-                                            port=REDIS_MASTER_PORT) 
+                                            port=REDIS_MASTER_PORT)
+    if len(CUSTOM_AUTHENTICATION_BACKENDS) > 0:
+        AUTHENTICATION_BACKENDS.extend(CUSTOM_AUTHENTICATION_BACKENDS)
+        
 except ImportError:
     pass
