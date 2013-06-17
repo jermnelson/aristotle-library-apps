@@ -11,21 +11,22 @@ from django.template import Context,Template,loader
 import django.utils.simplejson as json
 from django.utils.translation import ugettext
 import aristotle.settings as settings
+from aristotle.settings import REDIS_DATASTORE
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 import redis_helpers,sys,logging
 from app_settings import APP,SEED_RECORD_ID
 
-instance_server = settings.INSTANCE_REDIS
-annotation_server = settings.ANNOTATION_REDIS
+
+
 
 def setup_seed_rec():
     """
     Helper function returns a record based on the SEED_RECORD_ID
     for the default view
     """
-    if annotation_server.hexists(SEED_RECORD_ID,'callno-lcc'):
-        lcc = annotation_server.hget(SEED_RECORD_ID,'callno-lcc')
+    if REDIS_DATASTORE.hexists(SEED_RECORD_ID,'callno-lcc'):
+        lcc = REDIS_DATASTORE.hget(SEED_RECORD_ID,'callno-lcc')
         current = redis_helpers.get_record(call_number=lcc)
         return current
     else:

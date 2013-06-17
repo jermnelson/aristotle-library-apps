@@ -2,7 +2,7 @@ __author__ = "Jeremy Nelson"
 
 import json, redis, os, csv
 from bibframe.models import Instance, Holding, Work, Topic
-from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, INSTANCE_REDIS, CREATIVE_WORK_REDIS, PROJECT_HOME
+from aristotle.settings import REDIS_DATASTORE, PROJECT_HOME
 
 alt_titles = json.load(open(os.path.join(PROJECT_HOME,
                                          'dbfinder',
@@ -24,16 +24,16 @@ base_key = 'dbfinder'
 subject_hash_key  = "{0}:subjects".format(base_key)
 
 def __get_database__(work_key,
-                     instance_ds=INSTANCE_REDIS,
-                     work_ds=CREATIVE_WORK_REDIS):
+                     instance_ds=REDIS_DATASTORE,
+                     work_ds=REDIS_DATASTORE):
     """
     Helper function takes a work_key and an Instance datastore
     and Creative Work datastore and return a dict with the 
     title and uri
     
     :param work_key: Redis key of the Creative Work
-    :param instance_ds: Instance Datastore, defaults to INSTANCE_REDIS
-    :param work_ds: Creative Work Datastore, defaults to CREATIVE_WORK_REDIS
+    :param instance_ds: Instance Datastore, defaults to REDIS_DATASTORE
+    :param work_ds: Creative Work Datastore, defaults to REDIS_DATASTORE
     """
     database = {'description': work_ds.hget(work_key,'description'),
                 'title': work_ds.hget("{0}:title".format(work_key),
@@ -49,9 +49,9 @@ def __get_database__(work_key,
 
 def get_databases(letter=None,
                   subject=None,
-                  authority_ds=AUTHORITY_REDIS,
-                  instance_ds=INSTANCE_REDIS,
-                  work_ds=CREATIVE_WORK_REDIS):
+                  authority_ds=REDIS_DATASTORE,
+                  instance_ds=REDIS_DATASTORE,
+                  work_ds=REDIS_DATASTORE):
     """
     Helper function takes either a letter or subject and returns 
     a sorted list of databases.
@@ -74,9 +74,9 @@ def get_databases(letter=None,
             databases.append(__get_database__(work_key,instance_ds,work_ds))
     return sorted(databases, key=lambda x: x.get('title').lower())
 
-def get_dbs_alpha(authority_ds=AUTHORITY_REDIS,
-                  instance_ds=INSTANCE_REDIS,
-                  work_ds=CREATIVE_WORK_REDIS):
+def get_dbs_alpha(authority_ds=REDIS_DATASTORE,
+                  instance_ds=REDIS_DATASTORE,
+                  work_ds=REDIS_DATASTORE):
     """
     Helper function returns a list of databases organized by the first character
     of the title
@@ -87,9 +87,9 @@ def get_dbs_alpha(authority_ds=AUTHORITY_REDIS,
         databases.append({'letter':key.split(":")[-1]})
     return databases
     
-def get_dbs_subjects(authority_ds=AUTHORITY_REDIS,
-                    instance_ds=INSTANCE_REDIS,
-                    work_ds=CREATIVE_WORK_REDIS):
+def get_dbs_subjects(authority_ds=REDIS_DATASTORE,
+                    instance_ds=REDIS_DATASTORE,
+                    work_ds=REDIS_DATASTORE):
     """
     Helper function returns a list of databases organized by the first character
     of the subjects 
@@ -106,9 +106,9 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                                                   'dbfinder',
                                                   'fixures',
                                                   'ccweb.csv')),
-                       authority_ds=AUTHORITY_REDIS,
-                       instance_ds=INSTANCE_REDIS,
-                       work_ds=CREATIVE_WORK_REDIS):
+                       authority_ds=REDIS_DATASTORE,
+                       instance_ds=REDIS_DATASTORE,
+                       work_ds=REDIS_DATASTORE):
     """
     Helper function updates the BIBFRAME Annotation and Instance
     datastores based on values from CSV file exported from
@@ -153,7 +153,7 @@ def load_databases_csv(csv_file=open(os.path.join(PROJECT_HOME,
                                                   work_key):
                         authority_ds.sadd(subject_key, work_key)
                 else: # Assume this subject doesn't exist in the datastore
-                    new_topic = Topic(primary_redis=authority_ds,
+                    new_topic = Topic(redis_datastore=authority_ds,
                                       description="Topic Used for Database-by-Subject view in dbfinder",
                                       label=name)
                     setattr(new_topic, "bibframe:Works", work_key)
@@ -178,12 +178,12 @@ def legacy_load_databases_json():
     alt_title_dict = {}
     for row in subjects:
         subject_dict[row['pk']] = {"name":row['fields']['name']}
-        new_topic = TopicalConcept(primary_redis=AUTHORITY_REDIS,
+        new_topic = TopicalConcept(redis_datastore=REDIS_DATASTORE,
                                    description="Topic Used for Database-by-Subject view in dbfinder",
                                    label=row['fields']['name'])
         new_topic.save()
         subject_dict[row['pk']]["redis_key"] = new_topic.redis_key
-        AUTHORITY_REDIS.sadd("dbfinder:subjects", new_topic.redis_key) 
+        REDIS_DATASTORE.sadd("dbfinder:subjects", new_topic.redis_key) 
     for row in alt_titles:
         db_key = row['fields']['database']
         if alt_title_dict.has_key(db_key):
@@ -194,7 +194,7 @@ def legacy_load_databases_json():
         db_pk = row['pk']
         description = row['fields']['description']
         title = row['fields']['title']
-        new_work = Work(primary_redis=CREATIVE_WORK_REDIS,
+        new_work = Work(redis_datastore=REDIS_DATASTORE,
                         description=description,
                         title={'rda:preferredTitleForTheWork':title})
         if alt_title_dict.has_key(db_pk):
@@ -208,19 +208,19 @@ def legacy_load_databases_json():
            subject_name = subject_dict[subject_id].get("name",None)
            if subject_name is not None:
                subject_keys.append(subject_dict[subject_id].get("redis_key"))
-               AUTHORITY_REDIS.sadd("dbfinder:subject:{0}".format(subject_name),
+               REDIS_DATASTORE.sadd("dbfinder:subject:{0}".format(subject_name),
                                     new_work.redis_key)
         if len(subject_keys) > 0:
             new_work.subject = set(subject_keys)
         new_work.save()
         alpha_redis_key = "dbfinder:alpha:{0}".format(title[0].upper())
-        AUTHORITY_REDIS.sadd(alpha_redis_key,
+        REDIS_DATASTORE.sadd(alpha_redis_key,
                              new_work.redis_key)
-        AUTHORITY_REDIS.sadd("dbfinder:alphas",alpha_redis_key)
-        new_instance = Instance(primary_redis=INSTANCE_REDIS,
+        REDIS_DATASTORE.sadd("dbfinder:alphas",alpha_redis_key)
+        new_instance = Instance(redis_datastore=REDIS_DATASTORE,
                                 instanceOf=new_work.redis_key,
                                 uri=row['fields']['url'])
         new_instance.save()
-        CREATIVE_WORK_REDIS.sadd("{0}:bibframe:Instances".format(new_work.redis_key),
+        REDIS_DATASTORE.sadd("{0}:bibframe:Instances".format(new_work.redis_key),
                                  new_instance.redis_key)
         print("Added {0}".format(title))

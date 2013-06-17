@@ -375,24 +375,24 @@ class BIBFRAMESearch(object):
 def get_news():
     news = []
     # In demo mode, just create a news item regarding the
-    # statistics of the RLSP_CLUSTER
-    if RLSP_CLUSTER is not None:
+    # statistics of the REDIS_DATASTORE
+    if REDIS_DATASTORE is not None:
         item = {'heading': 'Current Statistics for RLSP Cluster',
                 'body': '''<p><strong>Totals:</strong>
 Works={0}<br>Instances={1}<br>Person={2}</p>
-<p>Number of keys={3}</p>'''.format(RLSP_CLUSTER.get('global bf:Work'),
-                                    RLSP_CLUSTER.get('global bf:Instance'),
-                                    RLSP_CLUSTER.get('global bf:Person'),
-                                    RLSP_CLUSTER.dbsize())}
+<p>Number of keys={3}</p>'''.format(REDIS_DATASTORE.get('global bf:Work'),
+                                    REDIS_DATASTORE.get('global bf:Instance'),
+                                    REDIS_DATASTORE.get('global bf:Person'),
+                                    REDIS_DATASTORE.dbsize())}
         news.append(item)
         body_html = '<ul>'
-        for org_key in  RLSP_CLUSTER.zrevrange('prospector-holdings',
+        for org_key in  REDIS_DATASTORE.zrevrange('prospector-holdings',
                                                0,
                                                -1):
 
             body_html += '''<li>{0} Total Holdings={1}</li>'''.format(
-                             RLSP_CLUSTER.hget(org_key, 'label'),
-                             RLSP_CLUSTER.scard('{0}:bf:Holdings'.format(org_key)))
+                             REDIS_DATASTORE.hget(org_key, 'label'),
+                             REDIS_DATASTORE.scard('{0}:bf:Holdings'.format(org_key)))
         body_html += '</ul>'
         item2 = {'heading': 'Institutional Collections',
                  'body': body_html}

@@ -8,7 +8,7 @@ __author__ = 'Jon Driscoll, Jeremy Nelson'
 import datetime,redis,copy
 import aristotle.settings
 
-redis_ds = aristotle.settings.OPERATIONAL_REDIS
+redis_ds = aristotle.settings.REDIS_DATASTORE
 library_key_format = 'library-hours:%Y-%m-%d'
 time_format = '%H:%M'
 

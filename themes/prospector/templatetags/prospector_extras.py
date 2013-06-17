@@ -8,9 +8,7 @@ __author__ = "Jeremy Nelson"
 from django import template
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import stringfilter
-from aristotle.settings import OPERATIONAL_REDIS as OPS_DS
-from aristotle.settings import CREATIVE_WORK_REDIS as CW_DS
-from aristotle.settings import INSTANCE_REDIS as INSTANCE_DS
+from aristotle.settings import REDIS_DATASTORE
 
 register = template.Library()
 
@@ -23,7 +21,7 @@ def get_featured_instances(num_items=5):
     :param num_items: Number of featured items
     """
     featured_instances = []
-    featured_keys = OPS_DS.smembers('prospector:featured')
+    featured_keys = REDIS_DATASTORE.smembers('prospector:featured')
     for key in featured_keys:
         info = {'redis_key': key}
         featured_instances.append(info)
@@ -40,7 +38,7 @@ def get_news(num_items=5):
     
     :param num_items: The number of news items to display
     """
-    news = OPS_DS.zrange("prospector:news",
+    news = REDIS_DATASTORE.zrange("prospector:news",
                          -(int(num_items)),
                          -1)
     news_template = template.loader.get_template('carl-news.html')

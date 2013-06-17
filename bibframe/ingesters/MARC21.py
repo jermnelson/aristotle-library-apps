@@ -1539,6 +1539,23 @@ class MARC21toCreativeWork(MARC21Ingester):
         if self.work_class is None:
             self.work_class = Work
 
+    def extract_note(self):
+        """
+        Extracts the note for the work
+        """
+        notes = []
+        fields = self.record.get_fields('500')
+        for field in fields:
+            subfield3 = field['3']
+            subfield_a = " ".join(field.get_subfields('a'))
+            if subfield3 is not None:
+                notes.append("{0} {1}".format(subfield3,
+                                              subfield_a))
+            else:
+                notes.append(subfield_a)
+        if len(notes) > 0:
+            self.entity_info["note"] = set(notes)
+
     def extract_performerNote(self):
         "Extracts performerNote"
         notes = []
@@ -1572,6 +1589,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             if len(values) > 0:
                 self.entity_info[attribute] = values
         # List of specific methods that haven't had Rule regex developed
+        self.extract_note()
         self.extract_performerNote()
         self.get_or_add_work()
         if self.creative_work is not None:

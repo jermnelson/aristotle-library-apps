@@ -20,8 +20,9 @@ from discovery.forms import SearchForm
 from discovery.redis_helpers import get_facets, get_result_facets, BIBFRAMESearch
 from discovery.redis_helpers import get_news
 
-from aristotle.settings import INSTITUTION,ANNOTATION_REDIS,AUTHORITY_REDIS
-from aristotle.settings import INSTANCE_REDIS,OPERATIONAL_REDIS,CREATIVE_WORK_REDIS
+
+from aristotle.settings import INSTITUTION
+from aristotle.settings import REDIS_DATASTORE
 from aristotle.settings import FEATURED_INSTANCES
 
 
@@ -38,9 +39,7 @@ def app(request):
 	if len(query) > 0:
             bibframe_search = BIBFRAMESearch(q=query,
                                              type_of=type_of,
-	     		                     authority_ds=AUTHORITY_REDIS,
-				             creative_wrk_ds=CREATIVE_WORK_REDIS,
-                                             instance_ds=INSTANCE_REDIS)
+	     		                     redis_datastore=REDIS_DATASTORE)
 	    bibframe_search.run()
 	    search_query = bibframe_search.query
 
@@ -51,30 +50,30 @@ def app(request):
                 message = 'No Results found for {0}'.format(query)
 	else:
             message = 'No search terms provided'
-            facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
+            facet_list = get_facets(REDIS_DATASTORE, REDIS_DATASTORE)
     else:
-        facet_list = get_facets(ANNOTATION_REDIS, AUTHORITY_REDIS)
+        facet_list = get_facets(REDIS_DATASTORE, REDIS_DATASTORE)
 #    example = {'work_path': os.path.join("apps",
 #	                                 "discovery",
 #			                 "work",
 #	                                 string(random.randint(0,
-#   int(CREATIVE_WORK_REDIS.get('global bibframe:CreativeWork'))))}
+#   int(REDIS_DATASTORE.get('global bibframe:CreativeWork'))))}
     featured_instances = []
     for instance_key in FEATURED_INSTANCES:
         cover_art_key = None
         instance_link = '/apps/discovery/Instance/{0}'.format(
             instance_key.split(":")[-1])
-        for annotation_key in INSTANCE_REDIS.smembers(
+        for annotation_key in REDIS_DATASTORE.smembers(
             '{0}:hasAnnotation'.format(instance_key)):
             if annotation_key.startswith('bf:CoverArt'):
                 cover_art_key = annotation_key
-        work_key = INSTANCE_REDIS.hget(instance_key,
+        work_key = REDIS_DATASTORE.hget(instance_key,
                                        'instanceOf')
         cover_id = cover_art_key.split(":")[-1]
         cover_url = '/apps/discovery/CoverArt/{0}-body.jpg'.format(cover_id)
         featured_instances.append(
             {'cover': cover_url,
-             'title': CREATIVE_WORK_REDIS.hget(
+             'title': REDIS_DATASTORE.hget(
                 '{0}:title'.format(work_key),
                 'rda:preferredTitleForTheWork'),
              'instance': instance_link})
@@ -104,8 +103,8 @@ def creative_work(request, redis_id):
     :param redis_id: Redis integer for the Creative Work
     """
     redis_key = "bf:Work:{0}".format(redis_id)
-    if CREATIVE_WORK_REDIS.exists(redis_key):
-        creative_work = Work(primary_redis=CREATIVE_WORK_REDIS,
+    if REDIS_DATASTORE.exists(redis_key):
+        creative_work = Work(primary_redis=REDIS_DATASTORE,
 	     	             redis_key=redis_key)
     else:
         raise Http404
@@ -128,8 +127,8 @@ def creative_work_json_ld(request, redis_id):
     :param redis_id": Redis integer for the Creative Work
     """
     redis_key = "bf:Work:{0}".format(redis_id) 
-    if CREATIVE_WORK_REDIS.exists(redis_key):
-        json_linked_data = get_json_linked_data(primary_redis=CREATIVE_WORK_REDIS,
+    if REDIS_DATASTORE.exists(redis_key):
+        json_linked_data = get_json_linked_data(primary_redis=REDIS_DATASTORE,
                                                 redis_key=redis_key)
         # Add current absolute url as prov:wasGeneratedBy
         absolute_url = request.build_absolute_uri()
@@ -138,7 +137,7 @@ def creative_work_json_ld(request, redis_id):
         instance_url_pattern = "{0}/apps/discovery/Instance/".format(request.get_host())
         person_url_pattern = "{0}/apps/discovery/Person/".format(request.get_host())
         # Add Instances to json_linked_data
-        for instance_key in CREATIVE_WORK_REDIS.smembers("{0}:bf:Instances".format(redis_key)):
+        for instance_key in REDIS_DATASTORE.smembers("{0}:bf:Instances".format(redis_key)):
             instance_url = "http://{0}{1}".format(instance_url_pattern,
                                                   instance_key.split(":")[-1])
             if json_linked_data.has_key('bibframe:Instance'):
@@ -146,14 +145,14 @@ def creative_work_json_ld(request, redis_id):
             else:
                 json_linked_data['bf:Instance'] = [instance_url,]
         title_key = "{0}:title".format(redis_key)
-        if CREATIVE_WORK_REDIS.exists(title_key):
+        if REDIS_DATASTORE.exists(title_key):
             rda_pref_title_key = 'rda:preferredTitleForTheWork'
-            rda_pref_title = CREATIVE_WORK_REDIS.hget(title_key, rda_pref_title_key)
+            rda_pref_title = REDIS_DATASTORE.hget(title_key, rda_pref_title_key)
             json_linked_data['bibframe:title'] = {rda_pref_title_key: rda_pref_title}
         creators_key = "{0}:rda:isCreatedBy".format(redis_key)
-        if CREATIVE_WORK_REDIS.exists(creators_key):
+        if REDIS_DATASTORE.exists(creators_key):
             creators = []
-            for creator_key in list(CREATIVE_WORK_REDIS.smembers(creators_key)):
+            for creator_key in list(REDIS_DATASTORE.smembers(creators_key)):
                 creators.append("http://{0}{1}".format(person_url_pattern,
                                                        creator_key.split(":")[-1]))
             json_linked_data['rda:isCreatedBy'] = creators
@@ -173,10 +172,10 @@ def display_cover_image(request, redis_id, type_of, image_ext):
     """
     redis_key = "bf:CoverArt:{0}".format(redis_id)
     if type_of == 'thumbnail':
-        raw_image = ANNOTATION_REDIS.hget(redis_key, 
+        raw_image = REDIS_DATASTORE.hget(redis_key, 
                                           'thumbnail')
     elif type_of == 'body':
-        raw_image = ANNOTATION_REDIS.hget(redis_key, 
+        raw_image = REDIS_DATASTORE.hget(redis_key, 
                                           'annotationBody')
     if raw_image is None:
         raise Http404
@@ -232,36 +231,36 @@ def facet_detail(request,facet_name,facet_item):
     """
     redis_key = "bf:Annotation:Facet:{0}:{1}".format(facet_name,facet_item)
     listing_key = "facet-listing:{0}:{1}".format(facet_name,facet_item)
-    if not ANNOTATION_REDIS.exists(redis_key):
+    if not REDIS_DATASTORE.exists(redis_key):
         raise Http404
-    if not ANNOTATION_REDIS.exists(listing_key):
-        ANNOTATION_REDIS.sort(redis_key,alpha=True,store=listing_key)
-        ANNOTATION_REDIS.expire(listing_key,86400)
+    if not REDIS_DATASTORE.exists(listing_key):
+        REDIS_DATASTORE.sort(redis_key,alpha=True,store=listing_key)
+        REDIS_DATASTORE.expire(listing_key,86400)
     offset =  int(request.REQUEST.get('offset',0))
     records = []
     pagination = get_pagination(request.path,
 		                listing_key,
-				ANNOTATION_REDIS,
+				REDIS_DATASTORE,
 				offset)
-    record_slice = ANNOTATION_REDIS.lrange(listing_key,
+    record_slice = REDIS_DATASTORE.lrange(listing_key,
 		                           offset,
 					   offset+PAGINATION_SIZE)
     for row in record_slice:
         if row.find("Instance") > -1:
-            work_key = INSTANCE_REDIS.hget(row,'instanceOf')
+            work_key = REDIS_DATASTORE.hget(row,'instanceOf')
         elif row.find("Work") > -1:
             work_key = row
-        work = Work(primary_redis=CREATIVE_WORK_REDIS,
+        work = Work(primary_redis=REDIS_DATASTORE,
                     redis_key=work_key)
         records.append({'work':work})
     label_key = 'bf:Annotation:Facet:{0}s'.format(facet_name)
     msg = "Results for Facet {0}".format(facet_name)
-    if ANNOTATION_REDIS.exists(label_key):
-        if ANNOTATION_REDIS.type(label_key) == 'zset':
+    if REDIS_DATASTORE.exists(label_key):
+        if REDIS_DATASTORE.type(label_key) == 'zset':
             msg = "{0} {1}".format(msg, facet_item)
         else:
             msg = " {0} {1}".format(msg,    
-                                    ANNOTATION_REDIS.hget(label_key, facet_item))
+                                    REDIS_DATASTORE.hget(label_key, facet_item))
     else:
         msg = "{0} {1}".format(msg, facet_item)
     
@@ -289,7 +288,7 @@ def facet_summary(request,facet_name):
     Displays A general facet with all of its's items
     """
     redis_key = "bf:Annnotation:Facet:{0}s".format(facet_name)
-    if not ANNOTATION_REDIS.exists(redis_key):
+    if not REDIS_DATASTORE.exists(redis_key):
         raise Http404
     return HttpResponse("In facet_summary, Facet = {0}".format(redis_key))
     
@@ -302,8 +301,8 @@ def instance(request,redis_id):
     :param redis_id": Redis integer for the Instance
     """
     redis_key = "bf:Instance:{0}".format(redis_id)
-    if INSTANCE_REDIS.exists(redis_key):
-        instance = Instance(primary_redis=INSTANCE_REDIS,
+    if REDIS_DATASTORE.exists(redis_key):
+        instance = Instance(primary_redis=REDIS_DATASTORE,
 			    redis_key=redis_key)
     else:
         raise Http404
@@ -326,8 +325,8 @@ def instance_json_ld(request, redis_id):
     :param redis_id": Redis integer for the Instance
     """
     redis_key = "bibframe:Instance:{0}".format(redis_id) 
-    if INSTANCE_REDIS.exists(redis_key):
-        json_linked_data = get_json_linked_data(primary_redis=INSTANCE_REDIS,
+    if REDIS_DATASTORE.exists(redis_key):
+        json_linked_data = get_json_linked_data(primary_redis=REDIS_DATASTORE,
                                                 redis_key=redis_key)
         # Turn the instanceOf into URI
         work_key = json_linked_data['bibframe:instanceOf'] 
@@ -339,9 +338,9 @@ def instance_json_ld(request, redis_id):
 
         # Add Library Holding Annotation
         annotations_key = "{0}:hasAnnotation".format(redis_key)
-        if INSTANCE_REDIS.exists(annotations_key):
+        if REDIS_DATASTORE.exists(annotations_key):
             library_holdings = []
-            for annotation_key in INSTANCE_REDIS.smembers(annotations_key):
+            for annotation_key in REDIS_DATASTORE.smembers(annotations_key):
                 if annotation_key.startswith('bibframe:Holding'):
                     library_holdings.append(annotation_key)
             json_linked_data['bibframe:hasAnnotation'] = library_holdings
@@ -357,8 +356,8 @@ def person(request,redis_id):
     :param redis_id": Redis integer for the Person
     """
     redis_key = "bf:Person:{0}".format(redis_id)
-    if AUTHORITY_REDIS.exists(redis_key):
-        person = Person(primary_redis=AUTHORITY_REDIS,
+    if REDIS_DATASTORE.exists(redis_key):
+        person = Person(primary_redis=REDIS_DATASTORE,
 			redis_key=redis_key)
     else:
         raise Http404
@@ -381,10 +380,10 @@ def person_json_ld(request, redis_id):
     :param redis_id": Redis integer for the Person
     """
     redis_key = "bibframe:Person:{0}".format(redis_id)
-    if AUTHORITY_REDIS.exists(redis_key):
-        json_linked_data = get_json_linked_data(primary_redis=AUTHORITY_REDIS,
+    if REDIS_DATASTORE.exists(redis_key):
+        json_linked_data = get_json_linked_data(redis_datastore=REDIS_DATASTORE,
                                                 redis_key=redis_key)
-        for work_key in list(AUTHORITY_REDIS.smembers("{0}:rda:isCreatorPersonOf")):
+        for work_key in list(REDIS_DATASTORE.smembers("{0}:rda:isCreatorPersonOf")):
             work_url = "http://{0}/apps/discovery/Work/{1}".format(request.get_host(), 
                                                                    work_key.split(":")[-1])
             if json_linked_data.has_key('rda:isCreatorPersonOf'):
@@ -403,9 +402,7 @@ def search(request):
     if len(query) > 0:
         bibframe_search = BIBFRAMESearch(q=query,
                                          type_of=type_of,
-                                         authority_ds=AUTHORITY_REDIS,
-                                         creative_wrk_ds=CREATIVE_WORK_REDIS,
-                                         instance_ds=INSTANCE_REDIS)
+                                         redis_datastore=REDIS_DATASTORE)
         bibframe_search.run()
         search_results = json.loads(bibframe_search.__json__())
         return search_results

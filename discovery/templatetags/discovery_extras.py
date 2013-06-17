@@ -11,8 +11,8 @@ from django.template import Context, Library, loader
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
 from discovery.app_settings import CARRIER_TYPE_GRAPHICS
-from aristotle.settings import INSTITUTION, ANNOTATION_REDIS, AUTHORITY_REDIS
-from aristotle.settings import INSTANCE_REDIS, OPERATIONAL_REDIS, CREATIVE_WORK_REDIS
+from aristotle.settings import INSTITUTION
+from aristotle.settings import REDIS_DATASTORE
 
 register = Library()
 
@@ -26,13 +26,13 @@ def about_instance(instance):
     info = []
     if hasattr(instance,'rda:carrierTypeManifestation'):
         info.append(('Format',getattr(instance,'rda:carrierTypeManifestation')))
-    if CREATIVE_WORK_REDIS.hexists(instance.instanceOf,'rda:isCreatedBy'):
-        creator_keys = [CREATIVE_WORK_REDIS.hget(instance.instanceOf,'rda:isCreatedBy'),]
+    if REDIS_DATASTORE.hexists(instance.instanceOf,'rda:isCreatedBy'):
+        creator_keys = [REDIS_DATASTORE.hget(instance.instanceOf,'rda:isCreatedBy'),]
     else:
-        creator_keys = CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(instance.instanceOf))
+        creator_keys = REDIS_DATASTORE.smembers("{0}:rda:isCreatedBy".format(instance.instanceOf))
     creator_dd = ''
     for key in creator_keys:
-	creator_info = AUTHORITY_REDIS.hgetall(key)
+	creator_info = REDIS_DATASTORE.hgetall(key)
 	name = unicode(creator_info.get('rda:preferredNameForThePerson'),errors='ignore')
 	creator_dd += '''<a href="/apps/discovery/authority/person/{0}/">
 	<i class="icon-user"></i> {1}</a>'''.format(key.split(":")[-1],
@@ -51,15 +51,15 @@ def about_instance(instance):
     for type_of in ['issn','isbn']:
 	number_key = '{0}:rda:identifierForTheManifestation:{1}'.format(instance.redis_key,
 			                                                type_of)
-	if INSTANCE_REDIS.exists(number_key):
-	    number_ids = list(INSTANCE_REDIS.smembers(number_key))
+	if REDIS_DATASTORE.exists(number_key):
+	    number_ids = list(REDIS_DATASTORE.smembers(number_key))
             info.append((type_of.upper(),' '.join(number_ids)))
-    facets = INSTANCE_REDIS.smembers("{0}:Annotations:facets".format(instance.redis_key))
+    facets = REDIS_DATASTORE.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
         if key.startswith('bf:Annotation:Facet:Access'):
 	    info.append(('Access',key.split(":")[-1]))
         if key.startswith('bf:Annotation:Facet:Location'):
-	    location = ANNOTATION_REDIS.hget('bf:Annotation:Facet:Locations',
+	    location = REDIS_DATASTORE.hget('bf:Annotation:Facet:Locations',
 		                             key.split(":")[-1])
 	    info.append(('Location in Library',location))
     #identifiers = getattr(instance,'rda:identifierForTheManifestation')
@@ -69,10 +69,10 @@ def about_instance(instance):
            continue
        if inspect.ismethod(getattr(instance,name)):
            continue
-       if OPERATIONAL_REDIS.hexists('bf:vocab:Instance:labels',
+       if REDIS_DATASTORE.hexists('bf:vocab:Instance:labels',
                                     name):
            if value is not None:
-               label = OPERATIONAL_REDIS.hget('bf:vocab:Instance:labels',
+               label = REDIS_DATASTORE.hget('bf:vocab:Instance:labels',
                                                name)
                instance_attribute = getattr(instance,name)
                if type(instance_attribute) == set:
@@ -126,7 +126,7 @@ def get_annotations(instance):
 
     """
     output = ''
-    annotations = INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key))
+    annotations = REDIS_DATASTORE.smembers('{0}:hasAnnotation'.format(instance.redis_key))
     sorted_annotations = sorted(annotations)
     for redis_key in sorted_annotations:
         if redis_key.find('Facet') > -1:
@@ -137,22 +137,22 @@ def get_annotations(instance):
             continue
         if redis_key.startswith('bf:Holding'):
             holdings_info = []
-            for key,value in ANNOTATION_REDIS.hgetall(redis_key).iteritems():
-                if OPERATIONAL_REDIS.hexists('bf:vocab:Holding:labels',
+            for key,value in REDIS_DATASTORE.hgetall(redis_key).iteritems():
+                if REDIS_DATASTORE.hexists('bf:vocab:Holding:labels',
                                              key):
-                    name = OPERATIONAL_REDIS.hget('bf:vocab:Holding:labels',key)
+                    name = REDIS_DATASTORE.hget('bf:vocab:Holding:labels',key)
                 else:
                     name = key
                 if key.startswith('schema:contentLocation'):
                     holdings_info.append({"name":"Library",
-                                          "value": AUTHORITY_REDIS.hget(value, 'label')})
+                                          "value": REDIS_DATASTORE.hget(value, 'label')})
                 elif key != 'created_on' and key != 'annotates':
                     holdings_info.append({"name":name,
                                           "value":value})
             output += get_library_holdings(holdings_info)
         elif redis_key.find('Facet:Location') > -1:
             location_info = {'code':facet_info[-1],
-                             'label': ANNOTATION_REDIS.hget('bf:Annotation:Facet:Locations',
+                             'label': REDIS_DATASTORE.hget('bf:Annotation:Facet:Locations',
                                                             facet_info[-1]),
                              'url':facet_url}
             location_template = loader.get_template('location-icon.html')
@@ -190,9 +190,9 @@ def get_cover_art(instance):
     :rtype: HTML or 0-length string
     """
     output = ''
-    for redis_key in INSTANCE_REDIS.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+    for redis_key in REDIS_DATASTORE.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
         if redis_key.startswith('bf:CoverArt'):
-           cover_art = ANNOTATION_REDIS.hgetall(redis_key)
+           cover_art = REDIS_DATASTORE.hgetall(redis_key)
            cover_art_template = loader.get_template('cover-art-medium.html')
            redis_id = redis_key.split(":")[-1]
            output += cover_art_template.render(
@@ -213,12 +213,12 @@ def get_creators(bibframe_entity):
         redis_key = bibframe_entity.attributes.get('instanceOf')
     else:
         redis_key = bibframe_entity.redis_key
-    if CREATIVE_WORK_REDIS.hexists(redis_key,"rda:isCreatedBy"):
-        creators = [CREATIVE_WORK_REDIS.hget(redis_key,"rda:isCreatedBy"),]
+    if REDIS_DATASTORE.hexists(redis_key,"rda:isCreatedBy"):
+        creators = [REDIS_DATASTORE.hget(redis_key,"rda:isCreatedBy"),]
     else:
-        creators = list(CREATIVE_WORK_REDIS.smembers("{0}:rda:isCreatedBy".format(redis_key)))
+        creators = list(REDIS_DATASTORE.smembers("{0}:rda:isCreatedBy".format(redis_key)))
     for i, key in enumerate(creators):
-        creator = AUTHORITY_REDIS.hgetall(key)
+        creator = REDIS_DATASTORE.hgetall(key)
 	redis_id = key.split(":")[-1]
 	context = {'name':unicode(creator['rda:preferredNameForThePerson'],
 		                  errors='ignore'),
@@ -241,15 +241,15 @@ def get_creator_works(person):
     :rtype: HTML or 0-length string
     """
     html_output = ''
-    creative_works = AUTHORITY_REDIS.smembers("{0}:rda:isCreatorPersonOf".format(person.redis_key))
+    creative_works = REDIS_DATASTORE.smembers("{0}:rda:isCreatorPersonOf".format(person.redis_key))
     if len(creative_works) > 0:
         html_output += '<h3>Total Works: {0}</h3>'.format(len(creative_works))
     work_template = loader.get_template('work-thumbnail.html')
     for wrk_key in creative_works:
-        instance_keys = CREATIVE_WORK_REDIS.smembers("{0}:bf:Instances".format(wrk_key))
+        instance_keys = REDIS_DATASTORE.smembers("{0}:bf:Instances".format(wrk_key))
 	instances = []
         for key in instance_keys:
-            carrier_type = INSTANCE_REDIS.hget(key,'rda:carrierTypeManifestation')
+            carrier_type = REDIS_DATASTORE.hget(key,'rda:carrierTypeManifestation')
             instances.append({'redis_id':key.split(":")[-1],
 		              'carrier_type':carrier_type,
 			      'graphic':CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")})
@@ -260,7 +260,7 @@ def get_creator_works(person):
 	context = {'image':image,
 		   'instances':instances,
                    'redis_id':wrk_key.split(":")[-1],
-		   'title':unicode(CREATIVE_WORK_REDIS.hget('{0}:title'.format(wrk_key),
+		   'title':unicode(REDIS_DATASTORE.hget('{0}:title'.format(wrk_key),
 			                                    'rda:preferredTitleForTheWork'),
 				   errors='ignore')}
 	html_output += work_template.render(Context(context))
@@ -297,8 +297,8 @@ def get_facet_url(facet_item):
 
 
 def get_format_image(instance_key):
-    if INSTANCE_REDIS.hexists(instance_key, 'rda:carrierTypeManifestation'):
-        carrier_type = INSTANCE_REDIS.hget(instance_key, 'rda:carrierTypeManifestation')
+    if REDIS_DATASTORE.hexists(instance_key, 'rda:carrierTypeManifestation'):
+        carrier_type = REDIS_DATASTORE.hget(instance_key, 'rda:carrierTypeManifestation')
     else:
         carrier_type = "Unknown"
     html_output = CARRIER_TYPE_GRAPHICS.get(carrier_type, "publishing_48x48.png")
@@ -324,10 +324,10 @@ def get_ids(instance):
     return mark_safe(html_output)
 
 def get_graphic(instance_key):
-    annotations = INSTANCE_REDIS.smembers("{0}:hasAnnotation".format(instance_key))
+    annotations = REDIS_DATASTORE.smembers("{0}:hasAnnotation".format(instance_key))
     for annotation_key in annotations:
         if annotation_key.startswith("bf:CoverArt"):
-            if ANNOTATION_REDIS.hexists(annotation_key, "thumbnail"):
+            if REDIS_DATASTORE.hexists(annotation_key, "thumbnail"):
                 redis_id = annotation_key.split(":")[-1]
                 return mark_safe("/apps/discovery/CoverArt/{0}-thumbnail.jpg".format(redis_id))
     return get_format_image(instance_key)
@@ -355,17 +355,17 @@ def get_instances(creative_work):
     """
     html_output = ''
     instance_template = loader.get_template('instance-icon.html')
-    instances = list(CREATIVE_WORK_REDIS.smembers("{0}:bf:Instances".format(creative_work.redis_key)))
+    instances = list(REDIS_DATASTORE.smembers("{0}:bf:Instances".format(creative_work.redis_key)))
     for key in instances:
         context = None
-	instance = INSTANCE_REDIS.hgetall(key)
+	instance = REDIS_DATASTORE.hgetall(key)
         carrier_type = instance.get('rda:carrierTypeManifestation','Unknown')
         redis_id = key.split(":")[-1]
-        annotations = INSTANCE_REDIS.smembers("{0}:hasAnnotation".format(key))
+        annotations = REDIS_DATASTORE.smembers("{0}:hasAnnotation".format(key))
         graphic = get_graphic(key)
         for annotation_key in annotations:
             if annotation_key.startswith('bf:CoverArt'):
-                if ANNOTATION_REDIS.hexists(annotation_key, "thumbnail"):
+                if REDIS_DATASTORE.hexists(annotation_key, "thumbnail"):
                     annotation_id = annotation_key.split(":")[-1]
                     context = {'graphic': '/apps/discovery/CoverArt/{0}-thumbnail.jpg'.format(annotation_id),
                                'name': carrier_type,
@@ -401,10 +401,10 @@ def get_location(instance):
     :param instance: Instance
     """
     location = ''
-    facets = INSTANCE_REDIS.smembers("{0}:Annotations:facets".format(instance.redis_key))
+    facets = REDIS_DATASTORE.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
         if key.startswith('bf:Annotation:Facet:Location'):
-	    location = ANNOTATION_REDIS.hget('bf:Annotation:Facet:Locations',
+	    location = REDIS_DATASTORE.hget('bf:Annotation:Facet:Locations',
 		                             key.split(":")[-1])
     return mark_safe(location)
 
@@ -429,12 +429,12 @@ def get_subjects(creative_work):
     """
     html_output = ''
     #! Using LOC Facet as proxy for subjects
-    facets = list(CREATIVE_WORK_REDIS.smembers("{0}:hasAnnotation".format(creative_work.redis_key)))
+    facets = list(REDIS_DATASTORE.smembers("{0}:hasAnnotation".format(creative_work.redis_key)))
     for facet in facets:
         if facet.startswith("bf:Annotation:Facet:LOCFirstLetter"):
             subject_template = loader.get_template('subject-icon.html')
 	    loc_key = facet.split(":")[-1]
-	    context = {'name':ANNOTATION_REDIS.hget('bf:Annotation:Facet:LOCFirstLetters',
+	    context = {'name':REDIS_DATASTORE.hget('bf:Annotation:Facet:LOCFirstLetters',
 		                                    loc_key),
                        'letter':loc_key}
 	    html_output += subject_template.render(Context(context))
@@ -455,7 +455,7 @@ def get_title(bibframe_entity):
                                           encoding='utf-8',
                                           errors="ignore")
 	if hasattr(bibframe_entity,'instanceOf'):
-	    preferred_title = unicode(CREATIVE_WORK_REDIS.hget('{0}:title'.format(bibframe_entity.instanceOf),
+	    preferred_title = unicode(REDIS_DATASTORE.hget('{0}:title'.format(bibframe_entity.instanceOf),
                                                                'rda:preferredTitleForTheWork'),
                                       encoding='utf-8',
                                       errors="ignore")
