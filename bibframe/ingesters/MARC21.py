@@ -49,7 +49,7 @@ PRECEDE_RE = re.compile(r'precede \w+ with "(?P<prepend>\w+:*)')
 COMBINED_SUBFLD_RE = re.compile(r'[$](?P<subfld>\w)[+]*')
 SUBFLD_RE = re.compile(r"[$|/|,](?P<subfld>\w)")
 SINGLE_TAG_IND_RE = re.compile(r'(\d{3})(\d|[-])(\d|[-])')
-RULE_ONE_RE = re.compile(r"\d{3},* [$|/|,](?P<subfld>\w)")
+RULE_ONE_RE = re.compile(r"\d{3},*-*\s*[$|/](?P<subfld>\w)")
 TAGS_RE = re.compile(r"(?P<tag>\d{3}),*-*")
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
@@ -167,9 +167,9 @@ class MARC21Ingester(Ingester):
                     marc_fields.extend(self.record.get_fields(tag))
             if len(marc_fields) > 0:
                 for marc_field in marc_fields:
-                    tag_value = marc_field[subfield]
+                    tag_value = marc_field.get_subfields(subfield)
                     if tag_value is not None:
-                        values.append(tag_value)
+                        values.append(' '.join(tag_value))
         return values
 
 
@@ -1539,6 +1539,15 @@ class MARC21toCreativeWork(MARC21Ingester):
         if self.work_class is None:
             self.work_class = Work
 
+    def extract_performerNote(self):
+        "Extracts performerNote"
+        notes = []
+        fields = self.record.get_fields('511')
+        for field in fields:
+            notes.append("Cast: {0}".format(''.join(field.get_subfields('a'))))
+        if len(notes) > 0:
+            self.entity_info["performerNote"] = set(notes)
+
     def ingest(self):
         "Method ingests MARC Record into RLSP"
         self.__classify_work_class__()
@@ -1562,6 +1571,8 @@ class MARC21toCreativeWork(MARC21Ingester):
                 values.extend(self.__rule_one__(rule))
             if len(values) > 0:
                 self.entity_info[attribute] = values
+        # List of specific methods that haven't had Rule regex developed
+        self.extract_performerNote()
         self.get_or_add_work()
         if self.creative_work is not None:
             for title_key in work_titles: 
