@@ -87,7 +87,7 @@ class WorkClassifier(SimpleFuzzyClassifier):
                         existing_keys = creator_keys.intersection(self.entity_info['rda:isCreatedBy'])
                     else:
                         existing_keys = creator_keys.union(self.entity_info['rda:isCreatedBy'])
-                    print("Existing keys are {0}".format(existing_keys))
+                    
                     if len(existing_keys) == 1:
                         msg = "{0} MATCHED {1} to {2}".format(
                             datetime.datetime.utcnow().isoformat(),

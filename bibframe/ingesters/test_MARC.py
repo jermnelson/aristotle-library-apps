@@ -198,7 +198,7 @@ class TestMARC21toCreativeWork(TestCase):
         self.assertEquals(list(self.work_ingester.creative_work.note)[0],
                           'Films, DVDs, and streaming Three-dimensional')
 ##        self.assertEquals(list(self.work_ingester.creative_work.note)[0],
-##                          test_redis.hget(self.work_ingester.creative_work.redis_key,
+##                          TEST_REDIS.hget(self.work_ingester.creative_work.redis_key,
 ##                                          'note'))
 
 
@@ -373,11 +373,9 @@ class MARC21toInstanceTest(TestCase):
 ##        marc_record.add_field(pymarc.Field(tag='907',
 ##                                           indicators=[' ',' '],
 ##                                           subfields=['a','.b1112223x']))
-        self.instance_ingester = MARC21toInstance(annotation_ds=test_redis,
-                                                  authority_ds=test_redis,
-                                                  instance_ds=test_redis,
-                                                  marc_record=marc_record,
-                                                  creative_work_ds=test_redis)
+        self.instance_ingester = MARC21toInstance(redis_datastore=TEST_REDIS,
+                                                  record=marc_record)
+                                                  
         self.instance_ingester.ingest()
 
 
@@ -401,7 +399,7 @@ class MARC21toInstanceTest(TestCase):
                           'ASITAF')
         self.assertEquals(list(self.instance_ingester.instance.coden)[1],
                           'ASIRAF')
-        self.assert_(test_redis.sismember('identifiers:CODEN:invalid',
+        self.assert_(TEST_REDIS.sismember('identifiers:CODEN:invalid',
                                           list(self.instance_ingester.instance.coden)[0]))
 
     def test_extract_color_content(self):
@@ -438,7 +436,7 @@ class MARC21toInstanceTest(TestCase):
                           '95030619')
         self.assertEquals(list(self.instance_ingester.instance.lccn)[1],
                           '95030619x')
-        self.assert_(test_redis.sismember('identifiers:lccn:invalid','95030619x'))
+        self.assert_(TEST_REDIS.sismember('identifiers:lccn:invalid','95030619x'))
  
     def test_extract_issue_number(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'issue-number'))[0],
@@ -451,7 +449,7 @@ class MARC21toInstanceTest(TestCase):
     def test_extract_legal_deposit(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'legal-deposit'))[0],
                           'DL 80-0-1524')
-        self.assert_(test_redis.sismember("identifiers:legal-deposit:invalid",
+        self.assert_(TEST_REDIS.sismember("identifiers:legal-deposit:invalid",
                                           "M444120-2006"))
 
 
@@ -459,33 +457,33 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(self.instance_ingester.instance.local)[0],
                           'b45647')
         self.assertEquals(list(self.instance_ingester.instance.local)[0],
-                          test_redis.hget(self.instance_ingester.instance.redis_key,
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
                                           "local"))
 ##
 ##    def test_ils_bib_number(self):
 ##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
 ##                          'b1112223')
 ##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
-##                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+##                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
 ##                                          'ils-bib-number'))
 ##
 ##    def test_sudoc(self):
 ##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
 ##                          'HE 20.6209:13/45')
 ##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
-##                          test_redis.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+##                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
 ##                                          "sudoc"))
 ##
     def test_extract_lc_overseas_acq(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'lc-overseas-acq'))[0],
-                          test_redis.hget(self.instance_ingester.instance.redis_key,
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
                                          'lc-overseas-acq'))
 
     def test_extract_ismn(self):
         self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
                           '979-0-2600-0043-8')
         self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
-                          test_redis.hget(self.instance_ingester.instance.redis_key,
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
                                           'ismn'))
 
     def test_issn(self):
@@ -495,12 +493,12 @@ class MARC21toInstanceTest(TestCase):
     def test_iso(self):
         self.assertEquals(list(self.instance_ingester.instance.iso)[0],
                           '19200 Baud')
-        self.assert_(test_redis.sismember('identifiers:iso:invalid','2400 Baud'))
+        self.assert_(TEST_REDIS.sismember('identifiers:iso:invalid','2400 Baud'))
 
     def test_isrc(self):
         self.assertEquals(list(self.instance_ingester.instance.isrc)[0],
                           'NLC018413261')
-        self.assertEquals(list(test_redis.sinter("identifiers:isrc:invalid",
+        self.assertEquals(list(TEST_REDIS.sinter("identifiers:isrc:invalid",
                                                  "{0}:isrc".format(self.instance_ingester.instance.redis_key)))[0],
                           "NLC018403261")
 
@@ -511,7 +509,7 @@ class MARC21toInstanceTest(TestCase):
     def test_music_plate(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'music-plate'))[0],
                           'B. & H. 8797')
-        self.assertEquals(test_redis.hget(self.instance_ingester.instance.redis_key,
+        self.assertEquals(TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
                                           'music-plate'),
                          'B. & H. 8797')
 
@@ -554,7 +552,7 @@ class MARC21toInstanceTest(TestCase):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
                           '240-951/147')
         self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
-                          test_redis.hget(self.instance_ingester.instance.redis_key,
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
                                           "stock-number"))
 
     def test_extract_strn(self):
@@ -569,7 +567,7 @@ class MARC21toInstanceTest(TestCase):
     def test_extract_supplementaryContentNote(self):
         self.assertEquals(list(self.instance_ingester.instance.supplementaryContentNote)[0],
                           'Literature cited: p. 67-68. References: 19')
-        self.assertEquals(list(test_redis.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[1],
+        self.assertEquals(list(TEST_REDIS.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[1],
                           'Has numerous supplements')
 
     def test_system_number(self):
@@ -591,10 +589,10 @@ class MARC21toInstanceTest(TestCase):
                           'http://www.test.edu/')
         
     def tearDown(self):
-        test_redis.flushdb()
+        TEST_REDIS.flushdb()
 
 
-class MARC21toLibraryHoldingTest(TestCase):
+class TestMARC21toLibraryHolding(TestCase):
 
     def setUp(self):
         marc_record = pymarc.Record()
@@ -614,48 +612,47 @@ class MARC21toLibraryHoldingTest(TestCase):
                                            subfields=['a','A 1.1:',
                                                       'z','A 1.1/3:984']))
 
-        self.lib_holding_ingester = MARC21toLibraryHolding(annotation_ds=TEST_REDIS,
-                                                           authority_ds=TEST_REDIS,
-                                                           instance_ds=TEST_REDIS,
-                                                           marc_record=marc_record,
-                                                           creative_work_ds=TEST_REDIS)
+        self.lib_holding_ingester = MARC21toLibraryHolding(redis_datastore=TEST_REDIS,
+                                                           record=marc_record)
         self.lib_holding_ingester.ingest()
 
 
     def test_init_(self):
-        self.assert_(self.lib_holding_ingester.holding.redis_key is not None)
+        self.assert_(self.lib_holding_ingester.holdings[0].redis_key is not None)
 
     def test_extract_ddc(self):
-        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-ddc'),
+        self.assertEquals(getattr(self.lib_holding_ingester.holdings[0],
+                                  'callno-ddc'),
                          'C848/.5407/05 20')
 
     def test_extract_govdoc(self):
-        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-govdoc'),
+        self.assertEquals(getattr(self.lib_holding_ingester.holdings[0],
+                                  'callno-govdoc'),
                           'A 1.1:')
 
     def test_extract_lcc(self):
-        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-lcc'),
+        self.assertEquals(getattr(self.lib_holding_ingester.holdings[0],
+                                  'callno-lcc'),
                           'PS3602.E267 M38 2008') 
 
     def test_extract_udc(self):
-        self.assertEquals(getattr(self.lib_holding_ingester.holding,'callno-udc'),
+        self.assertEquals(getattr(self.lib_holding_ingester.holdings[0],
+                                  'callno-udc'),
                           '631.321:631.411.3') 
 
 
     def tearDown(self):
         TEST_REDIS.flushdb()
 
-class MARC21toPersonTest(TestCase):
+class TestMARC21toPerson(TestCase):
 
     def setUp(self):
-        self.marc_record = pymarc.Record()
-        self.marc_record.add_field(
-            pymarc.Field(
+        self.marc_field = pymarc.Field(
                 tag='100',
                 indicators=['1','0'],
                 subfields=['a','Austen, Jane',
-                           'd','1775-1817']))
-        self.person_ingester = MARC21toPerson(record=self.marc_record,
+                           'd','1775-1817'])
+        self.person_ingester = MARC21toPerson(field=self.marc_field,
                                               redis_datastore=TEST_REDIS)
                                               
         self.person_ingester.ingest()
@@ -664,36 +661,41 @@ class MARC21toPersonTest(TestCase):
         self.assert_(self.person_ingester.person.redis_key)
 
     def test_dob(self):
-        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfBirth'),
+        self.assertEquals(getattr(self.person_ingester.person,
+                                  'rda:dateOfBirth'),
                           '1775')
-        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfBirth'),
-                          test_redis.hget(self.person_ingester.person.redis_key,
+        self.assertEquals(getattr(self.person_ingester.person,
+                                  'rda:dateOfBirth'),
+                          TEST_REDIS.hget(self.person_ingester.person.redis_key,
                                           'rda:dateOfBirth'))
 
     def test_dod(self):
-        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfDeath'),
+        self.assertEquals(getattr(self.person_ingester.person,
+                                  'rda:dateOfDeath'),
                           '1817')
-        self.assertEquals(getattr(self.person_ingester.person,'rda:dateOfDeath'),
-                          test_redis.hget(self.person_ingester.person.redis_key,
+        self.assertEquals(getattr(self.person_ingester.person,
+                                  'rda:dateOfDeath'),
+                          TEST_REDIS.hget(self.person_ingester.person.redis_key,
                                           'rda:dateOfDeath'))
 
-    def test_foaf_givenName(self):
-        self.assertEquals(getattr(self.person_ingester.person,'foaf:givenName'),
+    def test_schema_givenName(self):
+        self.assertEquals(getattr(self.person_ingester.person,'schema:givenName'),
                           'Jane')
-        self.assertEquals(getattr(self.person_ingester.person,'foaf:givenName'),
-                          test_redis.hget(self.person_ingester.person.redis_key,
-                                          'foaf:givenName'))
+        self.assertEquals(getattr(self.person_ingester.person,
+                                  'schema:givenName'),
+                          TEST_REDIS.hget(self.person_ingester.person.redis_key,
+                                          'schema:givenName'))
         
 
     def test_preferred_name(self):
         self.assertEquals(self.person_ingester.person.feature('rda:preferredNameForThePerson'),
                           'Austen, Jane')
         self.assertEquals(self.person_ingester.person.feature('rda:preferredNameForThePerson'),
-                          test_redis.hget(self.person_ingester.person.redis_key,
+                          TEST_REDIS.hget(self.person_ingester.person.redis_key,
                                           'rda:preferredNameForThePerson'))
 
     def tearDown(self):
-        test_redis.flushdb()
+        TEST_REDIS.flushdb()
 
 ##class MARC21toFacetsTest(TestCase):
 ##
@@ -709,31 +711,31 @@ class MARC21toPersonTest(TestCase):
 ##	                           indicators=['0','0'],
 ##				   subfields=['a','tgr']))
 ##
-##	self.facet_ingester = MARC21toFacets(annotation_ds=test_redis,
-##			                     authority_ds=test_redis,
-##					     instance_ds=test_redis,
-##					     creative_work_ds=test_redis,
+##	self.facet_ingester = MARC21toFacets(annotation_ds=TEST_REDIS,
+##			                     authority_ds=TEST_REDIS,
+##					     instance_ds=TEST_REDIS,
+##					     creative_work_ds=TEST_REDIS,
 ##					     marc_record=self.marc_record)
 ##
 ##    def test_access_facet(self):
-##	instance = Instance(redis=test_redis)
+##	instance = Instance(redis=TEST_REDIS)
 ##	instance.save()
 ##	self.facet_ingester.add_access_facet(instance=instance,
 ##			                     record=self.marc_record)
-##	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Access:Online"))
-##	self.assert_(test_redis.sismember("bibframe:Annotation:Facet:Access:Online",instance.redis_key))
+##	self.assert_(TEST_REDIS.exists("bibframe:Annotation:Facet:Access:Online"))
+##	self.assert_(TEST_REDIS.sismember("bibframe:Annotation:Facet:Access:Online",instance.redis_key))
 ##
 ##
 ##    def test_format_facet(self):
-##        instance = Instance(redis=test_redis,
+##        instance = Instance(redis=TEST_REDIS,
 ##			    attributes={"rda:carrierTypeManifestation":"Book"})
 ##	instance.save()
 ##	self.facet_ingester.add_format_facet(instance=instance)
-##	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Format:Book"))
-##	self.assert_(test_redis.sismember("bibframe:Annotation:Facet:Format:Book",instance.redis_key))
+##	self.assert_(TEST_REDIS.exists("bibframe:Annotation:Facet:Format:Book"))
+##	self.assert_(TEST_REDIS.sismember("bibframe:Annotation:Facet:Format:Book",instance.redis_key))
 ##
 ##    def test_lc_facet(self):
-##	creative_work = CreativeWork(redis=test_redis)
+##	creative_work = CreativeWork(redis=TEST_REDIS)
 ##	creative_work.save()
 ##	marc_record = pymarc.Record()
 ##	marc_record.add_field(pymarc.Field(tag='050',
@@ -741,26 +743,26 @@ class MARC21toPersonTest(TestCase):
 ##					   subfields=['a','QA345','b','T6']))
 ##        self.facet_ingester.add_lc_facet(creative_work=creative_work,
 ##			                 record=marc_record)
-##	self.assert_(test_redis.exists("bibframe:Annotation:Facet:LOCFirstLetter:QA"))
-##	self.assert_(test_redis.sismember("bibframe:Annotation:Facet:LOCFirstLetter:QA",creative_work.redis_key))
-##	self.assertEquals(test_redis.hget("bibframe:Annotation:Facet:LOCFirstLetters","QA"),
+##	self.assert_(TEST_REDIS.exists("bibframe:Annotation:Facet:LOCFirstLetter:QA"))
+##	self.assert_(TEST_REDIS.sismember("bibframe:Annotation:Facet:LOCFirstLetter:QA",creative_work.redis_key))
+##	self.assertEquals(TEST_REDIS.hget("bibframe:Annotation:Facet:LOCFirstLetters","QA"),
 ##                          "QA - Mathematics")
 ##
 ##    def test_location_facet(self):
-##	instance = Instance(redis=test_redis)
+##	instance = Instance(redis=TEST_REDIS)
 ##	instance.save()
 ##	self.facet_ingester.add_locations_facet(instance=instance,
 ##			                        record=self.marc_record)
-##	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Location:ewwwn"))
-##	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Location:tarfc"))
-##	self.assert_(test_redis.exists("bibframe:Annotation:Facet:Location:tgr"))
-##	self.assertEquals(test_redis.hget("bibframe:Annotation:Facet:Locations","ewwwn"),
+##	self.assert_(TEST_REDIS.exists("bibframe:Annotation:Facet:Location:ewwwn"))
+##	self.assert_(TEST_REDIS.exists("bibframe:Annotation:Facet:Location:tarfc"))
+##	self.assert_(TEST_REDIS.exists("bibframe:Annotation:Facet:Location:tgr"))
+##	self.assertEquals(TEST_REDIS.hget("bibframe:Annotation:Facet:Locations","ewwwn"),
 ##			  "Online")
-##	self.assertEquals(test_redis.hget("bibframe:Annotation:Facet:Locations","tarfc"),
+##	self.assertEquals(TEST_REDIS.hget("bibframe:Annotation:Facet:Locations","tarfc"),
 ##                          "Tutt Reference")
 ##
 ##    def tearDown(self):
-##        test_redis.flushdb()
+##        TEST_REDIS.flushdb()
 ##
 ##
 ##
@@ -781,11 +783,11 @@ class MARC21toPersonTest(TestCase):
 ##        marc_record.add_field(pymarc.Field(tag='907',
 ##                                           indicators=[' ',' '],
 ##                                           subfields=['a','.b1112223x']))
-##        self.marc21_ingester =  MARC21toBIBFRAME(annotation_ds=test_redis,
-##                                                 authority_ds=test_redis,
-##                                                 instance_ds=test_redis,
+##        self.marc21_ingester =  MARC21toBIBFRAME(annotation_ds=TEST_REDIS,
+##                                                 authority_ds=TEST_REDIS,
+##                                                 instance_ds=TEST_REDIS,
 ##                                                 marc_record=marc_record,
-##                                                 creative_work_ds=test_redis)
+##                                                 creative_work_ds=TEST_REDIS)
 ##	self.marc21_ingester.ingest()
 ##
 ##    def test_init(self):
@@ -804,7 +806,7 @@ class MARC21toPersonTest(TestCase):
 ##
 ##
 ##    def tearDown(self):
-##        test_redis.flushdb()
+##        TEST_REDIS.flushdb()
 ##
 ##
 
@@ -816,10 +818,10 @@ class MARC21toPersonTest(TestCase):
 ##            indicators=['', '0'],
 ##            subfields=['a', 'Orphans', 'x', 'Fiction'])
 ##        self.subjects_ingester = MARC21toSubjects(
-##            annotation_ds=test_redis,
-##            authority_ds=test_redis,
-##            creative_work_ds=test_redis,
-##            instance_ds=test_redis,
+##            annotation_ds=TEST_REDIS,
+##            authority_ds=TEST_REDIS,
+##            creative_work_ds=TEST_REDIS,
+##            instance_ds=TEST_REDIS,
 ##            field=field650)
 ##        self.subjects_ingester.ingest()
 ##        field650_2 = pymarc.Field(tag='650',
@@ -827,10 +829,10 @@ class MARC21toPersonTest(TestCase):
 ##            subfields=['a', 'Criminals',
 ##                'x', 'Fiction'])
 ##        self.subjects_ingester2 = MARC21toSubjects(
-##            annotation_ds=test_redis,
-##            authority_ds=test_redis,
-##            creative_work_ds=test_redis,
-##            instance_ds=test_redis,
+##            annotation_ds=TEST_REDIS,
+##            authority_ds=TEST_REDIS,
+##            creative_work_ds=TEST_REDIS,
+##            instance_ds=TEST_REDIS,
 ##            field=field650_2)
 ##        self.subjects_ingester2.ingest()
 ##        #marc_record.add_field(
@@ -857,7 +859,7 @@ class MARC21toPersonTest(TestCase):
 ##            "STTSTKSFKTSARFKXN")
 ##        self.assertEquals(
 ##            self.work_ingester.creative_work.attributes['rda:Title']["phonetic"],
-##            test_redis.hget("{0}:{1}".format(
+##            TEST_REDIS.hget("{0}:{1}".format(
 ##                self.work_ingester.creative_work.redis_key,
 ##                'rda:Title'),
 ##            "phonetic"))
@@ -869,12 +871,12 @@ class MARC21toPersonTest(TestCase):
 ##            'Statistics: facts or fiction.')
 ##        self.assertEquals(
 ##            self.work_ingester.creative_work.attributes['rda:Title']['rda:preferredTitleForTheWork'],
-##            test_redis.hget("{0}:{1}".format(self.work_ingester.creative_work.redis_key,
+##            TEST_REDIS.hget("{0}:{1}".format(self.work_ingester.creative_work.redis_key,
 ##                                                           'rda:Title'),
 ##                                          'rda:preferredTitleForTheWork'))
 ##
 ##    def tearDown(self):
-##        test_redis.flushdb()
+##        TEST_REDIS.flushdb()
 ##
 ##
 ##
@@ -897,11 +899,11 @@ class MARC21toPersonTest(TestCase):
 ##                                                          'pride-and-prejudice.mrc'),
 ##                                             'rb'))
 ##        for record in marc_reader:
-##            ingester = MARC21toBIBFRAME(annotation_ds=test_redis,
-##                                        authority_ds=test_redis,
-##                                        instance_ds=test_redis,
+##            ingester = MARC21toBIBFRAME(annotation_ds=TEST_REDIS,
+##                                        authority_ds=TEST_REDIS,
+##                                        instance_ds=TEST_REDIS,
 ##                                        marc_record=record,
-##                                        creative_work_ds=test_redis)
+##                                        creative_work_ds=TEST_REDIS)
 ##            ingester.ingest()
 ##              
 ##
@@ -910,34 +912,34 @@ class MARC21toPersonTest(TestCase):
 ##        Tests total number of expected creators from the MARC21 record set
 ##        for Pride and Prejudice
 ##        """
-##	self.assertEquals(int(test_redis.get('global bibframe:Authority:Person')),
+##	self.assertEquals(int(TEST_REDIS.get('global bibframe:Authority:Person')),
 ##	                  12)
-##	self.assertEquals(test_redis.hget('bibframe:Authority:Person:3',
+##	self.assertEquals(TEST_REDIS.hget('bibframe:Authority:Person:3',
 ##		                          'rda:preferredNameForThePerson'),
 ##			  'Austen, Jane')
 ##        for i in range(1,13):
 ##            author_key = "bibframe:Authority:Person:{0}".format(i)
-##            #print(test_redis.hget(author_key,'rda:preferredNameForThePerson'))
+##            #print(TEST_REDIS.hget(author_key,'rda:preferredNameForThePerson'))
 ##
-##	    #print(test_redis.hgetall(author_key))
-##            #print(test_redis.smembers("{0}:rda:isCreatorPersonOf".format(author_key)))
+##	    #print(TEST_REDIS.hgetall(author_key))
+##            #print(TEST_REDIS.smembers("{0}:rda:isCreatorPersonOf".format(author_key)))
 ##
 ##    def test_instances(self):
 ##        """
 ##	Tests total number of instances from the MARC21 record set for 
 ##	Pride and Prejudice
 ##	"""
-##	self.assertEquals(int(test_redis.get('global bibframe:Instance')),
+##	self.assertEquals(int(TEST_REDIS.get('global bibframe:Instance')),
 ##			  19)
-##        self.assertEquals(test_redis.hget('bibframe:Instance:1',
+##        self.assertEquals(TEST_REDIS.hget('bibframe:Instance:1',
 ##		                          'rda:carrierTypeManifestation'),
 ##                          'DVD Video')
-##        self.assertEquals(test_redis.hget('bibframe:Instance:3',
+##        self.assertEquals(TEST_REDIS.hget('bibframe:Instance:3',
 ##		                          'rda:carrierTypeManifestation'),
 ##                          'Book')
-##	for instance_key in list(test_redis.smembers("bibframe:CreativeWork:3:bibframe:Instances")):
+##	for instance_key in list(TEST_REDIS.smembers("bibframe:CreativeWork:3:bibframe:Instances")):
 ##	    pass
-##            #self.assertEquals(test_redis.hget(instance_key,
+##            #self.assertEquals(TEST_REDIS.hget(instance_key,
 ##            #                                  'rda:carrierTypeManifestation'),
 ##            #                  'book')
 ##
@@ -946,23 +948,23 @@ class MARC21toPersonTest(TestCase):
 ##	Tests total number of works from the MARC21 record set
 ##        for Pride and Prejudice
 ##	"""
-##	self.assertEquals(int(test_redis.get("global bibframe:CreativeWork")),
+##	self.assertEquals(int(TEST_REDIS.get("global bibframe:CreativeWork")),
 ##			  7)
 ##	# bibframe:CreativeWork:3 is the traditional Pride and Prejudice Work 
 ##	# from Jane Austen
-##	self.assertEquals(test_redis.scard("bibframe:CreativeWork:3:bibframe:Instances"),
+##	self.assertEquals(TEST_REDIS.scard("bibframe:CreativeWork:3:bibframe:Instances"),
 ##			  13)
-##	self.assert_(test_redis.sismember("bibframe:CreativeWork:3:rda:creator",
+##	self.assert_(TEST_REDIS.sismember("bibframe:CreativeWork:3:rda:creator",
 ##		                          "bibframe:Authority:Person:3"))
 ##	for i in range(1,8):
 ##            cw_key = "bibframe:CreativeWork:{0}".format(i)
-##	    #print(test_redis.smembers("{0}:bibframe:Instances".format(cw_key)))
-##            #print(test_redis.hgetall("{0}:rda:Title".format(cw_key)))
+##	    #print(TEST_REDIS.smembers("{0}:bibframe:Instances".format(cw_key)))
+##            #print(TEST_REDIS.hgetall("{0}:rda:Title".format(cw_key)))
 ##
 ##
 ##
 ##
 ##    def tearDown(self):
-##        test_redis.flushdb()
+##        TEST_REDIS.flushdb()
 ##
         

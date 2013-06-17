@@ -19,6 +19,7 @@ if LOCAL is True:
 else:
     REDIS_MASTER_HOST = '127.0.0.1'
 
+CUSTOM_AUTHENTICATION_BACKENDS = []
 # Runs all Redis RDA instances on a single server
 if SINGLE_SERVER is True:
     REDIS_CORPORATEBODY_HOST = REDIS_MASTER_HOST
