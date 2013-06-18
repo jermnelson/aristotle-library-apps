@@ -135,7 +135,10 @@ def process_title(raw_title):
 
     :param raw_title: Raw title
     """
+    if raw_title is None:
+        return [], None
     raw_terms, terms = raw_title.split(" "), []
+    
     for term in raw_terms:
         if term.lower() not in STOPWORDS: 
 	    for punc in [",",".",";",":","'",'"',"/"]:

@@ -65,7 +65,12 @@ def generate_call_number_app(instance,
                                         callno_local)
     for name in ['isbn','issn','lccn']:
         if hasattr(instance,name) and getattr(instance,name) is not None:
-            for value in list(getattr(instance,name)): 
+            id_value = getattr(instance, name)
+            if type(id_value) == set:
+                id_value = list(id_value)
+            elif type(id_value) == str:
+                id_value = [id_value, ]
+            for value in id_value: 
                 redis_datastore.hset('{0}-hash'.format(name), 
                                      value,
                                      instance.redis_key)
@@ -308,7 +313,9 @@ def lccn_set(identifiers_key,
     redis_datastore.hset(identifiers_key,
                       'lccn-normalized',
                       normalized_call_number)
-    redis_datastore.hset('lccn-hash',call_number,redis_key)
+    redis_datastore.hset('lccn-hash',
+                         call_number,
+                         redis_key)
     redis_datastore.hset('lccn-normalized-hash',
                       normalized_call_number,
                       redis_key)

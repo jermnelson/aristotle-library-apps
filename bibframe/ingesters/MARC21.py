@@ -44,13 +44,15 @@ field007_lkup = json.load(open(os.path.join(PROJECT_HOME,
                                 "rb"))
 
 
+ADDITIVE_SUBFLD_RE = re.compile("[+$](?P<subfld>\w)")
 CONDITIONAL_SUBFLD_ID_RE = re.compile(r'[+](?P<indicator2>\w)"(?P<fld_value>\w+)"')
 IND_CONDITIONAL_RE = re.compile(r'if i(?P<indicator>\w)=(?P<test>\w)')
 PRECEDE_RE = re.compile(r'precede \w+ with "(?P<prepend>\w+:*)')
 COMBINED_SUBFLD_RE = re.compile(r'[$](?P<subfld>\w)[+]*')
 SUBFLD_RE = re.compile(r"[$|/|,](?P<subfld>\w)")
 SINGLE_TAG_IND_RE = re.compile(r'(\d{3})(\d|[-])(\d|[-])')
-RULE_ONE_RE = re.compile(r"\d{3},*-*\s*[$|/](?P<subfld>\w)")
+RULE_ONE_RE = re.compile(r"\d{3},*-*\s*[$|/](?P<subfld>\w)$")
+RULE_TWO_RE = re.compile(r"\d{3},*-*\s*[$|/](?P<subfld>\w)[+]*")
 TAGS_RE = re.compile(r"(?P<tag>\d{3}),*-*")
 
 MARC_FLD_RE = re.compile(r"(\d+)([-|w+])([-|w+])/(\w+)")
@@ -149,9 +151,11 @@ class MARC21Ingester(Ingester):
         
         values = []
         rule_result = RULE_ONE_RE.search(rule)
-        
         if rule_result is not None:
-            subfield = rule_result.group('subfld')
+            if ADDITIVE_SUBFLD_RE.search(rule) is not None:
+                subfields = ADDITIVE_SUBFLD_RE.findall(rule)
+            else:
+                subfields = [rule_result.group('subfld'),]
             tags = TAGS_RE.findall(rule)
             if in_order is True:
                 while 1:
@@ -169,9 +173,12 @@ class MARC21Ingester(Ingester):
             if len(marc_fields) > 0:
                 for marc_field in marc_fields:
                     if not marc_field.is_control_field():
-                        tag_value = marc_field.get_subfields(subfield)
-                        if tag_value is not None:
-                            values.append(' '.join(tag_value))
+                        for subfield in subfields:
+                            tag_value = marc_field.get_subfields(subfield)
+                            tag_value = set(tag_value)
+                            if tag_value is not None:
+                                values.append(' '.join(tag_value))
+        values = list(set(values))
         return values
 
 
@@ -1123,7 +1130,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
                 holding = Holding(redis_datastore=self.redis_datastore)
                 data = subfield.split(" ")
                 institution_code = data[0]
-                org_key = self.redis_datstore.hget(
+                org_key = self.redis_datastore.hget(
                     'prospector-institution-codes',
                      institution_code)
                 setattr(holding, 'schema:contentLocation', org_key)
@@ -1590,7 +1597,10 @@ class MARC21toCreativeWork(MARC21Ingester):
         work_titles = []
         for attribute, rules in self.creative_work.marc_map.iteritems():
             values = []
-            if ['uniformTitle', 'title'].count(attribute) > 0:
+            #! NEED TitleEntity to check for duplicates
+            if attribute == 'uniformTitle':
+                pass
+            if attribute == 'title':
                 rule = rules[0]
                 titleValue = ' '.join(self.__rule_one__(rule))
                 title_entity = TitleEntity(redis_datastore=self.redis_datastore,
@@ -1602,7 +1612,8 @@ class MARC21toCreativeWork(MARC21Ingester):
                 work_titles.append(title_entity.redis_key)
                 continue
             for rule in rules:
-                values.extend(self.__rule_one__(rule))
+                result = list(set(self.__rule_one__(rule))
+                values.extend(result)
             if len(values) > 0:
                 self.entity_info[attribute] = values
         # List of specific methods that haven't had Rule regex developed

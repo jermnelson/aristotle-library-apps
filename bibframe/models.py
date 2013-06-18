@@ -161,7 +161,7 @@ def process_key(bibframe_key,
 def save_keys(entity_key,
               name,
               value,
-              redis_object):
+              redis_datastore):
     """
     Save keys 
 
@@ -169,40 +169,47 @@ def save_keys(entity_key,
     entity_key -- Entity Key
     name -- Name of entity
     value -- Value of entity
-    redis_object -- Redis Datastore
+    redis_datastore -- Redis Datastore
     """
     new_redis_key = "{0}:{1}".format(entity_key, name)
-    all_keys_key = "{0}:keys".format(entity_key)
-    redis_object.sadd(all_keys_key, new_redis_key)
+##    all_keys_key = "{0}:keys".format(entity_key)
+##    redis_datastore.sadd(all_keys_key, new_redis_key)
     if value is None:
-        redis_object.srem(all_keys_key,
-                          new_redis_key)
+        pass
+##        redis_datastore.srem(all_keys_key,
+##                             new_redis_key)
     elif type(value) is list:
-        redis_object.lpush(new_redis_key, value)
+        if len(value) == 1:
+            redis_datastore.hset(entity_key,
+                                 name,
+                                 value[0])
+        else:
+            for row in value:
+                redis_datastore.lpush(new_redis_key, row)
     elif type(value) is set:
         if len(value) == 1:
-            redis_object.hset(entity_key,
+            redis_datastore.hset(entity_key,
                               name,
                               list(value)[0])
-            redis_object.srem(all_keys_key,
-                              new_redis_key)
+##            redis_datastore.srem(all_keys_key,
+##                              new_redis_key)
         else:
             for member in list(value):
-                redis_object.sadd(new_redis_key,
+                redis_datastore.sadd(new_redis_key,
                                   member)
     elif type(value) is dict:
         for new_key, new_value in value.iteritems():
-            redis_object.hset(new_redis_key,
+            redis_datastore.hset(new_redis_key,
                               new_key,
                               new_value)
     else:
-        redis_object.hset(entity_key,
+        redis_datastore.hset(entity_key,
                           name,
                           value)
         # Remove new_redis_key from all_keys_key as new_redis_key
         # is not a distinct Redis key
-        redis_object.srem(all_keys_key,
-                          new_redis_key)
+##        redis_datastore.srem(all_keys_key,
+##                          new_redis_key)
 
 class RedisBibframeModelError(Exception):
     "Error raised when a Redis BIBFRAME Model Error occurs"
