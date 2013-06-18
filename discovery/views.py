@@ -14,6 +14,7 @@ from aristotle.forms import FeedbackForm
 
 from app_settings import APP, PAGINATION_SIZE
 from bibframe.models import Work,Instance,Person
+import bibframe.models
 from bibframe.redis_helpers import get_json_linked_data
 
 from discovery.forms import SearchForm
@@ -34,29 +35,29 @@ def app(request):
     """
     results,search_query,message = [],None,None
     if request.method == 'POST':
-	query = request.POST.get('q')
-	type_of = request.POST.get('q_type')
-	if len(query) > 0:
+        query = request.POST.get('q')
+        type_of = request.POST.get('q_type')
+        if len(query) > 0:
             bibframe_search = BIBFRAMESearch(q=query,
                                              type_of=type_of,
-	     		                     redis_datastore=REDIS_DATASTORE)
-	    bibframe_search.run()
-	    search_query = bibframe_search.query
+                                             redis_datastore=REDIS_DATASTORE)
+            bibframe_search.run()
+            search_query = bibframe_search.query
 
-	    message = 'Results for {0}'.format(query)
+            message = 'Results for {0}'.format(query)
             results = bibframe_search.creative_works()
             facet_list = bibframe_search.facets
-	    if len(results) < 1:
+            if len(results) < 1:
                 message = 'No Results found for {0}'.format(query)
-	else:
+        else:
             message = 'No search terms provided'
             facet_list = get_facets(REDIS_DATASTORE, REDIS_DATASTORE)
     else:
         facet_list = get_facets(REDIS_DATASTORE, REDIS_DATASTORE)
 #    example = {'work_path': os.path.join("apps",
-#	                                 "discovery",
-#			                 "work",
-#	                                 string(random.randint(0,
+#                                    "discovery",
+#                            "work",
+#                                    string(random.randint(0,
 #   int(REDIS_DATASTORE.get('global bibframe:CreativeWork'))))}
     featured_instances = []
     for instance_key in FEATURED_INSTANCES:
@@ -83,15 +84,15 @@ def app(request):
                               {'app': APP,
                                'example': {},
                                'featured': featured_instances, 
-			       'feedback_form':FeedbackForm({'subject':'Discovery App Home'}),
-			       'feedback_context':request.get_full_path(),
+                   'feedback_form':FeedbackForm({'subject':'Discovery App Home'}),
+                   'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,
-			       'message':message,
+                   'message':message,
                                'facet_list': facet_list,
                                'news_feed': get_news(),
-			       'results':results,
-			       'search_form': SearchForm(),
-			       'search_query':search_query,
+                   'results':results,
+                   'search_form': SearchForm(),
+                   'search_query':search_query,
                                'user': None})
 
 
@@ -104,19 +105,19 @@ def creative_work(request, redis_id):
     """
     redis_key = "bf:Work:{0}".format(redis_id)
     if REDIS_DATASTORE.exists(redis_key):
-        creative_work = Work(primary_redis=REDIS_DATASTORE,
-	     	             redis_key=redis_key)
+        creative_work = Work(redis_datastore=REDIS_DATASTORE,
+                         redis_key=redis_key)
     else:
         raise Http404
     return direct_to_template(request,
-		              'discovery/work.html',
-			      {'app': APP,
-			       'creative_work':creative_work,
-			       'feedback_form':FeedbackForm({'subject':'Discovery App Creative Work'}),
-			       'feedback_context':request.get_full_path(),
-			       'institution': INSTITUTION,
-			       'search_form': SearchForm(),
-			       'user':None})
+                      'discovery/work.html',
+                  {'app': APP,
+                   'creative_work':creative_work,
+                   'feedback_form':FeedbackForm({'subject':'Discovery App Creative Work'}),
+                   'feedback_context':request.get_full_path(),
+                   'institution': INSTITUTION,
+                   'search_form': SearchForm(),
+                   'user':None})
 
 @json_view
 def creative_work_json_ld(request, redis_id):
@@ -128,7 +129,7 @@ def creative_work_json_ld(request, redis_id):
     """
     redis_key = "bf:Work:{0}".format(redis_id) 
     if REDIS_DATASTORE.exists(redis_key):
-        json_linked_data = get_json_linked_data(primary_redis=REDIS_DATASTORE,
+        json_linked_data = get_json_linked_data(redis_datastore=REDIS_DATASTORE,
                                                 redis_key=redis_key)
         # Add current absolute url as prov:wasGeneratedBy
         absolute_url = request.build_absolute_uri()
@@ -200,30 +201,30 @@ def get_pagination(full_path,redis_key,redis_server,offset=0):
     counter,pages = 0,[]
     if total_pages > 6:
         for num in range(0,3):
-	    new_offset = num*PAGINATION_SIZE
+            new_offset = num*PAGINATION_SIZE
             page = {'route':'{0}?offset={1}'.format(full_path,
-		                                    new_offset),
-		    'number':num+1}
-	    if offset > num and offset <= new_offset:
-	        page['active'] = True
-	    pages.append(page)
-	pages.append({'route':'',
-		      'number':'...',
-		      'disabled':True})
-	for num in range(int(total_pages-2),int(total_pages)):
-	    pages.append({'route':'{0}?offset={1}'.format(full_path,
-		                                          offset+(num*PAGINATION_SIZE)),
-		          'number':num})
+                                            new_offset),
+                    'number':num+1}
+            if offset > num and offset <= new_offset:
+                page['active'] = True
+            pages.append(page)
+        pages.append({'route':'',
+              'number':'...',
+              'disabled':True})
+        for num in range(int(total_pages-2),int(total_pages)):
+            pages.append({'route':'{0}?offset={1}'.format(full_path,
+                                                  offset+(num*PAGINATION_SIZE)),
+                  'number':num})
     else:
         for num in range(0,int(total_pages)):
             page = {'route':'{0}?offset={1}'.format(full_path,offset+num),
-	            'number':num+1}
-	    pages.append(page)
+                'number':num+1}
+        pages.append(page)
     return {'previous':{'url':'{0}?offset={1}'.format(full_path,offset-PAGINATION_SIZE)},
-	    'pages':pages,
-	    'next':{'url':'{0}?offset={1}'.format(full_path,offset+PAGINATION_SIZE)}}
+        'pages':pages,
+        'next':{'url':'{0}?offset={1}'.format(full_path,offset+PAGINATION_SIZE)}}
 
-			    
+                
 
 def facet_detail(request,facet_name,facet_item):
     """
@@ -239,18 +240,18 @@ def facet_detail(request,facet_name,facet_item):
     offset =  int(request.REQUEST.get('offset',0))
     records = []
     pagination = get_pagination(request.path,
-		                listing_key,
-				REDIS_DATASTORE,
-				offset)
+                        listing_key,
+                REDIS_DATASTORE,
+                offset)
     record_slice = REDIS_DATASTORE.lrange(listing_key,
-		                           offset,
-					   offset+PAGINATION_SIZE)
+                                   offset,
+                       offset+PAGINATION_SIZE)
     for row in record_slice:
         if row.find("Instance") > -1:
             work_key = REDIS_DATASTORE.hget(row,'instanceOf')
         elif row.find("Work") > -1:
             work_key = row
-        work = Work(primary_redis=REDIS_DATASTORE,
+        work = Work(redis_datastore=REDIS_DATASTORE,
                     redis_key=work_key)
         records.append({'work':work})
     label_key = 'bf:Annotation:Facet:{0}s'.format(facet_name)
@@ -268,15 +269,15 @@ def facet_detail(request,facet_name,facet_item):
                               'discovery/app.html',
                               {'app': APP,
                                'example':{},
-			       'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
-			       'feedback_context':request.get_full_path(),
+                   'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
+                   'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,
                                'facet_list': None,
-			       'message': msg,
-			       'pagination':pagination,
-			       'results':records,
-			       'search_form': SearchForm(),
-			       'search_query': None,
+                   'message': msg,
+                   'pagination':pagination,
+                   'results':records,
+                   'search_form': SearchForm(),
+                   'search_query': None,
                                'user': None})
 
                               
@@ -302,19 +303,19 @@ def instance(request,redis_id):
     """
     redis_key = "bf:Instance:{0}".format(redis_id)
     if REDIS_DATASTORE.exists(redis_key):
-        instance = Instance(primary_redis=REDIS_DATASTORE,
-			    redis_key=redis_key)
+        instance = Instance(redis_datastore=REDIS_DATASTORE,
+                redis_key=redis_key)
     else:
         raise Http404
     return direct_to_template(request,
-		              'discovery/instance.html',
-			      {'app': APP,
-			       'feedback_form':FeedbackForm({'subject':'Discovery App Instance'}),
-			       'feedback_context':request.get_full_path(),
-			       'instance':instance,
-			       'institution': INSTITUTION,
-			       'search_form': SearchForm(),
-			       'user':None})
+                      'discovery/instance.html',
+                  {'app': APP,
+                   'feedback_form':FeedbackForm({'subject':'Discovery App Instance'}),
+                   'feedback_context':request.get_full_path(),
+                   'instance':instance,
+                   'institution': INSTITUTION,
+                   'search_form': SearchForm(),
+                   'user':None})
 
 @json_view
 def instance_json_ld(request, redis_id):
@@ -326,7 +327,7 @@ def instance_json_ld(request, redis_id):
     """
     redis_key = "bibframe:Instance:{0}".format(redis_id) 
     if REDIS_DATASTORE.exists(redis_key):
-        json_linked_data = get_json_linked_data(primary_redis=REDIS_DATASTORE,
+        json_linked_data = get_json_linked_data(redis_datastore=REDIS_DATASTORE,
                                                 redis_key=redis_key)
         # Turn the instanceOf into URI
         work_key = json_linked_data['bibframe:instanceOf'] 
@@ -357,19 +358,19 @@ def person(request,redis_id):
     """
     redis_key = "bf:Person:{0}".format(redis_id)
     if REDIS_DATASTORE.exists(redis_key):
-        person = Person(primary_redis=REDIS_DATASTORE,
-			redis_key=redis_key)
+        person = Person(redis_datastore=REDIS_DATASTORE,
+            redis_key=redis_key)
     else:
         raise Http404
     return direct_to_template(request,
-		              'discovery/person.html',
-			      {'app': APP,
-			       'feedback_form':FeedbackForm({'subject':'Discovery App Person'}),
-			       'feedback_context':request.get_full_path(),
-			       'institution': INSTITUTION,
-			       'person':person,
-			       'search_form': SearchForm(),
-			       'user':None})
+                      'discovery/person.html',
+                  {'app': APP,
+                   'feedback_form':FeedbackForm({'subject':'Discovery App Person'}),
+                   'feedback_context':request.get_full_path(),
+                   'institution': INSTITUTION,
+                   'person':person,
+                   'search_form': SearchForm(),
+                   'user':None})
 
 @json_view
 def person_json_ld(request, redis_id):
@@ -408,6 +409,61 @@ def search(request):
         return search_results
     else:
         return {'works':[]}
+
+def bibframe_router(request,
+                    entity_name,
+                    redis_id):
+    """View routes based on the Bibframe class and Redis id
+
+    Parameters:
+    entity_name -- Bibframe class anem
+    redis_id -- Redis integer for the Bibframe entity
+    """
+    bibframe_key = "bf:{0}:{1}".format(entity_name.title(),
+                                       redis_id)
+    if not REDIS_DATASTORE.exists(bibframe_key):
+        raise Http404
+    if ['Book',
+        'Manuscript',
+        'MovingImage',
+        'NotatedMusic',
+        'MusicalAudio',
+        'NonmusicalAudio',
+        'SoftwareOrMultimedia'].count(entity_name) > 0:
+        cw_class = getattr(bibframe.models,
+                               entity_name.title())
+        creative_work = cw_class(
+            redis_datastore=REDIS_DATASTORE,
+            redis_key=bibframe_key)
+        return direct_to_template(request,
+                    'discovery/work.html',
+                  {'app': APP,
+                   'creative_work':creative_work,
+                   'feedback_form':FeedbackForm({'subject':'Discovery App Creative Work'}),
+                   'feedback_context':request.get_full_path(),
+                   'institution': INSTITUTION,
+                   'search_form': SearchForm(),
+                   'user':None})
+    elif entity_name.title() == 'Instance':
+        instance = Instance(
+            redis_datastore=REDIS_DATASTORE,
+            redis_key=bibframe_key)
+    
+        return direct_to_template(request,
+                      'discovery/instance.html',
+                  {'app': APP,
+                   'feedback_form':FeedbackForm({'subject':'Discovery App Instance'}),
+                   'feedback_context':request.get_full_path(),
+                   'instance':instance,
+                   'institution': INSTITUTION,
+                   'search_form': SearchForm(),
+                   'user':None})
+        
+        
+    return HttpResponse("{0} exits {1}".format(
+        bibframe_key,
+        REDIS_DATASTORE.exists(bibframe_key)))
+    
 
 
 

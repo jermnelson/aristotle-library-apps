@@ -64,44 +64,47 @@ def about_instance(instance):
 	    info.append(('Location in Library',location))
     #identifiers = getattr(instance,'rda:identifierForTheManifestation')
     for name in dir(instance):
-       value = getattr(instance,name)
-       if name.startswith("__") or name.find('redis') > -1:
-           continue
-       if inspect.ismethod(getattr(instance,name)):
-           continue
-       if REDIS_DATASTORE.hexists('bf:vocab:Instance:labels',
+        value = getattr(instance, name)
+        if value is None:
+            continue
+        if name.startswith("__") or name.find('redis') > -1:
+            continue
+        if name.startswith("marc_map"):
+            continue
+        if inspect.ismethod(getattr(instance,name)):
+            continue
+        if REDIS_DATASTORE.hexists('bf:vocab:Instance:labels',
                                     name):
-           if value is not None:
-               label = REDIS_DATASTORE.hget('bf:vocab:Instance:labels',
+            if value is not None:
+                label = REDIS_DATASTORE.hget('bf:vocab:Instance:labels',
                                                name)
-               instance_attribute = getattr(instance,name)
-               if type(instance_attribute) == set:
-                   for row in list(instance_attribute):
-                       info.append((label,row))
-               elif type(instance_attribute) == dict:
-                   for k,v in instance_attribute.iteritems():
-                       info.append((k,v))
-               elif name == 'instanceOf':
-                   work_key = instance.instanceOf
-                   info.append((name,
+                instance_attribute = getattr(instance,name)
+                if type(instance_attribute) == set:
+                    for row in list(instance_attribute):
+                        info.append((label,row))
+                elif type(instance_attribute) == dict:
+                    for k,v in instance_attribute.iteritems():
+                        info.append((k,v))
+                elif name == 'instanceOf':
+                    work_key = instance.instanceOf
+                    info.append((name,
                                 '''<a href="/apps/discovery/work/{0}/">{1} <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1],
                                                                                                                     work_key)))
-
-               else:
-                   info.append((label,instance_attribute))
-       else:
-           if type(value) == dict:
-               for k,v in value.iteritems():
-                   info.append((k,v))
-           elif type(value) == set:
-              for row in list(value):
-                  if name == 'uniformResourceLocatorItem':
-                      row = '<a href="{0}">{0}</a>'.format(row)
-                  info.append((name, row))
-           elif name == 'rda:uniformResourceLocatorItem':
-               info.append((name,'<a href="{0}">{1}</a>'.format(value,value)))
-           else:
-               info.append((name,getattr(instance,name)))
+                else:
+                    info.append((label,instance_attribute))
+        else:
+            if type(value) == dict:
+                for k,v in value.iteritems():
+                    info.append((k,v))
+            elif type(value) == set:
+                for row in list(value):
+                    if name == 'uniformResourceLocatorItem':
+                        row = '<a href="{0}">{0}</a>'.format(row)
+                        info.append((name, row))
+                    elif name == 'rda:uniformResourceLocatorItem':
+                        info.append((name,'<a href="{0}">{1}</a>'.format(value,value)))
+            else:
+                info.append((name,getattr(instance,name)))
        
     #if identifiers.has_key('lccn'):
     #    info.append(('LOC Call Number',identifiers.get('lccn')))
@@ -355,7 +358,13 @@ def get_instances(creative_work):
     """
     html_output = ''
     instance_template = loader.get_template('instance-icon.html')
-    instances = list(REDIS_DATASTORE.smembers("{0}:bf:Instances".format(creative_work.redis_key)))
+    instance = REDIS_DATASTORE.hget(creative_work.redis_key,
+                                    'hasInstance')
+    if instance is None:
+        instances = list(REDIS_DATASTORE.smembers(
+            "{0}:hasInstance".format(creative_work.redis_key)))
+    else:
+        instances = [instance, ]
     for key in instances:
         context = None
 	instance = REDIS_DATASTORE.hgetall(key)
@@ -449,12 +458,17 @@ def get_title(bibframe_entity):
     :rtype: string
     """
     try:
-	if hasattr(bibframe_entity,'title'):
+	if hasattr(bibframe_entity, 'title'):
             if bibframe_entity.title is not None:
-	        preferred_title = unicode(bibframe_entity.title['rda:preferredTitleForTheWork'],
-                                          encoding='utf-8',
-                                          errors="ignore")
-	if hasattr(bibframe_entity,'instanceOf'):
+                title_entity_key = bibframe_entity.title
+	        preferred_title = unicode(
+                    REDIS_DATASTORE.hget(
+                        title_entity_key,
+                        'label'),
+                    encoding='utf-8',
+                    errors="ignore")
+	if hasattr(bibframe_entity,
+                   'instanceOf'):
 	    preferred_title = unicode(REDIS_DATASTORE.hget('{0}:title'.format(bibframe_entity.instanceOf),
                                                                'rda:preferredTitleForTheWork'),
                                       encoding='utf-8',

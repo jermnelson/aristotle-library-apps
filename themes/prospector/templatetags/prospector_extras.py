@@ -5,6 +5,7 @@
 """
 __author__ = "Jeremy Nelson"
 
+import json
 from django import template
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import stringfilter
@@ -43,6 +44,27 @@ def get_news(num_items=5):
                          -1)
     news_template = template.loader.get_template('carl-news.html')
     return mark_safe(news_template.render(template.Context({'news':news})))
+
+@register.filter(is_safe=True)
+def get_prospector_bar_chart(app=None):
+    "Returns a javascript for a Canvas.js bar chart of Prospector Holdings"
+    js_str = "var ctx=$('#prospector-rlsp-bar').get(0).getContext('2d');"
+    data = {'labels':[],
+            'data':[]}
+    for row in  REDIS_DATASTORE.zrevrange('prospector-holdings',
+                                          0,
+                                          -1,
+                                          withscores=True):
+        if float(row[1]) > 0:
+            org_key = row[0]
+            data['labels'].append(REDIS_DATASTORE.hget(org_key, 'label'))
+            data['data'].append(str(row[1]))
+    js_str += """var data={{ labels: ["{0}"],""".format('","'.join(data['labels']))
+    js_str += """datasets: [ {{ fillColor : "rgba(151,187,205,0.5)",
+                               strokeColor : "rgba(151,187,205,1)",
+                               data : [{0}]}}]}};""".format(','.join(data['data']))
+    js_str += "new Chart(ctx).Bar(data, {scaleShowLabel: true});"
+    return mark_safe(js_str)
 
 @register.filter(is_safe=True)
 def get_facet(facet):

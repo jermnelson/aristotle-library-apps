@@ -103,4 +103,7 @@ class WorkClassifier(SimpleFuzzyClassifier):
                 self.creative_work.save()
         else:
             print("Entity does not have a title {0}".format(self.entity_info))
+            self.redis_datastore.sadd('no-titles',
+                                      self.redis_datastore.get('simple-classifier'))
+        self.redis_datastore.incr('simple-classifier')
         

@@ -222,7 +222,7 @@ class BIBFRAMESearch(object):
 
     def author(self):
         found_creators = person_authority_app.person_search(self.query,
-			                                    authority_redis=self.redis_datastore)
+			                                    redis_datastore=self.redis_datastore)
         for work_key in found_creators:
              self.redis_datastore.sadd(self.search_key,
                                        work_key)
@@ -303,10 +303,6 @@ class BIBFRAMESearch(object):
         lib_location['items'].reverse()
         self.facets.append(lib_location)
                 
-            
-        
-            
-
 
     def journal_title(self):
         self.title()
@@ -378,26 +374,37 @@ def get_news():
     # In demo mode, just create a news item regarding the
     # statistics of the REDIS_DATASTORE
     if REDIS_DATASTORE is not None:
-        item = {'heading': 'Current Statistics for RLSP Cluster',
-                'body': '''<p><strong>Totals:</strong>
-Works={0}<br>Instances={1}<br>Person={2}</p>
-<p>Number of keys={3}</p>'''.format(REDIS_DATASTORE.get('global bf:Work'),
-                                    REDIS_DATASTORE.get('global bf:Instance'),
-                                    REDIS_DATASTORE.get('global bf:Person'),
-                                    REDIS_DATASTORE.dbsize())}
+        body_text = "<p><strong>Totals:</strong>"
+        for key in ['Book',
+                    'Manuscript',
+                    'MovingImage',
+                    'NotatedMusic',
+                    'MusicalAudio',
+                    'NonmusicalAudio',
+                    'SoftwareOrMultimedia',
+                    'Instance',
+                    'Person']:
+            body_text += '{0} = {1}<br>'.format(
+                key,
+                REDIS_DATASTORE.get('global bf:{0}'.format(key)))
+        body_text += '</p><p>Total number of keys={0}</p>'.format(
+            REDIS_DATASTORE.dbsize())
+        item = {'heading': 'Current Statistics for Redis Datastore',
+                'body': body_text}
         news.append(item)
-        body_html = '<ul>'
-        for org_key in  REDIS_DATASTORE.zrevrange('prospector-holdings',
-                                               0,
-                                               -1):
-
-            body_html += '''<li>{0} Total Holdings={1}</li>'''.format(
-                             REDIS_DATASTORE.hget(org_key, 'label'),
-                             REDIS_DATASTORE.scard('{0}:bf:Holdings'.format(org_key)))
-        body_html += '</ul>'
-        item2 = {'heading': 'Institutional Collections',
-                 'body': body_html}
-        news.append(item2)
+##        body_html = '<ul>'
+##        for row in  REDIS_DATASTORE.zrevrange('prospector-holdings',
+##                                               0,
+##                                               -1,
+##                                              withscores=True):
+##            org_key, score = row[0], row[1]
+##            body_html += '''<li>{0} Total Holdings={1}</li>'''.format(
+##                             REDIS_DATASTORE.hget(org_key, 'label'),
+##                             score)
+##        body_html += '</ul>'
+##        item2 = {'heading': 'Institutional Collections',
+##                 'body': body_html}
+##        news.append(item2)
     return news
         
 

@@ -359,11 +359,13 @@ class MARC21toInstance(MARC21Ingester):
         self.instance = None
         super(MARC21toInstance, self).__init__(**kwargs)
         self.entity_info['rda:identifierForTheManifestation'] = {}
+        if kwargs.has_key('instanceOf'):
+            self.entity_info['instanceOf'] = kwargs.get('instanceOf')
 
 
     def add_instance(self):
         """
-        Method creates an marcr:Instance based on values for the entity
+        Method creates an bf:Instance based on values for the entity
         """
         self.instance = Instance(redis_datastore=self.redis_datastore)
         for key,value in self.entity_info.iteritems():
@@ -1141,7 +1143,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
                 if self.instance is not None:
                     holding.annotates = self.instance.redis_key
                 holding.save()
-                self.redis_datastore.hadd(
+                self.redis_datastore.hset(
                     'ils-bib-numbers',
                     getattr(holding, 'ils-bib-number'),
                     holding.redis_key)
@@ -1150,12 +1152,14 @@ class MARC21toLibraryHolding(MARC21Ingester):
                         self.instance.redis_key)
                     self.redis_datastore.sadd(instance_annotation_key,
                                           holding.redis_key)
-                    self.redis_datastore.sadd("{0}:keys".format(self.instance.redis_key),
-                                          instance_annotation_key)
                 # Use MARC Relator Code for set key 
                 self.redis_datastore.sadd("{0}:resourceRole:own".format(org_key),
                                           holding.redis_key)
                 self.holdings.append(holding)
+        # Runs through CC specific to allow different combinations of MARC
+        # records, this should be generalized in a refactor
+        if len(self.holdings) < 1:
+            self.__add_cc_holdings()
 
 
     def add_holdings(self):
@@ -1612,7 +1616,7 @@ class MARC21toCreativeWork(MARC21Ingester):
                 work_titles.append(title_entity.redis_key)
                 continue
             for rule in rules:
-                result = list(set(self.__rule_one__(rule))
+                result = list(set(self.__rule_one__(rule)))
                 values.extend(result)
             if len(values) > 0:
                 self.entity_info[attribute] = values
@@ -1651,7 +1655,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         work_classifier.classify()
         self.creative_work = work_classifier.creative_work
         if self.creative_work is not None:
-            self.creative_work.save()             
+            self.creative_work.save()            
                 
                 
 class MARC21toTitleEntity(MARC21Ingester):

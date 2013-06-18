@@ -1,4 +1,5 @@
 {% extends 'app-base.html' %}
+{% load prospector_extras %}
 
 {% block body %}
 {# START main content #}
@@ -29,7 +30,23 @@
    {% include 'carl-right-column.html' %}
  {# END Facet and Content #}
  </div>
+{# START Prospector graph #}
+ <div class="row-fluid">
+  <div class="span12">
+  <canvas id="prospector-rlsp-bar" height="400" width="800"></canvas>
+  </div>
+{# END Prospector graph #}
+ </div>
 {# END main content #}
 </div>
 {% endif %}
+{% endblock %}
+
+
+
+{% block more_js %}
+<script src="{{ STATIC_URL }}js/Chart.min.js"></script>
+<script>
+{{ app|get_prospector_bar_chart }}
+</script>
 {% endblock %}
