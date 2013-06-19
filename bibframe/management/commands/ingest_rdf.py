@@ -7,8 +7,8 @@ __author__ = "Jeremy Nelson"
 import datetime
 import os
 import sys
-from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS
-from aristotle.settings import CREATIVE_WORK_REDIS, INSTANCE_REDIS
+from aristotle.settings import REDIS_DATASTORE
+
 from bibframe.ingesters.ProjectGutenbergRDF import ProjectGutenbergIngester
 from django.core.management.base import BaseCommand, CommandError
 
@@ -24,10 +24,7 @@ def ingest_pg_rdfs(rdf_filepath):
 
     :param rdf_filepath: Full path to the Project Gutenberg RDF XML files
     """
-    ingester = ProjectGutenbergIngester(annotation_ds=ANNOTATION_REDIS,
-                                        authority_ds=AUTHORITY_REDIS,
-                                        creative_work_ds=CREATIVE_WORK_REDIS,
-                                        instance_ds=INSTANCE_REDIS)
+    ingester = ProjectGutenbergIngester(redis_datastore=REDIS_DATASTORE)
     rdf_walk_results = next(os.walk(rdf_filepath))
     start_time = datetime.datetime.utcnow()
     sys.stderr.write("Started Project Gutenberg Ingestion at {0}\n".format(

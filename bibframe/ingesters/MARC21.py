@@ -1109,6 +1109,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
         cc_key = self.redis_datastore.hget('prospector-institution-codes',
                                            '9cocp')
         holding = Holding(redis_datastore=self.redis_datastore)
+        self.entity_info['ils-bib-number'] = self.record['907']['a'][1:-1]
         for key, value in self.entity_info.iteritems():
             setattr(holding, key, value)
         setattr(holding, 'schema:contentLocation', cc_key)
@@ -1116,7 +1117,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
         self.redis_datastore.sadd("{0}:resourceRole:own".format(cc_key),
                                   holding.redis_key)
         if hasattr(holding, 'ils-bib-number'):
-            self.redis_datastore.hadd('ils-bib-numbers',
+            self.redis_datastore.hset('ils-bib-numbers',
                                       getattr(holding, 'ils-bib-number'),
                                       holding.redis_key)
         self.holdings.append(holding)
@@ -1125,6 +1126,10 @@ class MARC21toLibraryHolding(MARC21Ingester):
 
     def __add_consortium_holdings__(self):
         "Helper function for CARL Alliance MARC records"
+        # quick check if local cc record using 994 field
+        if self.record['994'] is not None:
+            self.__add_cc_holdings__()
+            return
         all945s = self.record.get_fields('945')
         for field in all945s:
             a_subfields = field.get_subfields('a')
@@ -1151,7 +1156,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
                     instance_annotation_key = "{0}:hasAnnotation".format(
                         self.instance.redis_key)
                     self.redis_datastore.sadd(instance_annotation_key,
-                                          holding.redis_key)
+                                              holding.redis_key)
                 # Use MARC Relator Code for set key 
                 self.redis_datastore.sadd("{0}:resourceRole:own".format(org_key),
                                           holding.redis_key)
@@ -1174,10 +1179,6 @@ class MARC21toLibraryHolding(MARC21Ingester):
             # generic
             self.__add_cc_holdings__()
  
-
-    
-            
-
 
     def ingest(self):
         """

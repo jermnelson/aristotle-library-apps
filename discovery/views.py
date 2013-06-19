@@ -8,6 +8,7 @@ import os
 import random
 
 from django.views.generic.simple import direct_to_template
+from django.shortcuts import render
 from django.http import Http404, HttpResponse
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
@@ -419,10 +420,13 @@ def bibframe_router(request,
     entity_name -- Bibframe class anem
     redis_id -- Redis integer for the Bibframe entity
     """
-    bibframe_key = "bf:{0}:{1}".format(entity_name.title(),
+    bibframe_key = "bf:{0}:{1}".format(entity_name,
                                        redis_id)
     if not REDIS_DATASTORE.exists(bibframe_key):
-        raise Http404
+        bibframe_key = "bf:{0}:{1}".format(entity_name.title(),
+                                           redis_id)
+        if not REDIS_DATASTORE.exists(bibframe_key):
+            raise Http404
     if ['Book',
         'Manuscript',
         'MovingImage',
@@ -431,7 +435,11 @@ def bibframe_router(request,
         'NonmusicalAudio',
         'SoftwareOrMultimedia'].count(entity_name) > 0:
         cw_class = getattr(bibframe.models,
+                           entity_name)
+        if cw_class is None:
+            cw_class = getattr(bibframe.models,
                                entity_name.title())
+                               
         creative_work = cw_class(
             redis_datastore=REDIS_DATASTORE,
             redis_key=bibframe_key)
@@ -458,7 +466,18 @@ def bibframe_router(request,
                    'institution': INSTITUTION,
                    'search_form': SearchForm(),
                    'user':None})
-        
+    elif entity_name.title() == 'Organization':
+        organization = bibframe.models.Organization(
+            redis_datastore=REDIS_DATASTORE,
+            redis_key=bibframe_key)
+        return render(request,
+                      'discovery/organization.html',
+                      {'app': APP,
+                       'feedback_form':FeedbackForm({'subject':'Discovery App Organization'}),
+                       'feedback_context':request.get_full_path(),
+                       'organization': organization,
+                       'search_form': SearchForm(),
+                       'user': None})
         
     return HttpResponse("{0} exits {1}".format(
         bibframe_key,

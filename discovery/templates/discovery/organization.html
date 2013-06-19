@@ -1,0 +1,57 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+{% load discovery_extras %}
+
+{% block head-title %}
+{% if institution %}{% trans institution.name %} {% trans "Library Apps" %}{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
+{% trans "Discovery Organization View" %}
+{% endblock %}
+
+{% block more-css %}
+<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}css/discovery.less">
+{% endblock %}
+
+
+{% block body %}
+{# START content DIV #}
+<div class="container-fluid">
+ {# START row-fluid DIV #}
+ <div class="row-fluid">
+  {# START search DIV #}
+  <div class="row6">
+  {% include 'discovery/snippets/search.html' %}
+  {# END search DIV{% endcomment #}
+  </div>
+  {# START pinned-corner DIV #}
+  <div class="span4 offset1">
+   {% include 'discovery/snippets/pinned.html' %}
+  {# END pinned-corner DIV #}
+  </div>
+ {# row-fluid DIV #}
+ </div>
+ {# START row-fluid DIV #}
+ <div class="row-fluid">
+  {# START facets DIV{% endcomment #}
+  <div class="span2">
+    <p><a href="#"><img src="{{ STATIC_URL }}img/redis-small.png" /></a></p>
+  {# END facets DIV{% endcomment #}
+  </div>
+  {# START organization display DIV #}
+  <div class="span10">
+   <h2>{{ organization.label }}</h2> 
+   {{ organization|about_organization }}
+
+  {# END organization display DIV #}
+  </div>
+ {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{% comment %}END content DIV{% endcomment %}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script src="{{ STATIC_URL }}js/d3.js"></script>
+<script src="{{ STATIC_URL }}js/discovery.js"></script>
+{% endblock %}

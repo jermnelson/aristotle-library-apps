@@ -13,8 +13,9 @@ from bibframe.models import SoftwareOrMultimedia
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.classifiers import simple_fuzzy
 
-
+from organization_authority.redis_helpers import get_or_add_organization
 from person_authority.redis_helpers import get_or_generate_person
+
 
 from rdflib import RDF, RDFS
 from rdflib import Namespace
@@ -32,10 +33,7 @@ class ProjectGutenbergIngester(Ingester):
 
     >>> import redis
     >>> local_redis = redis.StrictRedis()
-    >>> ingester = ProjectGutenbergIngester(annotation_ds=local_redis,
-                                            authority_ds=local_redis,
-                                            redis_datastore=local_redis,
-                                            instance_ds=local_redis)
+    >>> ingester = ProjectGutenbergIngester(redis_datastore=local_redis)
     >>> ingester.ingest('C:\\ProjectGutenberg\epub\pg01.rdf')
     """                              
                                             
@@ -44,6 +42,14 @@ class ProjectGutenbergIngester(Ingester):
         super(ProjectGutenbergIngester, self).__init__(**kwargs)
         self.classifier = kwargs.get('classifier',
                                      simple_fuzzy.WorkClassifier)
+        if self.redis_datastore is not None:
+            entity_info = {'label': 'Project Gutenberg',
+                           'url': 'http://www.gutenberg.org/'}
+            self.project_gutenberg = get_or_add_organization(
+                entity_info,
+                redis_datastore=self.redis_datastore)
+        else:
+            self.project_gutenberg = None
                                      
 
     def __create_instances__(self, rdf_xml, work_key):
@@ -59,6 +65,7 @@ class ProjectGutenbergIngester(Ingester):
         """
         instances = []
         all_files = rdf_xml.findall('{{{0}}}file'.format(PGTERMS))
+        new_holding = Holding(redis_datastore=self.redis_datastore)
         for row in all_files:
             file_format = row.find("{{{0}}}format".format(DCTERMS))
             instance_info = {'instanceOf': work_key,
@@ -76,6 +83,15 @@ class ProjectGutenbergIngester(Ingester):
                 for key, value in instance_info.iteritems():
                     setattr(new_instance, key, value)
                 new_instance.save()
+                holding = Holding(redis_datastore=self.redis_datastore,
+                                  **{'hasInstance': new_instance.redis_key})
+                setattr(holding,
+                        'schema:contentLocation',
+                        self.project_gutenberg.redis_key)
+                holding.save()
+                self.redis_datastore.sadd(
+                    '{0}:hasAnnotation'.format(new_instance.redis_key),
+                    holding.redis_key)
                 instances.append(new_instance.redis_key)
         return instances
            
@@ -157,6 +173,7 @@ class ProjectGutenbergIngester(Ingester):
         if classifier.creative_work is not None:
             classifier.creative_work.save()
             work_key = classifier.creative_work.redis_key
+            print("New key is {0}".format(work_key))
             for creator_key in work['rda:isCreatedBy']:
                 self.redis_datastore.sadd(
                     '{0}:rda:isCreatorPersonOf'.format(creator_key),

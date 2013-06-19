@@ -113,10 +113,25 @@ def load_rdf():
                         marc_mapping)
                 else:
                     rdf_classes[domain_name]['attributes']['marc_map'] = marc_mapping
+                
     # Creates Classes with class hiearchy
     for class_name in rdf_class_order:
         parent_class = RedisBibframeInterface
+        # Adds any missing marc mapping in the parent class to the child
+        # classes.
         if rdf_classes[class_name]['parent'] is not None:
+            parent_name = rdf_classes[class_name]['parent']
+            if rdf_classes[
+                parent_name]['attributes'].has_key('marc_map'):         
+                for parent_map_key, parent_map_rule in rdf_classes[
+                    parent_name]['attributes']['marc_map'].iteritems():
+                    if rdf_classes[class_name][
+                        'attributes'].has_key('marc_map'):
+                        if not rdf_classes[class_name][
+                            'attributes'][
+                                'marc_map'].has_key(parent_map_key):
+                            rdf_classes[class_name]['attributes'][
+                                'marc_map'][parent_map_key] = parent_map_rule
             parent_class = getattr(sys.modules[__name__],
                                    rdf_classes[class_name]['parent'])
                                    

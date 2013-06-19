@@ -123,6 +123,17 @@ def about_instance(instance):
         html_output += '<dt>{0}</dt><dd>{1}</dd>'.format(row[0],row[1])
     return mark_safe(html_output)
 
+@register.filter(is_safe=True)
+def about_organization(organization):
+    "Returns html with Organization details"
+    html_output = '''<div class="well well-small">'''
+    html_output += "<h3>Total Holdings: {0}</h3>".format(
+        REDIS_DATASTORE.scard('{0}:resourceRole:own'.format(
+            organization.redis_key)))
+    html_output += "</div>"
+    return mark_safe(html_output)
+    
+
 def get_annotations(instance):
     """
     Returns Library Holdings and Facets
