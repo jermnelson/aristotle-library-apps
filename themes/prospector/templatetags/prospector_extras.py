@@ -11,6 +11,8 @@ from django.utils.safestring import mark_safe
 from django.template.defaultfilters import stringfilter
 from aristotle.settings import REDIS_DATASTORE
 
+from themes.prospector.redis_helpers import update_institution_count
+
 register = template.Library()
 
 @register.filter(is_safe=True)
@@ -65,6 +67,41 @@ def get_prospector_bar_chart(app=None):
                                data : [{0}]}}]}};""".format(','.join(data['data']))
     js_str += "new Chart(ctx).Bar(data, {scaleShowLabel: true});"
     return mark_safe(js_str)
+
+@register.filter(is_safe=True)
+def get_prospector_data(app=None):
+    "Returns Google Charts string of Prospector Holdings"
+    update_institution_count()
+    js_str = ''
+    #! THIS OPERATION SHOULD BE CACHED
+    for row in  REDIS_DATASTORE.zrevrange('prospector-holdings',
+                                          0,
+                                          -1,
+                                          withscores=True):
+        org_key = row[0]
+        if int(row[1]) < 1:
+            continue
+        library_info = [REDIS_DATASTORE.hget(org_key, 'label'),
+                        REDIS_DATASTORE.scard(
+                            "{0}:bf:Books".format(org_key)),
+                        REDIS_DATASTORE.scard(
+                            "{0}:bf:MovingImage".format(org_key)),
+                        REDIS_DATASTORE.scard(
+                            "{0}:bf:MusicalAudio".format(org_key)),
+                        row[1] # Total Holdings
+                        ]
+        js_str += '["{0}",{1}],\n'.format(library_info[0],
+                                          ','.join([str(i)
+                                                    for i in library_info[1:]]))
+    js_str = js_str[:-2] # Removes trailing comma
+    return mark_safe(js_str)
+        
+                
+            
+            
+            
+            
+        
 
 @register.filter(is_safe=True)
 def get_facet(facet):

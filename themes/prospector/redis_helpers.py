@@ -18,6 +18,8 @@ def load_prospector_orgs(redis_datastore=REDIS_DATASTORE):
                                                   "fixures",
                                                   "prospector-orgs.json"),
                                       "rb"))
+    if redis_datastore.exists('prospector-institution-codes'):
+        return # These codes are already loaded into the RLSP
     for code, info in prospector_orgs.iteritems():
         info['prospector-abbv'] = code
         organization = get_or_add_organization(info, redis_datastore)
@@ -81,3 +83,33 @@ def load_institution_places(prospector_code,
             else:
                 REDIS_DATASTORE.sadd('{0}:contains'.format(place_key), 
                                      sub_place_keys)
+
+def update_institution_count(redis_datastore=REDIS_DATASTORE):
+    "Updates consortium prospector-holdings Bibframe annotation"
+    for org_code, org_key in redis_datastore.hgetall(
+        'prospector-institution-codes').iteritems():
+        org_holding_key = '{0}:resourceRole:own'.format(org_key)
+        score = float(redis_datastore.scard(org_holding_key))
+        redis_datastore.zadd('prospector-holdings',
+                             score,
+                             org_key)
+        for holding_key in redis_datastore.smembers(org_holding_key):
+            instance_key = redis_datastore.hget(holding_key,
+                                                'annotates')
+            work_key = redis_datastore.hget(instance_key,
+                                            'instanceOf')
+            if work_key.startswith('bf:Book'):
+                redis_datastore.sadd("{0}:bf:Books".format(org_key),
+                                     work_key)
+            if work_key.startswith('bf:MovingImage'):
+                redis_datastore.sadd("{0}:bf:MovingImages".format(org_key),
+                                     work_key)
+            if work_key.startswith('bf:MusicalAudio'):
+                redis_datastore.sadd("{0}:bf:MusicalAudios".format(org_key),
+                                     work_key)
+            
+                      
+    
+
+
+    

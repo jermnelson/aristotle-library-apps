@@ -65,7 +65,7 @@ def get_brief(**kwargs):
     return output
 
 
-def get_json_linked_data(primary_redis, redis_key):
+def get_json_linked_data(redis_datastore, redis_key):
     """
     Function takes a redis_key and Redis instance, return JSON_LD of the
     BIBFRAME entity
@@ -77,7 +77,7 @@ def get_json_linked_data(primary_redis, redis_key):
                               "result": None,
                               "schema":"http://schema.org/" }}
     ld_output['redis_key'] = redis_key
-    for key, value in primary_redis.hgetall(redis_key).iteritems():
+    for key, value in redis_datastore.hgetall(redis_key).iteritems():
         # Assumes all values not explictly starting with "rda", "prov",
         # or "schema" is part of the bf (bibframe) name-space
         ld_key = None

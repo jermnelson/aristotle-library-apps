@@ -33,7 +33,7 @@
 {# START Prospector graph #}
  <div class="row-fluid">
   <div class="span12">
-  <canvas id="prospector-rlsp-bar" height="400" width="800"></canvas>
+  <div id="prospector-rlsp-bar" style="height: 1500px; width: 800px"></div>
   </div>
 {# END Prospector graph #}
  </div>
@@ -45,8 +45,23 @@
 
 
 {% block more_js %}
-<script src="{{ STATIC_URL }}js/Chart.min.js"></script>
-<script>
-{{ app|get_prospector_bar_chart }}
+<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+ google.load('visualization', "1", {packages:["corechart"]});
+ google.setOnLoadCallback(drawProspectorRLSPHoldings);
+ function drawProspectorRLSPHoldings() {
+   var data = google.visualization.arrayToDataTable([ 
+    ['Library', 'Books', 'MovingImage', 'MusicalAudio', /*  'NotatedMusic', 'SoftwareOrMultimedia', 'Map', */
+     'Total Holdings'],
+    {{ app|get_prospector_data }}
+   ]);
+
+   var options = {
+     title: 'Prospector Library Holdings',
+     vAxis: {title: 'Library'},
+     hAxis: {title: 'Holdings'}};
+   var chart =new google.visualization.BarChart(document.getElementById('prospector-rlsp-bar'));
+   chart.draw(data, options);
+ }
 </script>
 {% endblock %}

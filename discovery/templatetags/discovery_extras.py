@@ -32,16 +32,17 @@ def about_instance(instance):
         creator_keys = REDIS_DATASTORE.smembers("{0}:rda:isCreatedBy".format(instance.instanceOf))
     creator_dd = ''
     for key in creator_keys:
-	creator_info = REDIS_DATASTORE.hgetall(key)
-	name = unicode(creator_info.get('rda:preferredNameForThePerson'),errors='ignore')
-	creator_dd += '''<a href="/apps/discovery/authority/person/{0}/">
-	<i class="icon-user"></i> {1}</a>'''.format(key.split(":")[-1],
+        creator_info = REDIS_DATASTORE.hgetall(key)
+        name = unicode(creator_info.get('rda:preferredNameForThePerson'),
+                       errors='ignore')
+        creator_dd += '''<a href="/apps/discovery/Person/{0}/">
+    <i class="icon-user"></i> {1}</a>'''.format(key.split(":")[-1],
     name)
-	if 'rda:dateOfBirth' in creator_info:
-	    creator_dd += ' ({0}-'.format(creator_info.get('rda:dateOfBirth'))
-	if 'rda:dateOfDeath' in creator_info:
+        if 'rda:dateOfBirth' in creator_info:
+            creator_dd += ' ({0}-'.format(creator_info.get('rda:dateOfBirth'))
+        if 'rda:dateOfDeath' in creator_info:
             creator_dd += '{0})'.format(creator_info.get('rda:dateOfDeath'))
-	creator_dd += '<br/>'
+        creator_dd += '<br/>'
     if len(creator_keys) > 1:
         label = 'Creators'
     else:
@@ -49,19 +50,19 @@ def about_instance(instance):
     if len(creator_dd) > 0:
         info.append((label,creator_dd))
     for type_of in ['issn','isbn']:
-	number_key = '{0}:rda:identifierForTheManifestation:{1}'.format(instance.redis_key,
-			                                                type_of)
-	if REDIS_DATASTORE.exists(number_key):
-	    number_ids = list(REDIS_DATASTORE.smembers(number_key))
-            info.append((type_of.upper(),' '.join(number_ids)))
+        number_key = '{0}:rda:identifierForTheManifestation:{1}'.format(instance.redis_key,
+                                                            type_of)
+    if REDIS_DATASTORE.exists(number_key):
+        number_ids = list(REDIS_DATASTORE.smembers(number_key))
+        info.append((type_of.upper(),' '.join(number_ids)))
     facets = REDIS_DATASTORE.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
         if key.startswith('bf:Annotation:Facet:Access'):
-	    info.append(('Access',key.split(":")[-1]))
+            info.append(('Access',key.split(":")[-1]))
         if key.startswith('bf:Annotation:Facet:Location'):
-	    location = REDIS_DATASTORE.hget('bf:Annotation:Facet:Locations',
-		                             key.split(":")[-1])
-	    info.append(('Location in Library',location))
+            location = REDIS_DATASTORE.hget('bf:Annotation:Facet:Locations',
+                                            key.split(":")[-1])
+        info.append(('Location in Library',location))
     #identifiers = getattr(instance,'rda:identifierForTheManifestation')
     for name in dir(instance):
         value = getattr(instance, name)
@@ -126,12 +127,16 @@ def about_instance(instance):
 @register.filter(is_safe=True)
 def about_organization(organization):
     "Returns html with Organization details"
-    html_output = '''<div class="well well-small">'''
-    html_output += "<h3>Total Holdings: {0}</h3>".format(
-        REDIS_DATASTORE.scard('{0}:resourceRole:own'.format(
-            organization.redis_key)))
-    html_output += "</div>"
-    return mark_safe(html_output)
+    org_detail_template = loader.get_template('organization-detail.html')
+    stats = {'total_holdings': REDIS_DATASTORE.scard(
+        '{0}:resourceRole:own'.format(
+            organization.redis_key)),
+             'works':[]}
+    stats['works'].append({'name': 'Book',
+                           'value': REDIS_DATASTORE.scard(
+                               '{0}:bf:Books'.format(organization.redis_key))})
+    
+    return mark_safe(org_detail_template.render(Context({'stats': stats})))
     
 
 def get_annotations(instance):
@@ -190,8 +195,8 @@ def get_brief_heading(work):
     output = ''
     new_h4 = etree.Element('h4',attrib={'class':'media-heading'})
     new_a = etree.SubElement(new_h4,
-		             'a',
-		             attrib={'href':'/apps/discovery/work/{0}/'.format(work.redis_key.split(":")[-1])})
+                     'a',
+                     attrib={'href':'/apps/discovery/work/{0}/'.format(work.redis_key.split(":")[-1])})
     new_a.text = get_title(work)
     output = etree.tostring(new_h4)
     return mark_safe(output)
@@ -233,18 +238,17 @@ def get_creators(bibframe_entity):
         creators = list(REDIS_DATASTORE.smembers("{0}:rda:isCreatedBy".format(redis_key)))
     for i, key in enumerate(creators):
         creator = REDIS_DATASTORE.hgetall(key)
-	redis_id = key.split(":")[-1]
-	context = {'name':unicode(creator['rda:preferredNameForThePerson'],
-		                  errors='ignore'),
+    redis_id = key.split(":")[-1]
+    context = {'name':unicode(creator['rda:preferredNameForThePerson'],
+                          errors='ignore'),
                    'redis_id':redis_id}
-	if 'rda:dateOfBirth' in creator:
-            context['birth'] = creator['rda:dateOfBirth']
-        if 'rda:dateOfDeath' in creator:
-            context['death'] = creator['rda:dateOfDeath']
-        if not i%4:
-            html_output += "<br>"
-	html_output += creator_template.render(Context(context))
-        
+    if 'rda:dateOfBirth' in creator:
+        context['birth'] = creator['rda:dateOfBirth']
+    if 'rda:dateOfDeath' in creator:
+        context['death'] = creator['rda:dateOfDeath']
+    if not i%4:
+        html_output += "<br>"
+    html_output += creator_template.render(Context(context))
     return mark_safe(html_output)
     
 def get_creator_works(person):
@@ -261,23 +265,23 @@ def get_creator_works(person):
     work_template = loader.get_template('work-thumbnail.html')
     for wrk_key in creative_works:
         instance_keys = REDIS_DATASTORE.smembers("{0}:bf:Instances".format(wrk_key))
-	instances = []
-        for key in instance_keys:
-            carrier_type = REDIS_DATASTORE.hget(key,'rda:carrierTypeManifestation')
-            instances.append({'redis_id':key.split(":")[-1],
-		              'carrier_type':carrier_type,
-			      'graphic':CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")})
-        if hasattr(person,'image'):
-            image = person.image
-        else:
-            image = 'creative_writing_48x48.png' 
-	context = {'image':image,
-		   'instances':instances,
-                   'redis_id':wrk_key.split(":")[-1],
-		   'title':unicode(REDIS_DATASTORE.hget('{0}:title'.format(wrk_key),
-			                                    'rda:preferredTitleForTheWork'),
-				   errors='ignore')}
-	html_output += work_template.render(Context(context))
+    instances = []
+    for key in instance_keys:
+        carrier_type = REDIS_DATASTORE.hget(key,'rda:carrierTypeManifestation')
+        instances.append({'redis_id':key.split(":")[-1],
+                              'carrier_type':carrier_type,
+                              'graphic':CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")})
+    if hasattr(person,'image'):
+        image = person.image
+    else:
+        image = 'creative_writing_48x48.png' 
+    context = {'image':image,
+               'instances':instances,
+               'redis_id':wrk_key.split(":")[-1],
+               'title':unicode(REDIS_DATASTORE.hget('{0}:title'.format(wrk_key),
+                                                'rda:preferredTitleForTheWork'),
+                               errors='ignore')}
+    html_output += work_template.render(Context(context))
     return mark_safe(html_output)
 
 def get_date(person,type_of):
@@ -330,7 +334,7 @@ def get_ids(instance):
     if identifiers.has_key('lccn'):
         html_output += '<dt>LOC Call Number:</dt><dd>{0}</dd>'.format(identifiers.get('lccn'))
     if identifiers.has_key('local'):
-	html_output += '<dt>Local Call Number:</dt><dd>{0}</dd>'.format(identifiers.get('local'))
+        html_output += '<dt>Local Call Number:</dt><dd>{0}</dd>'.format(identifiers.get('local'))
     if identifiers.has_key('sudoc'):
         html_output += '<dt>Government Call Number:</dt><dd>{0}</dd>'.format(identifiers.get('sudoc'))
     if identifiers.has_key('ils-bib-number'):
@@ -378,7 +382,7 @@ def get_instances(creative_work):
         instances = [instance, ]
     for key in instances:
         context = None
-	instance = REDIS_DATASTORE.hgetall(key)
+        instance = REDIS_DATASTORE.hgetall(key)
         carrier_type = instance.get('rda:carrierTypeManifestation','Unknown')
         redis_id = key.split(":")[-1]
         annotations = REDIS_DATASTORE.smembers("{0}:hasAnnotation".format(key))
@@ -388,16 +392,16 @@ def get_instances(creative_work):
                 if REDIS_DATASTORE.hexists(annotation_key, "thumbnail"):
                     annotation_id = annotation_key.split(":")[-1]
                     context = {'graphic': '/apps/discovery/CoverArt/{0}-thumbnail.jpg'.format(annotation_id),
-                               'name': carrier_type,
-                               'redis_id': redis_id}
+                           'name': carrier_type,
+                           'redis_id': redis_id}
     
         if context is None:        
             context = {'graphic':'{0}img/{1}'.format(settings.STATIC_URL,
                                                      CARRIER_TYPE_GRAPHICS.get(carrier_type,
                                                                                "publishing_48x48.png")),
-	    	       'name':carrier_type,
-		   'redis_id':key.split(":")[-1]}
-	html_output += instance_template.render(Context(context))
+                       'name':carrier_type,
+                       'redis_id':key.split(":")[-1]}
+    html_output += instance_template.render(Context(context))
     return mark_safe(html_output)
 
 def get_library_holdings(holdings_info):
@@ -424,8 +428,9 @@ def get_location(instance):
     facets = REDIS_DATASTORE.smembers("{0}:Annotations:facets".format(instance.redis_key))
     for key in facets:
         if key.startswith('bf:Annotation:Facet:Location'):
-	    location = REDIS_DATASTORE.hget('bf:Annotation:Facet:Locations',
-		                             key.split(":")[-1])
+            location = REDIS_DATASTORE.hget(
+                'bf:Annotation:Facet:Locations',
+                key.split(":")[-1])
     return mark_safe(location)
 
 
@@ -453,11 +458,11 @@ def get_subjects(creative_work):
     for facet in facets:
         if facet.startswith("bf:Annotation:Facet:LOCFirstLetter"):
             subject_template = loader.get_template('subject-icon.html')
-	    loc_key = facet.split(":")[-1]
-	    context = {'name':REDIS_DATASTORE.hget('bf:Annotation:Facet:LOCFirstLetters',
-		                                    loc_key),
+        loc_key = facet.split(":")[-1]
+        context = {'name':REDIS_DATASTORE.hget('bf:Annotation:Facet:LOCFirstLetters',
+                                            loc_key),
                        'letter':loc_key}
-	    html_output += subject_template.render(Context(context))
+        html_output += subject_template.render(Context(context))
     return mark_safe(html_output)
 
 
@@ -469,21 +474,21 @@ def get_title(bibframe_entity):
     :rtype: string
     """
     try:
-	if hasattr(bibframe_entity, 'title'):
+        if hasattr(bibframe_entity, 'title'):
             if bibframe_entity.title is not None:
                 title_entity_key = bibframe_entity.title
-	        preferred_title = unicode(
-                    REDIS_DATASTORE.hget(
-                        title_entity_key,
-                        'label'),
+                preferred_title = unicode(
+                    REDIS_DATASTORE.hget(title_entity_key,
+                                         'label'),
                     encoding='utf-8',
                     errors="ignore")
-	if hasattr(bibframe_entity,
+        if hasattr(bibframe_entity,
                    'instanceOf'):
-	    preferred_title = unicode(REDIS_DATASTORE.hget('{0}:title'.format(bibframe_entity.instanceOf),
-                                                               'rda:preferredTitleForTheWork'),
-                                      encoding='utf-8',
-                                      errors="ignore")
+            preferred_title = unicode(
+                REDIS_DATASTORE.hget('{0}:title'.format(bibframe_entity.instanceOf),
+                                     'rda:preferredTitleForTheWork'),
+                encoding='utf-8',
+                errors="ignore")
         return mark_safe(preferred_title)
     except:
         return ''

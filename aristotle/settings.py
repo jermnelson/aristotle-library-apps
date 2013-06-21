@@ -9,7 +9,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 # Determines if Aristotle Library System runs with a Redis Cluster or
 # run as a single Redis Instance
-REDIS_CLUSTER_MODE = False 
+REDIS_CLUSTER_MODE = True
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -202,14 +202,16 @@ LOGGING = {
 try:
     from local_settings import *
     INSTALLED_APPS.extend(ACTIVE_APPS)
-    if REDIS_CLUSTER_MODE is True:
-        REDIS_DATASTORE = REDIS_CLUSTER
-    else:
-        import redis
-        REDIS_DATASTORE = redis.StrictRedis(host=REDIS_MASTER_HOST,
-                                            port=REDIS_MASTER_PORT)
-    if len(CUSTOM_AUTHENTICATION_BACKENDS) > 0:
-        AUTHENTICATION_BACKENDS.extend(CUSTOM_AUTHENTICATION_BACKENDS)
+##    if REDIS_CLUSTER_MODE is True:
+##   
+##        REDIS_DATASTORE = REDIS_DATASTORE
+##        
+##    else:
+##        import redis
+##        REDIS_DATASTORE = redis.StrictRedis(host=REDIS_MASTER_HOST,
+##                                            port=REDIS_MASTER_PORT)
+##    if len(CUSTOM_AUTHENTICATION_BACKENDS) > 0:
+##        AUTHENTICATION_BACKENDS.extend(CUSTOM_AUTHENTICATION_BACKENDS)
         
 except ImportError:
     pass

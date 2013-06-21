@@ -27,6 +27,14 @@ from aristotle.settings import INSTITUTION
 from aristotle.settings import REDIS_DATASTORE
 from aristotle.settings import FEATURED_INSTANCES
 
+CREATIVE_WORK_CLASSES = ['Book',
+                         'Manuscript',
+                         'Map',
+                         'MovingImage',
+                         'NotatedMusic',
+                         'MusicalAudio',
+                         'NonmusicalAudio',
+                         'SoftwareOrMultimedia']
 
 def app(request):
     """
@@ -120,47 +128,7 @@ def creative_work(request, redis_id):
                    'search_form': SearchForm(),
                    'user':None})
 
-@json_view
-def creative_work_json_ld(request, redis_id):
-    """
-    View returns the bibframe:Work as JSON linked data
 
-    :param request: HTTP Request
-    :param redis_id": Redis integer for the Creative Work
-    """
-    redis_key = "bf:Work:{0}".format(redis_id) 
-    if REDIS_DATASTORE.exists(redis_key):
-        json_linked_data = get_json_linked_data(redis_datastore=REDIS_DATASTORE,
-                                                redis_key=redis_key)
-        # Add current absolute url as prov:wasGeneratedBy
-        absolute_url = request.build_absolute_uri()
-        url_parts = os.path.split(absolute_url)
-        json_linked_data['prov:wasGeneratedBy'] = url_parts[0]
-        instance_url_pattern = "{0}/apps/discovery/Instance/".format(request.get_host())
-        person_url_pattern = "{0}/apps/discovery/Person/".format(request.get_host())
-        # Add Instances to json_linked_data
-        for instance_key in REDIS_DATASTORE.smembers("{0}:bf:Instances".format(redis_key)):
-            instance_url = "http://{0}{1}".format(instance_url_pattern,
-                                                  instance_key.split(":")[-1])
-            if json_linked_data.has_key('bibframe:Instance'):
-                json_linked_data['bf:Instance'].append(instance_url)
-            else:
-                json_linked_data['bf:Instance'] = [instance_url,]
-        title_key = "{0}:title".format(redis_key)
-        if REDIS_DATASTORE.exists(title_key):
-            rda_pref_title_key = 'rda:preferredTitleForTheWork'
-            rda_pref_title = REDIS_DATASTORE.hget(title_key, rda_pref_title_key)
-            json_linked_data['bibframe:title'] = {rda_pref_title_key: rda_pref_title}
-        creators_key = "{0}:rda:isCreatedBy".format(redis_key)
-        if REDIS_DATASTORE.exists(creators_key):
-            creators = []
-            for creator_key in list(REDIS_DATASTORE.smembers(creators_key)):
-                creators.append("http://{0}{1}".format(person_url_pattern,
-                                                       creator_key.split(":")[-1]))
-            json_linked_data['rda:isCreatedBy'] = creators
-        return json_linked_data
-    else:
-        raise Http404
 
 def display_cover_image(request, redis_id, type_of, image_ext):
     """
@@ -318,37 +286,6 @@ def instance(request,redis_id):
                    'search_form': SearchForm(),
                    'user':None})
 
-@json_view
-def instance_json_ld(request, redis_id):
-    """
-    View returns the bibframe:Instance as JSON linked data
-
-    :param request: HTTP Request
-    :param redis_id": Redis integer for the Instance
-    """
-    redis_key = "bibframe:Instance:{0}".format(redis_id) 
-    if REDIS_DATASTORE.exists(redis_key):
-        json_linked_data = get_json_linked_data(redis_datastore=REDIS_DATASTORE,
-                                                redis_key=redis_key)
-        # Turn the instanceOf into URI
-        work_key = json_linked_data['bibframe:instanceOf'] 
-        work_url = "http://{0}/apps/discovery/Work/{1}".format(request.get_host(), 
-                                                               work_key.split(":")[-1])
-        json_linked_data['bibframe:instanceOf'] = work_url
-        # Add current absolute url as prov:wasGeneratedBy
-        json_linked_data['prov:wasGeneratedBy'] = os.path.split(request.build_absolute_uri())[0]
-
-        # Add Library Holding Annotation
-        annotations_key = "{0}:hasAnnotation".format(redis_key)
-        if REDIS_DATASTORE.exists(annotations_key):
-            library_holdings = []
-            for annotation_key in REDIS_DATASTORE.smembers(annotations_key):
-                if annotation_key.startswith('bibframe:Holding'):
-                    library_holdings.append(annotation_key)
-            json_linked_data['bibframe:hasAnnotation'] = library_holdings
-        return json_linked_data
-    else:
-        raise Http404
 
 def person(request,redis_id):
     """
@@ -411,6 +348,9 @@ def search(request):
     else:
         return {'works':[]}
 
+
+
+
 def bibframe_router(request,
                     entity_name,
                     redis_id):
@@ -427,13 +367,7 @@ def bibframe_router(request,
                                            redis_id)
         if not REDIS_DATASTORE.exists(bibframe_key):
             raise Http404
-    if ['Book',
-        'Manuscript',
-        'MovingImage',
-        'NotatedMusic',
-        'MusicalAudio',
-        'NonmusicalAudio',
-        'SoftwareOrMultimedia'].count(entity_name) > 0:
+    if CREATIVE_WORK_CLASSES.count(entity_name) > 0:
         cw_class = getattr(bibframe.models,
                            entity_name)
         if cw_class is None:
@@ -485,4 +419,27 @@ def bibframe_router(request,
     
 
 
+@json_view
+def bibframe_json_router(request,
+                         entity_name,
+                         redis_id):
+    """View json ld routes based on the Bibframe class and Redis id
 
+    Parameters:
+    entity_name -- Bibframe class anem
+    redis_id -- Redis integer for the Bibframe entity
+    """
+    bibframe_key = "bf:{0}:{1}".format(entity_name,
+                                       redis_id)
+    
+    if not REDIS_DATASTORE.exists(bibframe_key):
+        raise Http404
+##    cw_class = getattr(bibframe.models,
+##                       entity_name)
+##    
+##    bf_entity = cw_class(redis_datastore=REDIS_DATASTORE,
+##                         redis_key=bibframe_key)
+    json_linked_data = get_json_linked_data(redis_datastore=REDIS_DATASTORE,
+                                            redis_key=bibframe_key)
+    return json_linked_data
+    
