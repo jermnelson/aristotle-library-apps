@@ -1028,11 +1028,38 @@ class MARC21toBIBFRAME(MARC21Ingester):
     def __init__(self, **kwargs):
         super(MARC21toBIBFRAME, self).__init__(**kwargs)
         
+    def __duplicate_check__(self, redis_key):
+        """Based upon type of redis key, checks if MARC Record is a
+        duplicate
+
+        Parameters:
+        redis_key -- Redis Key
+        """
+        field907 = self.record['907']
+        if field907 is not None:
+            if self.redis_datastore.hexists(redis_key,
+                                            field907['a'][1:-1]) is True:
+                return True
+        all945s = self.record.get_fields('945')
+        for field in all945s:
+            a_subfields = field.get_subfields('a')
+            for subfield in a_subfields:
+                data = subfield.split(" ")
+                # Bibnumber already exists return True
+                if self.redis_datastore.hexists(redis_key,
+                                                data[1]) is True:
+                    return True
+        return False
+    
+        
+        
 
     def ingest(self):
         "Method runs a complete ingestion of a MARC21 record into RLSP"
         # Start with either a new or existing Creative Work or subclass
         # like Book, Article, MusicalAudio, or MovingImage
+        if self.__duplicate_check__('ils-bib-numbers') is True:
+            return
         self.marc2creative_work = MARC21toCreativeWork(
             redis_datastore=self.redis_datastore,
             record=self.record)
@@ -1161,10 +1188,6 @@ class MARC21toLibraryHolding(MARC21Ingester):
                 self.redis_datastore.sadd("{0}:resourceRole:own".format(org_key),
                                           holding.redis_key)
                 self.holdings.append(holding)
-        # Runs through CC specific to allow different combinations of MARC
-        # records, this should be generalized in a refactor
-        if len(self.holdings) < 1:
-            self.__add_cc_holdings()
 
 
     def add_holdings(self):
@@ -2092,7 +2115,8 @@ def ingest_marcfile(**kwargs):
 
             count += 1
         end_time = datetime.datetime.now()
-        sys.stderr.write("\nFinished at {0}\n".format(end_time.isoformat()))
+        sys.stderr.write("\nFinished at {0} count={1}\n".format(end_time.isoformat(),
+                                                                count))
         sys.stderr.write("Total time elapsed is {0} seconds\n".format((end_time-start_time).seconds))
 
         return count

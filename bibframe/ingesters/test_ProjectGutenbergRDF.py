@@ -74,18 +74,18 @@ class TestProjectGutenbergIngester(unittest.TestCase):
                           'The Scarlet Letter')
 
     def test_multiple_creators(self):
-        TEST_REDIS.flushdb()
         self.ingester.ingest(os.path.join(PROJECT_HOME,
                                              'bibframe',
                                              'fixures',
                                              'pg',
                                              'pg1682.rdf'))
-        self.assertEquals(TEST_REDIS.hget('bf:Person:1',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:2',
                                           'schema:familyName'),
                           'Plato')
-        self.assertEquals(TEST_REDIS.hget('bf:Person:2',
+        self.assertEquals(TEST_REDIS.hget('bf:Person:3',
                                           'rda:preferredNameForThePerson'),
                           'Jowett, Benjamin')
+        
 
 
 

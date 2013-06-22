@@ -92,7 +92,10 @@ class TestMARC21Ingester(TestCase):
             pymarc.Field(tag='245',
                          indicators=['1', '0'],
                          subfields=['a', 'Pride and prejudice /',
-                                    'c', 'Jane Austen']))
+                                    'c', 'Jane Austen']),
+            pymarc.Field(tag='945',
+                         indicators=[' ',' '],
+                         subfields=['a', 'test_a b12345']))
         self.ingester = MARC21Ingester(redis_datastore=TEST_REDIS,
                                        record=marc_record)
         
@@ -115,10 +118,41 @@ class TestMARC21Ingester(TestCase):
         self.assertEquals(values_one[0],
                           'Pride and prejudice /')
 
+
+
     def tearDown(self):
         TEST_REDIS.flushdb()
         
 
+class TestMARC21toBIBFRAME(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_duplicate_alliance_marc21(self):
+        # Default in test record for the ingestor
+        new_record = pymarc.Record()
+        new_record.add_field(pymarc.Field(tag='945',
+                                          indicators=[' ',' '],
+                                          subfields=['a', 'test_a b12345']))
+        TEST_REDIS.hset('ils-bib-numbers', 'b12345', 'bf:Work:1')
+        ingester = MARC21toBIBFRAME(redis_datastore=TEST_REDIS,
+                                    record=new_record)
+        self.assert_(ingester.__duplicate_check__('ils-bib-numbers') is True)
+
+    def test_duplicate_cc_marc21(self):
+        # Default in test for Colorado College specific ingestor
+        record = pymarc.Record()
+        record.add_field(pymarc.Field(tag='907',
+                                      indicators=[' ',' '],
+                                      subfields=['a', '.b12345x']))
+        TEST_REDIS.hset('ils-bib-numbers', 'b12345', 'bf:Work:1')
+        ingester = MARC21toBIBFRAME(redis_datastore=TEST_REDIS,
+                                    record=record)
+        self.assert_(ingester.__duplicate_check__('ils-bib-numbers') is True)
+
+    def tearDown(self):
+        TEST_REDIS.flushdb()
         
 
 class TestMARC21toCreativeWork(TestCase):
@@ -179,7 +213,7 @@ class TestMARC21toCreativeWork(TestCase):
         classifications = getattr(self.work_ingester.creative_work,
                                   'class')
         self.assertEquals(list(classifications)[0],
-                          '016 014')
+                          '014 016')
 ##        self.assertEquals(list(classifications)[0],                                       
 ##                          'A 13.28:F 61/2/981')
 
@@ -610,7 +644,10 @@ class TestMARC21toLibraryHolding(TestCase):
         marc_record.add_field(pymarc.Field(tag='086',
                                            indicators=[' ',' '],
                                            subfields=['a','A 1.1:',
-                                                      'z','A 1.1/3:984']))
+                                                      'z','A 1.1/3:984']),
+                              pymarc.Field(tag='945',
+                                           indicators=[' ',' '],
+                                           subfields=['a','xwer b12345 i4567']))
 
         self.lib_holding_ingester = MARC21toLibraryHolding(redis_datastore=TEST_REDIS,
                                                            record=marc_record)

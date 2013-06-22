@@ -9,7 +9,7 @@ import os
 from lxml import etree
 
 from bibframe.models import Instance, Person, Work, TitleEntity
-from bibframe.models import SoftwareOrMultimedia
+from bibframe.models import Holding, SoftwareOrMultimedia
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.classifiers import simple_fuzzy
 
@@ -173,7 +173,6 @@ class ProjectGutenbergIngester(Ingester):
         if classifier.creative_work is not None:
             classifier.creative_work.save()
             work_key = classifier.creative_work.redis_key
-            print("New key is {0}".format(work_key))
             for creator_key in work['rda:isCreatedBy']:
                 self.redis_datastore.sadd(
                     '{0}:rda:isCreatorPersonOf'.format(creator_key),
