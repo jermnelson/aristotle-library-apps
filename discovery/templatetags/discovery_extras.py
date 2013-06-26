@@ -74,10 +74,10 @@ def about_instance(instance):
             continue
         if inspect.ismethod(getattr(instance,name)):
             continue
-        if REDIS_DATASTORE.hexists('bf:vocab:Instance:labels',
+        if REDIS_DATASTORE.hexists('bf:vocab:labels',
                                     name):
             if value is not None:
-                label = REDIS_DATASTORE.hget('bf:vocab:Instance:labels',
+                label = REDIS_DATASTORE.hget('bf:vocab:labels',
                                                name)
                 instance_attribute = getattr(instance,name)
                 if type(instance_attribute) == set:
@@ -88,9 +88,17 @@ def about_instance(instance):
                         info.append((k,v))
                 elif name == 'instanceOf':
                     work_key = instance.instanceOf
+                    namespace_, class_name, redis_id = work_key.split(":")
                     info.append((name,
-                                '''<a href="/apps/discovery/work/{0}/">{1} <i class="icon-share"></i></a>'''.format(work_key.split(":")[-1],
-                                                                                                                    work_key)))
+                                '''<a href="/apps/discovery/{0}/{1}/">{2}
+                                    <i class="icon-share"></i></a>'''.format(
+                                        class_name,
+                                        redis_id,
+                                        work_key)))
+                elif name == 'url':
+                    info.append((name,
+                                 '<a href="{0}">{1}</a>'.format(value,
+                                                                name)))
                 else:
                     info.append((label,instance_attribute))
         else:
@@ -104,6 +112,10 @@ def about_instance(instance):
                         info.append((name, row))
                     elif name == 'rda:uniformResourceLocatorItem':
                         info.append((name,'<a href="{0}">{1}</a>'.format(value,value)))
+            elif name == 'url':
+                 info.append((name,
+                              '<a href="{0}">{1}</a>'.format(value,
+                                                             value)))
             else:
                 info.append((name,getattr(instance,name)))
        
@@ -193,10 +205,12 @@ def get_brief_heading(work):
     :rtype: HTML or 0-length string
     """
     output = ''
+    namespace, class_name, redis_id = work.redis_key.split(":")
     new_h4 = etree.Element('h4',attrib={'class':'media-heading'})
     new_a = etree.SubElement(new_h4,
                      'a',
-                     attrib={'href':'/apps/discovery/work/{0}/'.format(work.redis_key.split(":")[-1])})
+                     attrib={'href':'/apps/discovery/{0}/{1}'.format(class_name,
+                                                                     redis_id)})
     new_a.text = get_title(work)
     output = etree.tostring(new_h4)
     return mark_safe(output)
@@ -238,17 +252,17 @@ def get_creators(bibframe_entity):
         creators = list(REDIS_DATASTORE.smembers("{0}:rda:isCreatedBy".format(redis_key)))
     for i, key in enumerate(creators):
         creator = REDIS_DATASTORE.hgetall(key)
-    redis_id = key.split(":")[-1]
-    context = {'name':unicode(creator['rda:preferredNameForThePerson'],
-                          errors='ignore'),
+        redis_id = key.split(":")[-1]
+        context = {'name':unicode(creator['rda:preferredNameForThePerson'],
+                                  errors='ignore'),
                    'redis_id':redis_id}
-    if 'rda:dateOfBirth' in creator:
-        context['birth'] = creator['rda:dateOfBirth']
-    if 'rda:dateOfDeath' in creator:
-        context['death'] = creator['rda:dateOfDeath']
-    if not i%4:
-        html_output += "<br>"
-    html_output += creator_template.render(Context(context))
+        if 'rda:dateOfBirth' in creator:
+            context['birth'] = creator['rda:dateOfBirth']
+        if 'rda:dateOfDeath' in creator:
+            context['death'] = creator['rda:dateOfDeath']
+        if not i%4:
+            html_output += "<br>"
+        html_output += creator_template.render(Context(context))
     return mark_safe(html_output)
     
 def get_creator_works(person):
@@ -259,29 +273,33 @@ def get_creator_works(person):
     :rtype: HTML or 0-length string
     """
     html_output = ''
-    creative_works = REDIS_DATASTORE.smembers("{0}:rda:isCreatorPersonOf".format(person.redis_key))
+    creative_works = REDIS_DATASTORE.smembers("{0}:resourceRole:aut".format(person.redis_key))
     if len(creative_works) > 0:
         html_output += '<h3>Total Works: {0}</h3>'.format(len(creative_works))
     work_template = loader.get_template('work-thumbnail.html')
     for wrk_key in creative_works:
         instance_keys = REDIS_DATASTORE.smembers("{0}:bf:Instances".format(wrk_key))
-    instances = []
-    for key in instance_keys:
-        carrier_type = REDIS_DATASTORE.hget(key,'rda:carrierTypeManifestation')
-        instances.append({'redis_id':key.split(":")[-1],
+        instances = []
+        for key in instance_keys:
+            carrier_type = REDIS_DATASTORE.hget(key,'rda:carrierTypeManifestation')
+            instances.append({'redis_id':key.split(":")[-1],
                               'carrier_type':carrier_type,
                               'graphic':CARRIER_TYPE_GRAPHICS.get(carrier_type,"publishing_48x48.png")})
-    if hasattr(person,'image'):
-        image = person.image
-    else:
-        image = 'creative_writing_48x48.png' 
-    context = {'image':image,
-               'instances':instances,
-               'redis_id':wrk_key.split(":")[-1],
-               'title':unicode(REDIS_DATASTORE.hget('{0}:title'.format(wrk_key),
-                                                'rda:preferredTitleForTheWork'),
-                               errors='ignore')}
-    html_output += work_template.render(Context(context))
+        if hasattr(person,'image'):
+            image = person.image
+        else:
+            image = 'creative_writing_48x48.png'
+        title_entity_key = REDIS_DATASTORE.hget(wrk_key,
+                            'title')
+        namespace, wrk_class_name, redis_id = wrk_key.split(":")
+        context = {'image':image,
+                   'instances':instances,
+                   'redis_id': redis_id,
+                   'title':unicode(REDIS_DATASTORE.hget(title_entity_key,
+                                                        'label'),
+                                   errors='ignore'),
+                   'work_class': wrk_class_name}
+        html_output += work_template.render(Context(context))
     return mark_safe(html_output)
 
 def get_date(person,type_of):

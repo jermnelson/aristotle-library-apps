@@ -1068,6 +1068,12 @@ class MARC21toBIBFRAME(MARC21Ingester):
         if self.marc2creative_work.creative_work is None:
             return
         work_key = self.marc2creative_work.creative_work.redis_key
+        # Add work_key to the relatedRole:aut set, should support other
+        # roles based on MARC mapping
+        if self.marc2creative_work.entity_info.has_key('rda:isCreatedBy'):
+            for creator_key in self.marc2creative_work.entity_info.get('rda:isCreatedBy'):
+                self.redis_datastore.sadd('{0}:resourceRole:aut'.format(creator_key),
+                                          work_key)
         # Extract Instance
         self.marc2instance = MARC21toInstance(
             instanceOf=work_key,
@@ -1590,6 +1596,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             if not self.entity_info.has_key('rda:isCreatedBy'):
                 self.entity_info['rda:isCreatedBy'] = set()
             self.entity_info['rda:isCreatedBy'].add(person_key)
+            
 
     def extract_note(self):
         """

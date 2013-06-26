@@ -220,7 +220,7 @@ class MODSIngester(Ingester):
             work_key = classifier.creative_work.redis_key
             for creator_key in work['rda:isCreatedBy']:
                 self.redis_datastore.sadd(
-                    '{0}:rda:isCreatorPersonOf'.format(creator_key),
+                    '{0}:resourceRole:aut'.format(creator_key),
                     work_key)
             instances = self.__create_instances__(work_key)
             for instance_key in instances:
@@ -249,9 +249,3 @@ class MODSIngester(Ingester):
         """
         self.mods_xml = etree.XML(urllib2.urlopen(url).read())
         self.__ingest__()
-        
-        
-        
-        
-        
-        

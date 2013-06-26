@@ -195,16 +195,21 @@ def get_pagination(full_path,redis_key,redis_server,offset=0):
 
                 
 
-def facet_detail(request,facet_name,facet_item):
-    """
-    Displays a specific Facet listing
+def facet_detail(request, facet_name, facet_item):
+    """Displays a specific Facet listing
+
+    Parameters:
+    facet_name -- Name of the Facet
+    facet_item -- Name of the Facet item
     """
     redis_key = "bf:Annotation:Facet:{0}:{1}".format(facet_name,facet_item)
     listing_key = "facet-listing:{0}:{1}".format(facet_name,facet_item)
     if not REDIS_DATASTORE.exists(redis_key):
         raise Http404
     if not REDIS_DATASTORE.exists(listing_key):
-        REDIS_DATASTORE.sort(redis_key,alpha=True,store=listing_key)
+        REDIS_DATASTORE.sort(redis_key,
+                             alpha=True,
+                             store=listing_key)
         REDIS_DATASTORE.expire(listing_key,86400)
     offset =  int(request.REQUEST.get('offset',0))
     records = []
@@ -217,14 +222,16 @@ def facet_detail(request,facet_name,facet_item):
                        offset+PAGINATION_SIZE)
     for row in record_slice:
         if row.find("Instance") > -1:
-            work_key = REDIS_DATASTORE.hget(row,'instanceOf')
+            work_key = REDIS_DATASTORE.hget(row, 'instanceOf')
         elif row.find("Work") > -1:
             work_key = row
         work = Work(redis_datastore=REDIS_DATASTORE,
                     redis_key=work_key)
         records.append({'work':work})
     label_key = 'bf:Annotation:Facet:{0}s'.format(facet_name)
-    msg = "Results for Facet {0}".format(facet_name)
+    msg = "Results {0} of {1} for Facet {2}".format(len(record_slice),
+                                                    REDIS_DATASTORE.llen(listing_key),
+                                                    facet_name)
     if REDIS_DATASTORE.exists(label_key):
         if REDIS_DATASTORE.type(label_key) == 'zset':
             msg = "{0} {1}".format(msg, facet_item)
@@ -232,21 +239,20 @@ def facet_detail(request,facet_name,facet_item):
             msg = " {0} {1}".format(msg,    
                                     REDIS_DATASTORE.hget(label_key, facet_item))
     else:
-        msg = "{0} {1}".format(msg, facet_item)
-    
+        msg = "{0} of {1}".format(msg, facet_item)
     return direct_to_template(request,
                               'discovery/app.html',
                               {'app': APP,
                                'example':{},
-                   'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
-                   'feedback_context':request.get_full_path(),
+                               'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
+                               'feedback_context':request.get_full_path(),
                                'institution': INSTITUTION,
                                'facet_list': None,
-                   'message': msg,
-                   'pagination':pagination,
-                   'results':records,
-                   'search_form': SearchForm(),
-                   'search_query': None,
+                               'message': msg,
+                               'pagination':pagination,
+                               'results':records,
+                               'search_form': SearchForm(),
+                               'search_query': None,
                                'user': None})
 
                               
@@ -386,7 +392,7 @@ def bibframe_router(request,
                    'institution': INSTITUTION,
                    'search_form': SearchForm(),
                    'user':None})
-    elif entity_name.title() == 'Instance':
+    elif entity_name == 'Instance':
         instance = Instance(
             redis_datastore=REDIS_DATASTORE,
             redis_key=bibframe_key)
@@ -400,7 +406,7 @@ def bibframe_router(request,
                    'institution': INSTITUTION,
                    'search_form': SearchForm(),
                    'user':None})
-    elif entity_name.title() == 'Organization':
+    elif entity_name == 'Organization':
         organization = bibframe.models.Organization(
             redis_datastore=REDIS_DATASTORE,
             redis_key=bibframe_key)
@@ -410,6 +416,18 @@ def bibframe_router(request,
                        'feedback_form':FeedbackForm({'subject':'Discovery App Organization'}),
                        'feedback_context':request.get_full_path(),
                        'organization': organization,
+                       'search_form': SearchForm(),
+                       'user': None})
+    elif entity_name == 'Person':
+        person = bibframe.models.Person(
+            redis_datastore=REDIS_DATASTORE,
+            redis_key=bibframe_key)
+        return render(request,
+                      'discovery/person.html',
+                      {'app': APP,
+                       'feedback_form':FeedbackForm({'subject':'Discovery App Organization'}),
+                       'feedback_context':request.get_full_path(),
+                       'person': person,
                        'search_form': SearchForm(),
                        'user': None})
         

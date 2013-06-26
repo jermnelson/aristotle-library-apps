@@ -92,6 +92,12 @@ def load_rdf():
     for row in rdfs_resources_elems:
         attribute_uri = row.attrib.get('{{{0}}}about'.format(RDF))
         attrib_name = os.path.split(attribute_uri)[-1]
+        if not REDIS_DATASTORE.hexists('bf:vocab:labels',
+                                       attrib_name):
+            label = row.find('{{{0}}}label'.format(RDFS))
+            REDIS_DATASTORE.hset('bf:vocab:labels',
+                                 attrib_name,
+                                 label.text)
         marc_fields = row.findall('{{{0}}}marcField'.format(BF_ABSTRACT))
         marc_mapping = {}
         for field in marc_fields:

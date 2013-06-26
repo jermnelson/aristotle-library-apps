@@ -5,7 +5,7 @@
   <img src="{% get_static_prefix %}img/{{ image }}" />
  </a>
  <div class="media-body">
-  <h4 class="media-heading"><a href="/apps/discovery/work/{{ redis_id }}/">{{ title }} </a></h4>
+  <h4 class="media-heading"><a href="/apps/discovery/{{ work_class }}/{{ redis_id }}/">{{ title }} </a></h4>
   <p>
    {% for instance in instances %}
     <a href="/apps/discovery/instance/{{ instance.redis_id }}/" class="btn btn-small">

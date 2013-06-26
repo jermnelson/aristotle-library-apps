@@ -175,7 +175,7 @@ class ProjectGutenbergIngester(Ingester):
             work_key = classifier.creative_work.redis_key
             for creator_key in work['rda:isCreatedBy']:
                 self.redis_datastore.sadd(
-                    '{0}:rda:isCreatorPersonOf'.format(creator_key),
+                    '{0}:resourceRole:aut'.format(creator_key),
                     work_key)
             instances = self.__create_instances__(rdf_xml, work_key)
             for instance_key in instances:
@@ -185,3 +185,4 @@ class ProjectGutenbergIngester(Ingester):
                                                   'title')
             self.redis_datastore.sadd('{0}:relatedResource'.format(title_key),
                                       work_key)
+            
