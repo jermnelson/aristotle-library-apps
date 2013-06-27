@@ -50,6 +50,7 @@ class MODSIngester(Ingester):
         self.work_class = kwargs.get('work_class',
                                      Work)
         self.creators = []
+        self.instances = []
         self.mods_xml = None
 
     def __classify_work_class__(self):
@@ -83,7 +84,7 @@ class MODSIngester(Ingester):
             self.work_class = MixedMaterial
         else:
             self.work_class = Work
-
+                             
     def __create_instances__(self, work_key):
         """Helper function creates specific instance(s) from MODS
 
@@ -96,6 +97,7 @@ class MODSIngester(Ingester):
             MODS_NS))
         form = self.mods_xml.find(
             '{{{0}}}physicalDescription/{{{0}}}form'.format(MODS_NS))
+        
         for element in origin_infos:
             instance_of = {'instanceOf': work_key}
             if form.attrib.get('type', None) == 'carrier':
@@ -105,11 +107,13 @@ class MODSIngester(Ingester):
             if extent is not None:
                 if extent.text is not None:
                     instance_of['extent'] = extent.text
+            hdl = self.__extract_hdl__()
+            if hdl is not None:
+                instance_of['hdl'] = hdl
             new_instance = Instance(redis_datastore=self.redis_datastore,
                                     **instance_of)
             new_instance.save()
-            instances.append(new_instance.redis_key)
-        return instances
+            self.instances.append(new_instance.redis_key)
 
 
     def __extract_creator__(self, name_parts):
@@ -166,6 +170,15 @@ class MODSIngester(Ingester):
             if person is not None:
                 self.creators.append(get_or_generate_person(person,
                                                             self.redis_datastore))
+
+    def __extract_hdl__(self):
+        location_urls = self.mods_xml.findall('{{{0}}}location/{{{0}}url'.format(
+            MODS_NS))
+        for url in location_urls:
+            if url.text.startswith('http://hdl'):
+                return url.text
+                    
+                                              
 
     def __extract_title__(self):
         "Helper function extracts title information from MODS"

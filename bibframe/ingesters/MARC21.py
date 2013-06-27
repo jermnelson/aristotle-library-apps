@@ -1146,9 +1146,11 @@ class MARC21toLibraryHolding(MARC21Ingester):
         for key, value in self.entity_info.iteritems():
             setattr(holding, key, value)
         setattr(holding, 'schema:contentLocation', cc_key)
+        if self.instance is not None:
+            holding.annotates = self.instance.redis_key
+            self.redis_datastore.sadd("{0}:resourceRole:own".format(cc_key),
+                                      self.instance.redis_key)
         holding.save()
-        self.redis_datastore.sadd("{0}:resourceRole:own".format(cc_key),
-                                  holding.redis_key)
         if hasattr(holding, 'ils-bib-number'):
             self.redis_datastore.hset('ils-bib-numbers',
                                       getattr(holding, 'ils-bib-number'),
@@ -1180,6 +1182,10 @@ class MARC21toLibraryHolding(MARC21Ingester):
                     setattr(holding, key, value)
                 if self.instance is not None:
                     holding.annotates = self.instance.redis_key
+                    # Use MARC Relator Code for set key 
+                    self.redis_datastore.sadd(
+                        "{0}:resourceRole:own".format(org_key),
+                        self.instance.redis_key)
                 holding.save()
                 self.redis_datastore.hset(
                     'ils-bib-numbers',
@@ -1190,9 +1196,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
                         self.instance.redis_key)
                     self.redis_datastore.sadd(instance_annotation_key,
                                               holding.redis_key)
-                # Use MARC Relator Code for set key 
-                self.redis_datastore.sadd("{0}:resourceRole:own".format(org_key),
-                                          holding.redis_key)
+
                 self.holdings.append(holding)
 
 

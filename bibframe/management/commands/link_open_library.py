@@ -56,15 +56,15 @@ def get_open_library_info(number_type='lccn',
 def CheckAndAddCoverArt(covers,
                         ol_url,
                         instance_key,
-                        cluster_ds=RLSP_CLUSTER):
+                        redis_datastore=REDIS_DATASTORE):
     annotationBody, thumbnail = None, None
     def __get_image__(url):
-        if not cluster_ds.sismember('bf:CoverArt:urls',
+        if not redis_datastore.sismember('bf:CoverArt:urls',
                                     url):
             try:
                 if urllib2.urlopen(url).getcode() != 404:
                     image = urllib2.urlopen(url).read()
-                    cluster_ds.sadd('bf:CoverArt:urls', url)
+                    redis_datastore.sadd('bf:CoverArt:urls', url)
                     return image
             except urllib2.HTTPError, e:
                 print("Cannot open url of {0}".format(url))
@@ -77,7 +77,7 @@ def CheckAndAddCoverArt(covers,
     if thumbnail is None and annotationBody is None:
         pass
     else:
-        new_cover = CoverArt(primary_redis=cluster_ds,
+        new_cover = CoverArt(redis_datastore=redis_datastore,
                              annotates=instance_key)
         setattr(new_cover,
                 'prov:generated',
@@ -91,7 +91,7 @@ def CheckAndAddCoverArt(covers,
                     'annotationBody',
                     annotationBody)
         new_cover.save()
-        cluster_ds.sadd(
+        redis_datastore.sadd(
             '{0}:hasAnnotation'.format(instance_key),
             new_cover.redis_key)
                         
@@ -101,20 +101,20 @@ def OpenLibraryLCCNLinker(**kwargs):
     """Creates LinkedData relationships between Open Library and RLSP
 
     Keyword arguments:
-    cluster_ds -- Cluster Datastore, defaults to RLSP_CLUSTER
+    redis_datastore -- Cluster Datastore, defaults to RLSP_CLUSTER
     start -- Start in lccn-sort-set, defaults to 0
     end -- End in lccn-sort-set, defaults to -1
     """
-    cluster_ds = kwargs.get('cluster_ds', RLSP_CLUSTER)
+    redis_datastore = kwargs.get('redis_datastore', RLSP_CLUSTER)
     start = kwargs.get('start', 0)
     end = kwargs.get('end', -1)
     start_time = datetime.datetime.now()
     counter = 0
     print("Start at {0}".format(start_time.isoformat()))
-    for lccn in cluster_ds.zrange('lccn-sort-set',
+    for lccn in redis_datastore.zrange('lccn-sort-set',
                                       start,
                                       end):
-        instance_key = cluster_ds.hget('lccn-hash', lccn)
+        instance_key = redis_datastore.hget('lccn-hash', lccn)
         lccn = LCCN_REGEX.sub('', lccn).strip()
         open_lib_rec = get_open_library_info(number_type='lccn',
                                              value=lccn)
@@ -122,18 +122,18 @@ def OpenLibraryLCCNLinker(**kwargs):
         # Now processes through individual BIBFRAME entities and
         # overlays Open Library JSON results
         if info.has_key('cover'):
-            CheckAndAddCoverArt(cluster_ds=cluster_ds,
+            CheckAndAddCoverArt(redis_datastore=redis_datastore,
                                 covers=info.get('cover'),
                                 ol_url=open_lib_rec.get('url'),
                                 instance_key=instance_key)
         if info.has_key('identifiers'):
             for id_name, id_value in info.get('identifiers').iteritems():
                 for row in id_value:
-                    cluster_ds.hsetnx(instance_key, id_name, row)
-                    cluster_ds.hsetnx('{0}-hash'.format(id_name),
+                    redis_datastore.hsetnx(instance_key, id_name, row)
+                    redis_datastore.hsetnx('{0}-hash'.format(id_name),
                                       row,
                                       instance_key)
-                    cluster_ds.zadd('{0}-sorted-set'.format(id_name),
+                    redis_datastore.zadd('{0}-sorted-set'.format(id_name),
                                     0,
                                     row)
         if not counter%50:

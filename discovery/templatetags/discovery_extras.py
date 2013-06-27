@@ -205,6 +205,7 @@ def get_brief_heading(work):
     :rtype: HTML or 0-length string
     """
     output = ''
+    print("Work is {0}".format(work))
     namespace, class_name, redis_id = work.redis_key.split(":")
     new_h4 = etree.Element('h4',attrib={'class':'media-heading'})
     new_a = etree.SubElement(new_h4,
