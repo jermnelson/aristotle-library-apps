@@ -71,7 +71,7 @@ def get_prospector_bar_chart(app=None):
 @register.filter(is_safe=True)
 def get_prospector_data(app=None):
     "Returns Google Charts string of Prospector Holdings"
-    update_institution_count()
+    # update_institution_count()
     js_str = ''
     #! THIS OPERATION SHOULD BE CACHED
     for row in  REDIS_DATASTORE.zrevrange('prospector-holdings',

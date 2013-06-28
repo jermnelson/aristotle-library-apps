@@ -96,10 +96,15 @@ def get_or_generate_person(person_attributes,
     # are still living)
     elif len(person_metaphones_keys) > 0 and\
          len(dob_keys) > 0:
-        found_persons = [get_person(redis_key, redis_datastore) for redis_key in list(person_keys.intersection(dob_keys))]
+        found_persons = [get_person(redis_key, redis_datastore)
+                         for redis_key in list(
+                             person_keys.intersection(dob_keys))]
+    else:
+        found_persons = [get_person(redis_key, redis_datastore)
+                        for redis_key in list(person_keys)]
     if len(found_persons) == 1:
         return found_persons[0]
-    elif len(found_persons) > 0:
+    elif len(found_persons) > 0:        
         return found_persons
     # Assumes that person does not exist, add to datastore
     else:

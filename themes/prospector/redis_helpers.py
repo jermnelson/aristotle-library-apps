@@ -93,11 +93,8 @@ def update_institution_count(redis_datastore=REDIS_DATASTORE):
         redis_datastore.zadd('prospector-holdings',
                              score,
                              org_key)
-        for holding_key in redis_datastore.smembers(org_holding_key):
-            instance_key = redis_datastore.hget(holding_key,
-                                                'annotates')
-            work_key = redis_datastore.hget(instance_key,
-                                            'instanceOf')
+        for instance_key in redis_datastore.smembers(org_holding_key):
+            work_key = redis_datastore.hget(instance_key, 'instanceOf')
             if work_key.startswith('bf:Book'):
                 redis_datastore.sadd("{0}:bf:Books".format(org_key),
                                      work_key)

@@ -17,8 +17,9 @@ from bibframe.classifiers import simple_fuzzy
 from bibframe.ingesters.Ingester import personal_name_parser, Ingester
 from bibframe.ingesters.Ingester import HONORIFIC_PREFIXES, HONORIFIC_SUFFIXES
 from bibframe.models import Annotation, Organization, Work, Holding, Instance 
-from bibframe.models import Person, Audio, Book, Cartography, MixedMaterial  
-from bibframe.models import MovingImage, MusicalAudio, NonmusicalAudio, NotatedMusic 
+from bibframe.models import Person, Audio, Book, Cartography, LanguageMaterial
+from bibframe.models import MixedMaterial, MovingImage, MusicalAudio
+from bibframe.models import NonmusicalAudio, NotatedMusic 
 from bibframe.models import SoftwareOrMultimedia, StillImage, TitleEntity
 from bibframe.models import ThreeDimensionalObject
 from person_authority.redis_helpers import get_or_generate_person
@@ -45,16 +46,19 @@ class MODSIngester(Ingester):
     def __init__(self, **kwargs):
         "Class takes standard RLSP BIBFRAME ingester"
         super(MODSIngester, self).__init__(**kwargs)
+        self.work_class = kwargs.get('work_class',
+                                     None)
         self.classifier = kwargs.get('classifier',
                                      simple_fuzzy.WorkClassifier)
-        self.work_class = kwargs.get('work_class',
-                                     Work)
+        self.contributors = []
         self.creators = []
         self.instances = []
         self.mods_xml = None
 
     def __classify_work_class__(self):
         "Helper function classifies a work based on typeOfResource"
+        if self.work_class is not None:
+            return
         type_of_resource = self.mods_xml.find(
             "{{{0}}}typeOfResource".format(MODS_NS))
         type_of = type_of_resource.text
@@ -91,7 +95,6 @@ class MODSIngester(Ingester):
         Parameter:
         work_key -- Work Key to be associated with BIBFRAME Instance(s)
         """
-        instances = []
         # Create an instance for each originInfo element in MODS
         origin_infos = self.mods_xml.findall('{{{0}}}originInfo'.format(
             MODS_NS))
@@ -116,7 +119,7 @@ class MODSIngester(Ingester):
             self.instances.append(new_instance.redis_key)
 
 
-    def __extract_creator__(self, name_parts):
+    def __extract_person__(self, name_parts):
         """Helper method takes a list of nameParts and extracts info
 
         Parameter:
@@ -129,7 +132,8 @@ class MODSIngester(Ingester):
             name_type = row.attrib.get('type', None)
             if row.text is None:
                 continue
-            name_value = row.text.strip().title()
+            name_value = row.text.strip()
+            person["rda:preferredNameForThePerson"] = ""
             if name_type == 'given':
                 person['schema:givenName'] = name_value
             elif name_type == 'family':
@@ -149,11 +153,27 @@ class MODSIngester(Ingester):
                 result = personal_name_parser(row.text)
                 for key, value in result.iteritems():
                     if not person.has_key(key):
-                        person[key] = value
+                        # Filter for embedded editor values
+                        if value.count('editor') > 0:
+                            person['resourceRole:edt'] = value
+                        else:
+                            person[key] = value
+            # Create an rda:rda:preferredNameForThePerson
+            person["rda:preferredNameForThePerson"] = "{0} {1}".format(
+                person.get('schema:givenName', ''),
+                person.get('schema:familyName', ''))
+            if person.has_key('schema:honorificPrefix'):
+                person["rda:preferredNameForThePerson"] = "{0}. {1}".format(
+                    person['schema:honorificPrefix'],
+                    person["rda:preferredNameForThePerson"])
+            if person.has_key('honorificSuffix'):
+                person["rda:preferredNameForThePerson"] = "{0} {1}".format(
+                    person["rda:preferredNameForThePerson"],
+                    person['honorificSuffix'])
         return person
             
             
-    def __extract_creators__(self):
+    def __extract_persons__(self):
         "Helper function extracts all creators from MODS xml"
         names = self.mods_xml.findall('{{{0}}}name'.format(MODS_NS))
         for name in names:
@@ -165,14 +185,22 @@ class MODSIngester(Ingester):
             role = name.find('{{{0}}}role/{{{0}}}roleTerm'.format(MODS_NS))
             if role is None:
                 continue
+            person = self.__extract_person__(name_parts)
+            if len(person) < 1:
+                continue
             if role.text == 'creator':
-                person = self.__extract_creator__(name_parts)
-            if person is not None:
-                self.creators.append(get_or_generate_person(person,
-                                                            self.redis_datastore))
+                self.creators.append(
+                    get_or_generate_person(person,
+                                           self.redis_datastore))
+            if role.text == 'contributor':
+                self.contributors.append(
+                    get_or_generate_person(person,
+                                           self.redis_datastore))
+            
+                
 
     def __extract_hdl__(self):
-        location_urls = self.mods_xml.findall('{{{0}}}location/{{{0}}url'.format(
+        location_urls = self.mods_xml.findall('{{{0}}}location/{{{0}}}url'.format(
             MODS_NS))
         for url in location_urls:
             if url.text.startswith('http://hdl'):
@@ -211,11 +239,19 @@ class MODSIngester(Ingester):
         if self.mods_xml is None:
             raise MODSIngesterError("Ingest requires valid MODS XML")
         work = dict()
-        self.__extract_creators__()
+        self.__extract_persons__()
         if self.creators is not None:
             work['rda:isCreatedBy'] = [creator.redis_key
                                        for creator in self.creators]
             work['associatedAgents'] = work['rda:isCreatedBy']
+        if self.contributors is not None:
+            work['rda:contributor'] = [contributor.redis_key
+                                       for contributor in self.contributors]
+            if work.has_key('associatedAgents'):
+                work['associatedAgents'].extend(work['rda:contributor'])
+            else:
+                work['associatedAgents'] = work['rda:contributor']
+                
         try:
             title_entities = self.__extract_title__()
             if len(title_entities) == 1:
@@ -224,9 +260,10 @@ class MODSIngester(Ingester):
                 work['title'] = ' '.join(title_entities)
         except ValueError:
             return
-        work_class = self.__classify_work_class__()
+        self.__classify_work_class__()
         classifier = self.classifier(entity_info=work,
-                                     redis_datastore=self.redis_datastore)
+                                     redis_datastore=self.redis_datastore,
+                                     work_class=self.work_class)
         classifier.classify()
         if classifier.creative_work is not None:
             classifier.creative_work.save()
@@ -235,8 +272,8 @@ class MODSIngester(Ingester):
                 self.redis_datastore.sadd(
                     '{0}:resourceRole:aut'.format(creator_key),
                     work_key)
-            instances = self.__create_instances__(work_key)
-            for instance_key in instances:
+            self.__create_instances__(work_key)
+            for instance_key in self.instances:
                 self.redis_datastore.sadd(
                     "{0}:hasInstance".format(work_key),
                     instance_key)
