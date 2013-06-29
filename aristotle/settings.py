@@ -121,7 +121,6 @@ ROOT_URLCONF = 'aristotle.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'aristotle.wsgi.application'
-
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_HOME, 'themes/prospector/templates'),
 ##    os.path.join(PROJECT_ROOT,'templates'),
