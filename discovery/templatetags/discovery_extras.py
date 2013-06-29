@@ -99,6 +99,10 @@ def about_instance(instance):
                     info.append((name,
                                  '<a href="{0}">{1}</a>'.format(value,
                                                                 name)))
+                elif name == 'hdl':
+                    info.append((label,
+                                 '<a href="{0}">{1}</a>'.format(value,
+                                                                value)))
                 else:
                     info.append((label,instance_attribute))
         else:
@@ -116,6 +120,7 @@ def about_instance(instance):
                  info.append((name,
                               '<a href="{0}">{1}</a>'.format(value,
                                                              value)))
+                
             else:
                 info.append((name,getattr(instance,name)))
        
@@ -205,7 +210,8 @@ def get_brief_heading(work):
     :rtype: HTML or 0-length string
     """
     output = ''
-    print("Work is {0}".format(work))
+    if type(work) == dict:
+        work = work.get('work')
     namespace, class_name, redis_id = work.redis_key.split(":")
     new_h4 = etree.Element('h4',attrib={'class':'media-heading'})
     new_a = etree.SubElement(new_h4,
@@ -420,7 +426,7 @@ def get_instances(creative_work):
                                                                                "publishing_48x48.png")),
                        'name':carrier_type,
                        'redis_id':key.split(":")[-1]}
-    html_output += instance_template.render(Context(context))
+        html_output += instance_template.render(Context(context))
     return mark_safe(html_output)
 
 def get_library_holdings(holdings_info):

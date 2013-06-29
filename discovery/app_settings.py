@@ -21,6 +21,7 @@ CARRIER_TYPE_GRAPHICS = {'Book':'publishing_48x48.png',
 			 'Music CD':'music_48x48.png',
 			 'Musical Score':'music_48x48.png',
 			 'Music Sound Recordings':'music_48x48.png',
+                         'online resource': 'internet_48x48.png',
 			 'Photo':'photos_48x48.png',
 			 'VHS Video':'cinema_48x48.png'}
 

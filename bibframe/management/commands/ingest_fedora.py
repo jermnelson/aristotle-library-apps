@@ -14,6 +14,7 @@ from bibframe.models import CoverArt, Work
 import bibframe.models
 
 from eulfedora.server import Repository
+from eulfedora.util import RequestFailed
 from lxml import etree
 
 FEDORA_REPO = Repository(root=FEDORA_ROOT,
@@ -38,12 +39,12 @@ def ingest_fedora(parent_pid, work_classname):
 SELECT ?a FROM <#ri> WHERE {
    ?a <info:fedora/fedora-system:def/relations-external#isMemberOfCollection>"""
     collection_sparql += "<info:fedora/{0}>".format(parent_pid) +  "}"
-    print("{0} is {1}".format(work_classname,
-                              getattr(bibframe.models,
-                                               work_classname)))
-    ingester = MODSIngester(redis_datastore=REDIS_DATASTORE,
-                            work_class=getattr(bibframe.models,
-                                               work_classname))
+    if work_classname is None:
+        ingester = MODSIngester(redis_datastore=REDIS_DATASTORE)
+    else:
+        ingester = MODSIngester(redis_datastore=REDIS_DATASTORE,
+                                work_class=getattr(bibframe.models,
+                                                   work_classname))
     csv_reader = FEDORA_REPO.risearch.sparql_query(collection_sparql)
     collection_pids = []
     for row in csv_reader:
@@ -59,12 +60,16 @@ SELECT ?a FROM <#ri> WHERE {
         ingester.instances = []
         ingester.mods_xml = etree.XML(repo_mods_result[0])
         ingester.__ingest__()
-        thumbnail_result = FEDORA_REPO.api.getDatastreamDissemination(
-            pid=pid,
-            dsID="TN")
+        try:
+            thumbnail_result = FEDORA_REPO.api.getDatastreamDissemination(
+                pid=pid,
+                dsID="TN")
+        except RequestFailed:
+            thumbnail_result = None
         org_key = REDIS_DATASTORE.hget(PREFIX_HASH_KEY,
                                        pid.split(":")[0])
-        
+        if org_key is None:
+            raise ValueError("Must have an org key for {0}".format(pid))
         for instance_key in ingester.instances:
             if thumbnail_result is not None:
                 new_cover = CoverArt(redis_datastore=REDIS_DATASTORE,

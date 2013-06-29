@@ -244,9 +244,10 @@ def search_title(user_input, redis_server):
     # If the terms list is null, tries to norm user_input, for edge cases where
     # the user input for the title could be a single, stop-word
     if len(terms) < 1:
-        title_keys = ["title-normed:{0}".format(user_input.lower().strip()), ]        
+        title_keys = ["title-normed:{0}".format(user_input.upper().strip()), ]        
     else:
-        title_keys = ["title-normed:{0}".format(x.encode('utf-8', 'ignore')) for x in terms]
+        title_keys = ["title-normed:{0}".format(x.encode('utf-8', 'ignore'))
+                      for x in terms]
     for title_key in redis_server.sinter(title_keys):
         related_works = redis_server.smembers("{0}:relatedResources".format(title_key))
         for work_key in related_works:

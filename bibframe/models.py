@@ -59,6 +59,19 @@ ACTIVE_ENTITIES = ['Agent',
                    'TopicalConcept',
                    'Work']
 
+CREATIVE_WORK_CLASSES = ['Article',
+                         'Book',
+                         'Dissertation',
+                         'Manuscript',
+                         'Map',
+                         'MixedMaterial',
+                         'MovingImage',
+                         'NotatedMusic',
+                         'MusicalAudio',
+                         'NonmusicalAudio',
+                         'Serial',
+                         'SoftwareOrMultimedia']
+
 def load_rdf():
     "Helper function creates BIBFRAME classes from vocab.rdf"
     vocab_rdf = etree.parse(os.path.join(settings.PROJECT_HOME,

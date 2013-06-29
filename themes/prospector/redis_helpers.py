@@ -1,6 +1,8 @@
 __author__ = "Jeremy Nelson"
+import datetime
 import json
 import os
+import sys
 from aristotle.settings import REDIS_DATASTORE, PROJECT_HOME
 from bibframe.models import Organization
 from organization_authority.redis_helpers import get_or_add_organization
@@ -44,6 +46,66 @@ def add_place(institution_redis_key, REDIS_DATASTORE):
             place_base,
             REDIS_DATASTORE.incr('global {0}'.format(place_base)))
     return place_key
+
+def add_facet(facet_key,
+              facet_sort_key,
+              entity_key,
+              redis_datastore=REDIS_DATASTORE):
+    "Function adds facet to RLSP"
+    redis_datastore.sadd(facet_key, entity_key)
+    redis_datastore.zadd(facet_sort_key,
+                         float(redis_datastore.scard(facet_key)),
+                         facet_key)
+
+def generate_facets(redis_datastore=REDIS_DATASTORE):
+    "Function generates Prospector BIGFRAME facets"
+    facet_keys = ['bf:Annotation:Facet:formats',
+                  'bf:Annotation:Facet:LOCFirstLetters:sort',
+                  'bf:Annotation:Facet:Languages',
+                  'bf:Annotation:Facet:PublicationDate']
+    # Generates Format Facet
+    print("Starting post-hoc generation of Facets at {0}".format(
+        datetime.datetime.utcnow().isoformat()))
+    for i in xrange(1, int(redis_datastore.get('global bf:Instance'))):
+        redis_key = "bf:Instance:{0}".format(i)
+        carrier_type = redis_datastore.hget(redis_key,
+                                            'rda:carrierTypeManifestation')
+        if carrier_type is not None:
+            format_facet = 'bf:Annotation:Facet:format:{0}'.format(
+                carrier_type)
+            add_facet(format_facet,
+                      'bf:Annotation:Facet:formats',
+                      redis_key,
+                      redis_datastore)
+            
+        language_code = redis_datastore.hget(redis_key, 'language')
+        if language_code is not None:
+            language_facet = 'bf:Annotation:Facet:Language:{0}'.format(
+                language_code)
+            add_facet(language_facet,
+                      'bf:Annotation:Facet:Languages',
+                      redis_key,
+                      redis_datastore)
+        publication_date = redis_datastore.hget(redis_key,
+                                                'rda:dateOfPublicationManifestation')
+        if publication_date is not None:
+            pub_date_facet = 'bf:Annotation:Facet:PublicationDate:{0}'.format(
+                publication_date)
+            add_facet(pub_date_facet,
+                      'bf:Annotation:Facet:PublicationDate',
+                      redis_key,
+                      redis_datastore)
+        if not i%100:
+            sys.stderr.write(" {0}:{1} ".format(i, redis_key))
+        else:
+            sys.stderr.write(".")
+    print("Finished post-hoc generation of Facets at {0}".format(
+        datetime.datetime.utcnow().isoformat()))
+                             
+            
+            
+        
+
 
     
 def load_institution_places(prospector_code,

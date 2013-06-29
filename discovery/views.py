@@ -15,6 +15,8 @@ from aristotle.forms import FeedbackForm
 
 from app_settings import APP, PAGINATION_SIZE
 from bibframe.models import Work,Instance,Person
+from bibframe.models import CREATIVE_WORK_CLASSES
+
 import bibframe.models
 from bibframe.redis_helpers import get_json_linked_data
 
@@ -27,14 +29,7 @@ from aristotle.settings import INSTITUTION
 from aristotle.settings import REDIS_DATASTORE
 from aristotle.settings import FEATURED_INSTANCES
 
-CREATIVE_WORK_CLASSES = ['Book',
-                         'Manuscript',
-                         'Map',
-                         'MovingImage',
-                         'NotatedMusic',
-                         'MusicalAudio',
-                         'NonmusicalAudio',
-                         'SoftwareOrMultimedia']
+
 
 def app(request):
     """
@@ -60,9 +55,9 @@ def app(request):
                 message = 'No Results found for {0}'.format(query)
         else:
             message = 'No search terms provided'
-            facet_list = get_facets(REDIS_DATASTORE, REDIS_DATASTORE)
+            facet_list = get_facets(REDIS_DATASTORE)
     else:
-        facet_list = get_facets(REDIS_DATASTORE, REDIS_DATASTORE)
+        facet_list = get_facets(REDIS_DATASTORE)
 #    example = {'work_path': os.path.join("apps",
 #                                    "discovery",
 #                            "work",
@@ -80,7 +75,11 @@ def app(request):
         work_key = REDIS_DATASTORE.hget(instance_key,
                                        'instanceOf')
         cover_id = cover_art_key.split(":")[-1]
-        cover_url = '/apps/discovery/CoverArt/{0}-body.jpg'.format(cover_id)
+        cover_url = '/apps/discovery/CoverArt/{0}-'.format(cover_id)
+        if REDIS_DATASTORE.hexists(cover_art_key, 'annotationBody'):
+            cover_url += "body.jpg"
+        else:
+            cover_url += 'thumbnail.jpg'
         featured_instances.append(
             {'cover': cover_url,
              'title': REDIS_DATASTORE.hget(
@@ -258,6 +257,14 @@ def facet_detail(request, facet_name, facet_item):
                               
 
     return HttpResponse("In facet detail key={0}\n{1}".format(redis_key,records))
+
+def language_facet(request, name):
+    return facet_detail(request, 'Language', name)
+
+def location_facet(request, name):
+    raise Http404
+
+    
 
 def facet_summary(request,facet_name):
     """

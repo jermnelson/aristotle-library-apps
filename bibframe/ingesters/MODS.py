@@ -23,6 +23,7 @@ from bibframe.models import NonmusicalAudio, NotatedMusic
 from bibframe.models import SoftwareOrMultimedia, StillImage, TitleEntity
 from bibframe.models import ThreeDimensionalObject
 from person_authority.redis_helpers import get_or_generate_person
+from title_search.redis_helpers import index_title
 from rdflib import Namespace
 
 
@@ -103,9 +104,10 @@ class MODSIngester(Ingester):
         
         for element in origin_infos:
             instance_of = {'instanceOf': work_key}
-            if form.attrib.get('type', None) == 'carrier':
-                if form.attrib.get('authority', None) == 'rdacarrier':
-                    instance_of['rda:carrierTypeManifestation'] = form.text
+            if form is not None:
+                if form.attrib.get('type', None) == 'carrier':
+                    if form.attrib.get('authority', None) == 'rdacarrier':
+                        instance_of['rda:carrierTypeManifestation'] = form.text
             extent = element.find('{{{0}}}extent'.format(MODS_NS))
             if extent is not None:
                 if extent.text is not None:
@@ -133,7 +135,6 @@ class MODSIngester(Ingester):
             if row.text is None:
                 continue
             name_value = row.text.strip()
-            person["rda:preferredNameForThePerson"] = ""
             if name_type == 'given':
                 person['schema:givenName'] = name_value
             elif name_type == 'family':
@@ -158,18 +159,28 @@ class MODSIngester(Ingester):
                             person['resourceRole:edt'] = value
                         else:
                             person[key] = value
-            # Create an rda:rda:preferredNameForThePerson
-            person["rda:preferredNameForThePerson"] = "{0} {1}".format(
-                person.get('schema:givenName', ''),
-                person.get('schema:familyName', ''))
-            if person.has_key('schema:honorificPrefix'):
-                person["rda:preferredNameForThePerson"] = "{0}. {1}".format(
-                    person['schema:honorificPrefix'],
-                    person["rda:preferredNameForThePerson"])
-            if person.has_key('honorificSuffix'):
-                person["rda:preferredNameForThePerson"] = "{0} {1}".format(
-                    person["rda:preferredNameForThePerson"],
-                    person['honorificSuffix'])
+            # Create an rda:rda:preferredNameForThePerson if it doesn't
+            # exist
+            if person.has_key("rda:preferredNameForThePerson") is False:
+                person["rda:preferredNameForThePerson"] = "{1}, {0}".format(
+                    person.get('schema:givenName', ''),
+                    person.get('schema:familyName', ''))
+                if person.has_key('schema:honorificPrefix'):
+                    person["rda:preferredNameForThePerson"] = "{0}. {1}".format(
+                        person['schema:honorificPrefix'],
+                        person["rda:preferredNameForThePerson"])
+                if person.has_key('honorificSuffix'):
+                    person["rda:preferredNameForThePerson"] = "{0} {1}".format(
+                        person["rda:preferredNameForThePerson"],
+                        person['honorificSuffix'])
+                if person.has_key('rdf:dateOfBirth'):
+                    person["rda:preferredNameForThePerson"] = "{0}, {1}-".format(
+                        person["rda:preferredNameForThePerson"],
+                        person['rdf:dateOfBirth'])
+                if person.has_key('rdf:dateOfDeath'):
+                    person["rda:preferredNameForThePerson"] = "{0}{1}".format(
+                        person["rda:preferredNameForThePerson"],
+                        person['rdf:dateOfDeath'])
         return person
             
             
@@ -188,14 +199,20 @@ class MODSIngester(Ingester):
             person = self.__extract_person__(name_parts)
             if len(person) < 1:
                 continue
+            result = get_or_generate_person(person,
+                                            self.redis_datastore)
             if role.text == 'creator':
-                self.creators.append(
-                    get_or_generate_person(person,
-                                           self.redis_datastore))
-            if role.text == 'contributor':
-                self.contributors.append(
-                    get_or_generate_person(person,
-                                           self.redis_datastore))
+                person_group = self.creators
+            elif role.text == 'contributor':
+                person_group = self.contributors
+            else:
+                # Add more roles as they are needed
+                continue
+            if type(result) == list:
+                for person in result:
+                    person_group.append(person)
+            elif type(result) == Person:
+                person_group.append(result)
             
                 
 
@@ -219,10 +236,13 @@ class MODSIngester(Ingester):
                 titleValue = titleInfo.find('{{{0}}}title'.format(MODS_NS))
                 if titleValue is not None and len(titleValue.text) > 0:
                     output['titleValue'] = titleValue.text
+                    output['label'] = output['titleValue']
                 # equalvant to MARC 245 $b
                 subtitle = titleInfo.find('{{{0}}}subTitle'.format(MODS_NS))
                 if subtitle is not None and len(subtitle.text) > 0:
                     output['subtitle'] = subtitle.text
+                    output['label'] = '{0}: {1}'.format(output.get('label'),
+                                                        output['subtitle'])
                 # equalivant to MARC 245 $p
                 partTitle = titleInfo.find('{{{0}}}partName'.format(MODS_NS))
                 if partTitle is not None and len(partTitle.text) > 0:
@@ -231,6 +251,7 @@ class MODSIngester(Ingester):
                 title_entity = TitleEntity(redis_datastore=self.redis_datastore,
                                            **output)
                 title_entity.save()
+                index_title(title_entity, self.redis_datastore)
                 title_entities.append(title_entity.redis_key)
         return title_entities
         
@@ -238,19 +259,23 @@ class MODSIngester(Ingester):
         "Helper function extracts info from MODS and ingests into RLSP"
         if self.mods_xml is None:
             raise MODSIngesterError("Ingest requires valid MODS XML")
+        self.contributors = []
+        self.creators = []
+        self.instances = []
         work = dict()
         self.__extract_persons__()
         if self.creators is not None:
-            work['rda:isCreatedBy'] = [creator.redis_key
-                                       for creator in self.creators]
+            work['rda:isCreatedBy'] = set([creator.redis_key
+                                           for creator in self.creators])
             work['associatedAgents'] = work['rda:isCreatedBy']
         if self.contributors is not None:
             work['rda:contributor'] = [contributor.redis_key
                                        for contributor in self.contributors]
             if work.has_key('associatedAgents'):
-                work['associatedAgents'].extend(work['rda:contributor'])
+                for redis_key in work['rda:contributor']:
+                    work['associatedAgents'].add(redis_key)
             else:
-                work['associatedAgents'] = work['rda:contributor']
+                work['associatedAgents'] = set(work['rda:contributor'])
                 
         try:
             title_entities = self.__extract_title__()
@@ -268,6 +293,11 @@ class MODSIngester(Ingester):
         if classifier.creative_work is not None:
             classifier.creative_work.save()
             work_key = classifier.creative_work.redis_key
+            # Adds work_key to title entity relatedResources set
+            self.redis_datastore.sadd(
+                "{0}:relatedResources".format(
+                    classifier.creative_work.title),
+                work_key)
             for creator_key in work['rda:isCreatedBy']:
                 self.redis_datastore.sadd(
                     '{0}:resourceRole:aut'.format(creator_key),
@@ -277,6 +307,7 @@ class MODSIngester(Ingester):
                 self.redis_datastore.sadd(
                     "{0}:hasInstance".format(work_key),
                     instance_key)
+                # 
             
         
 

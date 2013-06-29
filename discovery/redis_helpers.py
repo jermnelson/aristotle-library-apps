@@ -5,9 +5,11 @@ __author__ = "Jeremy Nelson"
 import json
 import time
 from aristotle.settings import REDIS_DATASTORE
+from bibframe.models import CREATIVE_WORK_CLASSES
 import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
-from bibframe.models import Work
+
+import bibframe.models
 
 
 
@@ -36,7 +38,7 @@ class FacetItem(object):
         self.redis_ds = kwargs.get('redis')
         if self.redis_ds is None:
             raise FacetError("FacetItem requires a Redis instance")
-        self.redis_key = kwargs.get('key','bibframe:Annotation:Facet')
+        self.redis_key = kwargs.get('key','bf:Annotation:Facet')
         self.count = 0
         if 'count' in kwargs:
             self.count = kwargs.get('count')
@@ -166,7 +168,7 @@ class BIBFRAMESearch(object):
             self.search_key = 'rlsp-query:{0}'.format(
                                    self.redis_datastore.incr('global rlsp-query'))
             self.redis_datastore.expire(self.search_key, 900)
-	self.facets, self.fails = [], []
+        self.facets, self.fails = [], []
 
     def __json__(self, with_results=True):
         """
@@ -220,21 +222,29 @@ class BIBFRAMESearch(object):
                                  self.__json__(with_results=False))
 
 
+    def __add_to_query__(self, work_key):
+        "Adds all found bf:Instances to search"
+        instance_key = self.redis_datastore.hget(work_key,
+                                                 'hasInstance')
+        if instance_key is None:
+            work_instances = self.redis_datastore.smembers(
+                     '{0}:hasInstance'.format(work_key))
+            for instance_key in list(work_instances):
+                self.redis_datastore.sadd(self.search_key,
+                                          instance_key)
+        else:
+            self.redis_datastore.sadd(self.search_key,
+                                      instance_key)
+
     def author(self):
         found_creators = person_authority_app.person_search(self.query,
 			                                    redis_datastore=self.redis_datastore)
         for work_key in found_creators:
-             self.redis_datastore.sadd(self.search_key,
-                                       work_key)
-             for instance_key in list(
-                 self.redis_datastore.smembers(
-                     '{0}:hasInstance'.format(work_key))):
-                 self.redis_datastore.sadd(self.search_key,
-                                           instance_key)
+            self.__add_to_query__(work_key)
 
 
     def creative_works(self):
-        works = []
+        works, work_class = [], None
         for entity_key in self.redis_datastore.smembers(self.search_key):
             work_key = None
             # If entity is bf:Instance, get entity's Creative Work
@@ -243,15 +253,23 @@ class BIBFRAMESearch(object):
                                                      'instanceOf')
             # Checks to see if entity_key is a Creative Work or child
             else:
-                for prefix in ['bf:Work',
-                               'bf:Book',
-                               'bf:StillImage',
-                               'bf:MovingImage']:
-                  if entity_key.startswith(prefix):
-                      work_key = entity_key
+                for work in bibframe.models.CREATIVE_WORK_CLASSES:
+                    prefix = "bf:{0}".format(work)
+                    if entity_key.startswith(prefix):
+                        work_class = getattr(bibframe.models,
+                                             work)
+                        work_key = entity_key
+                    
+            
             if work_key is not None:
-                works.append(Work(redis_key=work_key,
-                                  redis_datastore=self.redis_datastore))
+                if work_class is not None:
+                    works.append(work_class(redis_key=work_key,
+                                            redis_datastore=self.redis_datastore))
+                else:
+                    # Default Creative Work
+                    works.append(
+                        bibframe.models.Work(redis_key=work_key,
+                                             redis_datastore=self.redis_datastore))
         return works
         
 
@@ -263,7 +281,7 @@ class BIBFRAMESearch(object):
                                                       0,
                                                       -1):
             entity_keys = self.redis_datastore.sinter(facet_key, 
-                                                     self.search_key)
+                                                      self.search_key)
             entity_count = len(entity_keys)
             if entity_count > 0:
                 facet['items'].append(
@@ -287,11 +305,8 @@ class BIBFRAMESearch(object):
                         'items': [],
                         'count': 0}
         for lib_key in  self.redis_datastore.hvals('prospector-institution-codes'):
-            holdings = self.redis_datastore.smembers("{0}:bf:Holdings".format(lib_key))
-            instance_keys = set()
-            for holding_key in holdings:
-                instance_keys.add(self.redis_datastore.hget(holding_key,
-                                                          'annotates'))
+            lib_owner_key = "{0}:resourceRole:own".format(lib_key)
+            instance_keys = self.redis_datastore.smembers(lib_owner_key)
             search_set = self.redis_datastore.smembers(self.search_key)
             lib_results = instance_keys.intersection(search_set)
             if len(lib_results) > 0:
@@ -360,13 +375,7 @@ class BIBFRAMESearch(object):
         found_titles = title_app.search_title(self.query,
                                               self.redis_datastore)
         for title_key in found_titles:
-            self.redis_datastore.sadd(self.search_key,
-                                     title_key)
-            for instance_key in list(self.redis_datastore.smembers(
-                                          '{0}:bf:Instances'.format(title_key))):
-                 self.redis_datastore.sadd(self.search_key, 
-                                          instance_key)
-
+            self.__add_to_query__(title_key)
 
 
 def get_news():
@@ -375,15 +384,7 @@ def get_news():
     # statistics of the REDIS_DATASTORE
     if REDIS_DATASTORE is not None:
         body_text = "<p><strong>Totals:</strong>"
-        for key in ['Book',
-                    'Manuscript',
-                    'MovingImage',
-                    'NotatedMusic',
-                    'MusicalAudio',
-                    'NonmusicalAudio',
-                    'SoftwareOrMultimedia',
-                    'Instance',
-                    'Person']:
+        for key in CREATIVE_WORK_CLASSES:
             body_text += '{0} = {1}<br>'.format(
                 key,
                 REDIS_DATASTORE.get('global bf:{0}'.format(key)))
@@ -408,18 +409,17 @@ def get_news():
     return news
         
 
-def get_facets(annotation_ds, authority_ds):
+def get_facets(redis_datastore):
     """
     Helper Function returns a list of Facets
 
     :param annotation_ds: Annotation Datastore
     """
     facets = []
-    facets.append(AccessFacet(redis=annotation_ds))
-    facets.append(FormatFacet(redis=annotation_ds))
-    facets.append(LocationFacet(authority_ds=authority_ds,
-                                redis=annotation_ds))
-    facets.append(LCFirstLetterFacet(redis=annotation_ds))
+    facets.append(AccessFacet(redis=redis_datastore))
+    facets.append(FormatFacet(redis=redis_datastore))
+    facets.append(LocationFacet(redis=redis_datastore))
+    facets.append(LCFirstLetterFacet(redis=redis_datastore))
 
     return facets
 
@@ -435,6 +435,7 @@ def get_result_facets(work_keys):
     facets = []
     return facets
 
+    
 
 
 

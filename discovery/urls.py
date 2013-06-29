@@ -17,6 +17,10 @@ urlpatterns = patterns('discovery.views',
         name="discovery-bibframe-router"),
 ##    url(r"^authority/person/(\d+)/?$", "person", name="discovery-authority-person"),
     url(r"^[c|C]over[A|_a]rt/(\d+)-(\w+).(\w+)$", "display_cover_image"),
+#! These routes are hand-coded, should be more generic
+    url(r"^facet/languages/([\w ]+)$", "language_facet"),
+    url(r"^facet/libraries/([\w ]+)$", "location_facet"),
+    
 ##    url(r"^bibframe:Instance:(\d+)$", "instance", name="discovery-instance-direct"),
 ##    url(r"^[i|I]nstance/(\d+).json$", "instance_json_ld", name="discovery-instance-json_ld"),
 ##    url(r"^[i|I]nstance/(\d+)/?$", "instance", name="discovery-instance"),

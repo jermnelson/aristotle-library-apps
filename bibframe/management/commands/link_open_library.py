@@ -8,9 +8,9 @@ import sys
 import threading
 import urllib
 import urllib2
-from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS
-from aristotle.settings import CREATIVE_WORK_REDIS, INSTANCE_REDIS
-from aristotle.settings import RLSP_CLUSTER
+from aristotle.settings import REDIS_DATASTORE, REDIS_DATASTORE
+from aristotle.settings import REDIS_DATASTORE, REDIS_DATASTORE
+from aristotle.settings import REDIS_DATASTORE
 from bibframe.models import CoverArt
 from django.core.management.base import BaseCommand, CommandError
 
@@ -101,11 +101,11 @@ def OpenLibraryLCCNLinker(**kwargs):
     """Creates LinkedData relationships between Open Library and RLSP
 
     Keyword arguments:
-    redis_datastore -- Cluster Datastore, defaults to RLSP_CLUSTER
+    redis_datastore -- Defaults to REDIS_DATASTORE
     start -- Start in lccn-sort-set, defaults to 0
     end -- End in lccn-sort-set, defaults to -1
     """
-    redis_datastore = kwargs.get('redis_datastore', RLSP_CLUSTER)
+    redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
     start = kwargs.get('start', 0)
     end = kwargs.get('end', -1)
     start_time = datetime.datetime.now()
