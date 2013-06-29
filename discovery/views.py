@@ -40,6 +40,7 @@ def app(request):
     results,search_query,message = [],None,None
     if request.method == 'POST':
         query = request.POST.get('q')
+        request.session['q'] = query
         type_of = request.POST.get('q_type')
         if len(query) > 0:
             bibframe_search = BIBFRAMESearch(q=query,
@@ -53,6 +54,8 @@ def app(request):
             facet_list = bibframe_search.facets
             if len(results) < 1:
                 message = 'No Results found for {0}'.format(query)
+            else:
+                request.session['rlsp-query'] = bibframe_search.search_key
         else:
             message = 'No search terms provided'
             facet_list = get_facets(REDIS_DATASTORE)
@@ -202,14 +205,24 @@ def facet_detail(request, facet_name, facet_item):
     facet_item -- Name of the Facet item
     """
     redis_key = "bf:Annotation:Facet:{0}:{1}".format(facet_name,facet_item)
-    listing_key = "facet-listing:{0}:{1}".format(facet_name,facet_item)
     if not REDIS_DATASTORE.exists(redis_key):
         raise Http404
+    rlsp_query_key = request.session.get('rlsp-query', None)
+    listing_key = "facet-listing:{0}:{1}".format(facet_name,facet_item)
+    if rlsp_query_key is not None:
+        print("{0} {1}".format(REDIS_DATASTORE.type(rlsp_query_key),
+                               REDIS_DATASTORE.type(redis_key)))
+        results = REDIS_DATASTORE.sinterstore(rlsp_query_key,
+                                              redis_key,
+                                              listing_key)
+    
     if not REDIS_DATASTORE.exists(listing_key):
         REDIS_DATASTORE.sort(redis_key,
                              alpha=True,
                              store=listing_key)
         REDIS_DATASTORE.expire(listing_key,86400)
+    if rlsp_query_key is not None:
+        listing_key = REDIS_DATASTORE.sinter(rlsp_query_key, listing_key)
     offset =  int(request.REQUEST.get('offset',0))
     records = []
     pagination = get_pagination(request.path,
@@ -262,13 +275,38 @@ def language_facet(request, name):
     return facet_detail(request, 'Language', name)
 
 def location_facet(request, name):
+    rlsp_query_key = request.session.get('rlsp-query', None)
     location_key = REDIS_DATASTORE.hget('carl-prospector-slug-names', name)
     if not location_key:
         raise Http404
-    return HttpResponse("Location Key is {0} Library {1}".format(
-        location_key,
-        REDIS_DATASTORE.hget(location_key, 'label')))
-
+    result = REDIS_DATASTORE.sinter(rlsp_query_key,
+                                    '{0}:resourceRole:own'.format(location_key))
+    records = []
+    for instance_key in result:
+        work_key = REDIS_DATASTORE.hget(instance_key, 'instanceOf')
+        work_classname = work_key.split(":")[1]
+        work_class = getattr(bibframe.models,
+                             work_classname)
+        records.append(work_class(redis_datastore=REDIS_DATASTORE,
+                                  redis_key=work_key))
+    msg = "{0} Results for {1} owned by {2}".format(
+        len(records),
+        request.session.get('q', None),
+        REDIS_DATASTORE.hget(location_key, 'label'))
+    return direct_to_template(request,
+                              'discovery/app.html',
+                              {'app': APP,
+                               'example':{},
+                               'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
+                               'feedback_context':request.get_full_path(),
+                               'institution': INSTITUTION,
+                               'facet_list': None,
+                               'message': msg,
+                               'pagination':None,
+                               'results':records,
+                               'search_form': SearchForm(),
+                               'search_query': None,
+                               'user': None})    
     
 
 def facet_summary(request,facet_name):
