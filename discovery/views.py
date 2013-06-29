@@ -262,7 +262,12 @@ def language_facet(request, name):
     return facet_detail(request, 'Language', name)
 
 def location_facet(request, name):
-    raise Http404
+    location_key = REDIS_DATASTORE.hget('carl-prospector-slug-names', name)
+    if not location_key:
+        raise Http404
+    return HttpResponse("Location Key is {0} Library {1}".format(
+        location_key,
+        REDIS_DATASTORE.hget(location_key, 'label')))
 
     
 
