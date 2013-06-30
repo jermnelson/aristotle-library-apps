@@ -210,19 +210,21 @@ def facet_detail(request, facet_name, facet_item):
     rlsp_query_key = request.session.get('rlsp-query', None)
     listing_key = "facet-listing:{0}:{1}".format(facet_name,facet_item)
     if rlsp_query_key is not None:
-        print("{0} {1}".format(REDIS_DATASTORE.type(rlsp_query_key),
-                               REDIS_DATASTORE.type(redis_key)))
-        results = REDIS_DATASTORE.sinterstore(rlsp_query_key,
-                                              redis_key,
-                                              listing_key)
-    
-    if not REDIS_DATASTORE.exists(listing_key):
+        tmp_facet_result = 'facet-result:{0}'.format(
+            REDIS_DATASTORE.incr('global facet-result'))
+        REDIS_DATASTORE.sinterstore(tmp_facet_result,
+                                    rlsp_query_key,
+                                    redis_key)
+        REDIS_DATASTORE.expire(tmp_facet_result, 900)
+        REDIS_DATASTORE.sort(tmp_facet_result,
+                             alpha=True,
+                             store=listing_key)
+    else:
+
         REDIS_DATASTORE.sort(redis_key,
                              alpha=True,
                              store=listing_key)
-        REDIS_DATASTORE.expire(listing_key,86400)
-    if rlsp_query_key is not None:
-        listing_key = REDIS_DATASTORE.sinter(rlsp_query_key, listing_key)
+    REDIS_DATASTORE.expire(listing_key,1200)
     offset =  int(request.REQUEST.get('offset',0))
     records = []
     pagination = get_pagination(request.path,
@@ -270,6 +272,12 @@ def facet_detail(request, facet_name, facet_item):
                               
 
     return HttpResponse("In facet detail key={0}\n{1}".format(redis_key,records))
+
+def format_facet(request, name):
+    """Temp view method for formats, these needs further refactoring to reflect
+    specific BIBFRAME and RDA carrier_type"""
+    return HttpResponse("The Format:{0} Facet is under development".format(name))
+
 
 def language_facet(request, name):
     return facet_detail(request, 'Language', name)

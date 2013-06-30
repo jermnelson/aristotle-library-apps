@@ -20,6 +20,7 @@ urlpatterns = patterns('discovery.views',
 #! These routes are hand-coded, should be more generic
     url(r"^facet/languages/([\w ]+)$", "language_facet"),
     url(r"^facet/libraries/([\w|:w-]+)$", "location_facet"),
+    url(r"^facet/formats/([\w|:w-]+)$", "format_facet"),
     
 ##    url(r"^bibframe:Instance:(\d+)$", "instance", name="discovery-instance-direct"),
 ##    url(r"^[i|I]nstance/(\d+).json$", "instance_json_ld", name="discovery-instance-json_ld"),
