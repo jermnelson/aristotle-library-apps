@@ -9,7 +9,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 # Determines if Aristotle Library System runs with a Redis Cluster or
 # run as a single Redis Instance
-REDIS_CLUSTER_MODE = True
+REDIS_CLUSTER_MODE = False
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),

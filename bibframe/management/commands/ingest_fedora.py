@@ -39,6 +39,7 @@ def ingest_fedora(parent_pid, work_classname):
 SELECT ?a FROM <#ri> WHERE {
    ?a <info:fedora/fedora-system:def/relations-external#isMemberOfCollection>"""
     collection_sparql += "<info:fedora/{0}>".format(parent_pid) +  "}"
+    print(collection_sparql)
     if work_classname is None:
         ingester = MODSIngester(redis_datastore=REDIS_DATASTORE)
     else:

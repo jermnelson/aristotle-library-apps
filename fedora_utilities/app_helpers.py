@@ -197,3 +197,51 @@ def repository_update(pid,mods_snippet):
     """
     pass
    
+def extract_creators(mods_xml):
+    """Extracts all creators from a mods_xml file
+
+    Parameters:
+    mods_xml -- MODS XML
+    """
+    creators = []
+    names = mods_xml.findall('{{{0}}}name'.format(MODS_NS))
+    for name in names:
+        creator = None
+        role = name.find('{{{0}}}role/{{{0}}}roleTerm'.format(MODS_NS))
+        name_parts = name.findall('{{{0}}}namePart'.format(MODS_NS))
+        if role is None or role.text != 'creator':
+            continue
+        for part in name_parts:
+            creator = part.text
+            creators.append(creator)
+    return creators
+
+def extract_title(mods_xml):
+    title_entities = []
+    titleInfos = mods_xml.findall('{{{0}}}titleInfo'.format(MODS_NS))
+    for titleInfo in titleInfos:
+        output = {}
+        if titleInfo.attrib.get('type')is None:
+            # equalvant to MARC 245 $a
+            titleValue = titleInfo.find('{{{0}}}title'.format(MODS_NS))
+            if titleValue is not None and len(titleValue.text) > 0:
+                output['titleValue'] = titleValue.text
+                output['label'] = output['titleValue']
+            # equalvant to MARC 245 $b
+            subtitle = titleInfo.find('{{{0}}}subTitle'.format(MODS_NS))
+            if subtitle is not None and len(subtitle.text) > 0:
+                output['subtitle'] = subtitle.text
+                output['label'] = '{0}: {1}'.format(output.get('label'),
+                                                    output['subtitle'])
+            # equalivant to MARC 245 $p
+            partTitle = titleInfo.find('{{{0}}}partName'.format(MODS_NS))
+            if partTitle is not None and len(partTitle.text) > 0:
+                output['partTitle'] = partTitle.text
+            if len(output) > 0:
+                title_entities.append(output)
+    return title_entities
+            
+            
+            
+            
+    

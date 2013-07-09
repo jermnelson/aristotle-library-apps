@@ -4,7 +4,6 @@
 from app_settings import *
 from app_helpers import *
 ##from solr_helpers import SOLR_QUEUE, start_indexing
-print("BEFORE settings")
 from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
