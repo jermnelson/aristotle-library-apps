@@ -24,7 +24,7 @@ def add_organization(name_metaphone_keys,
     redis_datastore -- Redis Instance or Redis Cluster
     org_attributes -- Dict of organization's properties 
     """
-    new_organization = Organization(redis_datastore=REDIS_DATASTORE)
+    new_organization = Organization(redis_datastore=redis_datastore)
     for key, value in org_attributes.iteritems():
         setattr(new_organization, key, value)
     new_organization.save()
@@ -52,7 +52,7 @@ def get_or_add_organization(org_attributes,
     if len(existing_org_keys) == 0:
         return add_organization(name_metaphone_keys, 
                                 org_attributes, 
-                                redis_datastore)
+                                redis_datastore=redis_datastore)
     else:
         return Organization(redis_key=list(existing_org_keys)[0],
                             redis_datastore=redis_datastore)

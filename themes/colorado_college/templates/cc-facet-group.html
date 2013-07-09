@@ -1,0 +1,35 @@
+{% load 'colorado_college_extras' %}
+{# START Facet #}
+<div class="accordion-group">
+ <div class="accordion-heading cc-facet-header">
+  <a href="#{{ facet.name }}-facet-body" 
+     class="accordion-toggle"
+     data-toggle="collapse"
+      data-parent="#cc-facets">
+      {{ facet.label }} 
+      </a>
+    </div>
+    <div class="accordion-body collapse {% if expand %} in {%endif %}cc-facet-body"
+         id=" {{ facet.name }}-facet-body">
+     <div class="accordion-inner">
+      <ul> 
+      {% for item in facet.items %}
+       <li>
+         <a href="#">
+          {{ item.label }} ({{ item.count }}) 
+         </a>
+         {% if item.children %}
+         <ul>
+          {% for child in item.children %}
+          <li><a href="#">{{ child.label }} ({{ child.count }})</a></li> 
+          {% endfor %}
+         </ul>
+         {% endif %}
+       </li>
+      {% endfor %}
+      </ul>
+     </div> 
+    </div>
+  {# END Facet Group #}
+  </div> 
+

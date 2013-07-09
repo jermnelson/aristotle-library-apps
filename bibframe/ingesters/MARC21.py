@@ -20,9 +20,11 @@ from bibframe.models import MovingImage, MusicalAudio, NonmusicalAudio
 from bibframe.models import NotatedMusic, SoftwareOrMultimedia, StillImage
 from bibframe.models import TitleEntity, ThreeDimensionalObject
 from bibframe.ingesters.Ingester import Ingester
+from bibframe.ingesters import tutt_maps
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import IS_CONSORTIUM, PROJECT_HOME
+from organization_authority.redis_helpers import get_or_add_organization
 from title_search.redis_helpers import generate_title_app, process_title
 from title_search.redis_helpers import index_title, search_title
 
@@ -1040,6 +1042,8 @@ class MARC21toBIBFRAME(MARC21Ingester):
             if self.redis_datastore.hexists(redis_key,
                                             field907['a'][1:-1]) is True:
                 return True
+            else:
+                return False
         all945s = self.record.get_fields('945')
         for field in all945s:
             a_subfields = field.get_subfields('a')
@@ -1136,21 +1140,33 @@ class MARC21toLibraryHolding(MARC21Ingester):
         self.holdings = []
         self.instance = kwargs.get('instance', None)
 
-    def __add_cc_holdings__(self):
+    def __add_cc_holdings__(self, cc_key='bf:Organization:1'):
         "Helper function for Colorado College MARC Records"
         # Assumes hybrid environment
-        cc_key = self.redis_datastore.hget('prospector-institution-codes',
-                                           '9cocp')
+        if self.redis_datastore.hget('prospector-institution-codes',
+                                     '9cocp') is not None:
+            cc_key = self.redis_datastore.hget('prospector-institution-codes',
+                                     '9cocp')
+        
         holding = Holding(redis_datastore=self.redis_datastore)
         self.entity_info['ils-bib-number'] = self.record['907']['a'][1:-1]
+        cc_tutt_code = self.record['994']['a']
+        if tutt_maps.LOCATION_CODE_MAP.has_key(cc_tutt_code):
+            location_key = '{0}:codes:{1}'.format(cc_key,
+                                                  cc_tutt_code)
+        else:
+            location_key = cc_key
         for key, value in self.entity_info.iteritems():
             setattr(holding, key, value)
-        setattr(holding, 'schema:contentLocation', cc_key)
+        setattr(holding, 'schema:contentLocation', location_key)
         if self.instance is not None:
             holding.annotates = self.instance.redis_key
             self.redis_datastore.sadd("{0}:resourceRole:own".format(cc_key),
                                       self.instance.redis_key)
         holding.save()
+        if location_key != cc_key:
+            # Assumes local location
+            self.redis_datastore.sadd(location_key, holding.redis_key)
         if hasattr(holding, 'ils-bib-number'):
             self.redis_datastore.hset('ils-bib-numbers',
                                       getattr(holding, 'ils-bib-number'),

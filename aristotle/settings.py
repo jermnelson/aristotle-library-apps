@@ -81,7 +81,8 @@ STATICFILES_DIRS = (
     os.path.join(PROJECT_HOME, 'marc_batch/assets'),
     # os.path.join(PROJECT_HOME,'orders/assets'),
     os.path.join(PROJECT_HOME, 'portfolio/assets'),
-    os.path.join(PROJECT_HOME, 'themes/prospector/assets'),
+##    os.path.join(PROJECT_HOME, 'themes/prospector/assets'),
+    os.path.join(PROJECT_HOME, 'themes/colorado_college/assets'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -122,7 +123,8 @@ ROOT_URLCONF = 'aristotle.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'aristotle.wsgi.application'
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_HOME, 'themes/prospector/templates'),
+    os.path.join(PROJECT_HOME, 'themes/colorado_college/templates'),
+##    os.path.join(PROJECT_HOME, 'themes/prospector/templates'),
 ##    os.path.join(PROJECT_ROOT,'templates'),
 ##    os.path.join(PROJECT_ROOT,'templates/snippets/'),
 ##    os.path.join(PROJECT_HOME,'article_search/templates/'),
@@ -131,9 +133,9 @@ TEMPLATE_DIRS = (
 ##    os.path.join(PROJECT_HOME,'book_search/templates/book_search/snippets/'),
 ##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/'),
 ##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/snippets/'),
-    os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
-    os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
-##    os.path.join(PROJECT_HOME, 'etd/templates/etd/'),
+##    os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
+##    os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
+    os.path.join(PROJECT_HOME, 'etd/templates/etd/'),
 ##
 ##    os.path.join(PROJECT_HOME,'hours/templates/'),
 ##    os.path.join(PROJECT_HOME,'hours/templates/snippets/'),
@@ -143,8 +145,8 @@ TEMPLATE_DIRS = (
 ##    os.path.join(PROJECT_HOME,'orders/templates/'),
 ##    os.path.join(PROJECT_HOME,'orders/templates/snippets/'),
 ##    os.path.join(PROJECT_HOME,'person_authority/templates/'),
-##    os.path.join(PROJECT_HOME,'portfolio/templates/'),
-##    os.path.join(PROJECT_HOME,'portfolio/templates/portfolio/snippets/'),
+    os.path.join(PROJECT_HOME,'portfolio/templates/'),
+    os.path.join(PROJECT_HOME,'portfolio/templates/portfolio/snippets/'),
 ##    os.path.join(PROJECT_HOME,'reserve_search/templates/reserve_search/'),
 ##    os.path.join(PROJECT_HOME,'reserve_search/templates/reserve_search/snippets/'),
 ##    os.path.join(PROJECT_HOME,'title_search/templates/title_search/'),

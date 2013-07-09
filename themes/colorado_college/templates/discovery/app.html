@@ -1,0 +1,90 @@
+{% extends 'app-base.html' %}
+{% comment %}
+{% load colorado_college_extras %}
+{% endcomment %}
+
+{% block more-css %}
+<link href="{{ STATIC_URL }}css/colorado-college.css" rel="stylesheet">
+{% endblock %}
+
+
+<div class="container-fluid">
+
+{% block navbar %}
+ <div class="row-fluid cc-header-row">
+  <div class="span12 offset1">
+   <iframe src="/apps/website-header" class="website-header" scrolling="no"></iframe>
+  </div>
+ </div>
+{% endblock %}
+
+{% block body %}
+{# START main content #}
+{% if results %}
+  {% include 'discovery/cc-results.html' %}
+{% else %}
+ {# START Contact and Search Row #}
+ <div class="row-fluid contact-row" >
+  {% include 'cc-contact-info.html' %} 
+  {% include 'cc-search-widget.html' %}
+ {# END  Contact and Search Row #}
+ </div>
+ {% if message %}
+ {# START message #}
+ <div class="row-fluid">
+  <div class="span8 offset2">
+   {{ message }}
+  </div>
+ {# END message #}
+ </div>
+ {% endif %}
+ {# START Facet and Content #}
+ <div class="row-fluid">
+   {% include 'cc-left-column.html' %}
+   {% include 'cc-right-column.html' %}
+ {# END Facet and Content #}
+ </div>
+{# START Prospector graph #}
+ <div class="row-fluid">
+  <div class="span12">
+  <div id="prospector-rlsp-bar" style="height: 1500px; width: 800px"></div>
+  </div>
+{# END Prospector graph #}
+ </div>
+{% endif %}
+{% endblock %}
+
+{# END main content #}
+</div>
+
+{% block footer %}
+<div class="row-fluid">
+  <div class="span12 offset1">
+   <iframe src="/apps/website-footer" class="website-footer" scrolling="no"></iframe>
+  </div>
+</div>
+{% endblock %}
+
+{% block more_js %}
+<script src="https://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+ google.load('visualization', "1", {packages:["corechart"]});
+ google.setOnLoadCallback(drawProspectorRLSPHoldings);
+ function drawProspectorRLSPHoldings() {
+   var data = google.visualization.arrayToDataTable([ 
+    ['Library', 'Books', 'MovingImage', 'MusicalAudio', /*  'NotatedMusic', 'SoftwareOrMultimedia', 'Map', */
+     'Total Holdings'],
+    {% comment %}
+    {{ app|get_prospector_data }}
+    {% endcomment %}
+   ]);
+
+   var options = {
+     title: 'Prospector Library Holdings',
+     vAxis: {title: 'Library'},
+     hAxis: {title: 'Holdings'}};
+   var chart =new google.visualization.BarChart(document.getElementById('prospector-rlsp-bar'));
+   chart.draw(data, options);
+ }
+</script>
+{% endblock %}
