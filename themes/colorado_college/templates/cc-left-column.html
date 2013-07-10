@@ -1,70 +1,10 @@
+{% load colorado_college_extras %}
 <div class="span3 cc-left-column">
  {# START Facet Accordion #}
  <div class="accordion" id="cc-facets">
-  {# START Access Facet #}
-  <div class="accordion-group">
-    <div class="accordion-heading cc-facet-header">
-      <a href="#access-facet-body" 
-         class="accordion-toggle"
-         data-toggle="collapse"
-         data-parent="#cc-facets">
-       Access
-      </a>
-    </div>
-    <div class="accordion-body collapse in cc-facet-body"
-         id="access-facet-body">
-     <div class="accordion-inner">
-      <ul>
-        <li><a href="#">In the Library</a></li>
-        <li><a href="#">Online</a></li>
-      </ul>
-     </div> 
-    </div>
-  {# END Access Facet #}
-  </div> 
-  {# START Format Facet #}
-  <div class="accordion-group">
-    <div class="accordion-heading cc-facet-header">
-      <a href="#format-facet-body" 
-         class="accordion-toggle"
-         data-toggle="collapse"
-         data-parent="#cc-facets">
-      Format 
-      </a>
-    </div>
-    <div class="accordion-body collapse in cc-facet-body"
-         id="format-facet-body">
-     <div class="accordion-inner">
-      <ul>
-        <li><a href="#">In the Library</a></li>
-        <li><a href="#">Online</a></li>
-      </ul>
-     </div> 
-    </div>
-  {# END Format Facet #}
-  </div>
-  {# START Location Facet #}
-  <div class="accordion-group">
-    <div class="accordion-heading cc-facet-header">
-      <a href="#location-facet-body" 
-         class="accordion-toggle"
-         data-toggle="collapse"
-         data-parent="#cc-facets">
-       Location
-      </a>
-    </div>
-    <div class="accordion-body collapse cc-facet-body"
-         id="location-facet-body">
-     <div class="accordion-inner">
-      <ul>
-        <li><a href="#">In the Library</a></li>
-        <li><a href="#">Online</a></li>
-      </ul>
-     </div> 
-    </div>
-
-  {# END Location Facet #}
-  </div>
+ {% for facet in facet_list %}
+   {{ facet|display_facet }}
+ {% endfor %}
  {# END Facet Accordion #}
  </div>
 </div>

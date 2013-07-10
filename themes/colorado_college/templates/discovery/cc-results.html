@@ -1,0 +1,21 @@
+{% load colorado_college_extras %}
+<div class="row-fluid">
+ {% include 'cc-left-column.html' %}
+ {# START Results Pane #}
+ <div class="span9">
+  {# START Pagination View #}
+  <div class="row-fluid">
+   <div class="span8">
+    {{ shard_key|display_pagination  }}
+   {# END Pagination View #}
+   </div>
+  {# START Result Listings #}
+  {% for work in results %}
+    {{ work|display_brief }}
+   {% if not forloop.last %}
+   <hr>
+   {% endif %}
+  {% endfor %}
+ {# END Results Pane #}
+ </div> 
+</div>

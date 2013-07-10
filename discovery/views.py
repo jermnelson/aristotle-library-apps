@@ -9,7 +9,8 @@ import random
 
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import render
-from django.http import Http404, HttpResponse
+
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 
@@ -29,82 +30,76 @@ from aristotle.settings import INSTITUTION
 from aristotle.settings import REDIS_DATASTORE
 from aristotle.settings import FEATURED_INSTANCES
 
-
-
 def app(request):
     """
     Displays default view for the app
 
     :param request: HTTP Request
     """
-    results,search_query,message = [],None,None
+    request.session.flush()
+    results, search_query, message = [], None, None
     if request.method == 'POST':
-        query = request.POST.get('q')
-        request.session['q'] = query
-        type_of = request.POST.get('q_type')
-        if len(query) > 0:
+        search_form = SearchForm(request.POST)
+        if search_form.is_valid():
+            query = search_form.cleaned_data['query']
+            query_type = search_form.cleaned_data['query_type']
             bibframe_search = BIBFRAMESearch(q=query,
-                                             type_of=type_of,
+                                             type_of=query_type,
                                              redis_datastore=REDIS_DATASTORE)
             bibframe_search.run()
-            search_query = bibframe_search.query
-
-            message = 'Results for {0}'.format(query)
-            results = bibframe_search.creative_works()
-            facet_list = bibframe_search.facets
-            if len(results) < 1:
+            results = bibframe_search.creative_works()            
+            results_size = len(results)
+            if results_size < 1:
                 message = 'No Results found for {0}'.format(query)
             else:
+                message = "{0} Results for {1}".format(results_size,
+                                                       query)
                 request.session['rlsp-query'] = bibframe_search.search_key
-        else:
-            message = 'No search terms provided'
-            facet_list = get_facets(REDIS_DATASTORE)
+        return render(request,
+                  'discovery/app.html',
+                  {'app': APP,
+                   'example': {},
+                   'featured': [], 
+                   'feedback_form':FeedbackForm(
+                       {'subject':'Discovery App Results'}),
+                   'feedback_context':request.get_full_path(),
+                   'institution': INSTITUTION,
+                   'message':message,
+                   'facet_list': bibframe_search.facets,
+                   'news_feed': get_news(),
+                   'results':results,
+                   'shard_key': bibframe_search.active_shard,
+                   'search_form': search_form,
+                   ## 'search_query':search_query,
+                   'user': None})
+    if request.session.has_key('msg'):
+        message = request.session['msg']
+    search_form = SearchForm()
+    if request.session.has_key('rlsp-query'):
+        bf_search = BIBFRAMESearch(
+            search_key=request.session['rlsp-query'],
+            redis_datastore=REDIS_DATASTORE)
+        results = bf_search.creative_works()
+        facet_list = bf_search.facets
     else:
+        request.session.flush()
         facet_list = get_facets(REDIS_DATASTORE)
-#    example = {'work_path': os.path.join("apps",
-#                                    "discovery",
-#                            "work",
-#                                    string(random.randint(0,
-#   int(REDIS_DATASTORE.get('global bibframe:CreativeWork'))))}
-    featured_instances = []
-    for instance_key in FEATURED_INSTANCES:
-        cover_art_key = None
-        instance_link = '/apps/discovery/Instance/{0}'.format(
-            instance_key.split(":")[-1])
-        for annotation_key in REDIS_DATASTORE.smembers(
-            '{0}:hasAnnotation'.format(instance_key)):
-            if annotation_key.startswith('bf:CoverArt'):
-                cover_art_key = annotation_key
-        work_key = REDIS_DATASTORE.hget(instance_key,
-                                       'instanceOf')
-        cover_id = cover_art_key.split(":")[-1]
-        cover_url = '/apps/discovery/CoverArt/{0}-'.format(cover_id)
-        if REDIS_DATASTORE.hexists(cover_art_key, 'annotationBody'):
-            cover_url += "body.jpg"
-        else:
-            cover_url += 'thumbnail.jpg'
-        featured_instances.append(
-            {'cover': cover_url,
-             'title': REDIS_DATASTORE.hget(
-                '{0}:title'.format(work_key),
-                'rda:preferredTitleForTheWork'),
-             'instance': instance_link})
-    
-    return direct_to_template(request,
-                              'discovery/app.html',
-                              {'app': APP,
-                               'example': {},
+    featured_instances = __get_featured_instances__()
+    return render(request,
+                  'discovery/app.html',
+                  {'app': APP,
+                   'example': {},
                                'featured': featured_instances, 
                    'feedback_form':FeedbackForm({'subject':'Discovery App Home'}),
                    'feedback_context':request.get_full_path(),
-                               'institution': INSTITUTION,
+                   'institution': INSTITUTION,
                    'message':message,
-                               'facet_list': facet_list,
-                               'news_feed': get_news(),
+                   'facet_list': facet_list,
+                   'news_feed': get_news(),
                    'results':results,
                    'search_form': SearchForm(),
-                   'search_query':search_query,
-                               'user': None})
+                   ## 'search_query':search_query,
+                   'user': None})
 
 
 def creative_work(request, redis_id):
@@ -518,4 +513,30 @@ def bibframe_json_router(request,
     json_linked_data = get_json_linked_data(redis_datastore=REDIS_DATASTORE,
                                             redis_key=bibframe_key)
     return json_linked_data
-    
+
+def __get_featured_instances__(featured_instances=FEATURED_INSTANCES):
+    "Helper function iterates through featured instances returns list"
+    output = []
+    for instance_key in featured_instances:
+        cover_art_key = None
+        instance_link = '/apps/discovery/Instance/{0}'.format(
+            instance_key.split(":")[-1])
+        for annotation_key in REDIS_DATASTORE.smembers(
+            '{0}:hasAnnotation'.format(instance_key)):
+            if annotation_key.startswith('bf:CoverArt'):
+                cover_art_key = annotation_key
+        work_key = REDIS_DATASTORE.hget(instance_key,
+                                       'instanceOf')
+        cover_id = cover_art_key.split(":")[-1]
+        cover_url = '/apps/discovery/CoverArt/{0}-'.format(cover_id)
+        if REDIS_DATASTORE.hexists(cover_art_key, 'annotationBody'):
+            cover_url += "body.jpg"
+        else:
+            cover_url += 'thumbnail.jpg'
+        output.append(
+            {'cover': cover_url,
+             'title': REDIS_DATASTORE.hget(
+                '{0}:title'.format(work_key),
+                'rda:preferredTitleForTheWork'),
+             'instance': instance_link})
+    return output

@@ -20,15 +20,15 @@
 
 {% block body %}
 {# START main content #}
-{% if results %}
-  {% include 'discovery/cc-results.html' %}
-{% else %}
  {# START Contact and Search Row #}
  <div class="row-fluid contact-row" >
   {% include 'cc-contact-info.html' %} 
   {% include 'cc-search-widget.html' %}
  {# END  Contact and Search Row #}
  </div>
+{% if results %}
+  {% include 'discovery/cc-results.html' %}
+{% else %}
  {% if message %}
  {# START message #}
  <div class="row-fluid">

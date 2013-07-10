@@ -1,0 +1,76 @@
+{% extends 'app-base.html' %}
+{% load discovery_extras %}
+{% load colorado_college_extras %}
+
+{% block more-css %}
+<link href="{{ STATIC_URL }}css/colorado-college.css" rel="stylesheet">
+{% endblock %}
+
+{# START container DIV #}
+<div class="container-fluid">
+
+{% block navbar %}
+ <div class="row-fluid cc-header-row">
+  <div class="span12 offset1">
+   <iframe src="/apps/website-header" class="website-header" scrolling="no"></iframe>
+  </div>
+ </div>
+{% endblock %}
+
+{% block body %}
+<div class="row-fluid">
+ <div class="span10 offset1" >
+  <ul class="breadcrumb  cc-breadcrumb">
+   <li><a href="/apps/discovery">Discovery</a> <span class="divider">/</span></li>
+   <li><a href="/apps/discovery/{{  creative_work.name }}/">{{  creative_work.name }}</a> 
+    <span class="divider">/</span></li>
+  <li class="active"><a href="/apps/discovery/{{  creative_work.name }}/{{ creative_work.redis_id }}">
+   {{ creative_work.redis_id }}</a></li>
+
+  </ul>
+ </div>
+</div>
+<div class="row-fluid">
+  <div class="span7 offset1">
+   <div class="cc-about-work">
+    <h3>{{ creative_work|get_title }}</h3>
+    <h2>About this {{ creative_work.name }}</h2>
+    <dl class="dl-horizontal">
+      {% if creative_work.dimensions %}
+      <dt>Dimensions</dt>
+      <dd>{{ creative_work.dimensions }}</dd>
+      {% endif %}
+      {% if creative_work.extent %}
+      <dt>Extent</dt>
+      <dd>{{ creative_work.extent }}</dd>
+      {% endif %}
+      {% if creative_work.responsibilityStatement  %}
+       <dt>Statement of Responsiblity</dt>
+       <dd>{{ creative_work.responsibilityStatement }}</dd>
+      {% endif %}
+    </dl>
+   </div>
+  </div>
+  <aside class="span3 cc-actions">
+    <h1>You can...</h1>
+  </aside>
+</div>
+{# START Instances Row #}
+<div class="row-fluid">
+ <div class="span11 offset1">
+  {{ creative_work|display_instances }}
+ </div>
+{# END Instancs Row #}
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="row-fluid">
+  <div class="span12 offset1">
+   <iframe src="/apps/website-footer" class="website-footer" scrolling="no"></iframe>
+  </div>
+</div>
+{% endblock %}
+
+{# END container DIV #}
+</div>

@@ -6,6 +6,7 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_HOME = os.path.split(PROJECT_ROOT)[0]
 DEFAULT_CHARSET = 'utf-8'
 DEBUG = True
+OFFSET = 25 # Default shard size for discover results is 25
 TEMPLATE_DEBUG = DEBUG
 # Determines if Aristotle Library System runs with a Redis Cluster or
 # run as a single Redis Instance
@@ -133,8 +134,8 @@ TEMPLATE_DIRS = (
 ##    os.path.join(PROJECT_HOME,'book_search/templates/book_search/snippets/'),
 ##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/'),
 ##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/snippets/'),
-##    os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
-##    os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
+    os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
+    os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
     os.path.join(PROJECT_HOME, 'etd/templates/etd/'),
 ##
 ##    os.path.join(PROJECT_HOME,'hours/templates/'),
@@ -159,6 +160,7 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.humanize',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',

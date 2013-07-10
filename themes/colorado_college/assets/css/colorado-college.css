@@ -1,3 +1,44 @@
+.cc-about-work {
+  background-color: #F1ECE6;
+  border: 1px solid #CCCCCC;
+  margin: .5em;
+  padding: 1em;
+ }
+
+.cc-about-work h2 {
+ color: #2A466D;
+ font-size: 1.857em;
+ border-bottom: 1px solid #BBBBBB;
+}
+
+.cc-about-work h3 {
+ color: #000000;
+ font-size: 1.3em;
+}
+
+.cc-actions {
+ background-color: #F1ECE5;
+ border: 1px solid #E7E4E0;
+ padding: 14px 20px;
+ font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.cc-actions h1 {
+ color: #2A466D;
+ font-size: 1.857em;
+ font-weight: normal;
+ border-bottom: 1px solid #BBBBBB;
+}
+
+.cc-breadcrumb {
+ background-color: #2D4873;
+ color: #FFFFFF;
+}
+
+.cc-breadcrumb a, a.visited {
+ color: #FFFFFF;
+
+}
 .cc-contact {
  background-color: #2D4873;
  color: #FFFFFF;
@@ -92,3 +133,9 @@ iframe.website-header {
   height: 325px;
   width: 1020px;
 }
+
+  
+
+}
+
+

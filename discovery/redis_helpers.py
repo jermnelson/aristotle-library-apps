@@ -4,7 +4,7 @@
 __author__ = "Jeremy Nelson"
 import json
 import time
-from aristotle.settings import REDIS_DATASTORE
+from aristotle.settings import REDIS_DATASTORE, OFFSET
 from bibframe.models import CREATIVE_WORK_CLASSES
 import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
@@ -154,9 +154,10 @@ class BIBFRAMESearch(object):
         self.redis_datastore = kwargs.get('redis_datastore',
                                           REDIS_DATASTORE)
         search_key = kwargs.get('search_key', None)
+        self.offset = kwargs.get('offset', OFFSET)
         if search_key is not None:
             # Checks to see if history key exists in datastore
-            if not self.redis_datastore.has_key(search_key):
+            if not self.redis_datastore.exists(search_key):
                 # Search key has expired set to None to create a new search
                 # key
                 search_key = None
@@ -167,8 +168,16 @@ class BIBFRAMESearch(object):
         if search_key is None:
             self.search_key = 'rlsp-query:{0}'.format(
                                    self.redis_datastore.incr('global rlsp-query'))
-            self.redis_datastore.expire(self.search_key, 900)
-        self.facets, self.fails = [], []
+            
+            shard_incr = self.redis_datastore.incr(
+                'global {0}:shard'.format(self.search_key))
+            self.active_shard = "{0}:shard:{1}".format(
+                self.search_key,
+                shard_incr)
+            self.redis_datastore.zadd(self.search_key,
+                                      float(shard_incr),
+                                      self.active_shard)
+        self.facets, self.fails  = [], []
 
     def __json__(self, with_results=True):
         """
@@ -182,10 +191,13 @@ class BIBFRAMESearch(object):
         info = {"query":self.query,
                 "type": self.type_of,
                 "query-key":self.search_key}
-        if with_results is True: 
-            info['works'] = list(self.redis_datastore.smembers(self.search_key))
-        else:
-            info['works'] = self.redis_datastore.scard(self.search_key)
+##        if with_results is True:
+##            for shard_key in self.redis_datastore.zrange(self.search_key,
+##                                                         0,
+##                                                         -1):
+##                info['works'].extend(self.redis_datastore
+##        else:
+        info['works'] = self.redis_datastore.zcard(self.search_key)
         return json.dumps(info) 
 
 
@@ -216,24 +228,47 @@ class BIBFRAMESearch(object):
             self.number_med()
         elif self.type_of == 't':
             self.title()
+        # Resets active shard
+        self.active_shard = self.redis_datastore.zrange(
+            self.search_key,
+            0,
+            0)[0]
         self.generate_facets()
         self.redis_datastore.zadd('bibframe-searches', 
                                  time.time(),
                                  self.__json__(with_results=False))
+        # Should set query and all shard keys to expire in 15 minutes
+        for shard_key in self.redis_datastore.zrange(
+            self.search_key,
+            0,
+            -1):
+            self.redis_datastore.expire(shard_key, 900)
+        self.redis_datastore.expire(self.search_key, 900)
 
 
     def __add_to_query__(self, work_key):
         "Adds all found bf:Instances to search"
+        # First check to see if active shard is less than global
+        # offset
+        if self.redis_datastore.scard(self.active_shard) > self.offset:
+            redis_incr = self.redis_datastore.incr(
+                'global {0}:shard'.format(self.search_key))
+            self.active_shard = "{0}:shard:{1}".format(
+                self.search_key,
+                redis_incr)
+            self.redis_datastore.zadd(self.search_key,
+                                      float(redis_incr),
+                                      self.active_shard)
         instance_key = self.redis_datastore.hget(work_key,
                                                  'hasInstance')
         if instance_key is None:
             work_instances = self.redis_datastore.smembers(
                      '{0}:hasInstance'.format(work_key))
             for instance_key in list(work_instances):
-                self.redis_datastore.sadd(self.search_key,
+                self.redis_datastore.sadd(self.active_shard,
                                           instance_key)
         else:
-            self.redis_datastore.sadd(self.search_key,
+            self.redis_datastore.sadd(self.active_shard,
                                       instance_key)
 
     def author(self):
@@ -243,51 +278,46 @@ class BIBFRAMESearch(object):
             self.__add_to_query__(work_key)
 
 
-    def creative_works(self):
-        works, work_class = [], None
-        for entity_key in self.redis_datastore.smembers(self.search_key):
+    def creative_works(self, shard=0):
+        works, work_class = [], bibframe.models.Work
+        shard_key = self.redis_datastore.zrange(self.search_key,
+                                                shard,
+                                                shard)[0]
+        for entity_key in self.redis_datastore.smembers(shard_key):
+            
             work_key = None
             # If entity is bf:Instance, get entity's Creative Work
             if entity_key.startswith('bf:Instance'):
                 work_key = self.redis_datastore.hget(entity_key,
                                                      'instanceOf')
-            # Checks to see if entity_key is a Creative Work or child
             else:
-                for work in bibframe.models.CREATIVE_WORK_CLASSES:
-                    prefix = "bf:{0}".format(work)
-                    if entity_key.startswith(prefix):
-                        work_class = getattr(bibframe.models,
-                                             work)
-                        work_key = entity_key
-                    
-            
+                work_key = entity_key
+            # Checks to see if entity_key is a Creative Work or child 
+            for work in bibframe.models.CREATIVE_WORK_CLASSES:
+                prefix = "bf:{0}".format(work)
+                if work_key.startswith(prefix):
+                    work_class = getattr(bibframe.models,
+                                         work)
             if work_key is not None:
-                if work_class is not None:
-                    works.append(work_class(redis_key=work_key,
-                                            redis_datastore=self.redis_datastore))
-                else:
-                    # Default Creative Work
-                    works.append(
-                        bibframe.models.Work(redis_key=work_key,
-                                             redis_datastore=self.redis_datastore))
+                works.append(work_class(redis_key=work_key,
+                                        redis_datastore=self.redis_datastore))
         return works
         
 
     def __generate_facet__(self, name, sort_key):
-        facet = {'name': name,
-                 'items': [],
-                 'count': 0}
+        facet = Facet(name=name,
+                      redis=self.redis_datastore)
         for facet_key in self.redis_datastore.zrevrange(sort_key,
                                                       0,
                                                       -1):
             entity_keys = self.redis_datastore.sinter(facet_key, 
-                                                      self.search_key)
+                                                      self.active_shard)
             entity_count = len(entity_keys)
             if entity_count > 0:
-                facet['items'].append(
-                    {'name': facet_key.split(":")[-1],
-                     'count': entity_count})
-                facet['count'] += entity_count
+                facet_item = FacetItem(name=facet_key.split(":")[-1],
+                                       key=facet_key,
+                                       redis=self.redis_datastore)
+                facet.items.append(facet_item)
         return facet
             
 
@@ -301,22 +331,22 @@ class BIBFRAMESearch(object):
                                                    'bf:Annotation:Facet:Formats'))
         self.facets.append(self.__generate_facet__('Languages',
                                                    'bf:Annotation:Facet:Languages'))
-        lib_location = {'name': 'Libraries',
-                        'items': [],
-                        'count': 0}
-        for lib_key in  self.redis_datastore.hvals('prospector-institution-codes'):
-            lib_owner_key = "{0}:resourceRole:own".format(lib_key)
-            instance_keys = self.redis_datastore.smembers(lib_owner_key)
-            search_set = self.redis_datastore.smembers(self.search_key)
-            lib_results = instance_keys.intersection(search_set)
-            if len(lib_results) > 0:
-                lib_location['items'].append({'name': self.redis_datastore.hget(lib_key, 
-                                                                             'label'),
-                                              'count': len(lib_results)})
-            lib_location['count'] += len(lib_results)
-        lib_location['items'].sort(key=lambda x: x.get('count', 0))
-        lib_location['items'].reverse()
-        self.facets.append(lib_location)
+##        lib_location = {'name': 'Libraries',
+##                        'items': [],
+##                        'count': 0}
+##        for lib_key in  self.redis_datastore.hvals('prospector-institution-codes'):
+##            lib_owner_key = "{0}:resourceRole:own".format(lib_key)
+##            instance_keys = self.redis_datastore.smembers(lib_owner_key)
+##            search_set = self.redis_datastore.smembers(self.search_key)
+##            lib_results = instance_keys.intersection(search_set)
+##            if len(lib_results) > 0:
+##                lib_location['items'].append({'name': self.redis_datastore.hget(lib_key, 
+##                                                                             'label'),
+##                                              'count': len(lib_results)})
+##            lib_location['count'] += len(lib_results)
+##        lib_location['items'].sort(key=lambda x: x.get('count', 0))
+##        lib_location['items'].reverse()
+##        self.facets.append(lib_location)
                 
 
     def journal_title(self):

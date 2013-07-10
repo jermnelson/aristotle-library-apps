@@ -1,0 +1,10 @@
+<div class="pagination">
+ <ul>
+   <li><a href="/apps/discovery/filter?redis-key={{ previous }}">&laquo; Previous</a></li>
+   {% for shard in shards %}
+    <li {%if forloop.counter0 == shard_num %}class="active"{% endif %}><a href="/apps/discovery">{{ forloop.counter }}</a></li>
+   {% endfor %}
+   <li><a href=#">1</a></li>
+   <li><a href="/apps/discovery/filter?redis-key={{ next }}">Next &raquo;</a></li>      
+ </ul> 
+</div>

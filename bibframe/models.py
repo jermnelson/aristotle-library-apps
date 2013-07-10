@@ -276,6 +276,7 @@ class RedisBibframeInterface(object):
             self.redis_datastore = kwargs.pop('redis_datastore')
         if kwargs.has_key('redis_key'):
             self.redis_key = kwargs.pop('redis_key')
+            self.redis_id = self.redis_key.split(":")[-1]
         self.__load__(**kwargs)
         
     
@@ -326,9 +327,10 @@ class RedisBibframeInterface(object):
         if self.redis_datastore is None:
             raise ValueError("Cannot save, no redis_datastore")
         if self.redis_key is None:
-            count = self.redis_datastore.incr("global bf:{0}".format(self.name))
+            self.redis_id = self.redis_datastore.incr(
+                "global bf:{0}".format(self.name))
             self.redis_key = "bf:{0}:{1}".format(self.name,
-                                                 count)
+                                                 self.redis_id)
             self.redis_datastore.hset(self.redis_key,
                                     'created_on',
                                     datetime.datetime.utcnow().isoformat())

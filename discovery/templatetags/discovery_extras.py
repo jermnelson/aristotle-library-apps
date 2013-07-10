@@ -230,7 +230,8 @@ def get_cover_art(instance):
     :rtype: HTML or 0-length string
     """
     output = ''
-    for redis_key in REDIS_DATASTORE.smembers('{0}:hasAnnotation'.format(instance.redis_key)):
+    for redis_key in REDIS_DATASTORE.smembers(
+        '{0}:hasAnnotation'.format(instance.redis_key)):
         if redis_key.startswith('bf:CoverArt'):
            cover_art = REDIS_DATASTORE.hgetall(redis_key)
            cover_art_template = loader.get_template('cover-art-medium.html')
@@ -509,9 +510,11 @@ def get_title(bibframe_entity):
                     errors="ignore")
         if hasattr(bibframe_entity,
                    'instanceOf'):
+            title_entity_key = REDIS_DATASTORE.hget(bibframe_entity.instanceOf,
+                                                    'title')
             preferred_title = unicode(
-                REDIS_DATASTORE.hget('{0}:title'.format(bibframe_entity.instanceOf),
-                                     'rda:preferredTitleForTheWork'),
+                REDIS_DATASTORE.hget(title_entity_key,
+                                     'label'),
                 encoding='utf-8',
                 errors="ignore")
         return mark_safe(preferred_title)

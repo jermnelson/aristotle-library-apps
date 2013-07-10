@@ -1,4 +1,4 @@
-{% load 'colorado_college_extras' %}
+{% load humanize %}
 {# START Facet #}
 <div class="accordion-group">
  <div class="accordion-heading cc-facet-header">
@@ -6,17 +6,17 @@
      class="accordion-toggle"
      data-toggle="collapse"
       data-parent="#cc-facets">
-      {{ facet.label }} 
+      {{ facet.name }} 
       </a>
     </div>
     <div class="accordion-body collapse {% if expand %} in {%endif %}cc-facet-body"
-         id=" {{ facet.name }}-facet-body">
+         id="{{ facet.name }}-facet-body">
      <div class="accordion-inner">
       <ul> 
       {% for item in facet.items %}
        <li>
          <a href="#">
-          {{ item.label }} ({{ item.count }}) 
+          {{ item.name }} ({{ item.count|intcomma }}) 
          </a>
          {% if item.children %}
          <ul>
@@ -27,6 +27,7 @@
          {% endif %}
        </li>
       {% endfor %}
+
       </ul>
      </div> 
     </div>

@@ -1,0 +1,14 @@
+{% load discovery_extras %}
+{% load colorado_college_extras %}
+<ul class="thumbnails">
+ {% for instance in instances %}
+ <li class="span3">
+  <div class="thumbnail">
+   {{ instance|get_cover_art }}
+   <img src="/static/img/publishing48x48.png">
+   <h3><a href="/apps/discovery/Instance/{{ instance.redis_id }}/">{{ instance.redis_key }}</a></h3>
+   {{ instance|display_instance_summary }}     
+  </div>
+ </li>
+ {% endfor %}
+</ul>

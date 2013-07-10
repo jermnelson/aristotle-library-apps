@@ -1,13 +1,10 @@
 <div class="span7">
   <div class="cc-searchbox">
-   <form class="form-search" method="POST" action="">
-    <select>
-     <option>Keyword</option>
-     <option>Author</option>
-     <option>Title</option>
-     <option>Subject</option>
-    </select>
-    <input type="text" class="input-medium search-query" name="q"> 
+   <form class="form-search" method="POST" action="/apps/discovery/">
+   {% csrf_token %}
+   {{ search_form.query_type }}
+   {{ search_form.query }} 
+    {% comment %}<input type="text" class="input-medium search-query" name="q"> {% endcomment %}
     <button type="submit" class="btn">Go</button>
    </form>
   </div>
