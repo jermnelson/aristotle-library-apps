@@ -18,7 +18,7 @@ from bibframe.models import Annotation, Organization, Work, Holding, Instance
 from bibframe.models import Person, Book, Cartography, Manuscript, Map, MixedMaterial  
 from bibframe.models import MovingImage, MusicalAudio, NonmusicalAudio  
 from bibframe.models import NotatedMusic, SoftwareOrMultimedia, StillImage
-from bibframe.models import TitleEntity, ThreeDimensionalObject
+from bibframe.models import RemoteSensingImage, TitleEntity, ThreeDimensionalObject
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.ingesters import tutt_maps
 from call_number.redis_helpers import generate_call_number_app
