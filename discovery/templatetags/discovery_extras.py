@@ -155,7 +155,7 @@ def about_organization(organization):
     
     return mark_safe(org_detail_template.render(Context({'stats': stats})))
     
-
+    
 def get_annotations(instance):
     """
     Returns Library Holdings and Facets
@@ -500,6 +500,7 @@ def get_title(bibframe_entity):
     :rtype: string
     """
     try:
+        # bf:CreativeWork or derivative classes
         if hasattr(bibframe_entity, 'title'):
             if bibframe_entity.title is not None:
                 title_entity_key = bibframe_entity.title
@@ -508,6 +509,7 @@ def get_title(bibframe_entity):
                                          'label'),
                     encoding='utf-8',
                     errors="ignore")
+        # bf:Instance
         if hasattr(bibframe_entity,
                    'instanceOf'):
             title_entity_key = REDIS_DATASTORE.hget(bibframe_entity.instanceOf,
@@ -517,6 +519,21 @@ def get_title(bibframe_entity):
                                      'label'),
                 encoding='utf-8',
                 errors="ignore")
+        # bf:Annotation or derivative classes
+        if hasattr(bibframe_entity,
+                   'annotates'):
+            work_key = REDIS_DATASTORE.hget(
+                bibframe_entity.annotates,
+                'instanceOf')
+            title_entity_key = REDIS_DATASTORE.hget(
+                work_key,
+                'title')
+            preferred_title = unicode(
+                REDIS_DATASTORE.hget(title_entity_key,
+                                     'label'),
+                encoding='utf-8',
+                errors="ignore")
+        
         return mark_safe(preferred_title)
     except:
         return ''

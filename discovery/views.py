@@ -15,7 +15,7 @@ from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 
 from app_settings import APP, PAGINATION_SIZE
-from bibframe.models import Work,Instance,Person
+from bibframe.models import Work, Holding, Instance, Person
 from bibframe.models import CREATIVE_WORK_CLASSES
 
 import bibframe.models
@@ -445,6 +445,23 @@ def bibframe_router(request,
                    'institution': INSTITUTION,
                    'search_form': SearchForm(),
                    'user':None})
+    elif entity_name == 'Holding':
+        holding = Holding(
+            redis_datastore=REDIS_DATASTORE,
+            redis_key=bibframe_key)
+        return render(request,
+                      'discovery/holding.html',
+                      {'app': APP,
+                       'feedback_form':FeedbackForm(
+                           {'subject':'Discovery App Holding'}),
+                       'feedback_context':request.get_full_path(),
+                       'holding': holding,
+                       'holding_json': get_json_linked_data(
+                           redis_datastore=REDIS_DATASTORE,
+                           redis_key=bibframe_key),
+                       'institution': INSTITUTION,
+                       'search_form': SearchForm(),
+                       'user': request.user})
     elif entity_name == 'Instance':
         instance = Instance(
             redis_datastore=REDIS_DATASTORE,
