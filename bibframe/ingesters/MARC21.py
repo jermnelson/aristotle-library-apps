@@ -1555,8 +1555,24 @@ class MARC21toCreativeWork(MARC21Ingester):
         field007 = self.record['007']
         field336 = self.record['336']
         if leader[6] == 'a':
+            if field007 is not None:
+                if field007[0] == 'a':
+                    self.work_class = Map
+                elif field007[0] == 'd':
+                    self.work_class = Globe
+                elif field007[0] == 'h': # Microfilm
+                    self.work_class = StillImage
+                elif field007[0] == 'q': # Notated music
+                    self.work_class = NotatedMusic
+                elif field007[0] == 'r':
+                    self.work_class = RemoteSensingImage
+                elif field007[0] == 's':
+                    self.work_class = NonmusicalAudio
+                elif ['m', 'v'].count(field007[0]) > 0:
+                    self.work_class = MovingImage
+            if self.work_class == None:
             # Book is the default for Language Material
-            self.work_class = Book
+                self.work_class = Book
         elif leader[6] == 'c':
             self.work_class = NotatedMusic
         elif leader[6] == 'd':
