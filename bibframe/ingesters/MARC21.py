@@ -2115,7 +2115,7 @@ def ingest_marcfile(**kwargs):
     marc_filename = kwargs.get("marc_filename", None)
     redis_datastore = kwargs.get("redis_datastore",
                                  REDIS_DATASTORE)
-    if IS_CONSORTIUM is not None:
+    if IS_CONSORTIUM is not None or IS_CONSORTIUM is True:
         # Loads Prospector Consortium Libraries
         from themes.prospector.redis_helpers import load_prospector_orgs
         if not redis_datastore.exists('prospector-institution-codes'):
