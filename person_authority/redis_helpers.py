@@ -67,41 +67,41 @@ def get_or_generate_person(person_attributes,
     :param redis_datastore: BIBFRAME Redis datastore
     """
     person_metaphones, person_metaphones_keys, person_keys = [],[],[]
-    dob_keys,dod_keys = [],[]
+    dob_keys, dod_keys, matched_keys = [], [], []
     if person_attributes.has_key("rda:preferredNameForThePerson"):
         raw_name = person_attributes.get("rda:preferredNameForThePerson")
         person_metaphones = process_name(raw_name)
         person_metaphones_keys = ["person-metaphones:{0}".format(x) for x in person_metaphones]
         person_keys = redis_datastore.sinter(person_metaphones_keys)
-    if person_attributes.has_key("schema:dateOfBirth"):
-        raw_dob = person_attributes.get('schema:dateOfBirth')
-        dob_keys = redis_datastore.smembers('person-dob:{0}'.format(raw_dob))
-    if person_attributes.has_key("schema:dateOfDeath"):
-        raw_dod = person_attributes.get('schema:dateOfDeath')
-        dod_keys = redis_datastore.smembers('person-dod:{0}'.format(raw_dod))
     # No match on names, assume Person is not in the datastore and add to datastore
     if len(person_keys) <= 0:
         return add_person(person_attributes,
                           person_metaphones_keys,
                           redis_datastore)
-    # Try extracting the union of person_metaphone,dob_metaphones, and
-    # dod_metaphones
-    found_persons = []
-    if len(person_metaphones_keys) > 0 and\
-       len(dob_keys) > 0 and\
-       len(dod_keys) > 0:
-        found_persons = [get_person(redis_key,redis_datastore) for redis_key in list(person_keys.intersection(dob_keys,dod_keys))]
+    if person_attributes.has_key("schema:dateOfBirth"):
+        raw_dob = person_attributes.get('schema:dateOfBirth')
+        dob_key = 'person-dob:{0}'.format(raw_dob)
+        dob_keys = redis_datastore.smembers(dob_key)
         
-    # Matches on person_metaphones_keys and dob_keys (for creators that
-    # are still living)
-    elif len(person_metaphones_keys) > 0 and\
-         len(dob_keys) > 0:
-        found_persons = [get_person(redis_key, redis_datastore)
-                         for redis_key in list(
-                             person_keys.intersection(dob_keys))]
+        matched_keys = person_keys.intersection(dob_keys)
+    if person_attributes.has_key("schema:dateOfDeath"):
+        raw_dod = person_attributes.get('schema:dateOfDeath')
+        dod_keys = redis_datastore.smembers('person-dod:{0}'.format(raw_dod))
+        if len(dod_keys) > 0:
+            if len(dob_keys) > 0:
+                matched_keys = person_keys.intersection(
+                    dob_keys,
+                    dod_keys)
+            else:
+                matched_keys = person_keys.intersection(
+                    dod_keys)
+    if len(matched_keys) < 1:
+        return add_person(person_attributes,
+                          person_metaphones_keys,
+                          redis_datastore)
     else:
-        found_persons = [get_person(redis_key, redis_datastore)
-                        for redis_key in list(person_keys)]
+        found_persons = [get_person(redis_key,redis_datastore)
+                         for redis_key in list(matched_keys)]
     if len(found_persons) == 1:
         return found_persons[0]
     elif len(found_persons) > 0:        

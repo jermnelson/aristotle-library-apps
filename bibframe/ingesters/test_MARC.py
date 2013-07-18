@@ -650,7 +650,8 @@ class TestMARC21toLibraryHolding(TestCase):
                                            subfields=['a','xwer b12345 i4567']))
 
         self.lib_holding_ingester = MARC21toLibraryHolding(redis_datastore=TEST_REDIS,
-                                                           record=marc_record)
+                                                           record=marc_record,
+                                                           local=False)
         self.lib_holding_ingester.ingest()
 
 

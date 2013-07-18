@@ -1138,6 +1138,7 @@ class MARC21toLibraryHolding(MARC21Ingester):
     def __init__(self,**kwargs):
         super(MARC21toLibraryHolding,self).__init__(**kwargs)
         self.holdings = []
+        self.is_local = kwargs.get('local', True)
         self.instance = kwargs.get('instance', None)
 
     def __add_cc_holdings__(self, cc_key='bf:Organization:1'):
@@ -1220,13 +1221,12 @@ class MARC21toLibraryHolding(MARC21Ingester):
         """
         Creates one or more Library Holdings based on values in the entity
         """
-        
-        if settings.IS_CONSORTIUM is True:
-            self.__add_consortium_holdings__()
-        else:
+        if self.is_local is True:
             # CC specific III MARC record format, should be modified to be more
             # generic
             self.__add_cc_holdings__()
+        else:
+            self.__add_consortium_holdings__()
  
 
     def ingest(self):

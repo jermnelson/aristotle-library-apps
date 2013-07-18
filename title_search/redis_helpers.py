@@ -47,7 +47,6 @@ def add_metaphone_key(metaphone, title_keys, redis_server):
     metaphone_key = "all-metaphones:{0}".format(metaphone)
     for title_key in title_keys:
         redis_server.sadd(metaphone_key, title_key)
-    title_pipeline.execute()
 
 
 def add_or_get_metaphone_title(raw_title, redis_server):

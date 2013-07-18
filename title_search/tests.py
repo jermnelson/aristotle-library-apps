@@ -1,7 +1,6 @@
-###############################################################################
-# Title Search Unit Tests
-#
-###############################################################################
+"""
+Title Search Unit Tests
+"""
 __author__ = "Jeremy Nelson"
 
 from django.test import TestCase
@@ -31,21 +30,6 @@ class AddOrGetMetaphoneTitleTest(TestCase):
 
     def tearDown(self):
         test_ds.flushdb()
-
-class AddOrGetNaiveteTitleTest(TestCase):
-
-    def setUp(self):
-        self.old_man_keys = add_or_get_title('The Old Man in the Sea',
-            test_ds)
-
-    def test_old_man_in_sea(self):
-	for key in self.old_man_keys:
-	    self.assert_(test_ds.exists(key))
-
-    def tearDown(self):
-        test_ds.flushdb()
-
-
 
 class AddTitleMetaphoneTest(TestCase):
 
