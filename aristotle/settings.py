@@ -123,39 +123,11 @@ ROOT_URLCONF = 'aristotle.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'aristotle.wsgi.application'
-TEMPLATE_DIRS = (
-    os.path.join(PROJECT_HOME, 'themes/colorado_college/templates'),
-##    os.path.join(PROJECT_HOME, 'themes/prospector/templates'),
-##    os.path.join(PROJECT_ROOT,'templates'),
-##    os.path.join(PROJECT_ROOT,'templates/snippets/'),
-##    os.path.join(PROJECT_HOME,'article_search/templates/'),
-##    os.path.join(PROJECT_HOME,'article_search/templates/snippets/'),
-##    os.path.join(PROJECT_HOME,'book_search/templates/book_search/'),
-##    os.path.join(PROJECT_HOME,'book_search/templates/book_search/snippets/'),
-##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/'),
-##    os.path.join(PROJECT_HOME,'call_number/templates/call_number/snippets/'),
-    os.path.join(PROJECT_HOME,'discovery/templates/discovery/'),
-    os.path.join(PROJECT_HOME,'discovery/templates/discovery/snippets/'),
-    os.path.join(PROJECT_HOME, 'etd/templates/etd/'),
-##
-##    os.path.join(PROJECT_HOME,'hours/templates/'),
-##    os.path.join(PROJECT_HOME,'hours/templates/snippets/'),
-    os.path.join(PROJECT_HOME,'marc_batch/templates/marc_batch/'),
-##    os.path.join(PROJECT_HOME,'bibframe/templates/bibframe/'),
-##    #os.path.join(PROJECT_HOME,'marc_batch/templates/snippets/'),
-##    os.path.join(PROJECT_HOME,'orders/templates/'),
-##    os.path.join(PROJECT_HOME,'orders/templates/snippets/'),
-##    os.path.join(PROJECT_HOME,'person_authority/templates/'),
-    os.path.join(PROJECT_HOME,'portfolio/templates/'),
-    os.path.join(PROJECT_HOME,'portfolio/templates/portfolio/snippets/'),
-##    os.path.join(PROJECT_HOME,'reserve_search/templates/reserve_search/'),
-##    os.path.join(PROJECT_HOME,'reserve_search/templates/reserve_search/snippets/'),
-##    os.path.join(PROJECT_HOME,'title_search/templates/title_search/'),
-##    os.path.join(PROJECT_HOME,'title_search/templates/title_search/snippets/'),
+TEMPLATE_DIRS = [
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-)
+]
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -205,6 +177,7 @@ LOGGING = {
 try:
     from local_settings import *
     INSTALLED_APPS.extend(ACTIVE_APPS)
+    TEMPLATE_DIRS.extend(ACTIVE_TEMPLATE_DIRS)
 ##    if REDIS_CLUSTER_MODE is True:
 ##   
 ##        REDIS_DATASTORE = REDIS_DATASTORE
