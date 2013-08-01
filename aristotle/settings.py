@@ -69,25 +69,13 @@ MEDIA_URL = ''
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'assets'),
-    os.path.join(PROJECT_HOME, 'article_search/assets'),
-    os.path.join(PROJECT_HOME, 'bibframe/assets'),
-    os.path.join(PROJECT_HOME, 'book_search/assets'),
-    os.path.join(PROJECT_HOME, 'call_number/assets'),
-    os.path.join(PROJECT_HOME, 'discovery/assets'),
-    os.path.join(PROJECT_HOME, 'dbfinder/assets'),
-    os.path.join(PROJECT_HOME, 'etd/assets'),
-    # os.path.join(PROJECT_HOME,'hours/assets'),
-    os.path.join(PROJECT_HOME, 'marc_batch/assets'),
-    # os.path.join(PROJECT_HOME,'orders/assets'),
-    os.path.join(PROJECT_HOME, 'portfolio/assets'),
-##    os.path.join(PROJECT_HOME, 'themes/prospector/assets'),
-    os.path.join(PROJECT_HOME, 'themes/colorado_college/assets'),
+STATICFILES_DIRS = [
+    # Put static files directories into local_settings.py
+    #
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-)
+]
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -177,7 +165,9 @@ LOGGING = {
 try:
     from local_settings import *
     INSTALLED_APPS.extend(ACTIVE_APPS)
+    STATICFILES_DIRS.extend(ACTIVE_STATICFILES_DIRS)
     TEMPLATE_DIRS.extend(ACTIVE_TEMPLATE_DIRS)
+    
 ##    if REDIS_CLUSTER_MODE is True:
 ##   
 ##        REDIS_DATASTORE = REDIS_DATASTORE
