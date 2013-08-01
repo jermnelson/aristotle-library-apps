@@ -500,6 +500,20 @@ def bibframe_router(request,
                        'person': person,
                        'search_form': SearchForm(),
                        'user': None})
+    elif entity_name == 'Topic':
+        topic = bibframe.models.Topic(
+            redis_datastore=REDIS_DATASTORE,
+            redis_key=bibframe_key)
+        work_keys = REDIS_DATASTORE.smembers('{0}:works'.format(bibframe_key))
+        return render(request,
+                      'discovery/topic.html',
+                      {'app': APP,
+                       'feedback_form':FeedbackForm({'subject':'Discovery App Organization'}),
+                       'feedback_context':request.get_full_path(),
+                       'topic': topic,
+                       'works': work_keys,
+                       'search_form': SearchForm(),
+                       'user': None})
         
     return HttpResponse("{0} exits {1}".format(
         bibframe_key,

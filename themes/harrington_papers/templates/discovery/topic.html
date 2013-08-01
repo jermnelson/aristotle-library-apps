@@ -1,0 +1,25 @@
+{% extends 'harrington-base.html' %}
+{% load i18n %}
+{% load discovery_extras %}
+{% load harrington_extras %}
+
+{% block head-title %}
+ John Peabody Harrington Papers -- {{ topic.label }}
+{% endblock %}
+
+{% block body %}
+ {# START of title fluid row #}
+ <div class="row-fluid">
+  <div class="span12">
+  <h3>Topic - {{ topic.label }}</h3>
+  </div>
+{# END of title fluid row #}
+ </div> 
+ {% for work_key in works %}
+ <div class="row-fluid">
+  <div class="span10 offset1">
+   {{ work_key }}
+  </div>
+ </div> 
+ {% endfor %}
+{% endblock %}

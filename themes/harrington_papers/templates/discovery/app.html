@@ -1,0 +1,68 @@
+{% extends 'harrington-base.html' %}
+{% load i18n %}
+{% load harrington_extras %}
+
+{% block head-title %}
+{% if institution %}{% trans institution.name %} Library Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
+Discovery
+{% endblock %}
+
+{% block more-css %}
+<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}css/discovery.less">
+{% endblock %}
+
+
+{% block body %}
+ {% comment %}START row-fluid DIV{% endcomment %}
+ <div class="row-fluid">
+ {% if facet_list %}
+  {# START facets DIV #}
+  <div class="span3">
+    <div class="well well-small">
+     <h3>All Manuscripts</h3>
+     <ul>
+     {{ ""|display_collection }}
+     </ul>
+    </div>
+  {# END facets DIV{% endcomment #}
+  </div>
+ {% endif %}
+  <div class="span8" >
+   <div class="pull-right" style="float: right">
+   <img src="{{ STATIC_URL}}img/John_Peabody_Harrington_(1884-1961)_and_Chief_Wiishi_of_Mission_Indians.jpg">
+     <p><small>Photograph of John Peabody Harrington with Chief Wiishi of Mission Indians 
+      Source: <a href="https://en.wikipedia.org/wiki/John_Peabody_Harrington">Wikipedia</a> </small>
+    </p>
+   </div>
+
+   <p>
+    This collection is made up of scanned PDFs of the original Microfilm reels of the John Peabody Harrington
+    Papers.
+   </p>
+   <p>This online resource is provided by Colorado College's 
+    <a href="http://www.coloradocollege.edu/academics/dept/anthropology/">Department of Anthropology</a> and
+    the <a href="http://www.coloradocollege.edu/library/">Tutt Library</a>. 
+   </p>
+   <p>
+   Access limited to the Colorado College campus.
+   </p>
+  {% comment %}END row-fluid DIV{% endcomment %}
+ </div>
+{# START Topic Word Cloud #}
+<div class="row-fluid">
+  <div class="span6 offset1">
+    <div class="well">
+     <h3>Topic Cloud</h3>
+     {{ ""|display_topic_cloud }}      
+
+    </div>
+  </div>
+{# END Topic Word Cloud #}
+</div>
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+{% endblock %}
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Colorado College's online collection John Peabody Harrington Papers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Colorado College's online collection John Peabody Harrington Papers" >
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+   <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+  <!-- Latest compiled and minified CSS -->
+    {% comment %}
+ 
+   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
+ 
+    {% endcomment %}
+
+   
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+   
+    <link href=" {{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" >
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="/">CC's John Peabody Harrington Papers</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about-dlg" data-toggle="modal">About</a></li>
+              <li><a href="#contact-dlg" data-toggle="modal">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      {% block title_row %}
+      {# Start Title Row #}
+      <div class="row-fluid">
+       <div class="span12">
+        <h3>Colorado College Online Collections</h3> 
+        <h1 style="color: #96172E;">John Peabody Harrington Papers</h1>
+        <p>
+
+        </p>
+       </div>
+      {# END Title Row #}
+      </div>
+      {% endblock %}
+      {% block body %}{% endblock %}
+      {% block footer %}
+      {# START footer Row #}
+      <div class="row-fluid">
+        <footer class="span6 offset2">
+        Please contact <a href="mailto: jeremy.nelson@coloradocollege.edu">Jeremy Nelson</a>
+        about any technology problems with this site.
+        </footer>
+      {# END footer Row #}
+      </div>
+      {% endblock %}
+    </div> <!-- /container -->
+
+    {# START About Dlg #}
+    <div class="modal hide fade" id="about-dlg">
+     <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
+      <h3>About the John Peabody Harrington Papers</h3> 
+     </div>
+     <div class="modal-body">
+       <p>This collection provides on-campus access to the PDF scans of microfilms from John 
+          Peabody Harrington Papers. The Tutt Library also has this collection in microfilm.</p>
+       <div class="alert alert-info">
+          <h3>Note:</h3>Much of the content in this collection are PDFs of scanned handwritten 
+          manuscripts, full-text searching is <strong>NOT</strong> available for this collection.  
+       </div>
+     </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+     </div>
+    {# END About Dlg #}
+    </div>
+    {# START Contact Dlg #}
+    <div class="modal hide fade" id="contact-dlg">
+     <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
+      <h3>Contact</h3>
+     </div> 
+     <div class="modal-body">
+      <p>
+       The John Peabody Harrington Papers was developed by the <a href="http://www.coloradocollege.edu/library/">Tutt Library</a>
+       for use on-campus use. Please contact the library's Anthropology liasion, 
+       about questions on the content of this resource. Please e-mail <a href="mailto:jeremy.nelson@coloradocollege.edu">Jeremy
+       Nelson</a> about any technology problems.  
+      </p>
+     </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+     </div>
+    {# END Contact Dlg #}
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ STATIC_URL }}js/jquery.js"></script>
+   <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+   {% comment %}
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+   {% endcomment %}
+ 
+  </body>
+</html>

@@ -1,0 +1,37 @@
+{% extends 'harrington-base.html' %}
+{% load i18n %}
+{% load discovery_extras %}
+{% load harrington_extras %}
+
+{% block head-title %}
+ John Peabody Harrington Papers -- {{ creative_work|get_title }}
+{% endblock %}
+
+{% block body %}
+ {# START of title fluid row #}
+ <div class="row-fluid">
+  <div class="span9">
+   <h2><em>{{ creative_work|get_title }}</em></h2>
+  </div>
+ {# END of title fluid row #}
+ </div> 
+ {# START of main fluid row #}
+ <div class="row-fluid">
+  <div class="span3">
+   <div class="alert alert-block">
+    <h3>Subjects</h3> 
+   <ul>
+   {{ creative_work|get_subjects }}
+   </ul>
+   </div>
+  </div>
+  {# START main content div #}
+  <div class="span8">
+    <a href="{{ creative_work|get_pdf_uri }}" class="btn btn-primary btn-large">
+      Download PDF
+    </a>
+  {# END of main fluid row #}
+  </div>
+ </div> 
+
+{% endblock %}

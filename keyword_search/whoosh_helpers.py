@@ -3,7 +3,7 @@ __author__ = "Jeremy Nelson"
 
 import os
 
-from aritotle.settings import REDIS_DATASTORE
+from aristotle.settings import REDIS_DATASTORE, PROJECT_HOME
 
 from whoosh.analysis import StemmingAnalyzer
 from whoosh.fields import Schema, TEXT, KEYWORD, STORED
@@ -13,15 +13,12 @@ from whoosh.qparser import QueryParser
 BF_SCHEMA = Schema(
     title=TEXT(stored=True),
     work_id=TEXT(stored=True),
-    instance_ids=KEYWORDS(stored=True),
-    annotations=KEYWORDS(stored=True),
-    authorities=KEYWORDS(stored=True),
     content=TEXT)
     
 
-INDEXER = create_in(os.path.join(PROJECT_DIR,
-                                  "keyword_search",
-                                  "index"),
+INDEXER = create_in(os.path.join(PROJECT_HOME,
+                                 "keyword_search",
+                                 "index"),
                     BF_SCHEMA)
 
 
@@ -48,15 +45,13 @@ def index_marc(**kwargs):
     annotation_keys = kwargs.get('annotation_keys', [])
     authority_keys = kwargs.get('authority_keys', [])
     commit = kwargs.get('commit', True)
-    raw_content = ''
+    raw_content = u''
     for field in marc_record:
-        raw_content += field.value()
+        raw_content += u'{0} '.format(field.value())
     writer = indexer.writer()
-    writer.add_document(title=marc_record.title(),
+    writer.add_document(title=unicode(marc_record.title(),
+                                      errors='ignore'),
                         work_id=work_key,
-                        instance_ids=instance_keys,
-                        annotations=annotation_keys,
-                        authorities=authority_keys,
                         content=raw_content)
     if commit is True:
         writer.commit()
@@ -74,6 +69,7 @@ def keyword_search(**kwargs):
     redis_datastore -- RLSP datastore, defaults to Aristotle Settings
     query_text -- Text to search on
     """
+    hits = []
     indexer = kwargs.get('indexer', INDEXER)
     schema = kwargs.get('schema', BF_SCHEMA)
     redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
@@ -84,4 +80,6 @@ def keyword_search(**kwargs):
         query = QueryParser("content", schema).parse(unicode(query_text,
                                                              errors='ignore'))
         results = searcher.search(query)
-        return results
+        for hit in results:
+            hits.append(hit.fields())
+    return hits
