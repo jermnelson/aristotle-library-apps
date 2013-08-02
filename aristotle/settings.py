@@ -67,6 +67,7 @@ MEDIA_URL = ''
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PROJECT_HOME, "aristotle", "static")
 
 # Additional locations of static files
 STATICFILES_DIRS = [

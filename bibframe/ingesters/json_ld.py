@@ -111,8 +111,7 @@ class JSONLinkedDataIngester(Ingester):
                 topic_keys.append(topic_key)
             else:
                 bf_topic = models.Topic(
-                    redis_datastore=self.redis_datastore,
-                    label=topic.pop('bf:label'))
+                    redis_datastore=self.redis_datastore)
                 for key, value in topic.iteritems():
                     if key == 'bf:hasAuthority':
                         value = self.__extract_authority_lcsh__(value)
@@ -162,6 +161,9 @@ class JSONLinkedDataIngester(Ingester):
                 value = set(value)
             setattr(new_work, key, value)
         new_work.save()
+        for topic_key in new_work.subject:
+            self.redis_datastore.sadd("{0}:works".format(topic_key),
+                                      new_work.redis_key)
         for instance_key in work['hasInstance']:
             self.redis_datastore.hset(instance_key,
                                       'instanceOf',

@@ -311,14 +311,14 @@ class MARC21toFacets(MARC21Ingester):
                         location[0])
                     self.redis_datastore.sadd(redis_key, instance.redis_key)
                     if not self.redis_datastore.hexists(
-                        "bibframe:Annotation:Facet:Locations",
+                        "bf:Annotation:Facet:Locations",
                         location[0]):
                         self.redis_datastore.hset(
-                            "bibframe:Annotation:Facet:Locations",
+                            "bf:Annotation:Facet:Locations",
                             location[0],
                             location[1])
                     self.redis_datastore.zadd(
-                        "bibframe:Annotation:Facet:Locations:sort",
+                        "bf:Annotation:Facet:Locations:sort",
                         float(self.redis_datastore.scard(redis_key)),
                         redis_key)
                     self.redis_datastore.sadd("{0}:hasAnnotation".format(instance.redis_key),

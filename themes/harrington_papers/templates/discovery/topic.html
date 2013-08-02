@@ -17,9 +17,7 @@
  </div> 
  {% for work_key in works %}
  <div class="row-fluid">
-  <div class="span10 offset1">
-   {{ work_key }}
-  </div>
+  {{ work_key|get_brief_view }}
  </div> 
  {% endfor %}
 {% endblock %}

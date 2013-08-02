@@ -43,7 +43,6 @@ class JohnPeabodyHarringtonJSONLinkedDataCreator(JSONLinkedDataCreator):
         work_dict -- Dictionary of properties for the Creative Work
         """
         if len(lcsh_subjects) > 0:
-            print("Generate topics: {0}".format(len(lcsh_subjects)))
             work_dict['bf:subject'] = []
             for subject_uri in lcsh_subjects:
                 uri = subject_uri.replace('"','').strip()
@@ -77,9 +76,17 @@ class JohnPeabodyHarringtonJSONLinkedDataCreator(JSONLinkedDataCreator):
         for row in self.records:
             work_dict = self.__generate_work__(
                 creative_work_class='bf:Manuscript')
-            instance_dict = self.__generate_instance__()
+            instance_dict = self.__generate_instance__('online resource')
+            instance_dict['bf:publication'] = {
+                'providerName': 'National Anthropological Archives',
+                'identifier': 'http://id.loc.gov/authorities/names/n50065490'}
+            if len(row.get('Part')) > 0:
+                title_prefix = '{0} {1}'.format(self.title_prefix,
+                                                row.get('Part'))
+            else:
+                title_prefix = self.title_prefix
             title_str = '{0} Microfilm {1}, Reel {2}'.format(
-                self.title_prefix,
+                title_prefix,
                 row.get('Microfilm #'),
                 row.get('Reel #'))
             title_parts = row.get('Title').replace('"','').split(",")            

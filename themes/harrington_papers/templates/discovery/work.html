@@ -27,9 +27,17 @@
   </div>
   {# START main content div #}
   <div class="span8">
+   <div class="row-fluid">
+    <div class="span3">
     <a href="{{ creative_work|get_pdf_uri }}" class="btn btn-primary btn-large">
-      Download PDF
+     Download PDF <img src="{{ STATIC_URL }}img/pdficon_large.png">
     </a>
+    </div>
+    <div class="span4 alert alert-info">
+      <h3>About</h3>
+      {{ creative_work|about_work }}
+    </div>
+   </div>
   {# END of main fluid row #}
   </div>
  </div> 

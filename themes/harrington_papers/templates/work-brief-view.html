@@ -1,0 +1,11 @@
+<div class="span8 offset1 well well-small">
+ <a href="{{ work.pdf_url }}" style="float:right" class="btn"><img src="/static/img/pdficon_large.png" alt="Download PDF"><br>Download</a> 
+ <h3>{{ work.title }} <a href="{{ work.url }}"><i class="icon-info-sign icon-large"></i></a></h3>
+ <p>
+  <h4>Topics</h4>
+  {% for topic in work.topics %}
+   <a href="{{ topic.url }}">{{ topic.label }}</a>
+   {% if not forloop.last %},{% endif %}
+  {% endfor %}
+ </p>
+</div>

@@ -501,10 +501,14 @@ def bibframe_router(request,
                        'search_form': SearchForm(),
                        'user': None})
     elif entity_name == 'Topic':
+        def sort_func(work_key):
+            title_key = REDIS_DATASTORE.hget(work_key, 'title')
+            return REDIS_DATASTORE.hget(title_key, 'label')
         topic = bibframe.models.Topic(
             redis_datastore=REDIS_DATASTORE,
             redis_key=bibframe_key)
-        work_keys = REDIS_DATASTORE.smembers('{0}:works'.format(bibframe_key))
+        work_keys = list(REDIS_DATASTORE.smembers('{0}:works'.format(bibframe_key)))
+        work_keys.sort(key=lambda x: sort_func(x))
         return render(request,
                       'discovery/topic.html',
                       {'app': APP,
