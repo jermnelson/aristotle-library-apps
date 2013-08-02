@@ -21,10 +21,10 @@ class JSONLinkedDataCreator(object):
         self.records, self.topics, self.works = [], {}, []
         
 
-    def __generate_instance__(self):
+    def __generate_instance__(self, carrier_type):
         "Internal function returns an instance dict"
         return {'@type': 'bf:Instance',
-                'rda:carrierTypeManifestation': 'online resource',
+                'rda:carrierTypeManifestation': carrier_type,
                 'prov:Generation': self.__generate_provenance__()}
 
     def __generate_provenance__(self):
