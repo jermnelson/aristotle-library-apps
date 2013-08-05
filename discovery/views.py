@@ -7,7 +7,6 @@ __author__ = "Jeremy Nelson"
 import os
 import random
 
-from django.views.generic.simple import direct_to_template
 from django.shortcuts import render
 
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -115,7 +114,7 @@ def creative_work(request, redis_id):
                          redis_key=redis_key)
     else:
         raise Http404
-    return direct_to_template(request,
+    return render(request,
                       'discovery/work.html',
                   {'app': APP,
                    'creative_work':creative_work,
@@ -249,20 +248,20 @@ def facet_detail(request, facet_name, facet_item):
                                     REDIS_DATASTORE.hget(label_key, facet_item))
     else:
         msg = "{0} of {1}".format(msg, facet_item)
-    return direct_to_template(request,
-                              'discovery/app.html',
-                              {'app': APP,
-                               'example':{},
-                               'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
-                               'feedback_context':request.get_full_path(),
-                               'institution': INSTITUTION,
-                               'facet_list': None,
-                               'message': msg,
-                               'pagination':pagination,
-                               'results':records,
-                               'search_form': SearchForm(),
-                               'search_query': None,
-                               'user': None})
+    return render(request,
+                  'discovery/app.html',
+                  {'app': APP,
+                   'example':{},
+                   'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
+                   'feedback_context':request.get_full_path(),
+                   'institution': INSTITUTION,
+                   'facet_list': None,
+                   'message': msg,
+                   'pagination':pagination,
+                   'results':records,
+                   'search_form': SearchForm(),
+                   'search_query': None,
+                   'user': None})
 
                               
 
@@ -296,8 +295,8 @@ def location_facet(request, name):
         len(records),
         request.session.get('q', None),
         REDIS_DATASTORE.hget(location_key, 'label'))
-    return direct_to_template(request,
-                              'discovery/app.html',
+    return render(request,
+                  'discovery/app.html',
                               {'app': APP,
                                'example':{},
                                'feedback_form':FeedbackForm({'subject':'Discovery Facet Display'}),
@@ -335,8 +334,8 @@ def instance(request,redis_id):
                 redis_key=redis_key)
     else:
         raise Http404
-    return direct_to_template(request,
-                      'discovery/instance.html',
+    return render(request,
+                  'discovery/instance.html',
                   {'app': APP,
                    'feedback_form':FeedbackForm({'subject':'Discovery App Instance'}),
                    'feedback_context':request.get_full_path(),
@@ -359,8 +358,8 @@ def person(request,redis_id):
             redis_key=redis_key)
     else:
         raise Http404
-    return direct_to_template(request,
-                      'discovery/person.html',
+    return render(request,
+                  'discovery/person.html',
                   {'app': APP,
                    'feedback_form':FeedbackForm({'subject':'Discovery App Person'}),
                    'feedback_context':request.get_full_path(),
@@ -436,15 +435,15 @@ def bibframe_router(request,
         creative_work = cw_class(
             redis_datastore=REDIS_DATASTORE,
             redis_key=bibframe_key)
-        return direct_to_template(request,
-                    'discovery/work.html',
-                  {'app': APP,
-                   'creative_work':creative_work,
-                   'feedback_form':FeedbackForm({'subject':'Discovery App Creative Work'}),
-                   'feedback_context':request.get_full_path(),
-                   'institution': INSTITUTION,
-                   'search_form': SearchForm(),
-                   'user':None})
+        return render(request,
+                      'discovery/work.html',
+                      {'app': APP,
+                       'creative_work':creative_work,
+                       'feedback_form':FeedbackForm({'subject':'Discovery App Creative Work'}),
+                       'feedback_context':request.get_full_path(),
+                       'institution': INSTITUTION,
+                       'search_form': SearchForm(),
+                       'user':None})
     elif entity_name == 'Holding':
         holding = Holding(
             redis_datastore=REDIS_DATASTORE,
@@ -467,15 +466,15 @@ def bibframe_router(request,
             redis_datastore=REDIS_DATASTORE,
             redis_key=bibframe_key)
     
-        return direct_to_template(request,
+        return render(request,
                       'discovery/instance.html',
-                  {'app': APP,
-                   'feedback_form':FeedbackForm({'subject':'Discovery App Instance'}),
-                   'feedback_context':request.get_full_path(),
-                   'instance':instance,
-                   'institution': INSTITUTION,
-                   'search_form': SearchForm(),
-                   'user':None})
+                      {'app': APP,
+                       'feedback_form':FeedbackForm({'subject':'Discovery App Instance'}),
+                       'feedback_context':request.get_full_path(),
+                       'instance':instance,
+                       'institution': INSTITUTION,
+                       'search_form': SearchForm(),
+                       'user':None})
     elif entity_name == 'Organization':
         organization = bibframe.models.Organization(
             redis_datastore=REDIS_DATASTORE,

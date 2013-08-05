@@ -1,3 +1,6 @@
 [submodule "etd"]
 	path = etd
 	url = git@github.com:jermnelson/ccetd.git
+[submodule "ccetd"]
+	path = ccetd
+	url = git@github.com:jermnelson/ccetd.git

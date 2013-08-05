@@ -2,9 +2,11 @@
 
  :mod: views Hours App Views
 """
-__author__ = "Jon Driscoll and Jeremy Nelson"
+__author__ = "Jon Driscoll"
+__author__ = "Jeremy Nelson"
 
-from django.views.generic.simple import direct_to_template
+from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
+from django.shortcuts import render
 from app_settings import APP
 from aristotle.settings import INSTITUTION
 import datetime,copy,urllib

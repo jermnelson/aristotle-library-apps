@@ -5,7 +5,9 @@ __author__ = 'Jeremy Nelson'
 
 import imp
 import os
-from django.views.generic.simple import direct_to_template
+from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
+from django.shortcuts import render
+
 import django.utils.simplejson as json
 from aristotle.settings import PROJECT_HOME,PROJECT_ROOT,INSTITUTION,INSTALLED_APPS
 from aristotle.forms import FeedbackForm

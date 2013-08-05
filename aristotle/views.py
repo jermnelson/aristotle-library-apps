@@ -5,7 +5,9 @@ __author__ = 'Jeremy Nelson'
 
 import logging,sys, datetime
 from django.http import HttpResponse, Http404
-from django.views.generic.simple import direct_to_template
+
+from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib.auth.forms import AuthenticationForm
 import django.utils.simplejson as json
