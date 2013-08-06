@@ -21,6 +21,7 @@ from bibframe.models import NotatedMusic, SoftwareOrMultimedia, StillImage
 from bibframe.models import RemoteSensingImage, TitleEntity, ThreeDimensionalObject
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.ingesters import tutt_maps
+from django.template.defaultfilters import slugify
 from call_number.redis_helpers import generate_call_number_app
 from person_authority.redis_helpers import get_or_generate_person
 from aristotle.settings import IS_CONSORTIUM, PROJECT_HOME
@@ -207,7 +208,7 @@ class MARC21toFacets(MARC21Ingester):
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get("record", self.record)
         access = marc21_facets.get_access(record)
-        facet_key = "bf:Annotation:Facet:Access:{0}".format(access)
+        facet_key = "bf:Facet:access:{0}".format(slugify(access))
         self.redis_datastore.sadd(facet_key, instance.redis_key)
         self.redis_datastore.sadd("{0}:hasAnnotation".format(instance.redis_key),
                               facet_key)
@@ -224,10 +225,11 @@ class MARC21toFacets(MARC21Ingester):
         # is either added to an existing set or creates a new
         # sorted set for the facet marcr:Annotation
         instance = kwargs.get("instance", self.instance)
-        facet_key = "bf:Annotation:Facet:Format:{0}".format(
-            getattr(instance,'rda:carrierTypeManifestation'))
+        facet_key = "bf:Facet:format:{0}".format(
+            slugify(
+                getattr(instance,'rda:carrierTypeManifestation')))
         self.redis_datastore.sadd(facet_key, instance.redis_key)
-        self.redis_datastore.zadd('bf:Annotation:Facet:Formats',
+        self.redis_datastore.zadd('bf:Facet:formats',
             float(self.redis_datastore.scard(facet_key)),
             facet_key)
         instance_annotation_key = "{0}:hasAnnotation".format(instance.redis_key)
@@ -251,25 +253,25 @@ class MARC21toFacets(MARC21Ingester):
         record = kwargs.get('record', self.record)
         lc_facet, lc_facet_desc = marc21_facets.get_lcletter(record)
         for row in lc_facet_desc:
-            facet_key = "bf:Annotation:Facet:LOCFirstLetter:{0}".format(
-                lc_facet)
+            facet_key = "bf:Facet:loc-first-letter:{0}".format(
+                slugify(lc_facet))
             self.redis_datastore.sadd(facet_key, creative_work.redis_key)
             self.redis_datastore.sadd("{0}:hasAnnotation".format(
                 creative_work.redis_key),
                 facet_key)
             self.redis_datastore.hset(
-                "bf:Annotation:Facet:LOCFirstLetters",
-                lc_facet,
+                "bf:Facet:labels",
+                facet_key,
                 row)
             self.redis_datastore.zadd(
-                "bf:Annotation:Facet:LOCFirstLetters:sort",
+                "bf:Facet:loc-first-letter:sort",
                 float(self.redis_datastore.scard(facet_key)),
                 facet_key)
 
     def add_language_facet(self, **kwargs):
         """
         Method takes an instance and adds to
-        bibframe:Annotation:Facet:Language:LanguageTerm facet
+        bf:Facet:language facet
         """
         pass
 
@@ -291,7 +293,7 @@ class MARC21toFacets(MARC21Ingester):
         if consortium is True:
             output = marc21_facets.get_carl_location(record)
             if len(output) > 0:
-                redis_key = "bf:Annotation:Location:{0}".format(
+                redis_key = "bf:Facet:location:{0}".format(
                     output.get("site-code"))
                 self.redis_datastore.sadd(redis_key, instance.redis_key)
                 self.redis_datastore.hset(instance.redis_key,
@@ -300,25 +302,25 @@ class MARC21toFacets(MARC21Ingester):
                 self.redis_datastore.hset(instance.redis_key,
                                       "ils-item-number",
                                       output.get('ils-item-number'))
-                self.redis_datastore.zadd("bf:Annotation:Facet:Locations:sort",
+                self.redis_datastore.zadd("bf:Facet:locations:sort",
                                         float(self.redis_datastore.scard(redis_key)),
                                         redis_key)
         else:
             locations = marc21_facets.get_cc_location(record)
             if len(locations) > 0:
                 for location in locations:
-                    redis_key = "bf:Annotation:Location:{0}".format(
-                        location[0])
+                    redis_key = "bf:Facet:location:{0}".format(
+                        slugify(location[1]))
                     self.redis_datastore.sadd(redis_key, instance.redis_key)
                     if not self.redis_datastore.hexists(
-                        "bf:Annotation:Facet:Locations",
-                        location[0]):
+                        "bf:Facet:labels",
+                        slugify(location[1])):
                         self.redis_datastore.hset(
-                            "bf:Annotation:Facet:Locations",
-                            location[0],
+                            "bf:Facet:labels",
+                            location[1],
                             location[1])
                     self.redis_datastore.zadd(
-                        "bf:Annotation:Facet:Locations:sort",
+                        "bf:Facet:locations:sort",
                         float(self.redis_datastore.scard(redis_key)),
                         redis_key)
                     self.redis_datastore.sadd("{0}:hasAnnotation".format(instance.redis_key),
@@ -346,8 +348,8 @@ class MARC21toFacets(MARC21Ingester):
         self.add_format_facet(instance=instance)
         self.add_lc_facet(creative_work=creative_work,
             record=record)
-        #self.add_locations_facet(instance=instance,
-        #    record=record)
+        self.add_locations_facet(instance=instance,
+                                 record=record)
 
 
 isbn_regex = re.compile(r'([0-9\-]+)')

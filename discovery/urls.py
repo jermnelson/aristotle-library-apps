@@ -32,5 +32,5 @@ urlpatterns = patterns('discovery.views',
 ##    url(r"^[w|W]ork/(\d+)/?$", "creative_work", name="discovery-work"),
 ##    url(r"^[w|W]ork/(\d+)/?$", "creative_work", name="discovery-work"),
     url(r"^facet/([\w ]+)/$", "facet_summary"),
-    url(r"^facet/([\w ]+)/([\w ]+)$", "facet_detail"),
+    url(r"^[f|F]acet/([\w ]+)/([\w ]+)$", "facet_detail"),
 )

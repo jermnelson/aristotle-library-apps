@@ -198,7 +198,7 @@ def facet_detail(request, facet_name, facet_item):
     facet_name -- Name of the Facet
     facet_item -- Name of the Facet item
     """
-    redis_key = "bf:Annotation:Facet:{0}:{1}".format(facet_name,facet_item)
+    redis_key = "bf:Facet:{0}:{1}".format(facet_name,facet_item)
     if not REDIS_DATASTORE.exists(redis_key):
         raise Http404
     rlsp_query_key = request.session.get('rlsp-query', None)
@@ -222,21 +222,27 @@ def facet_detail(request, facet_name, facet_item):
     offset =  int(request.REQUEST.get('offset',0))
     records = []
     pagination = get_pagination(request.path,
-                        listing_key,
-                REDIS_DATASTORE,
-                offset)
+                                listing_key,
+                                REDIS_DATASTORE,
+                                offset)
     record_slice = REDIS_DATASTORE.lrange(listing_key,
-                                   offset,
-                       offset+PAGINATION_SIZE)
+                                          offset,
+                                          offset+PAGINATION_SIZE)
     for row in record_slice:
         if row.find("Instance") > -1:
             work_key = REDIS_DATASTORE.hget(row, 'instanceOf')
-        elif row.find("Work") > -1:
-            work_key = row
-        work = Work(redis_datastore=REDIS_DATASTORE,
-                    redis_key=work_key)
-        records.append({'work':work})
-    label_key = 'bf:Annotation:Facet:{0}s'.format(facet_name)
+        entity_name = work_key.split(":")[1]
+        if CREATIVE_WORK_CLASSES.count(entity_name) > 0:
+            cw_class = getattr(bibframe.models,
+                               entity_name)
+            if cw_class is None:
+                cw_class = getattr(bibframe.models,
+                                   entity_name.title())
+            work = cw_class(
+                redis_datastore=REDIS_DATASTORE,
+                redis_key=work_key)
+            records.append(work)
+    label_key = 'bf:Facet:{0}s'.format(facet_name)
     msg = "Results {0} of {1} for Facet {2}".format(len(record_slice),
                                                     REDIS_DATASTORE.llen(listing_key),
                                                     facet_name)
@@ -257,7 +263,7 @@ def facet_detail(request, facet_name, facet_item):
                    'institution': INSTITUTION,
                    'facet_list': None,
                    'message': msg,
-                   'pagination':pagination,
+                   'pagination':None,
                    'results':records,
                    'search_form': SearchForm(),
                    'search_query': None,

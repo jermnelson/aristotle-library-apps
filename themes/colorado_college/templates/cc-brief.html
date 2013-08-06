@@ -1,23 +1,27 @@
 {% load colorado_college_extras %}
 <div class="row-fluid">
- <div class="span8">
-  <h2><a href="/apps/discovery/{{ work.name }}/{{ work.redis_id }}/">
-      {{ title }} / {% for creator in creators %}{{ creator.name }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}</a></h2>
+ <div class="span7 offset2">
+  <h3><a href="/apps/discovery/{{ work.name }}/{{ work.redis_id }}/">
+      {{ title }} {% if creators %}/ {% for creator in creators %}{{ creator.name }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}{% endif %}</a></h3>
   <dl class="dl-horizontal">
+    {% if creators %}
     <dt>Author/Creator</dt>
     <dd>{% for creator in creators %}
         <a href="/apps/discovery/Person/{{ creator.id }}">{{ creator.familyName }}, {{ creator.givenName }}.</a>
          {% if not forloop.last %}<br>{% endif %}
         {% endfor %}
      </dd>
+    {% endif %}
      {% if datePublished %}
      <dt>Published</dt>
      <dd><a href="/apps/discovery?filter=datePublished={{ datePublished }}">{{ datePublished }}</a></dd>
      {% endif %}
+    {% if library_holdings %}
      <dt>Library Holdings</dt>
      <dd>
       {{ library_holdings }}
      </dd>
+    {% endif %}
   </dl>
  </div>
 </div>

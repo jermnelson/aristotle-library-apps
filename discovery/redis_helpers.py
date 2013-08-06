@@ -18,8 +18,18 @@ class Facet(object):
     def __init__(self, **kwargs):
         self.redis_ds = kwargs.get('redis')
         self.items = kwargs.get('items',[])
+        self.redis_id = kwargs.get('redis_id')
         self.redis_keys = kwargs.get('keys')
         self.name = kwargs.get('name')
+
+    def convert_title(self, key):
+        slug_name = key.split(":")[-1].replace("-"," ")
+        slug_name = slug_name.title()
+        slug_name = slug_name.replace('Vhs', 'VHS')
+        slug_name = slug_name.replace('Dvd', "DVD")
+        slug_name = slug_name.replace("Cd", "CD-")
+        return slug_name
+        
 
 class FacetError(Exception):
     "Exception for errors with Facets"
@@ -38,7 +48,7 @@ class FacetItem(object):
         self.redis_ds = kwargs.get('redis')
         if self.redis_ds is None:
             raise FacetError("FacetItem requires a Redis instance")
-        self.redis_key = kwargs.get('key','bf:Annotation:Facet')
+        self.redis_key = kwargs.get('key', 'bf:Facet')
         self.count = 0
         if 'count' in kwargs:
             self.count = kwargs.get('count')
@@ -48,19 +58,24 @@ class FacetItem(object):
         if 'name' in kwargs:
             self.name = kwargs.get('name')
         else:
-            self.name = self.redis_key.split(":")[-1]
-        self.children = kwargs.get('children',[])
+            self.name = self.redis_ds.hget('bf:Facet:labels',
+                                           self.redis_key)
+        self.children = kwargs.get('children', [])
 
 class AccessFacet(Facet):
 
     def __init__(self, **kwargs):
-        kwargs['name'] = 'Access'
+        kwargs['redis_id'] = 'access'
+        
+        kwargs['name'] = kwargs['redis'].hget('bf:Facet:labels',
+                                              'bf:Facet:{0}'.format(
+                                                      kwargs['redis_id']))
         kwargs['items'] = [
             FacetItem(
-                key='bf:Annotation:Facet:Access:In the Library',
+                key='bf:Facet:access:in-the-library',
                 redis=kwargs['redis']),
             FacetItem(
-                key='bf:Annotation:Facet:Access:Online',
+                key='bf:Facet:access:online',
                 redis=kwargs['redis'])]
         super(AccessFacet, self).__init__(**kwargs)
         #self.location_codxes = kwargs.get('location_codes',[])
@@ -76,18 +91,21 @@ class AccessFacet(Facet):
 class FormatFacet(Facet):
 
     def __init__(self, **kwargs):
-        kwargs['name'] = 'Format'
+        kwargs['redis_id'] = 'format'
+        kwargs['name'] = kwargs.get('redis').hget('bf:Facet:labels',
+                                                  'bf:Facet:{0}'.format(
+                                                      kwargs['redis_id']))
         kwargs['items'] = []
         # Formats are sorted by number of instances
         format_item_keys = kwargs['redis'].zrevrange(
-            'bf:Annotation:Facet:Formats',
+            'bf:Facet:formats',
             0,
             -1,
             withscores=True
             )
         for row in format_item_keys:
             kwargs['items'].append(
-                FacetItem(count=row[1],
+                FacetItem(count=int(row[1]),
                     key=row[0],
                     redis=kwargs['redis']))
         super(FormatFacet, self).__init__(**kwargs)
@@ -96,22 +114,24 @@ class FormatFacet(Facet):
 class LCFirstLetterFacet(Facet):
 
     def __init__(self, **kwargs):
-        kwargs['name'] = 'Call Number'
+        kwargs['redis_id'] = 'loc-first-letter'
+        kwargs['name'] = kwargs['redis'].hget(
+            'bf:Facet:labels',
+            'bf:Facet:{0}'.format(kwargs['redis_id']))
         kwargs['items'] = []
         lc_item_keys = kwargs['redis'].zrevrange(
-            'bf:Annotation:Facet:LOCFirstLetters:sort',
+            'bf:Facet:loc-first-letter:sort',
             0,
             5,
             withscores=True
             )
         for row in lc_item_keys:
             redis_key = row[0]
-            loc_key = redis_key.split(":")[-1]
             item_name = kwargs['redis'].hget(
-                'bf:Annotation:Facet:LOCFirstLetters',
-                loc_key)
+                'bf:Facet:labels',
+                redis_key)
             kwargs['items'].append(
-                FacetItem(count=row[1],
+                FacetItem(count=int(row[1]),
                     key=redis_key,
                     name=item_name,
                     redis=kwargs['redis']))
@@ -120,30 +140,53 @@ class LCFirstLetterFacet(Facet):
 class LocationFacet(Facet):
 
     def __init__(self, **kwargs):
-        kwargs['name'] = 'Location'
+        kwargs['redis_id'] = 'location'
+        kwargs['name'] = kwargs['redis'].hget(
+            'bf:Facet:labels',
+            'bf:Facet:{0}'.format(kwargs['redis_id']))
         kwargs['items'] = []
         location_keys = kwargs['redis'].zrevrange(
-            'bf:Annotation:Facet:Locations:sort',
+            'bf:Facet:locations:sort',
             0,
             -1,
             withscores=True
             )
         for row in location_keys:
             redis_key = row[0]
-            location_code = redis_key.split(":")[-1]
-            #org_key = kwargs['redis'].hget(
-            #    'bibframe:Annotation:Facet:Locations',
-            #    location_code)
-            #item_name = kwargs['authority_ds'].hget(org_key,
-            #                                        'label')
-            item_name = kwargs['redis'].hget('bf:Annotation:Facet:Locations',
-                                             location_code)
+            item_name = kwargs['redis'].hget('bf:Facet:labels',
+                                             redis_key)
             kwargs['items'].append(
-                FacetItem(count=row[1],
+                FacetItem(count=int(row[1]),
                     key=redis_key,
                     name=item_name,
                     redis=kwargs['redis']))
         super(LocationFacet, self).__init__(**kwargs)
+
+class PublicationYearFacet(Facet):
+
+    def __init__(self, **kwargs):
+        kwargs['redis_id'] = 'pub-year'
+        kwargs['name'] = kwargs['redis'].hget(
+            'bf:Facet:labels',
+            'bf:Facet:{0}'.format(kwargs['redis_id']))
+        kwargs['items'] = []
+        pub_year_keys = kwargs['redis'].zrevrange(
+            'bf:Facet:pub-year:sort',
+            0,
+            -1,
+            withscores=True)
+        for row in pub_year_keys:
+            redis_key = row[0]
+            item_name = kwargs['redis'].hget('bf:Facet:labels',
+                                             redis_key)
+            kwargs['items'].append(
+                FacetItem(count=int(row[1]),
+                    key=redis_key,
+                    name=item_name,
+                    redis=kwargs['redis']))
+        super(PublicationYearFacet, self).__init__(**kwargs)
+                                             
+        
 
 
 class BIBFRAMESearch(object):

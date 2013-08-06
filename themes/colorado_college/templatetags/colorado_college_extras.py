@@ -16,7 +16,7 @@ register = template.Library()
 def display_facet(facet):
     "Returns accordion group based on template and facet"
     expand = False
-    if ["Access", "Format"].count(facet.name) > 0:
+    if ["access", "format"].count(facet.redis_id) > 0:
         expand = True
     facet_grp_template = template.loader.get_template('cc-facet-group.html')
     return mark_safe(facet_grp_template.render(
@@ -70,7 +70,8 @@ def display_brief(work):
             REDIS_DATASTORE.hget(redis_key, 'schema:givenName'),
             errors='ignore'),
                          'familyName': unicode(
-            REDIS_DATASTORE.hget(redis_key, 'schema:familyName'),
+            REDIS_DATASTORE.hget(redis_key,
+                                 'schema:familyName'),
             errors='ignore'),
                          'name':unicode(
              REDIS_DATASTORE.hget(redis_key,
@@ -134,7 +135,10 @@ def get_facet(facet):
 @register.filter(is_safe=True)
 def get_work_total(work_name):
     work_key = "global bf:{0}".format(work_name)
-    work_total = '{0:,}'.format(int(REDIS_DATASTORE.get(work_key)))
+    if REDIS_DATASTORE.exists(work_key):
+        work_total = '{0:,}'.format(int(REDIS_DATASTORE.get(work_key)))
+    else:
+        work_total = 0
     return mark_safe(work_total)
     
     
