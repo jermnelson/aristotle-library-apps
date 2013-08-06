@@ -110,6 +110,9 @@ def display_instance_summary(instance):
     return mark_safe(output)
     
 
+
+    
+
 @register.filter(is_safe=True)
 def get_facet(facet):
     "Returns accordion group based on template and redis-key"
@@ -128,6 +131,10 @@ def get_facet(facet):
     return mark_safe(facet_grp_template.render(
         template.Context(facet)))
         
-    
+@register.filter(is_safe=True)
+def get_work_total(work_name):
+    work_key = "global bf:{0}".format(work_name)
+    work_total = '{0:,}'.format(int(REDIS_DATASTORE.get(work_key)))
+    return mark_safe(work_total)
     
     

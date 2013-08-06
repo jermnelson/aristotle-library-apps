@@ -19,9 +19,11 @@
 {% block body %}
 {# START main content #}
  {# START Contact and Search Row #}
- <div class="row-fluid contact-row" >
+ <div class="row-fluid" >
+  <div class="span11 offset1 contact-row">
   {% include 'cc-contact-info.html' %} 
   {% include 'cc-search-widget.html' %}
+  </div>
  {# END  Contact and Search Row #}
  </div>
 {% if results %}
@@ -38,8 +40,8 @@
  {% endif %}
  {# START Facet and Content #}
  <div class="row-fluid">
-   {% include 'cc-left-column.html' %}
-   {% include 'cc-right-column.html' %}
+   {% include 'cc-left-column.html' %} 
+   {% include 'cc-right-column.html' %} 
  {# END Facet and Content #}
  </div>
 {% endif %}

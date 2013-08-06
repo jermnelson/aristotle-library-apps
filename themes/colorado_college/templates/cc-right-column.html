@@ -16,10 +16,12 @@
   </li>
  </ul>
  <div class="row-fluid">
-  <div class="span5 well well-small">
+  <div class="span4 well well-small">
   <h2>About our collection</h2>
   <p class="lead">
-   Our library collection contains over <a href="#"><span style="font-size: 1.2em">{# { collection.books.total } #} 723,000</span> Books</a>,
+   Our library collection contains over <a href="#"><span style="font-size: 1.2em">{{ "Book"|get_work_total }}</span> Books</a>,
+   <a href="#"><span style="font-size: 1.2em">{{ "MovingImage"|get_work_total }}</span> Movies</a>,
+   <a href="#"><span style="font-size: 1.2em">{{ "Manuscript"|get_work_total }}</span> Manuscripts</a>
    
   </p>
   </div>
