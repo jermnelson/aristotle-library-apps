@@ -1,6 +1,8 @@
 {% load colorado_college_extras %}
+{# START row DIV #}
 <div class="row-fluid">
- <div class="span7 offset2">
+ {# START brief DIV #}
+ <div class="span7">
   <h3><a href="/apps/discovery/{{ work.name }}/{{ work.redis_id }}/">
       {{ title }} {% if creators %}/ {% for creator in creators %}{{ creator.name }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}{% endif %}</a></h3>
   <dl class="dl-horizontal">
@@ -23,5 +25,7 @@
      </dd>
     {% endif %}
   </dl>
+ {# END brief DIV #}
  </div>
+{# END row DIV #}
 </div>

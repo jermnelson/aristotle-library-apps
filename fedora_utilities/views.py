@@ -3,6 +3,7 @@
 """
 from app_settings import *
 from app_helpers import *
+
 ##from solr_helpers import SOLR_QUEUE, start_indexing
 from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
 from aristotle.views import json_view

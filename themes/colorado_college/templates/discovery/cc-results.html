@@ -1,14 +1,16 @@
 {% load colorado_college_extras %}
+
 <div class="row-fluid">
- {% include 'cc-left-column.html' %}
  {# START Results Pane #}
- <div class="span9">
-  {# START Pagination View #}
-  <div class="row-fluid">
-   <div class="span8">
-    {# shard_key|display_pagination  #}
+ <div class="span9 offset1">
+    <h2>{{ message }}</h2>
+ </div>
+</div>
+<div class="row-fluid">
+ {# START Pagination View #}
+ <div class="span8 offset1">
+  {{ shard_key|display_pagination }}
    {# END Pagination View #}
-   </div>
   {# START Result Listings #}
   {% for work in results %}
     {{ work|display_brief }}
@@ -16,6 +18,7 @@
    <hr>
    {% endif %}
   {% endfor %}
+ </div>
  {# END Results Pane #}
  </div> 
 </div>

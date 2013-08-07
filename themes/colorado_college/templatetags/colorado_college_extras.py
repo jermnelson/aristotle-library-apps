@@ -65,18 +65,18 @@ def display_brief(work):
             "{0}:rda:isCreatedBy".format(work.redis_key)))
     creators = []
     for redis_key in creators_keys[:4]:
-        creators.append({'id': redis_key.split(":")[-1],
-                         'givenName': unicode(
-            REDIS_DATASTORE.hget(redis_key, 'schema:givenName'),
-            errors='ignore'),
-                         'familyName': unicode(
-            REDIS_DATASTORE.hget(redis_key,
-                                 'schema:familyName'),
-            errors='ignore'),
-                         'name':unicode(
-             REDIS_DATASTORE.hget(redis_key,
+        creator = {'id': redis_key.split(":")[-1]}
+        given_name = REDIS_DATASTORE.hget(redis_key, 'schema:givenName')
+        if given_name is not None:
+            creator['givenName'] = unicode(given_name, errors='ignore')
+        family_name = REDIS_DATASTORE.hget(redis_key, 'schema:familyName')
+        if family_name is not None:
+            creator['familyName'] = unicode(family_name, errors='ignore')
+        creator['name'] = unicode(REDIS_DATASTORE.hget(redis_key,
                                   'rda:preferredNameForThePerson'),
-             errors='ignore')})
+                                  errors='ignore')
+        creators.append(creator)
+        
                          
     context = template.Context({'creators': creators,
                                 'title': title_entity,

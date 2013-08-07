@@ -49,32 +49,21 @@ def app(request):
             results = bibframe_search.creative_works()            
             results_size = len(results)
             if results_size < 1:
-                message = 'No Results found for {0}'.format(query)
+                request.session['msg'] = 'No Results found for {0}'.format(query)
             else:
-                message = "{0} Results for {1}".format(results_size,
+                request.session['msg'] = "{0} Results for {1}".format(results_size,
                                                        query)
                 request.session['rlsp-query'] = bibframe_search.search_key
-        return render(request,
-                  'discovery/app.html',
-                  {'app': APP,
-                   'example': {},
-                   'featured': [], 
-                   'feedback_form':FeedbackForm(
-                       {'subject':'Discovery App Results'}),
-                   'feedback_context':request.get_full_path(),
-                   'institution': INSTITUTION,
-                   'message':message,
-                   'facet_list': bibframe_search.facets,
-                   'news_feed': get_news(),
-                   'results':results,
-                   'shard_key': bibframe_search.active_shard,
-                   'search_form': search_form,
-                   ## 'search_query':search_query,
-                   'user': None})
+        print("IN POST Search request session keys={0}".format(
+            request.session.keys()))
+        return HttpResponseRedirect('/apps/discovery/')
     if request.session.has_key('msg'):
         message = request.session['msg']
     search_form = SearchForm()
+    print("BEFORE SESSION {0}".format(request.session.keys()))
     if request.session.has_key('rlsp-query'):
+        print("Has rlsp-query session set to {0}".format(
+            request.session['rlsp-query']))
         bf_search = BIBFRAMESearch(
             search_key=request.session['rlsp-query'],
             redis_datastore=REDIS_DATASTORE)

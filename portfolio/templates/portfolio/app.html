@@ -27,15 +27,9 @@
         {% if forloop.counter0|test_row %}
           </tr>
           <tr>
-         {% endif %}
-         {% if app.productivity  %}
-           {% if user.is_authenticated %}
-           {{ app|create_app_td }}
-           {% endif %}
-         {% else %}
+        {% endif %}
          {{ app|create_app_td }}
-         {% endif %}
-         {% endfor %}
+      {% endfor %}
          </tr>
    </table>
   </div>

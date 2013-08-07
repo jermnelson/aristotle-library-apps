@@ -3,13 +3,16 @@
 
 {% block more-css %}
 <link href="{{ STATIC_URL }}css/colorado-college.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
 {% endblock %}
 
 
 <div class="container-fluid">
 
 {% block navbar %}
- <div class="row-fluid cc-header-row">
+ <div class="row-fluid">
   <div class="span12 offset1">
    <iframe src="/apps/website-header" class="website-header" scrolling="no"></iframe>
   </div>
@@ -18,6 +21,9 @@
 
 {% block body %}
 {# START main content #}
+{% if results %}
+  {% include 'discovery/cc-results.html' %}
+{% else %}
  {# START Contact and Search Row #}
  <div class="row-fluid" >
   <div class="span11 offset1 contact-row">
@@ -26,16 +32,12 @@
   </div>
  {# END  Contact and Search Row #}
  </div>
-{% if results %}
-  {% include 'discovery/cc-results.html' %}
-{% else %}
  {% if message %}
  {# START message #}
  <div class="row-fluid">
   <div class="span8 offset2">
-   {{ message }}
+   MESSAGE is {{ message }}
   </div>
- {# END message #}
  </div>
  {% endif %}
  {# START Facet and Content #}

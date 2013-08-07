@@ -11,7 +11,13 @@ import title_search.redis_helpers as title_app
 
 import bibframe.models
 
-
+def slug_to_title(key):
+    slug_name = key.split(":")[-1].replace("-"," ")
+    slug_name = slug_name.title()
+    slug_name = slug_name.replace('Vhs', 'VHS')
+    slug_name = slug_name.replace('Dvd', "DVD")
+    slug_name = slug_name.replace("Cd", "CD-")
+    return slug_name
 
 class Facet(object):
 
@@ -22,13 +28,7 @@ class Facet(object):
         self.redis_keys = kwargs.get('keys')
         self.name = kwargs.get('name')
 
-    def convert_title(self, key):
-        slug_name = key.split(":")[-1].replace("-"," ")
-        slug_name = slug_name.title()
-        slug_name = slug_name.replace('Vhs', 'VHS')
-        slug_name = slug_name.replace('Dvd', "DVD")
-        slug_name = slug_name.replace("Cd", "CD-")
-        return slug_name
+
         
 
 class FacetError(Exception):
@@ -98,7 +98,7 @@ class FormatFacet(Facet):
         kwargs['items'] = []
         # Formats are sorted by number of instances
         format_item_keys = kwargs['redis'].zrevrange(
-            'bf:Facet:formats',
+            'bf:Facet:format:sort',
             0,
             -1,
             withscores=True
@@ -110,6 +110,32 @@ class FormatFacet(Facet):
                     redis=kwargs['redis']))
         super(FormatFacet, self).__init__(**kwargs)
 
+
+class LanguageFacet(Facet):
+
+    def __init__(self, **kwargs):
+        kwargs['redis_id'] = 'language'
+        kwargs['name'] = kwargs['redis'].hget(
+            'bf:Facet:labels',
+            'bf:Facet:{0}'.format(kwargs['redis_id']))
+        kwargs['items'] = []
+        language_keys = kwargs['redis'].zrevrange(
+            'bf:Facet:language:sort',
+            0,
+            5,
+            withscores=True
+            )
+        for row in language_keys:
+            redis_key = row[0]
+            item_name = kwargs['redis'].hget(
+                'bf:Facet:labels',
+                redis_key)
+            kwargs['items'].append(
+                FacetItem(count=int(row[1]),
+                    key=redis_key,
+                    name=item_name,
+                    redis=kwargs['redis']))
+        super(LanguageFacet, self).__init__(**kwargs)
 
 class LCFirstLetterFacet(Facet):
 
@@ -491,8 +517,10 @@ def get_facets(redis_datastore):
     facets = []
     facets.append(AccessFacet(redis=redis_datastore))
     facets.append(FormatFacet(redis=redis_datastore))
+    facets.append(LanguageFacet(redis=redis_datastore))
     facets.append(LocationFacet(redis=redis_datastore))
     facets.append(LCFirstLetterFacet(redis=redis_datastore))
+    facets.append(PublicationYearFacet(redis=redis_datastore))
 
     return facets
 

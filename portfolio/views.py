@@ -37,6 +37,7 @@ def get_apps(is_authenticated):
                         output.append(app_info)
                 else:
                     output.append(app_info)
+    print(output)
     return output
             
         

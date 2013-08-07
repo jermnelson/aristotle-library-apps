@@ -45,11 +45,11 @@
      {% endcomment %}
 	 <li>
 	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="{% url pid-mover %}">PID Object Mover</a>
+	   <a href="{% url 'pid-mover' %}">PID Object Mover</a>
 	 </li>
          <li {% if active == 'add_stub' %} class="active"{% endif %}>
            <i class="icon-chevron-right pull-right"></i>
-	   <a href="{% url add-obj-template %}">Add Fedora Objects from Template</a>
+	   <a href="{% url 'add-obj-template' %}">Add Fedora Objects from Template</a>
          </li>
       {% comment %}
 

@@ -10,7 +10,7 @@
       template of prefilled data to the digital repository.</p>
    <form method="POST" 
          class="form-horizontal" 
-         action="{% url add-obj-template %}">
+         action="{% url 'add-obj-template' %}">
     {% csrf_token %}
     {# START Object Select #}
     <div class="control-group">
