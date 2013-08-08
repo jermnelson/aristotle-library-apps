@@ -38,21 +38,54 @@
 </div>
 <div class="span8" data-bind="visible: SearchResultsPane">
   <h2 data-bind="html: ResultsMessage"></h2>
-  <div class="btn-group">
-   <a href="#" class="btn btn-small">TEXT</a>
-   <a href="#" class="btn btn-small">Date</a>
-   <a href="#" class="btn btn-small">Relevance</a>
-   <a href="#" class="btn btn-small"><i class="icon-list"></i></a>
-   <a href="#" class="btn btn-small disabled"><i class="icon-table"></i></a>
+   <div class="btn-toolbar">
+    <div class="btn-group">
+     <a title='Sort by Relevance' data-bind="click: SortByRelevance, 
+                                            attr: { class: SortByRelevanceButton }">
+      <i class="icon-ellipsis-vertical"></i></a>
+     <a title='Sort by Alpha' data-bind="click: SortByAlpha, attr: { class: SortByAlphaButton }"><i class="icon-text-width"></i></a>
+     <a title='Sort by Date' data-bind="click: SortByDate, attr: { class: SortByDateButton }"><i class="icon-calendar"></i></a>
+     <a title='Display as a List' data-bind="click: DisplayList, attr: { class: DisplayListButton }"><i class="icon-list-ol"></i></a>
+     <a title='Display by Thumbnail' data-bind="click: DisplayThumbnail, attr: { class: DisplayThumbnailButton }"><i class="icon-table"></i></a>
+    </div>
+    <div class="btn-group">
+     <a class="btn"><i class="icon-shopping-cart"></i></a>
 
-  </div>
+    </div>
+   </div>
+   <div class="pagination pagination-small">
+    <ul> 
+     <li><a href="#">Prev</a></li>
+     <li><a href="#">1</a></li>
+
+     <li><a href="#">Next</a></li>
+    </ul>
+   </div>
   <ul class="thumbnails" data-bind="foreach: SearchResults">
     <li class="span2">
-      <a data-bind="attr: { href: WorkURL}">
-       <small data-bind="text: WorkTitle"></small>
-      </a> 
-      <img data-bind="attr: { src: CoverArt }" style="width:150px; height:103px">
-      <small>by </small>
+     <div class="thumbnail">
+       <a data-bind="attr: { href: WorkURL}">
+        <small data-bind="html: WorkTitle"></small>
+       <img data-bind="attr: { src: CoverArt }" >
+      </a>
+      <small> 
+       <ul class="inline" data-bind="foreach: WorkCreators">by
+        <li><a data-bind="attr: { href: CreatorURL }, text: CreatorName"></a></li>
+       </ul>
+      </small>
+      <div class="btn-group">
+       <a class="btn btn-mini btn-success" title="Save Work to Cart"><i class="icon-save"></i></a>
+       <a class="btn btn-mini disabled" title="Remove Work from Cart">
+        <span class="icon-stack"> 
+        <i class="icon-save"></i>
+        <i class="icon-ban-circle icon-stack-base text-error"></i>
+        </span>
+       </a>
+       <a class="btn btn-mini" title="Comment on Work"><i class="icon-comment-alt"></i></a>
+       <a class="btn btn-mini" title="Cite Work"><i class="icon-edit"></i></a>
+      </div>
+
+     </div>
     </li>
   </ul>
 </div>

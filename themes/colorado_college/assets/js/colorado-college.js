@@ -1,11 +1,33 @@
 var  DiscoveryViewModel = function () {
   var self = this;
   self.DiscoveryHome = ko.observable(true);
+  self.DisplayListButton = ko.observable("btn"); 
+  self.DisplayThumbnailButton = ko.observable("btn disabled");
   self.QueryPhrase = ko.observable();
   self.QueryType =  ko.observable();
   self.ResultsMessage = ko.observable([]);
   self.SearchResults = ko.observableArray();
   self.SearchResultsPane = ko.observable(false);
+  self.SortByAlphaButton = ko.observable("btn");
+  self.SortByRelevanceButton = ko.observable("btn disabled");
+  self.SortByDateButton = ko.observable("btn");
+
+  // Functions
+  self.CloseThumbnail = function() {
+    alert("Should close thumbnail");
+  };
+
+  self.DisplayList = function() {
+   self.DisplayThumbnailButton("btn");
+   self.DisplayListButton("btn disabled");
+  };
+
+  self.DisplayThumbnail = function() {
+    self.DisplayThumbnailButton("btn disabled");
+    self.DisplayListButton("btn");
+  };
+
+  
   self.SearchSubmit = function() {
     var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     self.SearchResults([]);
@@ -22,7 +44,7 @@ var  DiscoveryViewModel = function () {
       success: function(data) {
         self.DiscoveryHome(false); 
         self.SearchResultsPane(true);
-        var message = "Results for <em>" + data['query'] + '</em>';
+        var message = data['works'].length + " Results for <em>" + data['query'] + '</em>';
         self.ResultsMessage(message);
         for(i in data['works']) {
           var work = data['works'][i];
@@ -31,5 +53,26 @@ var  DiscoveryViewModel = function () {
       }
      });
   };
+  self.SortByAlpha = function() {
+    var results = self.SearchResults;
+    results.sort(function(left,right) { return left.WorkTitle == right.WorkTitle ? 0: (left.WorkTitle < right.WorkTitle ? -1 : 1) });
+    self.SortByAlphaButton("btn disabled");
+    self.SortByRelevanceButton("btn");
+    self.SortByDateButton("btn");
+    
+  }
+  
+  self.SortByDate = function() {
+    self.SortByDateButton("btn disabled");
+    self.SortByRelevanceButton("btn");
+    self.SortByAlphaButton("btn"); 
+  }
+
+  self.SortByRelevance = function() {
+    self.SortByDateButton("btn");
+    self.SortByRelevanceButton("btn disabled");
+    self.SortByAlphaButton("btn"); 
+
+  }
 
 } 

@@ -269,16 +269,53 @@ class BIBFRAMESearch(object):
                     shard_key):
                     work_key = self.redis_datastore.hget(instance_key,
                                                          'instanceOf')
+                    creator_keys = []
+                    if self.redis_datastore.exists("{0}:rda:isCreatedBy".format(
+                        work_key)):
+                        creator_keys = list(
+                            self.redis_datastore.smembers(
+                                "{0}:rda:isCreatedBy".format(work_key)))
+                    else:
+                        creator_key = self.redis_datastore.hget(
+                            work_key,
+                            'rda:isCreatedBy')
+                        if creator_key is not None:
+                            creator_keys.append(creator_key)
+                    creators = []
+                    for key in creator_keys:
+                        creator_name = self.redis_datastore.hget(
+                            key,
+                            'rda:preferredNameForThePerson')
+                        if key.count('Person') > -1:
+                            creator_url = '/apps/discovery/Person/{0}'
+                        elif key.count('Organization') > -1:
+                            creator_url = '/apps/discovery/Organization/{0}'
+                        else:
+                            creator_url = '/apps/discovery/{0}'
+                        creator_url = creator_url.format(key.split(":")[-1])  
+                        creators.append({'CreatorName': unicode(creator_name,
+                                                                errors='ignore'),
+                                         'CreatorURL': unicode(creator_url,
+                                                               errors='ignore')})
+    
                     work_parts = work_key.split(":")
                     title_key = self.redis_datastore.hget(work_key,
                                                           'title')
-                    work = {'WorkTitle': self.redis_datastore.hget(
-                        title_key,
-                        'label'),
+                    raw_title = self.redis_datastore.hget(title_key,
+                                                          'label')
+                    found_text = u"<span style='background-color: yellow'>{0}</span>".format(self.query)
+    
+                    title = raw_title.decode('utf-8',
+                                             errors='replace')
+                    title = title.replace(self.query, found_text)
+                    
+                    work = {'CoverArt': '/static/img/publishing_48x48.png',
+                            'WorkCreators': creators,
+                            'WorkTitle': title, 
                             'WorkURL': '/apps/discovery/{0}/{1}'.format(
                                 work_parts[-2],
                                 work_parts[-1]),
-                            'CoverArt': '/static/img/publishing_48x48.png'}
+                            }
                     info['works'].append(work)
         else:
             info['works'] = self.redis_datastore.zcard(self.search_key)
@@ -407,10 +444,10 @@ class BIBFRAMESearch(object):
 
 
     def generate_facets(self):
-        facet_keys = ['bf:Annotation:Facet:formats',
-                      'bf:Annotation:Facet:LOCFirstLetters:sort',
-                      'bf:Annotation:Facet:Languages',
-                      'bf:Annotation:Facet:PublicationDate']
+        facet_keys = ['bf:Facet:format',
+                      'bf:Facet:loc-first-letter',
+                      'bf:Facet:language',
+                      'bf:Facet:PublicationDate']
         self.facets.append(self.__generate_facet__('Formats',
                                                    'bf:Annotation:Facet:Formats'))
         self.facets.append(self.__generate_facet__('Languages',
