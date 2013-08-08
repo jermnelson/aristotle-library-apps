@@ -1,5 +1,5 @@
 {% load colorado_college_extras %}
-<div class="span8">
+<div class="span8" data-bind="visible: DiscoveryHome">
  <h2>Featured Items</h2>
  <ul class="thumbnails">
   <li class="span2">
@@ -35,4 +35,24 @@
    </ul>
   </div>
  </div>
+</div>
+<div class="span8" data-bind="visible: SearchResultsPane">
+  <h2 data-bind="html: ResultsMessage"></h2>
+  <div class="btn-group">
+   <a href="#" class="btn btn-small">TEXT</a>
+   <a href="#" class="btn btn-small">Date</a>
+   <a href="#" class="btn btn-small">Relevance</a>
+   <a href="#" class="btn btn-small"><i class="icon-list"></i></a>
+   <a href="#" class="btn btn-small disabled"><i class="icon-table"></i></a>
+
+  </div>
+  <ul class="thumbnails" data-bind="foreach: SearchResults">
+    <li class="span2">
+      <a data-bind="attr: { href: WorkURL}">
+       <small data-bind="text: WorkTitle"></small>
+      </a> 
+      <img data-bind="attr: { src: CoverArt }" style="width:150px; height:103px">
+      <small>by </small>
+    </li>
+  </ul>
 </div>

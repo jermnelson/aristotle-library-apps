@@ -61,7 +61,9 @@
 </div>
 
 {% block more-js %}
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script src="{{ STATIC_URL }}js/colorado-college.js"></script> 
 <script>
-
+ ko.applyBindings(new DiscoveryViewModel());
 </script>
 {% endblock %}

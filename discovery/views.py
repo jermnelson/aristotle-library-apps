@@ -4,6 +4,7 @@
 
 __author__ = "Jeremy Nelson"
 
+import json
 import os
 import random
 
@@ -383,6 +384,14 @@ def person_json_ld(request, redis_id):
             else:
                 json_linked_data['rda:isCreatorPersonOf'] = [work_url,]
     return json_linked_data
+
+@json_view
+def load(request):
+    "JSON returns a listing for results to be loaded into the discovery app"
+    rlsp_query_key = request.GET.get('key')
+    rlsp_query_offset = request.GET.get('offset', 0)
+    
+    return {}
 
 @json_view
 def search(request):

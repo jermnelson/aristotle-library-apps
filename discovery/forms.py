@@ -22,7 +22,11 @@ SEARCH_CHOICES = [("kw", "Keyword"),
 
 
 class SearchForm(forms.Form):
-    query = forms.CharField(max_length=255)
-    query_type = forms.ChoiceField(choices=SEARCH_CHOICES)
+    query = forms.CharField(max_length=255,
+                            widget=forms.TextInput(
+                                attrs={'data-bind': 'value: QueryPhrase'}))
+    query_type = forms.ChoiceField(choices=SEARCH_CHOICES,
+                                   widget=forms.Select(
+                                       attrs={'data-bind': 'value: QueryType'}))
     
 

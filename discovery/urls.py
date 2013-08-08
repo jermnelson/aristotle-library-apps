@@ -9,6 +9,7 @@ import discovery.views
 urlpatterns = patterns('discovery.views',
     url(r"$^", "app", name="discovery-default"),
     url(r"^search$", "search", name="discovery-search"),
+    url(r"^load$", "load", name="discovery-load"),
     url(r"^(\w+)/(\d+).json$",
         "bibframe_json_router",
         name="discovery-bibframe-router"),                       

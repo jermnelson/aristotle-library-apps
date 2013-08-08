@@ -259,14 +259,29 @@ class BIBFRAMESearch(object):
         """
         info = {"query":self.query,
                 "type": self.type_of,
-                "query-key":self.search_key}
-##        if with_results is True:
-##            for shard_key in self.redis_datastore.zrange(self.search_key,
-##                                                         0,
-##                                                         -1):
-##                info['works'].extend(self.redis_datastore
-##        else:
-        info['works'] = self.redis_datastore.zcard(self.search_key)
+                "query-key":self.search_key,
+                'works': []}
+        if with_results is True:
+            for shard_key in self.redis_datastore.zrange(self.search_key,
+                                                         0,
+                                                         -1):
+                for instance_key in self.redis_datastore.smembers(
+                    shard_key):
+                    work_key = self.redis_datastore.hget(instance_key,
+                                                         'instanceOf')
+                    work_parts = work_key.split(":")
+                    title_key = self.redis_datastore.hget(work_key,
+                                                          'title')
+                    work = {'WorkTitle': self.redis_datastore.hget(
+                        title_key,
+                        'label'),
+                            'WorkURL': '/apps/discovery/{0}/{1}'.format(
+                                work_parts[-2],
+                                work_parts[-1]),
+                            'CoverArt': '/static/img/publishing_48x48.png'}
+                    info['works'].append(work)
+        else:
+            info['works'] = self.redis_datastore.zcard(self.search_key)
         return json.dumps(info) 
 
 
