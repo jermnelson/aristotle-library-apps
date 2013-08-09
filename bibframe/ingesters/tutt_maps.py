@@ -2,6 +2,7 @@
 # Tutt library III location codes
 # 
 FULL_CODE_MAP = {
+    'dacc': 'Digital Archives of Colorado College',
     'ewww':'Online',
     'ewwwd':'Online Government Documents',
     'ewwwp':'Online Periodcals',

@@ -6,6 +6,7 @@ import json
 import time
 from aristotle.settings import REDIS_DATASTORE, OFFSET
 from bibframe.models import CREATIVE_WORK_CLASSES
+from django.template.defaultfilters import slugify
 import person_authority.redis_helpers as person_authority_app
 import title_search.redis_helpers as title_app
 

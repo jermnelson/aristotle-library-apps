@@ -22,10 +22,15 @@ from bibframe.models import MixedMaterial, MovingImage, MusicalAudio
 from bibframe.models import NonmusicalAudio, NotatedMusic 
 from bibframe.models import SoftwareOrMultimedia, StillImage, TitleEntity
 from bibframe.models import ThreeDimensionalObject
+
+from discovery.redis_helpers import slug_to_title
+
+from django.template.defaultfilters import slugify
 from person_authority.redis_helpers import get_or_generate_person
 from title_search.redis_helpers import index_title
 from rdflib import Namespace
 
+from bibframe.ingesters import tutt_maps, marc21_maps
 
 MODS_NS = Namespace('http://www.loc.gov/mods/v3')
 
@@ -89,8 +94,80 @@ class MODSIngester(Ingester):
             self.work_class = MixedMaterial
         else:
             self.work_class = Work
+
+    def __create_facets__(self, instance, location_name):
+        "Helper function creates facets from instance"
+        instance_annotation_key = "{0}:hasAnnotation".format(instance.redis_key)
+        # Access Facet
+        if getattr(instance,
+                   'rda:carrierTypeManifestation') == 'online resource':
+            access_facet_key = "bf:Facet:access:online"
+            if not self.redis_datastore.hexists('bf:Facet:labels',
+                                                access_facet_key):
+                self.redis_datastore.hset('bf:Facet:labels',
+                                          access_facet_key,
+                                          'Online')
+        else:
+            access_facet_key = 'bf:Facet:access:in-the-library'
+        self.redis_datastore.sadd(access_facet_key, instance.redis_key)
+        self.redis_datastore.sadd(instance_annotation_key, access_facet_key)
+        # Format Facet
+        format_value = getattr(instance, 'rda:carrierTypeManifestation')
+        if format_value == 'online resource':
+            format_value = 'Electronic'
+        format_facet_key = 'bf:Facet:format:{0}'.format(slugify(format_value))
+        self.redis_datastore.sadd(format_facet_key, instance.redis_key)
+        self.redis_datastore.zadd(
+            'bf:Facet:format:sort',
+            float(self.redis_datastore.scard(format_facet_key)),
+            format_facet_key)
+        self.redis_datastore.sadd(instance_annotation_key, format_facet_key)
+        # Language Facet
+        languages = getattr(instance,
+                            'language')
+        lang_keys = []
+        if type(languages) != str:
+            for language in languages:
+                lang_keys.append('bf:Facet:language:{0}'.format(
+                    slugify(language)))
+        else:
+            lang_keys.append(languages)
+        for lang_key in lang_keys:
+            self.redis_datastore.sadd(lang_key, instance.redis_key)
+            self.redis_datastore.zadd(
+                'bf:Facet:language:sort',
+                float(self.redis_datastore.scard(lang_key)),
+                lang_key)
+            self.redis_datastore.sadd(instance_annotation_key, format_facet_key)
+        # Location Facet
+        location_facet_key = 'bf:Facet:location:{0}'.format(
+            slugify(location_name))
+        self.redis_datastore.sadd(location_facet_key, instance.redis_key)
+        self.redis_datastore.zadd(
+                        "bf:Facet:locations:sort",
+                        float(self.redis_datastore.scard(location_facet_key)),
+                        location_facet_key)
+        # Publisher Date
+        
+        
+    
+    def __create_holding__(self, instance, location_code):
+        """Helper function creates a library holding entity for instance
+
+        Parameters:
+        instance -- BIBFRAME instance
+        """
+        new_holding = Holding(redis_datastore=self.redis_datastore,
+                              annotates=instance.redis_key)
+        setattr(new_holding, 'schema:contentLocation', location_code)
+        new_holding.save()
+        self.redis_datastore.sadd(
+            '{0}:hasAnnotation'.format(instance.redis_key),
+            new_holding.redis_key)
+            
+        
                              
-    def __create_instances__(self, work_key):
+    def __create_instances__(self, work_key, rdacarrier):
         """Helper function creates specific instance(s) from MODS
 
         Parameter:
@@ -108,6 +185,10 @@ class MODSIngester(Ingester):
                 if form.attrib.get('type', None) == 'carrier':
                     if form.attrib.get('authority', None) == 'rdacarrier':
                         instance_of['rda:carrierTypeManifestation'] = form.text
+            # Assumes a default of an online resource for
+            # rda:carrierTypeManifestation
+            if not instance_of.has_key('rda:carrierTypeManifestation'):
+                instance_of['rda:carrierTypeManifestation'] = rdacarrier
             extent = element.find('{{{0}}}extent'.format(MODS_NS))
             if extent is not None:
                 if extent.text is not None:
@@ -115,10 +196,39 @@ class MODSIngester(Ingester):
             hdl = self.__extract_hdl__()
             if hdl is not None:
                 instance_of['hdl'] = hdl
+            language = self.__extract_languages__()
+            if language is not None:
+                instance_of['language'] = language
             new_instance = Instance(redis_datastore=self.redis_datastore,
                                     **instance_of)
             new_instance.save()
+            self.__create_holding__(new_instance,
+                                    'bf:Organization:1:codes:dacc')
+            self.__create_facets__(new_instance,
+                                   'Digital Archives of Colorado College')
             self.instances.append(new_instance.redis_key)
+
+
+
+    def __extract_description__(self):
+        "Helper method extracts the description from mods:abstract"
+        abstract = self.mods_xml.find('{{{0}}}abstract'.format(MODS_NS))
+        if abstract is not None:
+            description = abstract.text
+            if description is not None:
+                return description.encode('utf8', errors='ignore')
+
+    def __extract_languages__(self):
+        output = []
+        languages = self.mods_xml.findall(
+            "{{{0}}}language/{{{0}}}languageTerm".format(MODS_NS))
+        for language in languages:
+            if marc21_maps.LANGUAGE_CODING_MAP.has_key(language.text):
+               output.append(marc21_maps.LANGUAGE_CODING_MAP.get(language.text))
+            else:
+                output.append(language.text)
+        return output
+        
 
 
     def __extract_person__(self, name_parts):
@@ -285,6 +395,9 @@ class MODSIngester(Ingester):
                 work['title'] = ' '.join(title_entities)
         except ValueError:
             return
+        description = self.__extract_description__()
+        if description is not None:
+            work['description'] = description
         self.__classify_work_class__()
         classifier = self.classifier(entity_info=work,
                                      redis_datastore=self.redis_datastore,
@@ -302,12 +415,16 @@ class MODSIngester(Ingester):
                 self.redis_datastore.sadd(
                     '{0}:resourceRole:aut'.format(creator_key),
                     work_key)
-            self.__create_instances__(work_key)
-            for instance_key in self.instances:
-                self.redis_datastore.sadd(
-                    "{0}:hasInstance".format(work_key),
-                    instance_key)
-                # 
+            self.__create_instances__(work_key, 'online resource')
+            if len(self.instances) == 1:
+                self.redis_datastore.hset(work_key,
+                                          'hasInstance',
+                                          self.instances[0])
+            elif len(self.instances) > 1:
+                for instance_key in self.instances:
+                    self.redis_datastore.sadd(
+                        "{0}:hasInstance".format(work_key),
+                        instance_key)
             
         
 

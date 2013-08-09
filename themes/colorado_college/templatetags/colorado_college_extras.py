@@ -89,9 +89,19 @@ def display_instances(work):
     "Generates a display of all of the instances for a work"
     work_instances_template = template.loader.get_template(
         'cc-work-instances.html')
-    if type(work.hasInstance) == str:
-        instances = [Instance(redis_key=work.hasInstance,
-                              redis_datastore=REDIS_DATASTORE),]
+    instances = []
+    instance_keys = list(REDIS_DATASTORE.smembers(
+        "{0}:hasInstance".format(work.redis_key)))
+    if len(instance_keys) < 1:
+        instance_key = REDIS_DATASTORE.hget(work.redis_key,
+                                             'hasInstance')
+        if instance_key is not None:
+            instance_keys.append(instance_key)
+                
+    for instance_key in instance_keys:
+        instances.append(
+            Instance(redis_key=instance_key,
+                     redis_datastore=REDIS_DATASTORE))
     context =  template.Context({'instances': instances})
     return mark_safe(work_instances_template.render(context))
 

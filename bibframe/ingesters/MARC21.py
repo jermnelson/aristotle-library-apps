@@ -198,18 +198,7 @@ class MARC21toFacets(MARC21Ingester):
         self.instance = kwargs.get('instance')
         super(MARC21toFacets, self).__init__(**kwargs)
 
-    def __add_label__(self, facet_key):
-        """Helper function takes a facet_key and adds to bf:Facet:labels
-        hash if the facet_key doesn't exist in the datastore
 
-        Parameters:
-        facet_key -- Facet_Key
-        """
-        if not self.redis_datastore.hexists('bf:Facet:labels',
-                                            facet_key):
-            self.redis_datastore.hset('bf:Facet:labels',
-                                      facet_key,
-                                      slug_to_title(facet_key))
 
     def add_access_facet(self, **kwargs):
         """
@@ -219,11 +208,6 @@ class MARC21toFacets(MARC21Ingester):
         :keyword instance: BIBFRAME Instance, defaults to self.instance
         :keyword record: MARC21 record, defaults to self.marc_record
         """
-        if not self.redis_datastore.hexists('bf:Facet:labels',
-                                       'bf:Facet:access'):
-            self.redis_datastore.hset('bf:Facet:labels',
-                                 'bf:Facet:access',
-                                 'Access')
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get("record", self.record)
         access = marc21_facets.get_access(record)
@@ -242,11 +226,6 @@ class MARC21toFacets(MARC21Ingester):
         """
         # Extract's the Format facet value from the Instance and
         # creates an Annotation key that the instance's redis key
-        if not self.redis_datastore.hexists('bf:Facet:labels',
-                                       'bf:Facet:format'):
-            self.redis_datastore.hset('bf:Facet:labels',
-                                 'bf:Facet:format',
-                                 'Format (Carrier Type)')
         instance = kwargs.get("instance", self.instance)
         facet_key = "bf:Facet:format:{0}".format(
             slugify(
@@ -276,11 +255,6 @@ class MARC21toFacets(MARC21Ingester):
         creative_work = kwargs.get('creative_work', self.creative_work)
         record = kwargs.get('record', self.record)
         lc_facet, lc_facet_desc = marc21_facets.get_lcletter(record)
-        if not self.redis_datastore.hexists('bf:Facet:labels',
-                                       'bf:Facet:loc-first-letter'):
-            self.redis_datastore.hset('bf:Facet:labels',
-                                 'bf:Facet:loc-first-letter',
-                                 'LCSH Call Number')
         for row in lc_facet_desc:
             facet_key = "bf:Facet:loc-first-letter:{0}".format(
                 slugify(lc_facet))
@@ -305,21 +279,16 @@ class MARC21toFacets(MARC21Ingester):
         Method takes an instance and adds to
         bf:Facet:language facet
         """
-        if not self.redis_datastore.hexists('bf:Facet:labels',
-                                       'bf:Facet:language'):
-            self.redis_datastore.hset('bf:Facet:labels',
-                                 'bf:Facet:language',
-                                 'Language')
         instance = kwargs.get('instance', self.instance)
-        lang_code = self.redis_datastore.hget(instance.redis_key,
-                                              'language')
-        if lang_code is not None:
-            facet_key = 'bf:Facet:language:{0}'.format(lang_code)
+        language = self.redis_datastore.hget(instance.redis_key,
+                                             'language')
+        if language is not None:
+            facet_key = 'bf:Facet:language:{0}'.format(
+                slugify(language))
             self.redis_datastore.sadd(facet_key, instance.redis_key)
-            label = marc21_maps.LANGUAGE_CODING_MAP.get(lang_code)
             self.redis_datastore.hset('bf:Facet:labels',
                                       facet_key,
-                                      label)
+                                      language)
             instance_annotation_key = "{0}:hasAnnotation".format(
                 instance.redis_key)
             self.redis_datastore.zadd(
@@ -338,13 +307,6 @@ class MARC21toFacets(MARC21Ingester):
         :param instance: BIBFRAME Instance, defaults to self.instance
         :param record: MARC21 record, defaults to self.marc_record
         """
-        if not self.redis_datastore.hexists(
-            "bf:Facet:labels",
-            "bf:Facet:location"):
-            self.redis_datastore.hset(
-                "bf:Facet:labels",
-                "bf:Facet:location",
-                "Location")
         instance = kwargs.get("instance", self.instance)
         record = kwargs.get("record", self.record)
         if hasattr(settings, "IS_CONSORTIUM"):
@@ -392,11 +354,6 @@ class MARC21toFacets(MARC21Ingester):
         Method adds the publication date of the instance to the
         bf:Facet:pub-year:{year}
         """
-        if not self.redis_datastore.hexists('bf:Facet:labels',
-                                            'bf:Facet:pub-year'):
-            self.redis_datastore.hset('bf:Facet:labels',
-                                      'bf:Facet:pub-year',
-                                      'Publication Year')
         instance = kwargs.get('instance', self.instance)
         publish_year = self.redis_datastore.hget(
             instance.redis_key,
@@ -774,7 +731,8 @@ class MARC21toInstance(MARC21Ingester):
         fields = self.record.get_fields('008')
         for field in fields:
             if field.tag == '008':
-                output.append(field.data[35:38])
+                language = marc21_maps.LANGUAGE_CODING_MAP[field.data[35:38]]
+                output.append(language)
         if len(output) > 0:
             self.entity_info['language'] = set(output)
 

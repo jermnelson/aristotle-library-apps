@@ -36,6 +36,10 @@
     <h3>{{ creative_work|get_title }}</h3>
     <h2>About this {{ creative_work.name }}</h2>
     <dl class="dl-horizontal">
+      {% if creative_work.description %}
+      <dt>Description</dt>
+      <dd>{{ creative_work.description }}</dd>
+      {% endif %}
       {% if creative_work.dimensions %}
       <dt>Dimensions</dt>
       <dd>{{ creative_work.dimensions }}</dd>
@@ -48,12 +52,16 @@
        <dt>Statement of Responsiblity</dt>
        <dd>{{ creative_work.responsibilityStatement }}</dd>
       {% endif %}
+      
     </dl>
    </div>
   </div>
-  <aside class="span3 cc-actions">
+  <div class="span3">
+   <aside class="cc-actions">
     <h1>You can...</h1>
-  </aside>
+   </aside>
+   
+   {{ creative_work|get_cover_art }}     
 </div>
 {# START Instances Row #}
 <div class="row-fluid">

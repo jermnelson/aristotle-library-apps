@@ -6,6 +6,7 @@ __author__ = "Jeremy Nelson"
 
 import datetime, re, pymarc, os, sys,logging, redis, time
 from aristotle.settings import PROJECT_HOME, REDIS_DATASTORE
+from discovery.redis_helpers import slug_to_title
 import json
 
 HONORIFIC_PREFIXES = ['Ms',
@@ -96,6 +97,41 @@ class Ingester(object):
         """
         self.redis_datastore = kwargs.get('redis_datastore',
                                           REDIS_DATASTORE)
+        self.__setup_facets__()
+
+    def __add_label__(self, facet_key):
+        """Helper function takes a facet_key and adds to bf:Facet:labels
+        hash if the facet_key doesn't exist in the datastore
+
+        Parameters:
+        facet_key -- Facet_Key
+        """
+        if not self.redis_datastore.hexists('bf:Facet:labels',
+                                            facet_key):
+            self.redis_datastore.hset('bf:Facet:labels',
+                                      facet_key,
+                                      slug_to_title(facet_key))
+
+    def __setup_facets__(self):
+        self.redis_datastore.hset('bf:Facet:labels',
+                                  'bf:Facet:access',
+                                  'Access')
+        self.redis_datastore.hset('bf:Facet:labels',
+                                  'bf:Facet:format',
+                                  'Format (Carrier Type)')
+        self.redis_datastore.hset('bf:Facet:labels',
+                                  'bf:Facet:loc-first-letter',
+                                  'LCSH Call Number')
+        self.redis_datastore.hset('bf:Facet:labels',
+                                  'bf:Facet:language',
+                                  'Language')
+        self.redis_datastore.hset("bf:Facet:labels",
+                                  "bf:Facet:location",
+                                  "Location")
+        self.redis_datastore.hset('bf:Facet:labels',
+                                  'bf:Facet:pub-year',
+                                  'Publication Year')
+        
 
     def ingest(self):
         pass # Should be overridden by child classes

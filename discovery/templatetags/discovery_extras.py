@@ -7,6 +7,7 @@ import redis
 import inspect
 import xml.etree.ElementTree as etree
 from bibframe.models import Work, Instance, Person, Holding
+from bibframe.ingesters import tutt_maps
 from django.template import Context, Library, loader
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
@@ -180,8 +181,15 @@ def get_annotations(instance):
                 else:
                     name = key
                 if key.startswith('schema:contentLocation'):
-                    holdings_info.append({"name":"Library",
-                                          "value": REDIS_DATASTORE.hget(value, 'label')})
+                    if settings.IS_CONSORTIUM is True:
+                        holdings_info.append({"name":"Library",
+                                              "value": REDIS_DATASTORE.hget(value, 'label')})
+                    else:
+                        code = value.split(":")[-1]
+                        location = tutt_maps.FULL_CODE_MAP[code]
+                        holdings_info.append({"name": "Location",
+                                              "value": location})
+                                                  
                 elif key != 'created_on' and key != 'annotates':
                     holdings_info.append({"name":name,
                                           "value":value})

@@ -8,7 +8,7 @@ import datetime
 import os
 import sys
 from aristotle.settings import REDIS_DATASTORE, FEDORA_URI, FEDORA_ROOT
-from aristotle.settings import FEDORA_USER, FEDORA_PASSWORD
+from aristotle.settings import FEDORA_USER, FEDORA_PASSWORD, IS_CONSORTIUM
 from bibframe.ingesters.MODS import MODSIngester
 from bibframe.models import CoverArt, Work
 import bibframe.models
@@ -39,7 +39,6 @@ def ingest_fedora(parent_pid, work_classname):
 SELECT ?a FROM <#ri> WHERE {
    ?a <info:fedora/fedora-system:def/relations-external#isMemberOfCollection>"""
     collection_sparql += "<info:fedora/{0}>".format(parent_pid) +  "}"
-    print(collection_sparql)
     if work_classname is None:
         ingester = MODSIngester(redis_datastore=REDIS_DATASTORE)
     else:
@@ -111,7 +110,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if len(args) > 2:
             raise CommandError("ingest_fedora has two args: parent_pid " +
-                               "and optional work_clas")
+                               "and optional work_class")
         parent_pid = args[0]
         if len(args) == 2:
             work_class = args[1]
