@@ -8,19 +8,23 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+	 {% comment %}
    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
   <!-- Latest compiled and minified CSS -->
-    {% comment %}
- 
-   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
- 
     {% endcomment %}
+
+   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
+
+     
 
    
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+	  .navbar-brand {
+	  max-width:none !important;
+	  }
     </style>
    
     <link href=" {{ STATIC_URL }}css/bootstrap-responsive.css" rel="stylesheet">
@@ -39,28 +43,23 @@
   </head>
 
   <body>
-
-    <div class="navbar navbar-inverse navbar-fixed-top" >
-      <div class="navbar-inner">
-        <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="brand" href="/">CC's John Peabody Harrington Papers</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about-dlg" data-toggle="modal">About</a></li>
-              <li><a href="#contact-dlg" data-toggle="modal">Contact</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
+   <div class="container">
+<div class="navbar navbar-inverse navbar-fixed-top col-lg-12">
+  <a class="navbar-brand" href="/">CC's John Peabody Harrington Papers</a>
+  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+	<div class="nav-collapse collapse navbar-responsive-collapse">
+	<ul class="nav navbar-nav">	
+    <li class="active"><a href="/">Home</a></li>
+    <li><a href="#about-dlg" data-toggle="modal">About</a></li>
+    <li><a href="#contact-dlg" data-toggle="modal">Contact</a></li>	
+  </ul>
+  </div>
+</div>
+   
       {% block title_row %}
       {# Start Title Row #}
       <div class="row-fluid">
@@ -88,10 +87,12 @@
     </div> <!-- /container -->
 
     {# START About Dlg #}
-    <div class="modal hide fade" id="about-dlg">
+    <div class="modal fade" id="about-dlg">
+	<div class="modal-dialog">
+	<div class="modal-content">
      <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
-      <h3>About the John Peabody Harrington Papers</h3> 
+      <h3 class="modal-title">About the John Peabody Harrington Papers</h3> 
      </div>
      <div class="modal-body">
        <p>This collection provides on-campus access to the PDF scans of microfilms from John 
@@ -100,17 +101,23 @@
           <h3>Note:</h3>Much of the content in this collection are PDFs of scanned handwritten 
           manuscripts, full-text searching is <strong>NOT</strong> available for this collection.  
        </div>
+	   <p>Initial cataloguing of this collection was done by Ravi Donepudi. Collection updated to Bootstrap 3 by Ryan Keenan.</p>
      </div>
      <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
      </div>
+	 </div>
+	 </div>
     {# END About Dlg #}
     </div>
+	
     {# START Contact Dlg #}
-    <div class="modal hide fade" id="contact-dlg">
+    <div class="modal fade" id="contact-dlg">
+	<div class="modal-dialog">
+	<div class="modal-content">
      <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
-      <h3>Contact</h3>
+      <h3 class="modal-title">Contact</h3>
      </div> 
      <div class="modal-body">
       <p>
@@ -123,6 +130,8 @@
      <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
      </div>
+	 </div>
+	 </div>
     {# END Contact Dlg #}
     </div>
 
@@ -130,11 +139,13 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ STATIC_URL }}js/jquery.js"></script>
-   <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
    {% comment %}
+   
+   <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+   {% endcomment %}
     <!-- Latest compiled and minified JavaScript -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
-   {% endcomment %}
+   
  
   </body>
 </html>
