@@ -44,6 +44,31 @@
      </div>
     {# END alternate title #}
     </div>
+    {# START creators title #}
+    <div class="control-group">
+     <label class="control-label" for="creators">
+       {{ add_obj_form.creators.label }}
+     </label>
+     <div class="controls">
+       {{ add_obj_form.creators }}
+     <a href="#" data-bind="click: addCreator" id="AddCreatorBtn"><i class="icon-plus-sign"></i></a>
+
+     </div>
+    {# END alternate creators #}
+    </div>
+    {# START corporate contributors title #}
+    <div class="control-group" data-bind="visible: meetingMinutesTemplate">
+     <label class="control-label" for="corporate_contributors ">
+     {{ add_obj_form.corporate_contributors.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.corporate_contributors }}
+     <a href="#" data-bind="click: addCorporateContributor" 
+                 id="AddCorporateContributorBtn"><i class="icon-plus-sign"></i></a>
+     </div>
+    {# END people subjects #}
+    </div>
+
     {# START Date Created #}
     <div class="control-group">
      <label class="control-label" for="date_created">
@@ -112,9 +137,33 @@
      </label>
      <div class="controls">
      {{ add_obj_form.sub_people }}
+     <a href="#" data-bind="click: addPerson" id="AddPersonBtn"><i class="icon-plus-sign"></i></a>
      </div>
     {# END people subjects #}
     </div>
+   {# START place subjects #}
+    <div class="control-group">
+     <label class="control-label" for="sub_places">
+     {{ add_obj_form.sub_places.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.sub_places }}
+     <a href="#" data-bind="click: addPlace" id="AddPlaceBtn"><i class="icon-plus-sign"></i></a>
+     </div>
+    {# END place subjects #}
+    </div>
+    {# START topic subjects #}
+    <div class="control-group">
+     <label class="control-label" for="sub_topics">
+     {{ add_obj_form.sub_topics.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.sub_topics }}
+     <a href="#" data-bind="click: addTopic" id="AddTopicBtn"><i class="icon-plus-sign"></i></a>
+     </div>
+    {# END topic subjects #}
+    </div>
+
     {# START organizations #}
     <div class="control-group">
      <label class="control-label" for="organizations">
@@ -122,7 +171,7 @@
      </label>
      <div class="controls">
      {{ add_obj_form.organizations }}
-     <a href="#" data-bind><i class="icon-plus-sign"></i></a>
+     <a href="#" data-bind="click: addOrganization" id="AddOrgBtn"><i class="icon-plus-sign"></i></a>
      </div>
     {# END organizations #}
     </div>
@@ -172,13 +221,14 @@
   </div>
 {% endblock %}
 
-{% block more_js %}
+{% block more-js %}
 <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script>
  function AddStubViewModel() {
    var self = this;
    self.chosenContentModel = ko.observable();
+   self.topicOne = ko.observable();
    self.meetingMinutesTemplate = ko.observable(false);
    self.newsletterTemplate = ko.observable(false);
    self.displayContentModel = function() {
@@ -186,11 +236,14 @@
         case '1':
             self.resetForm();
             self.meetingMinutesTemplate(true);
+            self.topicOne("Meeting minutes");
+            //self.topicOne.html("<input name='sub_topics' type='text'>Universities and colleges</input>");
             break;
 
         case '2':
           self.resetForm();
           self.newsletterTemplate(true);
+          self.topicOne("Newsletter");
           break;
 
         default:
@@ -198,9 +251,48 @@
     }
 
    }
+
+
+   self.addCorporateContributor = function() {
+     var last_corp_contrib = $("#AddCorporateContributorBtn").prev();
+     last_corp_contrib.after("<input name='corporate_contributors' type='text' maxlength='255'></input>");
+   }
+
+   self.addCreator = function() {
+    var last_creator = $("#AddCreatorBtn").prev();
+    last_creator.after("<input name='creators' type='text' maxlength='255'></input>");
+
+   }
+
+   self.addOrganization = function() {
+     var last_org = $("#AddOrgBtn").prev();
+     last_org.after("<input name='organizations' type='text' maxlength='255'></input>");
+
+   }
+
+   self.addPerson = function() {
+     var last_person = $("#AddPersonBtn").prev();
+     last_person.after("<input name='sub_people' type='text' maxlength='255'></input>");
+   }
+
+   self.addPlace = function() {
+     var last_place = $("#AddPlaceBtn").prev();
+     last_place.after("<input name='sub_places' type='text' maxlength='255'></input>");
+   }
+
+
+   self.addTopic = function() {
+     var last_topic = $("#AddTopicBtn").prev();
+     var new_topic = "<input name='sub_topics' type='text' maxlength='255'>";
+     new_topic += "</input>";
+     last_topic.after(new_topic);
+   }
+   
    self.resetForm = function() {
      self.newsletterTemplate(false);
      self.meetingMinutesTemplate(false);
+     self.topicOne("");
+
 
    }
  } 

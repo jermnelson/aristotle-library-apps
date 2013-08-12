@@ -54,14 +54,23 @@ def add_stub_from_template(request):
         if add_obj_template_form.is_valid():
             mods_context = {'dateCreated': add_obj_template_form.cleaned_data[
                 'date_created'],
+                            'corporate_contributors': [],
                             'organizations': [],
-                            'schema_type': 'CreativeWork', # Default
+                            'schema_type': 'CreativeWork', # Default,
+                            'subject_people': [],
+                            'subject_places': [],
                             'topics': [],
                             'title': add_obj_template_form.cleaned_data['title']
                             }
-            
             admin_note = add_obj_template_form.cleaned_data[
                 'admin_note']
+            creators = request.POST.getlist('creators')
+            if len(creators) > 0:
+                mods_context['creators'] = []
+                mods_context['creators'].extend(creators)
+            corp_contribs = request.POST.getlist('corporate_contributors')
+            if len(corp_contribs) > 0:
+                mods_context['corporate_contributors'].extend(corp_contribs)
             if len(admin_note) > 0:
                 mods_context['admin_note'] = admin_note
             description = add_obj_template_form.cleaned_data[
@@ -81,27 +90,38 @@ def add_stub_from_template(request):
                 'collection_pid']
             number_stub_recs = add_obj_template_form.cleaned_data[
                 'number_objects']
+            subject_people = request.POST.getlist('sub_people')
+            if len(subject_people) > 0:
+                mods_context['subject_people'].extend(subject_people)
+            subject_places = request.POST.getlist('sub_places')
+            if len(subject_places) > 0:
+                mods_context['subject_places'].extend(subject_places)
+            subject_orgs = request.POST.getlist('organizations')
+            if len(subject_orgs) > 0:
+                mods_context['organizations'].extend(subject_orgs)
+            topics = request.POST.getlist('sub_topics')
+            if len(topics) > 0:
+                mods_context['topics'].extend(topics)
             content_model = 'adr:adrBasicObject'
             for row in DIGITAL_ORIGIN:
                 if row[0] == int(digital_origin_id):
                     mods_context['digitalOrigin'] = row[1]
             mods_context['language'] = 'English'
-            mods_context['place_publication'] = 'Colorado Springs'
-            mods_context['publisher'] = 'Colorado College'
+            mods_context['publication_place'] = PLACE
+            mods_context['publisher'] = INSTITUTION
             if object_template == 1:
                 mods_context['alt_title'] = add_obj_template_form.cleaned_data[
                     'alt_title']
                 mods_context['extent'] = add_obj_template_form.cleaned_data[
                     'extent']
-                mods_context['subject_places'] = mods_context[
-                    'place_publication']
                 mods_context['typeOfResource'] = 'text'
-                mods_context['topics'] = ['meeting minutes',
-                                          'universities and colleges']
-                mods_context['subject_places'] = [mods_context[
-                    'place_publication'],]
-                mods_context['subject_people'] = [add_obj_template_form.cleaned_data[
-                    'sub_people'],]
+                mods_context['topics'].extend(['Meeting minutes',
+                                               'Universities and colleges'])
+                mods_context['topics'] = list(set(mods_context['topics']))
+                mods_context['subject_places'].append(
+                    mods_context['publication_place'])
+                mods_context['subject_places'] = list(set(
+                    mods_context['subject_places']))
                 
                 
                                           
@@ -110,9 +130,9 @@ def add_stub_from_template(request):
                     'frequency']
                 mods_context['typeOfResource'] = 'text'
                 mods_context['genre'] = 'periodical'
-                mods_context['place_publication'] = 'Colorado Springs'
-                mods_context['publisher'] = 'Colorado College'
-                mods_context['topics'] = ['College publications',]
+                mods_context['corporate_contributors'] = []
+                mods_context['publisher'] = INSTITUTION
+                mods_context['topics'] = list(set(mods_context['topics']))
             elif object_template == 3:
                 mods_context['typeOfResource'] = 'sound recording'
                 mods_context['genre'] = 'interview'

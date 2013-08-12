@@ -90,7 +90,6 @@ var CreativeWorkViewModel = function() {
   self.IsPrivateAnnotation = ko.observable();
 
   self.SaveAnnotation = function() {
-    alert("IN SAVE");
     var data = {
       body: self.AnnotationBody(),
       type: self.AnnotationType(),

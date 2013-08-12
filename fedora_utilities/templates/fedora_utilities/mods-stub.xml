@@ -13,11 +13,19 @@
 </titleInfo>
 {% endif %}
 {% for creator in creators %}
-<name type="personal"
+<name type="personal">
  <namePart>{{ creator }}</namePart>
  <role>
-  <roleTerm type="text">creator</roleTerm>
+  <roleTerm type="text" authority="marcrelator">creator</roleTerm>
  </role>
+</name>
+{% endfor %}
+{% for org in corporate_contributors %}
+<name type="corporate">
+ <namePart>{{ org }}</namePart>
+ <role>
+  <roleTerm type="text" authority="marcrelator">contributor</roleTerm>
+ </role> 
 </name>
 {% endfor %}
 <typeOfResource>{{ typeOfResource }}</typeOfResource>

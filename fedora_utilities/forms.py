@@ -12,6 +12,8 @@ DIGITAL_ORIGIN = [(1, 'born digital'),
                   (3, 'digitized microfilm'),
                   (4, 'digitized other analog')]
 
+INSTITUTION = 'Colorado College'
+
 MARC_FREQUENCY = [('choose', 'Choose...'),
                   ('Semiweekly', 'Semiweekly - 2 times a week'),
                   ('Three times a week', 'Three times a week'),
@@ -37,6 +39,7 @@ OBJECT_TEMPLATES = [(0, 'Choose model'),
                     (5, 'Video')]
 
 RIGHTS_STATEMENT = "Copyright restrictions apply. Contact Colorado College for permission to publish."
+PLACE = 'Colorado Springs, Colorado'
 
 class AddFedoraObjectFromTemplate(forms.Form):
     admin_note = forms.CharField(label='Administrative Notes',
@@ -49,6 +52,9 @@ class AddFedoraObjectFromTemplate(forms.Form):
     collection_pid = forms.CharField(max_length=20,
                                      label="PID of Parent Collection")
     creators = forms.CharField(required=False)
+    corporate_contributors = forms.CharField(
+        required=False,
+        initial=INSTITUTION)
     date_created = forms.CharField(label='Date Created')
     digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
                                        label='Digital Origin',
@@ -73,7 +79,8 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                         widget=forms.Select(
                                             attrs={'data-bind':'value: chosenContentModel, click: displayContentModel'}))
     organizations = forms.CharField(max_length=255,
-                                    required=False)
+                                    required=False,
+                                    initial=INSTITUTION)
     rights_holder = forms.CharField(max_length=255,
                                     label='Rights Statement',
                                     initial=RIGHTS_STATEMENT,
@@ -81,6 +88,13 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                         attrs={'rows': 3}))
     sub_people = forms.CharField(label='Subject -- People',
                                  required=False)
+    sub_places = forms.CharField(label='Subject -- Places',
+                                 required=False,
+                                 initial=PLACE)
+    sub_topics = forms.CharField(label='Subject -- Topic',
+                                 required=False,
+                                 widget=forms.TextInput(
+                                     attrs={'data-bind': 'value: topicOne'}))
     title = forms.CharField(max_length=120,
                             label='Title')
 
