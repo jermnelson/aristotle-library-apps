@@ -4,6 +4,8 @@
 
 {% block more-css %}
 <link href="{{ STATIC_URL }}css/colorado-college.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 {% endblock %}
 
 {# START container DIV #}
@@ -34,6 +36,7 @@
   <div class="span7 offset1">
    <div class="cc-about-work">
     <h3>{{ creative_work|get_title }}</h3>
+    <div style="float: right"> {{ creative_work|display_network_toolbar }}</div>
     <h2>About this {{ creative_work.name }}</h2>
     <dl class="dl-horizontal">
       {% if creative_work.description %}
@@ -59,8 +62,21 @@
   <div class="span3">
    <aside class="cc-actions">
     <h1>You can...</h1>
+     <p>
+      Cite this work with a MLA, Chicago, APA, or other citation styles with 
+      RefWorks or Zotero.
+     </p>
+     <p>
+      Add this work to your saved resources 
+      <a href="#" data-bind="click: SaveWork"><i class="icon-folder-close-alt"></i> folder</a>. 
+     </p>
+     <p>
+     Start a new <a href="/apps/discovery/"><i class="icon-search"></i> search</a>
+     </p>
+     <p>
+      Login to your library account with your TIGER number.
+     </p>
    </aside>
-   
    {{ creative_work|get_cover_art }}     
 </div>
 {# START Instances Row #}
@@ -82,3 +98,18 @@
 
 {# END container DIV #}
 </div>
+
+{% block more-js %}
+{% csrf_token %}
+<script src="{{ STATIC_URL }}js/knockout.js"></script>
+<script src="{{ STATIC_URL }}js/colorado-college.js"></script> 
+<script>
+ var work_redis_key = "{{ creative_work.redis_key }}";
+ ko.applyBindings(new CreativeWorkViewModel());
+</script>
+{% endblock %}
+
+{% block more-dialogs %}
+ {{ creative_work|display_user_annotation_dialog }}
+{% endblock %}
+

@@ -1,0 +1,20 @@
+<div class="btn-toolbar">
+  <div class="btn-group">
+    <a href="/apps/discovery/{{  entity.name }}/{{ entity.redis_id }}.rss" 
+       class='btn' 
+       data-toggle="tooltip" 
+       title='RSS Feed of changes to this {{ entity.name }}'><i class='icon-rss-sign'></i></a>
+    <a href="/apps/discovery/{{ entity.name }}/{{ entity.redis_id }}.json" 
+       class='btn'
+       data-toggle="tooltip" 
+      title="Linked Data View of this {{ entity.name }}">
+    <i class='icon-cogs'></i></a>
+    <a href="#annotateEntity"
+       class="btn"
+       data-toggle="modal"
+       title='Annotate this {{ entity.name }}'><i class="icon-comment"></i></a>
+    <a href="#" class='btn'><i class='icon-twitter'></i></a>
+    <a href="#" class='btn'><i class='icon-facebook'></i></a>
+ </div>
+</div>
+

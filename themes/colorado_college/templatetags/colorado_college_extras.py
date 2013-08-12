@@ -8,6 +8,7 @@ from django import template
 from django.utils.safestring import mark_safe
 from bibframe.models import Instance
 from aristotle.settings import REDIS_DATASTORE
+from discovery.forms import AnnotationForm
 register = template.Library()
 
 
@@ -22,6 +23,18 @@ def display_facet(facet):
     return mark_safe(facet_grp_template.render(
         template.Context({'expand': expand,
                           'facet':facet})))
+
+@register.filter(is_safe=True)
+def display_network_toolbar(redis_entity):
+    """Returns a semantic and social network toolbar 
+
+    Parameter:
+    redis_entity -- BIBFRAME Entity
+    """
+    network_toolbar_template = template.loader.get_template(
+        'cc-network-toolbar.html')
+    return mark_safe(network_toolbar_template.render(
+        template.Context({'entity': redis_entity})))
 
 @register.filter(is_safe=True)
 def display_pagination(current_shard):
@@ -121,7 +134,14 @@ def display_instance_summary(instance):
     return mark_safe(output)
     
 
-
+@register.filter(is_safe=True)
+def display_user_annotation_dialog(entity):
+    "Displays a User Annotation dialog"
+    user_dialog_template =  template.loader.get_template(
+        'cc-user-annotation.html')
+    context =  template.Context({'form': AnnotationForm(),
+                                 'entity': entity})
+    return mark_safe(user_dialog_template.render(context))
     
 
 @register.filter(is_safe=True)

@@ -4,7 +4,7 @@ var  DiscoveryViewModel = function () {
   self.DisplayListButton = ko.observable("btn"); 
   self.DisplayThumbnailButton = ko.observable("btn disabled");
   self.QueryPhrase = ko.observable();
-  self.QueryType =  ko.observable();
+  self.QueryType = ko.observable();
   self.ResultsMessage = ko.observable([]);
   self.SearchResults = ko.observableArray();
   self.SearchResultsPane = ko.observable(false);
@@ -75,4 +75,45 @@ var  DiscoveryViewModel = function () {
 
   }
 
-} 
+}
+
+var CreativeWorkViewModel = function() {
+  var self = this;
+  self.csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value; 
+
+  self.AnnotateWork = function() {
+    $('#annotateEntity').modal(show=true);
+  }
+  
+  self.AnnotationBody = ko.observable();
+  self.AnnotationType = ko.observable();
+  self.IsPrivateAnnotation = ko.observable();
+
+  self.SaveAnnotation = function() {
+    alert("IN SAVE");
+    var data = {
+      body: self.AnnotationBody(),
+      type: self.AnnotationType(),
+      is_private: self.IsPrivateAnnotation()};
+    alert("In save Annotation " + data);
+
+  }
+
+  self.SaveWork = function() {
+    var data = {
+      action: 'patron_annotation',
+      key: work_redis_key,
+      csrfmiddlewaretoken: self.csrf_token};
+    $.ajax({
+      url: '/apps/discovery/save',
+      data: data,
+      type: 'POST',
+      dataType: 'json',
+      success: function(data) {
+        alert(data['msg']);
+      }
+      
+    });
+  }
+
+}

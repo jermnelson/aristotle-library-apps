@@ -4,6 +4,8 @@
 
 {% block more-css %}
 <link href="{{ STATIC_URL }}css/colorado-college.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 {% endblock %}
 
 {# START container DIV #}
@@ -42,6 +44,7 @@
   {{ instance|about_instance }}
  </div>
  <div class="span4">
+  {{ instance|display_network_toolbar }}
   {{ instance|get_annotations }}
  </div>
 {# END Instancs Row #}

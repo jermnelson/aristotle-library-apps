@@ -11,6 +11,8 @@ import random
 from django.shortcuts import render
 
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.contrib.syndication.views import Feed
+
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 
@@ -394,6 +396,21 @@ def load(request):
     return {}
 
 @json_view
+def save(request):
+    "Saves Annotation or other Redis BIBFRAME entities to RLSP"
+    action = request.POST.get('action')
+    entity_key = request.POST.get('key')
+    if action == 'patron_annotation':
+        if request.user.is_authenticated() is False:
+            return {'msg': 'User must be logged in to save'}
+        else:
+            return {
+                'error': '{0} is saved to User Annotations'.format(entity_key)
+            }
+        
+    
+
+@json_view
 def search(request):
     """
     JSON-based search api for external calls into the discovery app
@@ -526,7 +543,44 @@ def bibframe_router(request,
         bibframe_key,
         REDIS_DATASTORE.exists(bibframe_key)))
     
+class EntityActivityFeed(Feed):
 
+    def get_object(self, request, redis_name, redis_id):
+        redis_key = "bf:{0}:{1}".format(redis_name,
+                                        redis_id)
+        if not REDIS_DATASTORE.exists(redis_key):
+            raise Http404
+        redis_class = getattr(bibframe.models,
+                              redis_name)
+        return redis_class(redis_datastore=REDIS_DATASTORE,
+                           redis_key=redis_key)
+
+    def items(self):        
+        return []
+
+    def item_title(self, item):
+        return item.title
+
+    def item_description(self, item):
+        return item.description
+
+    def item_link(self, item):
+        return "/apps/discovery/{0}/{1}/{2}".format(item.redis_name,
+                                                    item.redis_id,
+                                                    item.date)
+
+
+    def description(self, obj):
+        return "Updates a news feed of activity for {0}".format(obj.redis_key)
+
+    def title(self, obj):
+        return "{0} Activity".format(obj.name)
+
+    def link(self, obj):
+        return '/apps/discovery/{0}/{1}.rss'.format(obj.name,
+                                                    obj.redis_id)
+
+    
 
 @json_view
 def bibframe_json_router(request,
