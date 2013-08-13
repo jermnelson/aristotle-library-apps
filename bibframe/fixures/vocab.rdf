@@ -138,13 +138,14 @@
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Instance">
     <rdfs:label>Instance</rdfs:label>
     <bf-abstract:marcField>260</bf-abstract:marcField>
-    <bf-abstract:marcField>856...</bf-abstract:marcField>
+    <bf-abstract:marcField>856 [859]...</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
     <bf-abstract:definition>A resource reflecting an individual, material embodiment of the Work.</bf-abstract:definition>
     <bf-abstract:note>An instance can be generated from an 856 pointing to a digital version of the work.For example, if $ind1=4 and $ind2=1</bf-abstract:note>
     <dcterms:modified>2013-04-17 (Updated)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-17 (Updated 856 instance)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11737193"/>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15716616"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Authority">
     <rdfs:label>Authority</rdfs:label>
@@ -174,6 +175,8 @@
     <rdfs:label>Organization</rdfs:label>
     <bf-abstract:marcField>110,410,610,710,810 I1=0 or 2</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16514537"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Jurisdiction">
     <rdfs:label>Jurisdiction</rdfs:label>
@@ -186,18 +189,23 @@
     <bf-abstract:marcField>111,411,611,711,811</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
     <bf-abstract:note>RDA corporate conference</bf-abstract:note>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13894436"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Annotation">
     <rdfs:label>Annotation</rdfs:label>
-    <bf-abstract:marcField>856</bf-abstract:marcField>
+    <bf-abstract:marcField>856, 520</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
     <bf-abstract:definition>A resource that adds additional information to or about other BIBFRAME resources when knowing 'who' annotated it is important.</bf-abstract:definition>
-    <dcterms:modified>2013-04-12 (Updated definition)</dcterms:modified>
+    <dcterms:modified>2013-04-12 (Updated definition);2013-06-20 (Added exaple)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-07-10 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13428604"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Holding">
     <rdfs:label>Holding</rdfs:label>
     <bf-abstract:marcField>852</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <bf-abstract:definition>Individual Institution's holding/shelflisting info about a resource.</bf-abstract:definition>
     <dcterms:modified>2013-04-16</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-18 (New)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
@@ -206,6 +214,7 @@
     <rdfs:label>Cover Art Annotation</rdfs:label>
     <bf-abstract:marcField>856</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <bf-abstract:definition>Link to a thumbnail of cover illustration of item</bf-abstract:definition>
     <dcterms:modified>2013-04-18 (Updated MARC); 2013-04-24 (Added example)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16574557"/>
   </rdfs:Class>
@@ -213,6 +222,13 @@
     <rdfs:label>Review Annotation</rdfs:label>
     <bf-abstract:marcField>856</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Description">
+    <rdfs:label>Description Annotation</rdfs:label>
+    <bf-abstract:marcField>856</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <bf-abstract:definition>Description of Resource, as from publisher</bf-abstract:definition>
+    <dcterms:modified>2013-07-18 (Added)</dcterms:modified>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Identifier">
     <rdfs:label>Identifier</rdfs:label>
@@ -232,6 +248,7 @@
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/OrganizationSystemEntity">
     <rdfs:label>Organization of materials information</rdfs:label>
+    <bf-abstract:marcField>351, $3abc</bf-abstract:marcField>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11628622"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/CoverageEntity">
@@ -243,10 +260,15 @@
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/LanguageEntity">
     <rdfs:label>Language</rdfs:label>
+    <bf-abstract:marcField>041</bf-abstract:marcField>
     <bf-abstract:note>This will take some analysis. It may be an Instance splitter.</bf-abstract:note>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5485844"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/NotationEntity">
     <rdfs:label>Notation Entity</rdfs:label>
+    <bf-abstract:note>Deleted. Use notation property.</bf-abstract:note>
+    <dcterms:modified>2013-07-18 (Deleted)</dcterms:modified>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/TitleEntity">
     <rdfs:label>Title Entity</rdfs:label>
@@ -254,10 +276,10 @@
     <dcterms:modified>2013-03-29 (Updated)</dcterms:modified>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/Topic">
-    <rdfs:label>Topical Concept</rdfs:label>
+    <rdfs:label>Topic</rdfs:label>
     <bf-abstract:marcField>650</bf-abstract:marcField>
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
-    <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-04-30 (Added example); 2013-05-21 (Updated label)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15875548"/>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/TemporalConcept">
@@ -273,11 +295,6 @@
     <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15599751"/>
-  </rdfs:Class>
-  <rdfs:Class rdf:about="http://bibframe.org/vocab/EditionEntity">
-    <rdfs:label>Edition Entity</rdfs:label>
-    <bf-abstract:marcField>250</bf-abstract:marcField>
-    <dcterms:modified>2013-03-20 (New)</dcterms:modified>
   </rdfs:Class>
   <rdfs:Class rdf:about="http://bibframe.org/vocab/PhilatelicEntity">
     <rdfs:label>Philatelic Entity</rdfs:label>
@@ -374,9 +391,9 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Associated Agent</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/resourceRole">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -400,10 +417,20 @@
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/identifier">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Resource"/>
-    <rdfs:label>identifier</rdfs:label>
+    <rdfs:label>Identifier</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Identifier"/>
+    <bf-abstract:marcField>0XX...</bf-abstract:marcField>
+    <bf-abstract:note>Preferred use of identifier; values from controlled lists. For uncontrolled, use 'identifierLabel'</bf-abstract:note>
+    <dcterms:modified>2013-07-18 (Updated range)</dcterms:modified>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/identifierLabel">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <rdfs:label>Identifier Label</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <bf-abstract:definition>String version of identifier.</bf-abstract:definition>
+    <bf-abstract:note>This is for when there's no controlled list or uri for the id. Allowed but not encouraged.</bf-abstract:note>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/isbn10">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -461,11 +488,11 @@
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/issn">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
-    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>International Standard Serial Number</rdfs:label>
     <bf-abstract:marcField>022--/a,z,y</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/identifier"/>
     <dcterms:modified>2013-05-07 (Added example)</dcterms:modified>
+    <dcterms:modified>(Updated domain)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-12 (Updated)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17387996"/>
   </rdfs:Resource>
@@ -576,6 +603,8 @@
     <rdfs:label>Uniform Resource Number</rdfs:label>
     <bf-abstract:marcField>0247-+2"urn"/a,z</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/identifier"/>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17439166"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/doi">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -593,6 +622,7 @@
     <rdfs:label>fingerprint identifier</rdfs:label>
     <bf-abstract:marcField>026--/e</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/identifier"/>
+    <bf-abstract:note>LC has no examples</bf-abstract:note>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/strn">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -624,6 +654,8 @@
     <rdfs:label>music publication number assigned by publisher</rdfs:label>
     <bf-abstract:marcField>0282-/a</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/identifier"/>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5639219"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/music-publisher">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -631,6 +663,8 @@
     <rdfs:label>other publisher number for music</rdfs:label>
     <bf-abstract:marcField>0283-/a</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/identifier"/>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15532740"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/videorecording-identifier">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -638,6 +672,8 @@
     <rdfs:label>publisher assigned videorecording number</rdfs:label>
     <bf-abstract:marcField>0284-/a</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/identifier"/>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13488078"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/publisher-number">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -725,6 +761,8 @@
     <rdfs:label>technical report number</rdfs:label>
     <bf-abstract:marcField>088--/a,z</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/identifier"/>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13987899"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/isni">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -833,14 +871,27 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Intended Audience</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/IntendedAudienceEntity"/>
     <bf-abstract:marcField>521--</bf-abstract:marcField>
     <bf-abstract:marcField>008/22MU+BK+CF+VM</bf-abstract:marcField>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-09 (Updated)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16484626"/>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/4889062"/>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/contents">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
+    <rdfs:label>Contents</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <bf-abstract:marcField>505 i2=" "</bf-abstract:marcField>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
+    <bf-abstract:note>Formatted contents, but just basic.</bf-abstract:note>
+    <dcterms:modified>2013-07-19 (Added)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-07-19 (Added)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/8088133"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/audience">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -865,10 +916,10 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/IntendedAudienceEntity"/>
     <rdfs:label>Audience Assigner</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <bf-abstract:marcField>521--/b</bf-abstract:marcField>
     <bf-abstract:rdaField>Often the publisher, so this could be the organization uri.</bf-abstract:rdaField>
     <dcterms:modified>2013-04-10 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-12 (Updated); 2013-04-18 (Added example)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15628464"/>
   </rdfs:Resource>
@@ -876,9 +927,10 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Organization System</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/OrganizationSystemEntity"/>
     <bf-abstract:marcField>351--/3+a+b=+c</bf-abstract:marcField>
+    <bf-abstract:definition>Denotes how the materials are organized and arranged, within it's parts and/or for different material formats</bf-abstract:definition>
+    <bf-abstract:pipeline-edit>2013-06-24 (Updated range)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/12700618"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/materialOrganization">
@@ -901,10 +953,13 @@
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/materialHierarchicalLevel">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
-    <rdfs:domain rdf:resource="http://bibframe.org/vocab/OrganizationSystemEntity"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/OrganizationEntity"/>
     <rdfs:label>Hierarchical Level of Material</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <bf-abstract:marcField>351--/c</bf-abstract:marcField>
+    <bf-abstract:definition>The level of material organized this way (ie., series)</bf-abstract:definition>
+    <bf-abstract:note>LC has no examples of this.</bf-abstract:note>
+    <dcterms:modified>2013-06-24 (Updated domain, definition)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/materialPart">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -923,6 +978,7 @@
     <bf-abstract:marcField>336--/a(term)</bf-abstract:marcField>
     <bf-abstract:marcField>336--/b(code)</bf-abstract:marcField>
     <bf-abstract:marcField>245--/k, 513--/a, 516--/a,008/24-27BK+CR(codes)</bf-abstract:marcField>
+    <bf-abstract:note>All these codes should not be strings.</bf-abstract:note>
     <bf-abstract:pipeline-edit>2013-05-07 (Updated property)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13623634"/>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5808761"/>
@@ -932,12 +988,14 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:label>Coverage of Content</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/CoverageEntity"/>
     <bf-abstract:marcField>513--/b</bf-abstract:marcField>
-    <bf-abstract:marcField>522--/a</bf-abstract:marcField>
     <bf-abstract:marcField>518--/a</bf-abstract:marcField>
+    <bf-abstract:marcField>522--/a</bf-abstract:marcField>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
     <bf-abstract:note>Date or time</bf-abstract:note>
+    <dcterms:modified>2013-05-29 (Updated subproperty)</dcterms:modified>
+    <dcterms:modified>2013-06-24 (Updated Range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-05-07 (Updated property)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14389913"/>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5795097"/>
@@ -973,6 +1031,7 @@
     <bf-abstract:marcField>502--/a</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-05-29 (Updated subproperty)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-18 (Updated)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16684455"/>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16872934"/>
@@ -1018,7 +1077,6 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Summary</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/SummaryEntity"/>
     <bf-abstract:pipeline-edit>2013-05-07 (Updated property)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13299475"/>
   </rdfs:Resource>
@@ -1062,11 +1120,14 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>missingLabel</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/NotationEntity"/>
     <bf-abstract:marcField>546--/b</bf-abstract:marcField>
     <bf-abstract:marcField>007/01(f)values a,b,c</bf-abstract:marcField>
     <bf-abstract:marcField>008/23 value f BK, MM, CR</bf-abstract:marcField>
     <bf-abstract:marcField>008/29 value f MP, VM</bf-abstract:marcField>
+    <bf-abstract:definition>Script of language, braille, etc.</bf-abstract:definition>
+    <bf-abstract:note>language notation, including braille; 007/008 parts not in transformation yet</bf-abstract:note>
+    <dcterms:modified>2013-07-18 (Updated range)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-07-18 (Updated propertyname)</bf-abstract:pipeline-edit>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/contentAccessabilityNote">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1074,6 +1135,7 @@
     <rdfs:label>Content accessibility note</rdfs:label>
     <bf-abstract:marcField>??</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
+    <dcterms:modified>2013-05-29 (Updated subproperty)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/illustrativeContentNote">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1242,17 +1304,33 @@
     <rdfs:label>Award note</rdfs:label>
     <bf-abstract:marcField>586--/3+a</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14979049"/>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/primaryLanguage">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
+    <rdfs:label>Language</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <bf-abstract:marcField>008/35-37</bf-abstract:marcField>
+    <bf-abstract:definition>Language of text, from MARC 008</bf-abstract:definition>
+    <bf-abstract:note>Additional languages or more granularity on "language" property</bf-abstract:note>
+    <dcterms:modified>2013-06-24 (New)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-05-30 (New)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16241964"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/language">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Language</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/LanguageEntity"/>
-    <bf-abstract:marcField>008/35-37</bf-abstract:marcField>
+    <bf-abstract:marcField>041 and 008/35-37</bf-abstract:marcField>
     <dcterms:modified>2013-04-10 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
+    <dcterms:modified>2013-06-23 (Updated MARC)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5485844"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/languageNote">
@@ -1270,7 +1348,7 @@
     <rdfs:label>Resource part</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <bf-abstract:marcField>041--/subfield indicates part</bf-abstract:marcField>
-    <bf-abstract:note>e.g., text, original text, summary, sung/spoken text, libretto, accompanying material,soundtrack, title, subtitle, intertitles, captions,original libretto</bf-abstract:note>
+    <bf-abstract:note>e.g., text, original text, summary, sung/spoken text, libretto, accompanying material, soundtrack, title, subtitle, intertitles, captions, original libretto</bf-abstract:note>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-30 (New)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/12076972"/>
@@ -1279,11 +1357,11 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/LanguageEntity"/>
     <rdfs:label>Language of part</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <bf-abstract:marcField>041--/content of subfield used for part type</bf-abstract:marcField>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-30 (New)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/12076972"/>
   </rdfs:Resource>
@@ -1292,7 +1370,6 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/LanguageEntity"/>
     <rdfs:label>Language of part</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/"/>
     <bf-abstract:marcField>041--/content of subfield used for part type</bf-abstract:marcField>
     <bf-abstract:note>Prefer the use of languageOfPart as uri to language code.</bf-abstract:note>
     <dcterms:modified>2013-05-16 (New)</dcterms:modified>
@@ -1309,10 +1386,10 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:label>classification</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/ClassificationEntity"/>
     <bf-abstract:marcField>084,086--/a</bf-abstract:marcField>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-12</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16835757"/>
   </rdfs:Resource>
@@ -1503,9 +1580,9 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Annotation"/>
     <rdfs:label>Annotation itself</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-30 (Updated)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15599751"/>
   </rdfs:Resource>
@@ -1513,10 +1590,27 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Annotation"/>
     <rdfs:label>Annotation asserted by</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15599751"/>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/dateOfAssertion">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <rdfs:label>Annotation Assertion Date</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/xs:date"/>
+    <bf-abstract:note>xs:date may be too restrictive? or add dateOfAssertionLabel</bf-abstract:note>
+    <dcterms:modified>2013-07-18 (Added )</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15747233"/>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/annotationSource">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <rdfs:label>Annotation Source</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <bf-abstract:note>For a publisher supplied description, source would be the publisher</bf-abstract:note>
+    <dcterms:modified>2013-07-18 (Added )</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/relatedResource">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1526,6 +1620,8 @@
     <bf-abstract:marcField>787</bf-abstract:marcField>
     <bf-abstract:marcField>700,710,711, with $t and i2 not 2</bf-abstract:marcField>
     <bf-abstract:marcField>730,740, and i2 not 2</bf-abstract:marcField>
+    <dcterms:modified>2013-07-18 (Added example)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-07-18 (Updated property</bf-abstract:pipeline-edit>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/relatedWork">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1533,11 +1629,11 @@
     <rdfs:label>Related work</rdfs:label>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/RelatedEntity"/>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedResource"/>
     <dcterms:modified>2013-03-22 (Updated)</dcterms:modified>
     <dcterms:modified>2013-05-01 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14923309"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/relatedInstance">
@@ -1546,10 +1642,12 @@
     <rdfs:label>Related Instance</rdfs:label>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/RelatedEntity"/>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedesource"/>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13987899"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/hasExpression">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1557,10 +1655,10 @@
     <rdfs:label>Expressed as</rdfs:label>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/RelatedEntity"/>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedResource"/>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/expressionOf">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1579,11 +1677,11 @@
     <rdfs:label>Instantiated as</rdfs:label>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/RelatedEntity"/>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedResource"/>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
     <dcterms:modified>2013-04-18 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-18</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/630296"/>
   </rdfs:Resource>
@@ -1593,21 +1691,27 @@
     <rdfs:label>Instance of</rdfs:label>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/RelatedEntity"/>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedResource"/>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-18 (New)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15798171"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/series">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:label>Work is in series; has series</rdfs:label>
-    <bf-abstract:marcField>400,410,411,430,490,800,810,811,830</bf-abstract:marcField>
+    <bf-abstract:marcField>400,410,411,430, 440,490,800,810,811,830</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
+    <bf-abstract:note>3599904 contains example of 440 with private language used for sort title</bf-abstract:note>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
     <dcterms:modified>2013-05-16 (Updated MARC)</dcterms:modified>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
+    <dcterms:modified>2013-07-19 (Updated MARC)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-06-20 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13694403"/>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/3599904"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/subseries">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1615,7 +1719,9 @@
     <bf-abstract:marcField>762</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-09 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11292563"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/subseriesOf">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1623,7 +1729,9 @@
     <bf-abstract:marcField>760</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
     <dcterms:modified>2013-04-09 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-09 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11374173"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/translationOf">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1631,7 +1739,9 @@
     <bf-abstract:marcField>765</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
     <dcterms:modified>2013-03-22 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-09 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11333828"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/translation">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1639,7 +1749,9 @@
     <bf-abstract:marcField>767</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
     <dcterms:modified>2013-03-22 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-09 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11500013"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/supplementTo">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1647,7 +1759,9 @@
     <bf-abstract:marcField>772</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
     <dcterms:modified>2013-03-22 (Updated)</dcterms:modified>
-    <bf-abstract:pipeline-edit>2013-04-09 (Updated)</bf-abstract:pipeline-edit>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-04-09 (Updated);2013-06-20 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13019979"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/supplement">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1656,6 +1770,8 @@
     <bf-abstract:marcField>525 $a</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
     <dcterms:modified>2013-03-22 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-06-20 (Added example)</dcterms:modified>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17438799"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/otherEdition">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -1692,6 +1808,7 @@
     <bf-abstract:marcField>700,710,711 with $t and i2=2</bf-abstract:marcField>
     <bf-abstract:marcField>730,740 and i2=2</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/relatedWork"/>
+    <bf-abstract:note>505 i2=0</bf-abstract:note>
     <dcterms:modified>2013-03-22 (Updated)</dcterms:modified>
     <dcterms:modified>2013-04-30 (Added example)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17428206"/>
@@ -1983,14 +2100,18 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:label>Language of work</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <bf-abstract:note>Deleted. Use "language" property.</bf-abstract:note>
+    <dcterms:modified>2013-06-18 (Updated range)</dcterms:modified>
+    <dcterms:modified>2013-07-19 (Deleted)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/subject">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:label>Subject</rdfs:label>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <bf-abstract:marcField>6XX, 043</bf-abstract:marcField>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/instanceOf">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -2004,10 +2125,10 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Work"/>
     <rdfs:label>Controlled title</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/TitleEntity"/>
     <bf-abstract:marcField>130,240 $a</bf-abstract:marcField>
     <bf-abstract:note>Authorized Access Point title</bf-abstract:note>
     <dcterms:modified>2013-04-17 (Updated)</dcterms:modified>
+    <dcterms:modified>2013-07-18 (Updated range)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/title">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -2053,6 +2174,42 @@
     <bf-abstract:marcField>130,730,830,245,246,247,242 $n</bf-abstract:marcField>
     <bf-abstract:note>parallel enumeration: repeat element</bf-abstract:note>
     <dcterms:modified>2013-04-17 (Updated)</dcterms:modified>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/form">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/TitleEntity"/>
+    <rdfs:label>Class or genre</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <bf-abstract:marcField>130,730,830 $k</bf-abstract:marcField>
+    <bf-abstract:marcField>380 $a</bf-abstract:marcField>
+    <bf-abstract:note>class or genre to which work belongs used to differentiate works e.g., selections, play, manuscripts.</bf-abstract:note>
+    <dcterms:modified>2013-07-17 (New)</dcterms:modified>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/date">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/TitleEntity"/>
+    <rdfs:label>Earliest date associated with the work</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <bf-abstract:marcField>130,730,830 $f</bf-abstract:marcField>
+    <bf-abstract:marcField>046 $k+$l</bf-abstract:marcField>
+    <bf-abstract:note>used to differentiate works with the same title</bf-abstract:note>
+    <dcterms:modified>2013-07-17 (New)</dcterms:modified>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/placeOfOrigin">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/TitleEntity"/>
+    <rdfs:label>Place work originated</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <bf-abstract:marcField>Auth 370 $g</bf-abstract:marcField>
+    <bf-abstract:note>Parenthetical in MARC headings so difficult to identify and pull out of 130 or 240</bf-abstract:note>
+    <dcterms:modified>2013-07-17 (New)</dcterms:modified>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/medium">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/TitleEntity"/>
+    <rdfs:label>Medium of performance</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <dcterms:modified>2013-07-17 (New)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/titleType">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -2100,9 +2257,9 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Key title</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/TitleEntity"/>
     <bf-abstract:marcField>222 $a+$b</bf-abstract:marcField>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-25 (Updated range)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/abbreviatedTitle">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -2110,9 +2267,11 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Abbreviated title</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/TitleEntity"/>
     <bf-abstract:marcField>210 $a+$b</bf-abstract:marcField>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-25 (Updated range, Added example)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-06-25 (Added)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17467062"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/responsibilityStatement">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -2122,30 +2281,27 @@
     <bf-abstract:marcField>245 $c</bf-abstract:marcField>
     <bf-abstract:note>parallel responsibility: repeat element</bf-abstract:note>
   </rdfs:Resource>
-  <rdfs:Resource rdf:about="http://bibframe.org/vocab/editionStatement">
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/edition">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Edition statement</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/EditionEntity"/>
-    <bf-abstract:marcField>250--/a+b</bf-abstract:marcField>
-    <dcterms:modified>2013-03-22 (New)</dcterms:modified>
-  </rdfs:Resource>
-  <rdfs:Resource rdf:about="http://bibframe.org/vocab/edition">
-    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
-    <rdfs:domain rdf:resource="http://bibframe.org/vocab/EditionEntity"/>
-    <rdfs:label>Edition</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <bf-abstract:marcField>250--/a</bf-abstract:marcField>
-    <bf-abstract:note>parallel edition statement: repeat element</bf-abstract:note>
+    <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-20 (Updated domain, name and marc)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-06-20 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/9111141"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/editionResponsibility">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
-    <rdfs:domain rdf:resource="http://bibframe.org/vocab/EditionEntity"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Edition responsibility</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <bf-abstract:marcField>250--/b</bf-abstract:marcField>
     <bf-abstract:note>parallel edition responsibility: repeat element</bf-abstract:note>
+    <dcterms:modified>2013-06-20 (Updated domain)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-06-20 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/9111141"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/serialFirstIssue">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
@@ -2206,12 +2362,12 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Publication</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/ProviderEntity"/>
     <bf-abstract:marcField>260 $a+$b+$c</bf-abstract:marcField>
     <bf-abstract:marcField>264 if i2=1 $a+$b+$c</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/provider"/>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-25 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-12 (Updated)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5456313"/>
   </rdfs:Resource>
@@ -2219,32 +2375,32 @@
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Production</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/ProviderEntity"/>
     <bf-abstract:marcField>264 if i2=0 $a+$b+$c</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/provider"/>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-25 (Updated range)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/distribution">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Distribution</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/ProviderEntity"/>
     <bf-abstract:marcField>264 if i2=2 $a+$b+$c</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/provider"/>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-25 (Updated range)</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/manufacture">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Manufacture</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <rdfs:range rdf:resource="http://bibframe.org/vocab/ProviderEntity"/>
     <bf-abstract:marcField>260 $e+$f+$g</bf-abstract:marcField>
     <bf-abstract:marcField>264 if i2=3 $a+$b+$c</bf-abstract:marcField>
     <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/provider"/>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-25 (Updated range)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-04-12 (Updated)</bf-abstract:pipeline-edit>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/providerRole">
@@ -2259,10 +2415,9 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/ProviderEntity"/>
     <rdfs:label>Provider name</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://bibframe.org/vocab/Organization"/>
     <bf-abstract:marcField>see notes</bf-abstract:marcField>
-    <bf-abstract:note>parallel name: repeat element</bf-abstract:note>
-    <bf-abstract:pipeline-edit>2013-04-17 (Updated range)</bf-abstract:pipeline-edit>
+    <bf-abstract:note>parallel name: repeat element. Transcription. If there's a real Organization, we should allow for it here.</bf-abstract:note>
+    <bf-abstract:pipeline-edit>2013-04-17 (Updated range);2013-06-25 (Updated range)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5456313"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/providerPlace">
@@ -2270,10 +2425,9 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/ProviderEntity"/>
     <rdfs:label>Provider place</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <bf-abstract:marcField>see notes</bf-abstract:marcField>
-    <bf-abstract:note>parallel place: repeat element</bf-abstract:note>
-    <bf-abstract:pipeline-edit>2013-04-17 (Added example)</bf-abstract:pipeline-edit>
+    <bf-abstract:note>parallel place: repeat element. In MARC, this is from a transcription, so it may not be able to be a uri to a place</bf-abstract:note>
+    <bf-abstract:pipeline-edit>2013-04-17 (Added example); 2013-06-18 (Updated range)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5456313"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/providerDate">
@@ -2357,7 +2511,9 @@
     <rdfs:label>Preferred citation</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <bf-abstract:marcField>524 $a</bf-abstract:marcField>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-05-29 (Updated subproperty)</dcterms:modified>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17106072"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/custodialHistory">
@@ -2365,9 +2521,10 @@
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Custodial history</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <bf-abstract:marcField>561 $a + $u</bf-abstract:marcField>
+    <bf-abstract:marcField>561 $a</bf-abstract:marcField>
+    <bf-abstract:note>561 $u should be an annotation?</bf-abstract:note>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-18 (Updated note)</dcterms:modified>
     <bf-abstract:pipeline-edit>2013-05-07 (Updated property)</bf-abstract:pipeline-edit>
     <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17125262"/>
   </rdfs:Resource>
@@ -2377,25 +2534,32 @@
     <rdfs:label>Immediate acquisition</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     <bf-abstract:marcField>541</bf-abstract:marcField>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/note"/>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-05-29 (Updated subproperty</dcterms:modified>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/carrierType">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Carrier type</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <bf-abstract:marcField>007/01</bf-abstract:marcField>
     <bf-abstract:marcField>338 $a</bf-abstract:marcField>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
-    <bf-abstract:pipeline-edit>2013-04-10 (Updated)</bf-abstract:pipeline-edit>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-04-10 (Updated);2013-06-24 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16460143"/>
   </rdfs:Resource>
   <rdfs:Resource rdf:about="http://bibframe.org/vocab/mediaType">
     <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
     <rdfs:domain rdf:resource="http://bibframe.org/vocab/Instance"/>
     <rdfs:label>Media type</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <bf-abstract:marcField>007/00</bf-abstract:marcField>
     <bf-abstract:marcField>337 $a</bf-abstract:marcField>
     <dcterms:modified>2013-03-22 (New)</dcterms:modified>
+    <dcterms:modified>2013-06-24 (Added example)</dcterms:modified>
+    <bf-abstract:pipeline-edit>2013-06-24 (Updated)</bf-abstract:pipeline-edit>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16460143"/>
   </rdfs:Resource>
 </rdf:RDF>
