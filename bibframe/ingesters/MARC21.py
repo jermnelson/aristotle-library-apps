@@ -20,7 +20,7 @@ from bibframe.models import MovingImage, MusicalAudio, NonmusicalAudio
 from bibframe.models import NotatedMusic, SoftwareOrMultimedia, StillImage
 from bibframe.models import RemoteSensingImage, TitleEntity, ThreeDimensionalObject
 from bibframe.ingesters.Ingester import Ingester
-from bibframe.ingesters import tutt_maps, marc21_maps
+from bibframe.ingesters import tutt_maps, marc21_maps, web_services
 from discovery.redis_helpers import slug_to_title
 from django.template.defaultfilters import slugify
 from call_number.redis_helpers import generate_call_number_app
@@ -29,6 +29,7 @@ from aristotle.settings import IS_CONSORTIUM, PROJECT_HOME
 from organization_authority.redis_helpers import get_or_add_organization
 from title_search.redis_helpers import generate_title_app, process_title
 from title_search.redis_helpers import index_title, search_title
+
 
 from lxml import etree
 from rdflib import RDF, RDFS, Namespace
@@ -1135,6 +1136,7 @@ class MARC21toBIBFRAME(MARC21Ingester):
             redis_datastore=self.redis_datastore,)
         self.marc2instance.ingest()
         self.marc2instance.instance.save()
+        
         finish_instance = datetime.datetime.utcnow()
         instance_key = self.marc2instance.instance.redis_key
         work_instances_key = "{0}:hasInstance".format(work_key)
@@ -1848,9 +1850,14 @@ def ingest_marcfile(**kwargs):
             # Need to check if MARC21 record has already been ingested into the
             # datastore
             if not check_marc_exists(redis_datastore, record):
-                ingester = MARC21toBIBFRAME(record=record,
-                                            redis_datastore=redis_datastore)
-                ingester.ingest()
+                try:
+                    ingester = MARC21toBIBFRAME(record=record,
+                                                redis_datastore=redis_datastore)
+                    ingester.ingest()
+                except Exception as e:
+                    print("Failed to ingest {0}={1}".format(
+                        count,
+                        e))
             if count%1000:
                 if not count % 100:
                     sys.stderr.write(".")

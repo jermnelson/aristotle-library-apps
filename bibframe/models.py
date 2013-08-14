@@ -123,8 +123,9 @@ def load_rdf():
             domain_name = os.path.split(
                 domain.attrib.get('{{{0}}}resource'.format(RDF)))[-1]
             if rdf_classes.has_key(domain_name) is False:
-                raise ValueError("Unknown BIBFRAME class {0}".format(
-                    domain_name))
+                continue
+##                raise ValueError("Unknown BIBFRAME class {0}".format(
+##                    domain_name))
             rdf_classes[domain_name]['attributes'][attrib_name] = None
             if marc_mapping is not None:
                 if rdf_classes[domain_name]['attributes'].has_key('marc_map'):

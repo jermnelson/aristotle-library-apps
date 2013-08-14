@@ -478,7 +478,7 @@ class MARC21toInstanceTest(TestCase):
 
     def test_language(self):
         self.assertEquals(list(self.instance_ingester.instance.language)[0],
-                          'eng')
+                          'English')
 
     def test_extract_legal_deposit(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'legal-deposit'))[0],
