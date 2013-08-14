@@ -35,7 +35,7 @@
     {# END title #}
     </div>
     {# START alternate title #}
-    <div class="control-group" data-bind="visible: meetingMinutesTemplate">
+    <div class="control-group" data-bind="visible: showAlternativeTitle">
      <label class="control-label" for="alt_title">
        {{ add_obj_form.alt_title.label }}
      </label>
@@ -56,6 +56,35 @@
      </div>
     {# END alternate creators #}
     </div>
+
+     {# START corporate creators #}
+    <div class="control-group" data-bind="visible: showCorporateCreators">
+     <label class="control-label" for="corporate_contributors ">
+     {{ add_obj_form.corporate_creators.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.corporate_creators }}
+     <a href="#" data-bind="click: addCorporateCreator" 
+                 id="AddCorporateCreatorBtn"><i class="icon-plus-sign"></i></a>
+     </div>
+    {# END corporate creators #}
+    </div>
+
+
+    {# START contributors #}
+    <div class="control-group" data-bind="visible: showContributors">
+     <label class="control-label" for="contributors ">
+     {{ add_obj_form.contributors.label }}
+     </label>
+     <div class="controls">
+     {{ add_obj_form.contributors }}
+     <a href="#" data-bind="click: addContributor" 
+                 id="AddContributorBtn"><i class="icon-plus-sign"></i></a>
+     </div>
+    {# END contributors #}
+    </div>
+
+
     {# START corporate contributors #}
     <div class="control-group" data-bind="visible: showCorporateCreators">
      <label class="control-label" for="corporate_contributors ">
@@ -89,6 +118,44 @@
      </div>
     {# END digital origin #}
     </div>
+
+    {# START Type of Resource #}
+    <div class="control-group">
+     <label class="control-label" for="type_of_resource">
+      {{ add_obj_form.type_of_resource.label }}
+     </label>
+     <div class="controls">
+       {{ add_obj_form.type_of_resource }}
+     </div>
+    {# END Type of Resource  #}
+    </div>
+
+
+    {# START Genre #}
+    <div class="control-group" data-bind="visible: showGenre">
+     <label class="control-label" for="genre">
+      {{ add_obj_form.genre.label }}
+     </label>
+     <div class="controls">
+      {{ add_obj_form.genre }}
+      <br><b>Or</b><br>
+      {{ add_obj_form.genre_free_form.label }}: 
+      {{ add_obj_form.genre_free_form }}
+     </div>
+    {# END Genre #}
+    </div>
+
+    {# START Form #}
+    <div class="control-group" data-bind="visible: showForm">
+     <label class="control-label" for="genre">
+      {{ add_obj_form.form.label }}
+     </label>
+     <div class="controls">
+      {{ add_obj_form.form }}
+     </div>
+    {# END Genre #}
+    </div>
+
     {# START description #}
     <div class="control-group">
      <label class="control-label" for="digital_origin">
@@ -101,7 +168,7 @@
     </div>
     {# START extent #}
     <div class="control-group" 
-         data-bind="visible: meetingMinutesTemplate">
+         data-bind="visible: showExtent">
       <label class="control-label" for="extent">
        {{ add_obj_form.extent.label }}
       </label>
@@ -132,22 +199,22 @@
     </div>
     {# START people subjects #}
     <div class="control-group" data-bind="visible: meetingMinutesTemplate">
-     <label class="control-label" for="sub_people">
-     {{ add_obj_form.sub_people.label }}
+     <label class="control-label" for="subject_people">
+     {{ add_obj_form.subject_people.label }}
      </label>
      <div class="controls">
-     {{ add_obj_form.sub_people }}
+     {{ add_obj_form.subject_people }}
      <a href="#" data-bind="click: addPerson" id="AddPersonBtn"><i class="icon-plus-sign"></i></a>
      </div>
     {# END people subjects #}
     </div>
    {# START place subjects #}
     <div class="control-group">
-     <label class="control-label" for="sub_places">
-     {{ add_obj_form.sub_places.label }}
+     <label class="control-label" for="subject_places">
+     {{ add_obj_form.subject_places.label }}
      </label>
      <div class="controls">
-     {{ add_obj_form.sub_places }}
+     {{ add_obj_form.subject_places }}
      <a href="#" data-bind="click: addPlace" id="AddPlaceBtn"><i class="icon-plus-sign"></i></a>
      </div>
     {# END place subjects #}
@@ -155,10 +222,10 @@
     {# START topic subjects #}
     <div class="control-group">
      <label class="control-label" for="sub_topics">
-     {{ add_obj_form.sub_topics.label }}
+     {{ add_obj_form.subject_topics.label }}
      </label>
      <div class="controls">
-     {{ add_obj_form.sub_topics }}
+     {{ add_obj_form.subject_topics }}
      <a href="#" data-bind="click: addTopic" id="AddTopicBtn"><i class="icon-plus-sign"></i></a>
      </div>
     {# END topic subjects #}
@@ -182,6 +249,9 @@
       </label>  
       <div class="controls">
       {{ add_obj_form.frequency }}
+      <br><b>Or</b><br>
+      {{ add_obj_form.frequency_free_form.label }}: 
+      {{ add_obj_form.frequency_free_form }}
       </div>
     </div>
     {# END frequency #}
@@ -228,29 +298,84 @@
  function AddStubViewModel() {
    var self = this;
    self.chosenContentModel = ko.observable();
-   self.topicOne = ko.observable();
+   self.extentValue = ko.observable();
+   self.formValue = ko.observable();
+   self.showAlternativeTitle = ko.observable(false);
+   self.showContributors = ko.observable(false);
    self.showCorporateCreators = ko.observable(false);
+   self.showCorporateContributors = ko.observable(false);
+   self.showExtent = ko.observable(false);
+   self.showGenre = ko.observable(false);
+   self.showForm = ko.observable(false);
    self.meetingMinutesTemplate = ko.observable(false);
+   self.topicOne = ko.observable();
+   self.genreOptions = ko.observableArray();
    self.newsletterTemplate = ko.observable(false);
+   self.typeOfResource = ko.observable();
+
    self.displayContentModel = function() {
      switch(self.chosenContentModel()) {
+        // Meeting Minutes
         case '1':
             self.resetForm();
             self.meetingMinutesTemplate(true);
             self.topicOne("Meeting minutes");
+            self.showAlternativeTitle(true);
             self.showCorporateCreators(true);
+            self.showExtent(true);
+            self.typeOfResource("text"); 
+
             //self.topicOne.html("<input name='sub_topics' type='text'>Universities and colleges</input>");
             break;
 
+        // Newsletter
         case '2':
           self.resetForm();
           self.newsletterTemplate(true);
+          self.showAlternativeTitle(true);
+          self.showContributors(true);
+          self.showGenre(true);
+          self.genreOptions.push({ name: "Periodical", value: "periodical" });
+          self.genreOptions.push({ name: "Newspaper", value: "newspaper"});
           self.topicOne("Newsletter");
+          self.typeOfResource("text"); 
+
           break;
 
+        // Podcast
         case '3':
           self.resetForm();
           self.showCorporateCreators(true);
+          self.showExtent(true);
+          self.showForm(true);
+          self.showGenre(true);
+          self.typeOfResource("sound recording");
+          self.extentValue("1 audio file");
+          self.formValue("podcast");
+          break;
+
+        // Video
+        case '4':
+          self.resetForm();
+          self.showCorporateCreators(true);
+          self.showExtent(true);
+          self.showForm(true);
+          self.showGenre(true);
+          self.extentValue("1 video file");
+          self.formValue("video clip");
+          self.genreOptions.push({ name: "Videorecording", value: "videorecording"}); 
+          self.typeOfResource("moving image"); 
+          break;
+
+       // Master Form displays everything
+       case '5':
+          self.resetForm()
+          self.showAlternativeTitle(true);
+          self.showContributors(true);
+          self.showCorporateCreators(true);
+          self.showGenre(true);
+          self.showExtent(true);
+          self.showForm(true);
           break;
 
         default:
@@ -259,47 +384,58 @@
 
    }
 
+   self.addAdditionalField = function(btn_name, name) {
+     var last_field = $("#" + btn_name).prev();
+     last_field.after("<input name='" + name + "' type='text' maxlength='255'></input>");
+   }
+
+   self.addCorporateCreator = function() {
+      self.addAdditionalField("AddCorporateCreatorBtn", "corporate_creators");
+   }
 
    self.addCorporateContributor = function() {
-     var last_corp_contrib = $("#AddCorporateContributorBtn").prev();
-     last_corp_contrib.after("<input name='corporate_contributors' type='text' maxlength='255'></input>");
+     self.addAdditionalField("AddCorporateContributorBtn", 'corporate_contributors');
+   }
+
+  self.addContributor = function() {
+     self.addAdditionalField("AddContributorBtn", 'contributors');
    }
 
    self.addCreator = function() {
-    var last_creator = $("#AddCreatorBtn").prev();
-    last_creator.after("<input name='creators' type='text' maxlength='255'></input>");
-
+    self.addAdditionalField("AddCreatorBtn", 'creators');
    }
 
    self.addOrganization = function() {
-     var last_org = $("#AddOrgBtn").prev();
-     last_org.after("<input name='organizations' type='text' maxlength='255'></input>");
-
+     self.addAdditionalField("AddOrgBtn", 'organizations');
    }
 
    self.addPerson = function() {
-     var last_person = $("#AddPersonBtn").prev();
-     last_person.after("<input name='sub_people' type='text' maxlength='255'></input>");
+     self.addAdditionalField("AddPersonBtn", 'subject_people');
    }
 
    self.addPlace = function() {
-     var last_place = $("#AddPlaceBtn").prev();
-     last_place.after("<input name='sub_places' type='text' maxlength='255'></input>");
+     self.addAdditionalField("AddPlaceBtn", 'subject_places');
    }
 
 
    self.addTopic = function() {
-     var last_topic = $("#AddTopicBtn").prev();
-     var new_topic = "<input name='sub_topics' type='text' maxlength='255'>";
-     new_topic += "</input>";
-     last_topic.after(new_topic);
+     self.addAdditionalField("AddTopicBtn", "subject_topics");
    }
    
    self.resetForm = function() {
+     self.genreOptions([{ name: "Choose...", value: null}]);
+     self.extentValue("");
+     self.formValue("");
+     self.showExtent(false);
+     self.showForm(false);
+     self.showGenre(false);
      self.newsletterTemplate(false);
      self.meetingMinutesTemplate(false);
+     self.showAlternativeTitle(false);
+     self.showContributors(false);
      self.showCorporateCreators(false);
      self.topicOne("");
+     self.typeOfResource(""); 
 
 
    }

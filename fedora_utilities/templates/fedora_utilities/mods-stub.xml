@@ -20,6 +20,23 @@
  </role>
 </name>
 {% endfor %}
+{% for contributor in contributors %}
+<name type="personal">
+ <namePart>{{ contributor }}</namePart>
+ <role>
+  <roleTerm type="text" authority="marcrelator">contributor</roleTerm>
+ </role>
+</name>
+{% endfor %}
+{% for org in corporate_creators %}
+<name type="corporate">
+ <namePart>{{ org }}</namePart>
+ <role>
+  <roleTerm type="text" authority="marcrelator">creator</roleTerm>
+ </role> 
+</name>
+{% endfor %}
+
 {% for org in corporate_contributors %}
 <name type="corporate">
  <namePart>{{ org }}</namePart>
@@ -56,13 +73,16 @@
 {% endif %}
 <genre authority="marcgt">{{ genre }}</genre>
 <physicalDescription>
+ {% if form %}
+ <form>{{ form }}</form>
+ {% endif %}
  <genre>{{ genre }}</genre>
  <digitalOrigin>{{ digitalOrigin }}</digitalOrigin>
  {% if extent %}
  <extent>{{ extent }}</extent>
  {% endif %}
 </physicalDescription>
-{% for topic in topics %}
+{% for topic in subject_topics %}
 <subject>
  <topic>{{ topic }}</topic>
 </subject>
@@ -89,5 +109,4 @@
 <accessCondition type="useAndReproduction">
  {{ rights_statement }}
 </accessCondition>
-<note type="admin">supplied by</note>
 </mods>  

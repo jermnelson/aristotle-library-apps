@@ -40,7 +40,24 @@ def default(request):
     return render(request,
                   'fedora_utilities/app.html',
                   context)
-    
+
+def __process_form_list__(name, request, context):
+    "Helper function takes a name and updates context"
+    listing = request.POST.getlist(name)
+    if len(listing) > 0:
+        context[name].extend(listing)
+
+def __process_form_free_text__(name, request, context):
+    """Helper function takes a name and checks for free form value,
+    if free_form is present takes precedent over select options"""
+    selected_option = request.POST.get(name)
+    free_text = request.POST.get('{0}_free_form'.format(name))
+    print(selected_option, free_text)
+    if len(free_text) > 0:
+        context[name] = free_text
+    elif len(selected_option) > 0 and selected_option is not None:
+        context[name] = selected_option
+        
 @login_required
 def add_stub_from_template(request):
     """Handler for adding Fedora stub object using a template
@@ -54,29 +71,39 @@ def add_stub_from_template(request):
         if add_obj_template_form.is_valid():
             mods_context = {'dateCreated': add_obj_template_form.cleaned_data[
                 'date_created'],
+                            'contributors': [],
                             'corporate_contributors': [],
+                            'creators': [],
                             'organizations': [],
                             'schema_type': 'CreativeWork', # Default,
                             'subject_people': [],
                             'subject_places': [],
-                            'topics': [],
+                            'subject_topics': [],
                             'title': add_obj_template_form.cleaned_data['title']
                             }
+            
+            __process_form_list__('creators', request, mods_context)
+            __process_form_list__('contributors', request, mods_context)
+            __process_form_list__('corporate_contributors',
+                                  request,
+                                  mods_context)
+            __process_form_list__('subject_people', request, mods_context)
+            __process_form_list__('subject_places', request, mods_context)
+            __process_form_list__('organizations', request, mods_context)
+            __process_form_list__('subject_topics', request, mods_context)
+            __process_form_free_text__('genre', request, mods_context)
             admin_note = add_obj_template_form.cleaned_data[
                 'admin_note']
-            creators = request.POST.getlist('creators')
-            if len(creators) > 0:
-                mods_context['creators'] = []
-                mods_context['creators'].extend(creators)
-            corp_contribs = request.POST.getlist('corporate_contributors')
-            if len(corp_contribs) > 0:
-                mods_context['corporate_contributors'].extend(corp_contribs)
             if len(admin_note) > 0:
-                mods_context['admin_note'] = admin_note
+                mods_context['admin_note'] = admin_note            
             description = add_obj_template_form.cleaned_data[
                 'description']
             if len(description) > 0:
                 mods_context['description'] = description
+            alt_title = add_obj_template_form.cleaned_data[
+                'alt_title']
+            if len(alt_title) > 0:
+                mods_context['alt_title'] = alt_title
             rights_holder = add_obj_template_form.cleaned_data[
                 'rights_holder']                
             if len(rights_holder) > 0:
@@ -90,18 +117,9 @@ def add_stub_from_template(request):
                 'collection_pid']
             number_stub_recs = add_obj_template_form.cleaned_data[
                 'number_objects']
-            subject_people = request.POST.getlist('sub_people')
-            if len(subject_people) > 0:
-                mods_context['subject_people'].extend(subject_people)
-            subject_places = request.POST.getlist('sub_places')
-            if len(subject_places) > 0:
-                mods_context['subject_places'].extend(subject_places)
-            subject_orgs = request.POST.getlist('organizations')
-            if len(subject_orgs) > 0:
-                mods_context['organizations'].extend(subject_orgs)
-            topics = request.POST.getlist('sub_topics')
-            if len(topics) > 0:
-                mods_context['topics'].extend(topics)
+            mods_context['form'] = add_obj_template_form.cleaned_data['form']
+            mods_context['typeOfResource'] = add_obj_template_form.cleaned_data[
+                'type_of_resource']
             content_model = 'adr:adrBasicObject'
             for row in DIGITAL_ORIGIN:
                 if row[0] == int(digital_origin_id):
@@ -114,10 +132,9 @@ def add_stub_from_template(request):
                     'alt_title']
                 mods_context['extent'] = add_obj_template_form.cleaned_data[
                     'extent']
-                mods_context['typeOfResource'] = 'text'
-                mods_context['topics'].extend(['Meeting minutes',
+                mods_context['subject_topics'].extend(['Meeting minutes',
                                                'Universities and colleges'])
-                mods_context['topics'] = list(set(mods_context['topics']))
+                mods_context['subject_topics'] = list(set(mods_context['topics']))
                 mods_context['subject_places'].append(
                     mods_context['publication_place'])
                 mods_context['subject_places'] = list(set(
@@ -126,29 +143,22 @@ def add_stub_from_template(request):
                 
                                           
             elif object_template == 2:
-                mods_context['frequency'] = add_obj_template_form.cleaned_data[
-                    'frequency']
+                __process_form_free_text__('frequency',
+                                           request,
+                                           mods_context)
                 mods_context['typeOfResource'] = 'text'
-                mods_context['genre'] = 'periodical'
                 mods_context['corporate_contributors'] = []
                 mods_context['publisher'] = INSTITUTION
-                mods_context['topics'] = list(set(mods_context['topics']))
+                mods_context['subject_topics'] = list(set(mods_context['topics']))
             elif object_template == 3:
-                mods_context['typeOfResource'] = 'sound recording'
-                mods_context['genre'] = 'interview'
                 mods_context['schema_type'] = 'AudioObject'
             elif object_template == 4:
-                mods_context['typeOfResource'] = 'text'
-                mods_context['genre'] = 'thesis'
-                content_model = 'adr:adrETD'
-                mods_context['schema_type'] = 'ScholarlyArticle'
-            elif object_template == 5:
-                mods_context['typeOfResource'] = 'moving image'
-                mods_context['genre'] = 'videorecording'
+                
                 mods_context['schema_type'] = 'VideoObject'
             else:
                 raise ValueError("Unknown Object Template={0}".format(
                     object_template))
+            print("MODS context is {0}".format(mods_context))
             mods_xml_template = loader.get_template(
                 'fedora_utilities/mods-stub.xml')
             mods_xml = mods_xml_template.render(Context(mods_context))

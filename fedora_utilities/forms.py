@@ -7,10 +7,15 @@ from eulfedora.util import RequestFailed
 
 repository = Repository()
 
+
+
 DIGITAL_ORIGIN = [(1, 'born digital'),
                   (2, 'reformatted digital'),
                   (3, 'digitized microfilm'),
                   (4, 'digitized other analog')]
+
+
+GENRE = [('choose', 'Choose...')]
 
 INSTITUTION = 'Colorado College'
 
@@ -35,8 +40,8 @@ OBJECT_TEMPLATES = [(0, 'Choose model'),
                     (1, 'Meeting Minutes'),
                     (2, 'Newsletter'),
                     (3, 'Podcast'),
-                    (4, 'Thesis'),
-                    (5, 'Video')]
+                    (4, 'Video'),
+                    (5, 'Master (All fields)')]
 
 RIGHTS_STATEMENT = "Copyright restrictions apply. Contact Colorado College for permission to publish."
 PLACE = 'Colorado Springs, Colorado'
@@ -51,10 +56,15 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                 required=False)
     collection_pid = forms.CharField(max_length=20,
                                      label="PID of Parent Collection")
-    creators = forms.CharField(required=False)
+    
+    contributors = forms.CharField(required=False)
     corporate_contributors = forms.CharField(
         required=False,
         initial=INSTITUTION)
+    corporate_creators = forms.CharField(
+        required=False,
+        initial=INSTITUTION)
+    creators = forms.CharField(required=False)
     date_created = forms.CharField(label='Date Created')
     digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
                                        label='Digital Origin',
@@ -66,11 +76,24 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                   required=False)
     extent = forms.CharField(label='Extent',
                              max_length=1500,
-                             widget=forms.Textarea(attrs={'rows':5}),
+                             widget=forms.Textarea(
+                                 attrs={'rows':5,
+                                        'data-bind': 'value: extentValue'}),
                              required=False)
+    form = forms.CharField(label='Form',
+                           required=False,
+                           widget=forms.TextInput(
+                               attrs={'data-bind': 'value: formValue'}))
+    frequency_free_form = forms.CharField(label='Other', required=False)
     frequency = forms.ChoiceField(choices=MARC_FREQUENCY,
                                   label='Frequency',
                                   required=False)
+    genre = forms.ChoiceField(
+        label='Genre',
+        required=False,
+        widget=forms.Select(
+            attrs={'data-bind': "options: genreOptions, optionsText: 'name'"}))
+    genre_free_form = forms.CharField(label='Other', required=False)
     number_objects = forms.CharField(initial=1,
                                      label='Number of stub records',
                                      max_length=5)
@@ -86,17 +109,23 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                     initial=RIGHTS_STATEMENT,
                                     widget=forms.Textarea(
                                         attrs={'rows': 3}))
-    sub_people = forms.CharField(label='Subject -- People',
-                                 required=False)
-    sub_places = forms.CharField(label='Subject -- Places',
-                                 required=False,
-                                 initial=PLACE)
-    sub_topics = forms.CharField(label='Subject -- Topic',
-                                 required=False,
-                                 widget=forms.TextInput(
-                                     attrs={'data-bind': 'value: topicOne'}))
+    subject_people = forms.CharField(label='Subject -- People',
+                                     required=False)
+    subject_places = forms.CharField(label='Subject -- Places',
+                                     required=False,
+                                     initial=PLACE)
+    subject_topics = forms.CharField(
+        label='Subject -- Topic',
+        required=False,
+        widget=forms.TextInput(
+            attrs={'data-bind': 'value: topicOne'}))
     title = forms.CharField(max_length=120,
                             label='Title')
+    type_of_resource = forms.CharField(
+        label='Type of Resource',
+        required=False,
+        widget=forms.TextInput(
+            attrs={'data-bind': 'value: typeOfResource'}))
 
                                         
 
