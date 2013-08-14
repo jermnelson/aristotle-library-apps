@@ -324,8 +324,8 @@
             self.showCorporateCreators(true);
             self.showExtent(true);
             self.typeOfResource("text"); 
-
-            //self.topicOne.html("<input name='sub_topics' type='text'>Universities and colleges</input>");
+            var topic_one = $('#AddTopicBtn').prev(); 
+            topic_one.after("<input name='subject_topics' type='text' value='Universities and colleges'></input>");
             break;
 
         // Newsletter

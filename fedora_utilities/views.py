@@ -153,12 +153,12 @@ def add_stub_from_template(request):
             elif object_template == 3:
                 mods_context['schema_type'] = 'AudioObject'
             elif object_template == 4:
-                
                 mods_context['schema_type'] = 'VideoObject'
+            elif object_template == 5:
+                pass
             else:
                 raise ValueError("Unknown Object Template={0}".format(
                     object_template))
-            print("MODS context is {0}".format(mods_context))
             mods_xml_template = loader.get_template(
                 'fedora_utilities/mods-stub.xml')
             mods_xml = mods_xml_template.render(Context(mods_context))
