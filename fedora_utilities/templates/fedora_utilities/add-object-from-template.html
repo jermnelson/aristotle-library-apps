@@ -56,8 +56,8 @@
      </div>
     {# END alternate creators #}
     </div>
-    {# START corporate contributors title #}
-    <div class="control-group" data-bind="visible: meetingMinutesTemplate">
+    {# START corporate contributors #}
+    <div class="control-group" data-bind="visible: showCorporateCreators">
      <label class="control-label" for="corporate_contributors ">
      {{ add_obj_form.corporate_contributors.label }}
      </label>
@@ -66,7 +66,7 @@
      <a href="#" data-bind="click: addCorporateContributor" 
                  id="AddCorporateContributorBtn"><i class="icon-plus-sign"></i></a>
      </div>
-    {# END people subjects #}
+    {# END corporate contributors #}
     </div>
 
     {# START Date Created #}
@@ -229,6 +229,7 @@
    var self = this;
    self.chosenContentModel = ko.observable();
    self.topicOne = ko.observable();
+   self.showCorporateCreators = ko.observable(false);
    self.meetingMinutesTemplate = ko.observable(false);
    self.newsletterTemplate = ko.observable(false);
    self.displayContentModel = function() {
@@ -237,6 +238,7 @@
             self.resetForm();
             self.meetingMinutesTemplate(true);
             self.topicOne("Meeting minutes");
+            self.showCorporateCreators(true);
             //self.topicOne.html("<input name='sub_topics' type='text'>Universities and colleges</input>");
             break;
 
@@ -244,6 +246,11 @@
           self.resetForm();
           self.newsletterTemplate(true);
           self.topicOne("Newsletter");
+          break;
+
+        case '3':
+          self.resetForm();
+          self.showCorporateCreators(true);
           break;
 
         default:
@@ -291,6 +298,7 @@
    self.resetForm = function() {
      self.newsletterTemplate(false);
      self.meetingMinutesTemplate(false);
+     self.showCorporateCreators(false);
      self.topicOne("");
 
 

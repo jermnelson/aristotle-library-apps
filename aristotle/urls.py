@@ -15,7 +15,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'discovery.views.app', name='home'),
+##    url(r'^$', 'discovery.views.app', name='home'),
+    url(r'^$','portfolio.views.default', name='portfolio.home'),
     url(r'^feedback', 'aristotle.views.feedback'),
     url(r'^background.html$','aristotle.views.background', name='background'),
     url(r'^getting-started.html$','aristotle.views.starting', name='getting-started'),
@@ -26,9 +27,9 @@ urlpatterns = patterns('',
     url(r'^accounts/logout[$|/]', 'aristotle.views.app_logout', name='logout'),
 ##    url(r'^apps/article_search/', include('article_search.urls')),
 ##    url(r'^apps/book_search/', include('book_search.urls')),
-    url(r'^apps/discovery[$|/]', include('discovery.urls')),
-    url(r'^apps/call_number/', include('call_number.urls')),
-    url(r'^apps/dbfinder/', include('dbfinder.urls')),
+##    url(r'^apps/discovery[$|/]', include('discovery.urls')),
+##    url(r'^apps/call_number/', include('call_number.urls')),
+##    url(r'^apps/dbfinder/', include('dbfinder.urls')),
 ##    url(r'^etd/', include('etd.urls')),
 ##    url(r'^apps/etd[$|/]', include('ccetd.urls')),
     url(r'^apps/fedora_utilities/', include('fedora_utilities.urls')),
@@ -52,5 +53,5 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^captcha/', include('captcha.urls')),
+##    url(r'^captcha/', include('captcha.urls')),
 )
