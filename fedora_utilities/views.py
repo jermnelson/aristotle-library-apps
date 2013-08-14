@@ -52,7 +52,6 @@ def __process_form_free_text__(name, request, context):
     if free_form is present takes precedent over select options"""
     selected_option = request.POST.get(name)
     free_text = request.POST.get('{0}_free_form'.format(name))
-    print(selected_option, free_text)
     if len(free_text) > 0:
         context[name] = free_text
     elif len(selected_option) > 0 and selected_option is not None:
