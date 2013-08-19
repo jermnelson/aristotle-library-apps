@@ -133,11 +133,13 @@ def add_stub_from_template(request):
             mods_context['language'] = 'English'
             mods_context['publication_place'] = PLACE
             mods_context['publisher'] = INSTITUTION
+            extent = add_obj_template_form.cleaned_data['extent']
+            if len(extent) > 0:
+                mods_context['extent'] = extent
             if object_template == 1:
                 mods_context['alt_title'] = add_obj_template_form.cleaned_data[
                     'alt_title']
-                mods_context['extent'] = add_obj_template_form.cleaned_data[
-                    'extent']
+                
                 mods_context['subject_topics'].extend(['Meeting minutes',
                                                'Universities and colleges'])
                 mods_context['subject_topics'] = list(set(mods_context['subject_topics']))
