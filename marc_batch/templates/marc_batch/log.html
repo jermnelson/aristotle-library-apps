@@ -17,7 +17,7 @@
    <div class="row-fluid">
     {% comment %}START job log details DIV{% endcomment %}
 	 <div class="span4">
-      <a class="btn btn-success" href="{% url marc-download %}">Download modified MARC file</a>
+      <a class="btn btn-success" href="{% url 'marc-download' %}">Download modified MARC file</a>
       <input type="hidden" value="{{ current_job.pk }}" name="job_id" />
 	  <input type="hidden" value="{{ current_log.pk }}" name="log_id" />
       {{ log_form }}
