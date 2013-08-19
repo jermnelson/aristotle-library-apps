@@ -46,16 +46,18 @@ def __process_form_list__(name, request, context):
     if request.POST.has_key(name):
         listing = request.POST.getlist(name)
         if listing is not None and len(listing) > 0:
-            if context.has_key(name):
-                context[name].extend(listing)
-            else:
-                context[name] = listing
+            for row in listing:
+                if len(row) > 0:
+                    if context.has_key(name):
+                        context[name].append(row)
+                    else:
+                        context[name] = [row,]
 
 def __process_form_free_text__(name, request, context):
     """Helper function takes a name and checks for free form value,
     if free_form is present takes precedent over select options"""
-    selected_option = request.POST.get(name)
-    free_text = request.POST.get('{0}_free_form'.format(name))
+    selected_option = request.POST.get(name, '')
+    free_text = request.POST.get('{0}_free_form'.format(name), '')
     if len(free_text) > 0:
         context[name] = free_text
     elif selected_option is not None and len(selected_option) > 0:
@@ -71,8 +73,6 @@ def add_stub_from_template(request):
     """
     if request.method == 'POST':
         add_obj_template_form = AddFedoraObjectFromTemplate(request.POST)
-        print("{0} {1}".format(add_obj_template_form.is_valid(),
-                               add_obj_template_form.errors))
         if add_obj_template_form.is_valid():
             mods_context = {'dateCreated': add_obj_template_form.cleaned_data[
                 'date_created'],
