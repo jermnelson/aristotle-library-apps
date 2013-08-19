@@ -92,7 +92,7 @@ class AddFedoraObjectFromTemplate(forms.Form):
         label='Genre',
         required=False,
         widget=forms.Select(
-            attrs={'data-bind': "options: genreOptions, optionsText: 'name'"}))
+            attrs={'data-bind': "options: genreOptions, optionsText: 'name', optionsValue: 'value'"}))
     genre_free_form = forms.CharField(label='Other', required=False)
     number_objects = forms.CharField(initial=1,
                                      label='Number of stub records',
@@ -126,6 +126,11 @@ class AddFedoraObjectFromTemplate(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={'data-bind': 'value: typeOfResource'}))
+
+    def clean(self):
+        if self._errors.has_key('genre'):
+            del self._errors['genre']
+        return self.cleaned_data
 
                                         
 
