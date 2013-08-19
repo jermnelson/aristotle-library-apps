@@ -143,8 +143,6 @@ def add_stub_from_template(request):
                 mods_context['subject_topics'].extend(['Meeting minutes',
                                                'Universities and colleges'])
                 mods_context['subject_topics'] = list(set(mods_context['subject_topics']))
-                mods_context['subject_places'].append(
-                    mods_context['publication_place'])
                 mods_context['subject_places'] = list(set(
                     mods_context['subject_places']))
                 
