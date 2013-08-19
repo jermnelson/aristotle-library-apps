@@ -4,7 +4,7 @@
  {# START brief DIV #}
  <div class="span7">
   <h3><a href="/apps/discovery/{{ work.name }}/{{ work.redis_id }}/">
-      {{ title }} {% if creators %}/ {% for creator in creators %}{{ creator.name }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}{% endif %}</a></h3>
+      {{ title|truncatewords:10 }} {% if creators %}/ {% for creator in creators %}{{ creator.name }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}{% endif %}</a></h3>
   <dl class="dl-horizontal">
     {% if creators %}
     <dt>Author/Creator</dt>

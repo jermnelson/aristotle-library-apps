@@ -9,12 +9,20 @@
        data-toggle="tooltip" 
       title="Linked Data View of this {{ entity.name }}">
     <i class='icon-cogs'></i></a>
+    <a href="/apps/discovery/{{ entity.name }}/{{ entity.redis_id }}.rdf" 
+       class="btn"
+       title="RDF/XML View of {{ entity.name }}">
+    <i class="icon-file-text-alt"></i>
+    </a>
     <a href="#annotateEntity"
        class="btn"
        data-toggle="modal"
        title='Annotate this {{ entity.name }}'><i class="icon-comment"></i></a>
+    {% comment %}
     <a href="#" class='btn'><i class='icon-twitter'></i></a>
     <a href="#" class='btn'><i class='icon-facebook'></i></a>
+    {% endcomment %}
+
  </div>
 </div>
 

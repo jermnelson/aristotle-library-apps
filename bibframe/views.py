@@ -5,16 +5,15 @@ __author__ = 'Jeremy Nelson'
 import datetime
 import re
 
-from django.views.generic.simple import direct_to_template
+
+from django.shortcuts import render as direct_to_template
 
 from bibframe.app_settings import APP
 from aristotle.views import json_view
 from bibframe.forms import MARCRSearchForm, MARC12toMARCRForm
 from bibframe.ingesters.MARC21 import ingest_marcfile
 from aristotle.forms import FeedbackForm
-from aristotle.settings import INSTITUTION, ANNOTATION_REDIS, AUTHORITY_REDIS
-from aristotle.settings import INSTANCE_REDIS
-from aristotle.settings import CREATIVE_WORK_REDIS
+from aristotle.settings import INSTITUTION, REDIS_DATASTORE
 
 def annotation(request,
                redis_key):

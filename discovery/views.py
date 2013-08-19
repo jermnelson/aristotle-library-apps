@@ -57,16 +57,11 @@ def app(request):
                 request.session['msg'] = "{0} Results for {1}".format(results_size,
                                                        query)
                 request.session['rlsp-query'] = bibframe_search.search_key
-        print("IN POST Search request session keys={0}".format(
-            request.session.keys()))
         return HttpResponseRedirect('/apps/discovery/')
     if request.session.has_key('msg'):
         message = request.session['msg']
     search_form = SearchForm()
-    print("BEFORE SESSION {0}".format(request.session.keys()))
     if request.session.has_key('rlsp-query'):
-        print("Has rlsp-query session set to {0}".format(
-            request.session['rlsp-query']))
         bf_search = BIBFRAMESearch(
             search_key=request.session['rlsp-query'],
             redis_datastore=REDIS_DATASTORE)

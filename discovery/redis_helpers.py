@@ -304,6 +304,9 @@ class BIBFRAMESearch(object):
                                                           'title')
                     raw_title = self.redis_datastore.hget(title_key,
                                                           'label')
+                    terms = raw_title.split(" ")
+                    if len(terms) > 10:
+                        raw_title = ' '.join(terms[0:9]) + '...'
                     found_text = u"<span style='background-color: yellow'>{0}</span>".format(self.query)
     
                     title = raw_title.decode('utf-8',
