@@ -12,6 +12,26 @@ from discovery.forms import AnnotationForm
 register = template.Library()
 
 
+@register.filter(is_safe=True)
+def author_of(person):
+    "Returns div with a list of Works that the person is an author of"
+    author_role_key = "{0}:resourceRole:aut".format(person.redis_key)
+    if not REDIS_DATASTORE.exists(author_role_key):
+        return mark_safe('')
+    author_html = """<div class="alert alert-info alert-block">
+    <h3>Author's Creative Works</h3><ul>"""
+    for work_key in REDIS_DATASTORE.smembers(author_role_key):
+        work_info = work_key.split(":")
+        title_key = REDIS_DATASTORE.hget(work_key, 'title')
+        title = REDIS_DATASTORE.hget(title_key, 'label')
+        author_html += """<li>{0} <em><a href="/apps/discovery/{0}/{1}">{2}</a></li></em>
+         """.format(work_info[1],
+                    work_info[-1],
+                    title)
+    author_html += "</ul></div>"
+    return mark_safe(author_html)
+        
+        
 
 @register.filter(is_safe=True)
 def display_facet(facet):
@@ -96,6 +116,19 @@ def display_brief(work):
                                 'work': work}
                                 )
     return mark_safe(work_template.render(context))
+
+@register.filter(is_safe=True)
+def display_person_dates(person):
+    "Displays a person date of birth and death if present"
+    date_html = """<dl class="dl-horizontal">"""
+    if hasattr(person, 'rda:dateOfBirth'):
+        date_html += "<dt>Date of Birth:</dt>"
+        date_html += "<dd>{0}</dd>".format(getattr(person, 'rda:dateOfBirth'))
+    if hasattr(person, 'rda:dateOfDeath'):
+        date_html +=  "<dt>Date of Death:</dt>"
+        date_html += "<dd>{0}</dd>".format(getattr(person, 'rda:dateOfDeath'))
+    date_html += "</dl>"
+    return mark_safe(date_html)
 
 @register.filter(is_safe=True)
 def display_instances(work):

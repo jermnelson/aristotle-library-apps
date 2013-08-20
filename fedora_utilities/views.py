@@ -79,6 +79,7 @@ def add_stub_from_template(request):
                             'contributors': [],
                             'corporate_contributors': [],
                             'creators': [],
+                            'corporate_creators': [],
                             'organizations': [],
                             'schema_type': 'CreativeWork', # Default,
                             'subject_people': [],
@@ -88,10 +89,12 @@ def add_stub_from_template(request):
                             }
             
             __process_form_list__('creators', request, mods_context)
+            __process_form_list__('corporate_creators', request, mods_context)
             __process_form_list__('contributors', request, mods_context)
             __process_form_list__('corporate_contributors',
                                   request,
                                   mods_context)
+            
             __process_form_list__('subject_people', request, mods_context)
             __process_form_list__('subject_places', request, mods_context)
             __process_form_list__('organizations', request, mods_context)
@@ -131,7 +134,7 @@ def add_stub_from_template(request):
                 if row[0] == int(digital_origin_id):
                     mods_context['digitalOrigin'] = row[1]
             mods_context['language'] = 'English'
-            mods_context['publication_place'] = PLACE
+            mods_context['publication_place'] = PUBLICATION_PLACE
             mods_context['publisher'] = INSTITUTION
             extent = add_obj_template_form.cleaned_data['extent']
             if len(extent) > 0:

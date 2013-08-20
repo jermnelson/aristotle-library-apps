@@ -20,24 +20,32 @@
 {% endblock %}
 
 {% block body %}
-{# START Person Breadcrumbs #}
 <div class="row-fluid">
- <div class="span10 offset1" >
-  <ul class="breadcrumb  cc-breadcrumb">
+ {# START Person Breadcrumbs #}
+ <div class="span7 offset1" >
+  <ul class="breadcrumb">
    <li><a href="/apps/discovery">Discovery</a> <span class="divider">/</span></li>
    <li><a href="/apps/discovery/Person/">Person</a> 
     <span class="divider">/</span></li>
   <li class="active"><a href="/apps/discovery/Person/{{ person.redis_id }}">
    {{ person.redis_id }}</a></li>
   </ul>
+ {# END Person Breadcrumbs #}
  </div>
-{# END Person Breadcrumbs #}
+ {% include 'cc-app-nav.html' %}
+
 </div>
 
 <div class="row-fluid">
- <div class="span10 offset1 cc-about-work">
+ <div class="span6 offset1 cc-about-work">
+  <div style="float: right"> {{ person|display_network_toolbar }}</div>  
   <h2>{{ person|get_name }}</h2> 
+  {{ person|display_person_dates }}
 {#  {% include 'discovery/snippets/person-detail.html' %} #}
+ </div>
+ <div class="span4">
+  {{ person|author_of }}
+  {# {{ person|editor_of }} #}
  </div>
 </div>
 {% endblock %}

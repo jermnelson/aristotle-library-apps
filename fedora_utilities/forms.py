@@ -44,7 +44,8 @@ OBJECT_TEMPLATES = [(0, 'Choose model'),
                     (5, 'Master (All fields)')]
 
 RIGHTS_STATEMENT = "Copyright restrictions apply. Contact Colorado College for permission to publish."
-PLACE = 'Colorado Springs, (Colo.)'
+PLACE = 'Colorado Springs (Colo.)'
+PUBLICATION_PLACE = 'Colorado Springs, Colorado'
 
 class AddFedoraObjectFromTemplate(forms.Form):
     admin_note = forms.CharField(label='Administrative Notes',
