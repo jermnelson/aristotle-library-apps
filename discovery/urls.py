@@ -19,6 +19,8 @@ urlpatterns = patterns('discovery.views',
     url(r"^(\w+)/(\d+)/?$",
         "bibframe_router",
         name="discovery-bibframe-router"),
+    url(r"^(?P<class_name>\w+)/(?P<slug>[-a-zA-Z0-9_]+)/?$",
+        "bibframe_by_name"),
 ##    url(r"^authority/person/(\d+)/?$", "person", name="discovery-authority-person"),
     url(r"^[c|C]over[A|_a]rt/(\d+)-(\w+).(\w+)$", "display_cover_image"),
 #! These routes are hand-coded, should be more generic

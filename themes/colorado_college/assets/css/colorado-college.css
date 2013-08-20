@@ -31,8 +31,8 @@
 }
 
 .cc-breadcrumb {
- background-color: #2D4873;
- color: #FFFFFF;
+ background-color: #2D4873 !important;
+ color: #FFFFFF !important;
 }
 
 .cc-breadcrumb a, a.visited {

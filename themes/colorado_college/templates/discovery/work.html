@@ -21,8 +21,8 @@
 
 {% block body %}
 <div class="row-fluid">
- <div class="span10 offset1 cc-breadcrumb" >
-  <ul class="breadcrumb">
+ <div class="span10 offset1" >
+  <ul class="breadcrumb cc-breadcrumb">
    <li><a href="/apps/discovery">Discovery</a> <span class="divider">/</span></li>
    <li><a href="/apps/discovery/{{  creative_work.name }}/">{{  creative_work.name }}</a> 
     <span class="divider">/</span></li>
@@ -35,10 +35,14 @@
 <div class="row-fluid">
   <div class="span7 offset1">
    <div class="cc-about-work">
-    <h3>{{ creative_work|get_title }}</h3>
+    <h1>{{ creative_work|get_title }}</h1>
     <div style="float: right"> {{ creative_work|display_network_toolbar }}</div>
     <h2>About this {{ creative_work.name }}</h2>
     <dl class="dl-horizontal">
+      <dt>Created by</dt>
+      <dd>
+       {{ creative_work|get_creators }}
+      </dd>
       {% if creative_work.description %}
       <dt>Description</dt>
       <dd>{{ creative_work.description }}</dd>

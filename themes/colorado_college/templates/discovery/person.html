@@ -23,7 +23,7 @@
 <div class="row-fluid">
  {# START Person Breadcrumbs #}
  <div class="span7 offset1" >
-  <ul class="breadcrumb">
+  <ul class="breadcrumb cc-breadcrumb">
    <li><a href="/apps/discovery">Discovery</a> <span class="divider">/</span></li>
    <li><a href="/apps/discovery/Person/">Person</a> 
     <span class="divider">/</span></li>
@@ -59,3 +59,8 @@
 {% endblock %}
 {# END container DIV #}
 </div>
+
+{% block more-dialogs %}
+ {{ person|display_user_annotation_dialog }}
+{% endblock %}
+

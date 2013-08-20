@@ -27,14 +27,14 @@ def add_person(person_attributes,
     new_person.save()
     for metaphone in person_metaphones_keys:
         redis_datastore.sadd(metaphone,new_person.redis_key)
-    if hasattr(new_person, 'schema:dateOfBirth'):
+    if hasattr(new_person, 'rda:dateOfBirth'):
         dob_key = 'person-dob:{0}'.format(
-                      person_attributes.get('schema:dateOfBirth'))
+                      person_attributes.get('rda:dateOfBirth'))
         redis_datastore.sadd(dob_key,
                              new_person.redis_key)
-    if hasattr(new_person, 'schema:dateOfDeath'):
+    if hasattr(new_person, 'rda:dateOfDeath'):
         dod_key = "person-dod:{0}".format(
-                      person_attributes.get('schema:dateOfDeath'))
+                      person_attributes.get('rda:dateOfDeath'))
         redis_datastore.sadd(dod_key, new_person.redis_key)
     return new_person
 
@@ -78,14 +78,14 @@ def get_or_generate_person(person_attributes,
         return add_person(person_attributes,
                           person_metaphones_keys,
                           redis_datastore)
-    if person_attributes.has_key("schema:dateOfBirth"):
-        raw_dob = person_attributes.get('schema:dateOfBirth')
+    if person_attributes.has_key("rda:dateOfBirth"):
+        raw_dob = person_attributes.get('rda:dateOfBirth')
         dob_key = 'person-dob:{0}'.format(raw_dob)
         dob_keys = redis_datastore.smembers(dob_key)
         
         matched_keys = person_keys.intersection(dob_keys)
-    if person_attributes.has_key("schema:dateOfDeath"):
-        raw_dod = person_attributes.get('schema:dateOfDeath')
+    if person_attributes.has_key("rda:dateOfDeath"):
+        raw_dod = person_attributes.get('rda:dateOfDeath')
         dod_keys = redis_datastore.smembers('person-dod:{0}'.format(raw_dod))
         if len(dod_keys) > 0:
             if len(dob_keys) > 0:
@@ -145,4 +145,6 @@ def process_name(raw_name):
             pass
         first_phonetic,second_phonetic = metaphone.dm(name)
         person_metaphones.append(first_phonetic)
+    person_metaphones = filter(lambda x: len(x) > 0,
+                               person_metaphones)
     return person_metaphones

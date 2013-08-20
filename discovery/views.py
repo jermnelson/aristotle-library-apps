@@ -87,6 +87,18 @@ def app(request):
                    ## 'search_query':search_query,
                    'user': None})
 
+def bibframe_by_name(request, class_name, slug):
+    """Displays either a disambiguation of multiple BIBFRAME entities
+    that match the slugified title or a single BIBFRAME entity otherwise.
+
+    Parameters:
+    class_name -- BIBFRAME Class
+    slug -- Title of BIBFRAME entity as a slug
+    """
+    title_key = REDIS_DATASTORE.hget('title-slugs-hash', slug)
+    if title_key is None:
+        raise Http404
+    return HttpResponse("{0} {1}".format(class_name, title_key))
 
 def creative_work(request, redis_id):
     """

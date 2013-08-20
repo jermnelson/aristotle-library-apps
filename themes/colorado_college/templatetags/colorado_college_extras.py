@@ -176,6 +176,36 @@ def display_user_annotation_dialog(entity):
                                  'entity': entity})
     return mark_safe(user_dialog_template.render(context))
     
+@register.filter(is_safe=True)
+def get_creators(bibframe_entity):
+    output = '<ul class="icons-ul">'
+    if type(bibframe_entity) == Instance:
+        redis_key = bibframe_entity.attributes.get('instanceOf')
+    else:
+        redis_key = bibframe_entity.redis_key
+    if REDIS_DATASTORE.hexists(redis_key,"rda:isCreatedBy"):
+        creators = [REDIS_DATASTORE.hget(redis_key,"rda:isCreatedBy"),]
+    else:
+        creators = list(REDIS_DATASTORE.smembers("{0}:rda:isCreatedBy".format(redis_key)))
+        
+    
+    for i, key in enumerate(creators):
+        creator_id = key.split(":")[-1]
+        output += """<li><a href="/apps/discovery/Person/{0}">
+<i class="icon-li icon-user"></i> {1}</a></li>""".format(
+        key.split(":")[-1],
+        REDIS_DATASTORE.hget(key,
+                             'rda:preferredNameForThePerson'))
+    output += "</ul>"
+    return mark_safe(output)
+        
+        
+    
+            
+        
+    
+        
+
 
 @register.filter(is_safe=True)
 def get_facet(facet):
