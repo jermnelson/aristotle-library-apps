@@ -5,7 +5,7 @@ from app_settings import *
 from app_helpers import *
 
 ##from solr_helpers import SOLR_QUEUE, start_indexing
-from aristotle.settings import INSTITUTION, FEDORA_URI, SOLR_URL
+from aristotle.settings import INSTITUTION, FEDORA_URI, FEDORA_MODEL, SOLR_URL
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 from django.contrib.auth.decorators import login_required
@@ -129,7 +129,6 @@ def add_stub_from_template(request):
             mods_context['form'] = add_obj_template_form.cleaned_data['form']
             mods_context['typeOfResource'] = add_obj_template_form.cleaned_data[
                 'type_of_resource']
-            content_model = 'adr:adrBasicObject'
             for row in DIGITAL_ORIGIN:
                 if row[0] == int(digital_origin_id):
                     mods_context['digitalOrigin'] = row[1]
@@ -175,7 +174,7 @@ def add_stub_from_template(request):
                          mods_context['title'],
                          collection_pid,
                          number_stub_recs,
-                         content_model)
+                         FEDORA_MODEL)
             request.session['msg'] = \
                                    "Created {0} stub records in collection {1}".format(
                                        number_stub_recs,
