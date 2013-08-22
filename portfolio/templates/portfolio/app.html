@@ -3,100 +3,53 @@
 {% load portfolio_extras %}
 
 {% block more-css %}
-<link href="{{ STATIC_URL }}css/app.less" rel="stylesheet/less" type="text/css" />
-<link href="{{ STATIC_URL }}portfolio/css/portfolio.less" rel="stylesheet/less" type="text/css" />
+<link href="{{ STATIC_URL }}portfolio/css/portfolio.css" i
+      rel="stylesheet/css" 
+      type="text/css" />
 {% endblock %}
 
 
 
 {% block body %}
-{% comment %}
- <div class="row-fluid">
-
+ <div class="row" id="first-container">
+  <h1>Available Apps</h1>
  </div>
-{% endif %}
-{% endcomment %}
-
-{% comment %}START row-fluid DIV{% endcomment %}
-
- <div class="row-fluid main-pane" id="main-pane" >
-  <div class="span8 offset1">
-   <table class="portfolio">
-      <tr>
-       {% for app in portfolio %}
-        {% if forloop.counter0|test_row %}
-          </tr>
-          <tr>
-        {% endif %}
-         {{ app|create_app_td }}
-      {% endfor %}
-         </tr>
-   </table>
-  </div>
- {% comment %}
- <div class="row-fluid">
-  <div id="portfolio-carousel" class="carousel" >
-   <div class="carousel-inner">
-	 <div class="active item carousel-item">
-	  <h2 style="text-align:center">All Apps</h2>
-          <table class="portfolio">
-          <tr>
-          {% for app in portfolio %}
-          {% if forloop.counter0|test_row %}
-          </tr>
-          <tr>
-          {% endif %}
-          {{ app|create_app_td }}
-          {% endfor %}
-          </tr>
-	  </table>
+ <div class="row">
+  {% for app in portfolio %}
+   <div class="col-sm-3 col-md-2">
+     <div class="thumbnail">
+      <button type="button" class="close" data-dismiss="thumbnail" aria-hidden="true">&times;</button>
+      <a href="{{ app.url }}" 
+        class="btn btn-default">
+       <img src="{{ STATIC_URL }}img/{{ app.icon_url }}" alt="{{ app.name }} Icon">
+      </a>
+      <div class="caption">
+        <h4>
+        {{ app.current_view.title }}
+        <sup>
+            <a href="#"
+                title="Expand" 
+                data-bind="click: toggleDescription">+</a>
+        </sup>
+        </h4>
+        <p style="visible: none" id="app-{{ app.url }}-desc">{{ app.description }}</p>
+      </div>
      </div>
-     <div class="item" style="height:300px">
-      <h2 style="text-align:center">Access &amp; Discovery Apps</h2>
-          <table class="portfolio">
-          <tr>
-          {% for app in portfolio %}
-          {% if forloop.counter0|test_row %}
-          </tr>
-          <tr>
-          {% endif %}
-          {% if not app.productivity %}
-          {{ app|create_app_td }}
-          {% endif %}
-          {% endfor %}
-          </tr>
-	  </table>
-
-     </div>
-     <div class="item" style="height:300px">
-      <h2 style="text-align:center">Productivity Apps</h2>
-          <table class="portfolio">
-          <tr>
-          {% for app in portfolio %}
-          {% if forloop.counter0|test_row %}
-          </tr>
-          <tr>
-          {% endif %}
-          {% if app.productivity %}
-          {{ app|create_app_td }}
-          {% endif %}
-          {% endfor %}
-          </tr>
-	  </table>
-     </div>
-    </div>
-     <a class="carousel-control left" href="#portfolio-carousel" data-slide="prev">&lsaquo;</a>
-     <a class="carousel-control right" href="#portfolio-carousel" data-slide="next">&rsaquo;</a>
    </div>
-  </div>
- {% endcomment %}
- {% comment %}END row-fluid DIV{% endcomment %}
- </div>
+ {% endfor %}
 {% endblock %}
 
 {% block more-js %}
-<script src="{{ STATIC_URL }}portfolio/js/portfolio.js"></script>
 <script>
-$('.carousel').carousel({interval:false});
+ function PortfolioViewModel() {
+  self = this;
+  self.toggleDescription = function() {
+    alert("In toggleDescription");
+  }
+
+
+ } 
+ ko.applyBindings(new PortfolioViewModel());
+
 </script>
 {% endblock %}

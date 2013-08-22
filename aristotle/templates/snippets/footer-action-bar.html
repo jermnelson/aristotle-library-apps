@@ -1,13 +1,22 @@
- <div class="row-fluid footer-action-bar">
- {% block portfolio-btn %}
- <div class="span2">
- <a href="/apps/portfolio" class="btn"><i class="icon-th"></i>Apps</a>
+{% comment %}
+{# START Footer Toolbar DIV#}
+<div class="btn-toolbar">
+ <div class="btn-group">
+  <a href="/apps/portfolio" 
+     class="btn btn-default" 
+     title="All Apps"><i class="glyphicon glyphicon-th"></i></a>
  </div>
- {% endblock %}
- {% block about-btn %}
+ <div class="btn-group">
+  <a href="#" 
+     class="btn btn-default" 
+     onclick="$('#about_app_dlg').modal('show')">
+     <i class=" glyphicon glyphicon-question-sign"></i></a>
+  <a href="/" class="btn btn-default"><i class="glyphicon glyphicon-home"></i></a>
+ </div>
+ {% comment %}
  <div class="span6">
   <div class="btn-group">
-   <a href="#" class="btn" onclick="$('#about_app_dlg').modal('show')"><i class="icon-info-sign"></i> About</a>
+   <a href="#" class="btn" onclick="$('#about_app_dlg').modal('show')"><i class="nfo-sign"></i> About</a>
    <a href="/" class="btn"><i class="icon-home"></i> Home</a>
    {% if user.is_authenticated %}
    <a href="/accounts/logout" class="btn"><i class="icon-circle-arrow-left"></i> Logout <span class="label">{{ user.username }}</span> </a>
@@ -20,3 +29,7 @@
  </div>
  {% endblock %}
  </div>
+
+{# END Footer Toolbar DIV#}
+</div> 
+{% endcomment %}

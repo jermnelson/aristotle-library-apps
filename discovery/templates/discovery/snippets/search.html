@@ -1,9 +1,27 @@
 {% load i18n %}
-<div class="search-pane span4" draggable="true">
-<form class="form-search" method="POST" action="/apps/discovery/">
- {% csrf_token %}
- <input type="text" class="input-medium search-query" name="q">
- <button type="submit" class="btn">{% trans "Search" %}</button>
- <a href='#more-options' class="btn btn-info btn-small">{% trans "More" %} &raquo;</a>
-</form>
+{# START Search Form DIV #}
+<div class="col-md-6 col-sm-6">
+ <div class="panel panel-info">
+  {# START Search panel heading DIV #}
+  <div class="panel-heading">
+   <h3 class="panel-title">Search</h3>
+  {# END Search panel heading DIV #}
+  </div>
+  {# START Search panel body DIV #}
+  <div class="panel-body">
+   {# START Search Input Group #}
+   <div class="input-group">
+       <input type="text" class="form-control" data-bind="value: searchQuery" name="query">
+ 
+    <div class="input-group-btn">
+     <button type="button"
+             class="btn btn-info">Go!</button>
+    </div>
+   {# END Search Input Group #}
+   </div>
+ {# END Search panel body DIV #}
+  </div>
+ {# END Search Input Group #}
+ </div>
+{# END Search Form DIV #}
 </div>

@@ -2,8 +2,8 @@
 {% load i18n %}
 
 {% block head-title %}
-{% if institution %}{% trans institution.name %} Library Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
-Discovery
+{% if institution %}{% trans institution.name %} Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
+Discovery App
 {% endblock %}
 
 {% block more-css %}
@@ -12,60 +12,25 @@ Discovery
 
 
 {% block body %}
-{% comment %}START content DIV{% endcomment %}
-<div class="container-fluid">
- {% comment %}START row-fluid DIV{% endcomment %}
- <div class="row-fluid">
-  {% comment %}START search DIV{% endcomment %}
-  <div class="row6">
-  {% include 'discovery/snippets/search.html' %}
-  {% comment %}END search DIV{% endcomment %}
+{# START Search and Message row DIV #}
+<div class="row" id="first-container">
+ {% include 'discovery/snippets/search.html' %}
+ {# START message DIV #}
+ <div class="col-md-3 col-sm-3">
+  <div class="alert{% if msg.alert_type %} {{ msg.alert_type }}{% else %} alert-success{% endif %} alert-dismissable">
+   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> 
+   <h3>{% if msg.headline %}{{ msg.headline }}{% else %}No Messages{% endif %}</h3>
+   <p>{{ msg.body }}</p>
   </div>
-  {# START pinned-corner DIV #}
-  <div class="span4 offset1">
-   {% if message %}
-    <h3>{{ message }}</h3>
-   {% else %}
-   {% include 'discovery/snippets/pinned.html' %}
-   {% endif %}
-  {# END pinned-corner DIV #}
-  </div>
-  {# START Display Pagination DIV #}
-  {% if pagination %}
-  <div class="row-fluid">
-  {% include 'discovery/snippets/results-pagination.html' %}
-
-  {# END Display Pagination DIV #}
-  </div>
-  {% endif %}
- {% comment %}END row-fluid DIV{% endcomment %}
+ {# END  message DIV #}
  </div>
- {% comment %}START row-fluid DIV{% endcomment %}
- <div class="row-fluid">
- {% if facet_list %}
-  {# START facets DIV{% endcomment #}
-  <div class="span3">
-   {% for facet in facet_list %}
-    {% include 'discovery/snippets/facet.html' %}
-   {% endfor %}
-  {# END facets DIV{% endcomment #}
-  </div>
- {% endif %}
-  {# START canvas-results-display DIV #}
-  <div class="span8" >
-  <br>
-  {% include 'discovery/snippets/canvas-results.html' %}
-  {# END canvas-results-display DIV #}
-  </div>
- {% comment %}END row-fluid DIV{% endcomment %}
- </div>
-{% comment %}END content DIV{% endcomment %}
+{# END Search and Message row DIV #}
 </div>
 {% endblock %}
 
 {% block more-js %}
-<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
-<script src="{{ STATIC_URL }}js/knockout.js"></script>
-<script src="{{ STATIC_URL }}js/d3.js"></script>
 <script src="{{ STATIC_URL }}js/discovery.js"></script>
+<script>
+ ko.applyBindings(new DiscoveryViewModel()); 
+</script>
 {% endblock %}

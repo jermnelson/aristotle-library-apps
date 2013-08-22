@@ -1,3 +1,69 @@
+function DiscoveryViewModel() {
+  self = this;
+  self.searchChoices = ko.observableArray([
+   { name: "Keyword", action: "kwSearch" },
+   { name: "Author", action: "auSearch" },
+   { name: "Title", action: "tSearch" },
+   { name: "Journal Title", action: "jtSearch" },
+   { name: "LC Subject", action: "lcSearch" },
+   { name: "Medical Subject", action: "medSearch" },
+   { name: "Children's Subject", action: "NoneSearch" },
+   { name: "LC Call Number", action: "lccnSearch" },
+   { name: "Gov Doc Number", action: "govSearch" },
+   { name: "ISSN/ISBN", action: "isSearch" },
+   { name: "Dewey Call Number", action: "dwSearch" },
+   { name: "Medical Call Number", action: "medcSearch" },
+   { name: "OCLC Number", action: "oclcSearch" }]);
+ 
+  self.searchQuery = ko.observable();
+  // Handlers for Search
+  self.searchPlatform = function(search_type) {
+    var data = {
+      type: search_type,
+      query: self.searchQuery()
+    }
+    alert(search_type + " Search on " + data['query']);
+
+  }
+  self.searchType = ko.observable("Select");
+
+  self.auSearch = function() {
+  }
+  self.childSubjectSearch = function() {
+  }
+  self.dwSearch = function() {
+  }
+  self.govSearch = function() {
+  }
+  self.isSearch = function() {
+  }
+  self.jtSearch = function() {
+
+  }
+  self.kwSearch = function() {
+  }
+  self.lcSearch = function() {
+
+  }
+  self.lccnSearch = function() {
+
+  }
+  self.medSearch = function() {
+
+  }
+  self.medcSearch = function() {
+
+  }
+  self.oclcSearch = function() {
+
+  }
+  self.tSearch = function() {
+
+  }
+}
+
+
+
 function displaySimpleGraph(json_resources) {
  var svg = d3.select("#discovery-results").append("svg:svg");
  svg.attr("width",200).attr("height",280);

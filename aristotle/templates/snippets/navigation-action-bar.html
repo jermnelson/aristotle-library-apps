@@ -1,33 +1,74 @@
 {% load i18n %}
-{% comment %}START Navigation Action View ROW DIV{% endcomment %}
-<div class="row-fluid nav-action-bar">
-<div class="span5">
-{% block up-affordance %}
-{% endblock %}
-{% block app-icon %}
- <a class="app-ico-float" href="/apps/{% if app.url %}{{ app.url }}{% else %}/apps/{% endif %}">
-  <img src="{{ STATIC_URL }}img/{% if app.icon_url %}{{ app.icon_url }}{% else %}portfolio.png{% endif %}" style="width:32px;height:32px" />
- </a>
- {% endblock %}
-{% block action-view-title %}
-<h2 style="color:white"><a style="color:white" href="/apps/{% if app.url %}{{ app.url }}{% else %}/apps/{% endif %}">{% if app.current_view %}{{ app.current_view.title }}{% else %}App Title{% endif %}</a>{% block action-view-subtitle %}{% endblock %} </h2>
-</div>
-<div class="span2">
- <a href="{{ institution.url }}"><img src="{{ STATIC_URL }}img/{{ institution.logo }}" class="institution_logo" /></a>
-</div>
-{% endblock %}
+{# START Navigation Action #}
+<div class="nav-bar navbar-default navbar-fixed-top">
+ {# START Navbar Container DIV #}
+ <div class="container">
+ {# START Navbar Header #}
+ <div class="navbar-header">
+    <button type="button" 
+            class="navbar-toggle" 
+            data-toggle="collapse" 
+            data-target=".navbar-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" 
+       href="{% if app.url %}{{ app.url }}{% else %}/apps/{% endif %}">
+      Default {% if app.current_view %}{{ app.current_view.title }}{% else %}App Title{% endif %}
+    </a>
+ {# END Navbar Header #}
+ </div>
+ {# START Navbar Collapse #}
+ <div class="collapse navbar-collapse">
+  <ul class="nav navbar-nav">
+    <li><a href="#" title="Home"> 
+        <i class="glyphicon glyphicon-home"></i>
+        </a>
+    </li>
+    <li><a href="#" title="All Apps"> 
+         <i class="glyphicon glyphicon-th"></i>
+        </a>
+    <li><a href="#" title="Comment">
+         <i class="glyphicon glyphicon-comment"></i>
+        </a>
+    </li>   
+    <li class="dropdown"> 
+     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+     {% if institution.logo %} 
+     <img src="{{STATIC_URL }}img/{{ institution.logo }}"
+          title="{{ institution.name }}" 
+          style="height: 30px">
+     {% else %}
+     {{ institution.name }}
+     {% endif %}
+      <b class="caret"></b>
+     </a>
+     <ul class="dropdown-menu">
+     {% for link in institution.links %}
+      <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+     {% empty %}
+      <li><a href="{{ institution.url }}">Home</a></li>
+     {% endfor %}
+     </ul>
+   </li>
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" title="App Help and Info" data-toggle="dropdown"> 
+         <i class="glyphicon glyphicon-question-sign"></i>
+         <b class="caret"></b>
+        </a>
+      <ul class="dropdown-menu">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li class='divider'></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </li>
 
-{% block action-btns %}
-{% for btn in app.action_btns %}
-{% if forloop.counter > 2 %}
-
-{% else %}
-<div class="span1">
- <button class="btn {{ btn.class }}" onclick="{{ btn.action_url }}">{{ btn.icon }}</button>
-</div>
-{% endif %}
-{% endfor %}
-{% endblock %}
-
-{% comment %}END Navigation Action View ROW DIV{% endcomment %}
+ {# END Header Links #}
+ </div>
+ {# END Navbar Container DIV #}
+ </div>
+{# END Navigation Action View #}
 </div>
