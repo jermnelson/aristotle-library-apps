@@ -6,20 +6,26 @@ import os
 from aristotle.settings import REDIS_DATASTORE, PROJECT_HOME
 
 from whoosh.analysis import StemmingAnalyzer
-from whoosh.fields import Schema, TEXT, KEYWORD, STORED
-from whoosh.index import create_in
+from whoosh.fields import Schema, TEXT, KEYWORD, STORED, ID
+from whoosh.index import create_in, open_dir
 from whoosh.qparser import QueryParser
 
 BF_SCHEMA = Schema(
-    title=TEXT(stored=True),
-    work_id=TEXT(stored=True),
-    content=TEXT)
+    author_keys = KEYWORD(stored=True)
+    instance_keys = KEYWORD(stored=True)
+    title = TEXT(stored=True),
+    work_key = ID(stored=True),
+    content = TEXT
     
+BF_INDEX_FILE_STORAGE = os.path.join(PROJECT_HOME,
+                                     "keyword_search",
+                                     "index")
 
-INDEXER = create_in(os.path.join(PROJECT_HOME,
-                                 "keyword_search",
-                                 "index"),
-                    BF_SCHEMA)
+if os.path.exists(BF_INDEX_FILE_STORAGE):
+    INDEXER = open_dir(BF_INDEX_FILE_STORAGE)
+else:
+    INDEXER = create_in(BF_INDEX_FILE_STORAGE,
+                        BF_SCHEMA)
 
 
 
@@ -49,7 +55,7 @@ def index_marc(**kwargs):
     for field in marc_record:
         raw_content += u'{0} '.format(field.value())
     writer = indexer.writer()
-    writer.add_document(title=unicode(marc_record.title(),
+    writer.add_document(instance_keys=instatitle=unicode(marc_record.title(),
                                       errors='ignore'),
                         work_id=work_key,
                         content=raw_content)
