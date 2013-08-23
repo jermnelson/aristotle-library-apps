@@ -9,12 +9,14 @@
   </div>
   {# START Search panel body DIV #}
   <div class="panel-body">
+   {% csrf_token %}
    {# START Search Input Group #}
    <div class="input-group">
        <input type="text" class="form-control" data-bind="value: searchQuery" name="query">
  
     <div class="input-group-btn">
      <button type="button"
+             data-bind="click: searchRLSP"
              class="btn btn-info">Go!</button>
     </div>
    {# END Search Input Group #}

@@ -1,0 +1,45 @@
+{% load i18n %}
+{% load discovery_extras %}
+{% load humanize %}
+{# START Facet Column DIV #}
+<div class="col-sm-3 col-md-3">
+ {# START Facet Panel Group Accordion #}
+ <div class="panel-group" id="facet-accordion">
+  {% for facet in facet_list %}
+   {# START facet panel #}
+   <div class="panel panel-success">
+    {# START facet panel heading #}
+    <div class="panel-heading">
+     <h4 class="panel-title">
+      <a class="accordion-toggle" 
+         data-toggle="collapse" 
+         data-parent="#facet-accordion" 
+         href="#{{ facet.redis_id }}-facet-body">
+         {{ facet.name }}
+      </a>
+     </h4>
+    {# END facet panel heading #}
+    </div>
+    {# START facet panel body #}
+    <div id="{{ facet.redis_id }}-facet-body"
+         class="panel-collapse collapse {% if forloop.counter < 3%} in{%endif %}">
+     <div class="panel-body"> 
+      <ul> 
+      {% for item in facet.items %}
+       <li>
+         <a href="/apps/discovery/Facet/{{ facet.redis_id }}/{{ item.name|slugify }}">
+          {{ item.name }} ({{ item.count|intcomma }}) 
+         </a>
+       </li>
+      {% endfor %}      
+      </ul>
+     </div>
+    {# END facet panel body #}
+    </div>
+   {# END facet panel #}
+   </div>
+  {% endfor %}
+ {# END Facet Panel Group  Accordion #}
+ </div>
+{# END Facet Column DIV #}
+</div>

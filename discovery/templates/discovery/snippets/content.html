@@ -1,0 +1,35 @@
+{% load discovery_extras %}
+<div class="col-sm-8 col-md-8">
+ {# Main Content Panel #}
+ <div class="panel panel-primary">
+  <div class="panel-heading">
+   <h1 class="panel-title" data-bind="html: contextHeading">Default Content Area</h1>
+  </div>
+  <div class="panel-body" id="results-panel">
+    <p class="lead" style="font-style: italic" data-bind="text: searchQuery"></p>
+    {# Search Results #}
+    <ul class="media-list"
+        data-bind="foreach: searchResults,
+                   visible: showResults">
+     {# Individual Search Result #}
+     <li class="media">
+       <a class="pull-left" 
+          data-bind="attr: { href: work_url }">
+        <img class="media-object"
+             data-bind="attr: { src: instance_thumbnail,
+                                alt: thumbnail_alt }">
+       </a>
+       <div class="media-body">
+        <h4 class="media-heading"
+            data-bind="html: title"></h4>
+        <p data-bind="html: work_summary"></p>
+       </div>
+     {# End Individual Search Result #}
+     </li>
+    {# End Search Results #}
+    </ul> 
+    </div>
+  </div>
+ {# End Main Content Panel #}
+ </div>
+</div>

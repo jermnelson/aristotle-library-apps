@@ -63,14 +63,32 @@ class FacetItem(object):
                                            self.redis_key)
         self.children = kwargs.get('children', [])
 
+def get_facet_label(redis_ds, redis_key, label):
+    name = redis_ds.hget('bf:Facet:labels',
+                         redis_key)
+    if name is None:
+        redis_ds.hset('bf:Facet:labels',
+                      redis_key,
+                      label)
+        name = label
+    return name
+        
+        
+                          
+
 class AccessFacet(Facet):
 
     def __init__(self, **kwargs):
         kwargs['redis_id'] = 'access'
-        
-        kwargs['name'] = kwargs['redis'].hget('bf:Facet:labels',
-                                              'bf:Facet:{0}'.format(
-                                                      kwargs['redis_id']))
+        facet_key = 'bf:Facet:{0}'.format(kwargs['redis_id'])
+        kwargs['name'] = get_facet_label(kwargs['redis'],
+                                         facet_key,
+                                         'Access')
+        if kwargs['name'] is None:
+            kwargs['name'] = 'Access'
+            kwargs['redis'].hset('bf:Facet:labels',
+                                 facet_key,
+                                 kwargs['name'])
         kwargs['items'] = [
             FacetItem(
                 key='bf:Facet:access:in-the-library',
@@ -93,9 +111,10 @@ class FormatFacet(Facet):
 
     def __init__(self, **kwargs):
         kwargs['redis_id'] = 'format'
-        kwargs['name'] = kwargs.get('redis').hget('bf:Facet:labels',
-                                                  'bf:Facet:{0}'.format(
-                                                      kwargs['redis_id']))
+        facet_key = 'bf:Facet:{0}'.format(kwargs['redis_id'])
+        kwargs['name'] = get_facet_label(kwargs['redis'],
+                                         facet_key,
+                                         'Access (Carrier Media')
         kwargs['items'] = []
         # Formats are sorted by number of instances
         format_item_keys = kwargs['redis'].zrevrange(
@@ -116,9 +135,11 @@ class LanguageFacet(Facet):
 
     def __init__(self, **kwargs):
         kwargs['redis_id'] = 'language'
-        kwargs['name'] = kwargs['redis'].hget(
-            'bf:Facet:labels',
-            'bf:Facet:{0}'.format(kwargs['redis_id']))
+        facet_key = 'bf:Facet:{0}'.format(kwargs['redis_id'])
+        kwargs['name'] = get_facet_label(kwargs['redis'],
+                                         facet_key,
+                                         'Language')
+
         kwargs['items'] = []
         language_keys = kwargs['redis'].zrevrange(
             'bf:Facet:language:sort',
@@ -142,9 +163,10 @@ class LCFirstLetterFacet(Facet):
 
     def __init__(self, **kwargs):
         kwargs['redis_id'] = 'loc-first-letter'
-        kwargs['name'] = kwargs['redis'].hget(
-            'bf:Facet:labels',
-            'bf:Facet:{0}'.format(kwargs['redis_id']))
+        facet_key = 'bf:Facet:{0}'.format(kwargs['redis_id'])
+        kwargs['name'] = get_facet_label(kwargs['redis'],
+                                         facet_key,
+                                         'LCSH Call Number Class')
         kwargs['items'] = []
         lc_item_keys = kwargs['redis'].zrevrange(
             'bf:Facet:loc-first-letter:sort',
@@ -168,6 +190,10 @@ class LocationFacet(Facet):
 
     def __init__(self, **kwargs):
         kwargs['redis_id'] = 'location'
+        facet_key = 'bf:Facet:{0}'.format(kwargs['redis_id'])
+        kwargs['name'] = get_facet_label(kwargs['redis'],
+                                         facet_key,
+                                         'Location')        
         kwargs['name'] = kwargs['redis'].hget(
             'bf:Facet:labels',
             'bf:Facet:{0}'.format(kwargs['redis_id']))
@@ -193,9 +219,11 @@ class PublicationYearFacet(Facet):
 
     def __init__(self, **kwargs):
         kwargs['redis_id'] = 'pub-year'
-        kwargs['name'] = kwargs['redis'].hget(
-            'bf:Facet:labels',
-            'bf:Facet:{0}'.format(kwargs['redis_id']))
+        facet_key = 'bf:Facet:{0}'.format(kwargs['redis_id'])
+        kwargs['name'] = get_facet_label(kwargs['redis'],
+                                         facet_key,
+                                         'Publication Year')
+        
         kwargs['items'] = []
         pub_year_keys = kwargs['redis'].zrevrange(
             'bf:Facet:pub-year:sort',

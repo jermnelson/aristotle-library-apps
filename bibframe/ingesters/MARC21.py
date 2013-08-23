@@ -29,6 +29,7 @@ from aristotle.settings import IS_CONSORTIUM, PROJECT_HOME
 from organization_authority.redis_helpers import get_or_add_organization
 from title_search.redis_helpers import generate_title_app, process_title
 from title_search.redis_helpers import index_title, search_title
+from keyword_search.whoosh_helpers import index_marc
 
 
 from lxml import etree
@@ -1162,18 +1163,27 @@ class MARC21toBIBFRAME(MARC21Ingester):
                 self.redis_datastore.hset(work_key,
                                           'hasInstance',
                                           instance_key)
+        index_marc(instance_keys=[instance_key,],
+                   record=self.record,
+                   redis_datastore=self.redis_datastore,
+                   work_key=work_key)
         self.marc2library_holdings = MARC21toLibraryHolding(
             redis_datastore=self.redis_datastore,
             record=self.record,
             instance=self.marc2instance.instance)
         self.marc2library_holdings.ingest()
+        instance_annotation_key = "{0}:hasAnnotation".format(
+                self.marc2instance.instance.redis_key)
         if self.redis_datastore.hexists(self.marc2instance.instance.redis_key,
-                                    'hasAnnotation'):
+                                        'hasAnnotation'):
             annotation = self.marc2instance.instance.hasAnnotation
             self.redis_datastore.hdel(self.marc2instance.instance.redis_key,
-                                  'hasAnnotation')
-            self.redis_datastore.sadd("{0}:hasAnnotation".format(self.marc2instance.instance.redis_key),
-                                  annotation)
+                                      'hasAnnotation')
+            self.redis_datastore.sadd(instance_annotation_key,
+                                      annotation)
+        for holding in self.marc2library_holdings.holdings:
+            self.redis_datastore.sadd(instance_annotation_key,
+                                      holding.redis_key)
         
         generate_call_number_app(self.marc2instance.instance, 
                                  self.redis_datastore)

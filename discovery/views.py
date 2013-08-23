@@ -13,6 +13,9 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.views import Feed
 
+from aristotle.settings import INSTITUTION
+from aristotle.settings import REDIS_DATASTORE
+from aristotle.settings import FEATURED_INSTANCES
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
 
@@ -27,10 +30,7 @@ from discovery.forms import SearchForm
 from discovery.redis_helpers import get_facets, get_result_facets, BIBFRAMESearch
 from discovery.redis_helpers import get_news
 
-
-from aristotle.settings import INSTITUTION
-from aristotle.settings import REDIS_DATASTORE
-from aristotle.settings import FEATURED_INSTANCES
+from keyword_search import whoosh_helpers
 
 def app(request):
     """
@@ -425,6 +425,10 @@ def search(request):
     query = request.POST.get('q')
     type_of = request.POST.get('q_type')
     if len(query) > 0:
+        if type_of == 'kw':
+            search_results = {
+                'works': whoosh_helpers.keyword_search(query_text=query)}
+            return search_results
         bibframe_search = BIBFRAMESearch(q=query,
                                          type_of=type_of,
                                          redis_datastore=REDIS_DATASTORE)

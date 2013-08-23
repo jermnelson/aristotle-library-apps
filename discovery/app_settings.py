@@ -3,7 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-APP = {'current_view': {'title': 'Discovery'},
+APP = {'current_view': {'title': 'Discovery App'},
        'description': '''The Discovery App highlights special features and
        capabilities of the Redis Library Services Platform''',
        'icon_url': 'discovery.png',

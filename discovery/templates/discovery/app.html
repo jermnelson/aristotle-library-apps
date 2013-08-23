@@ -15,16 +15,14 @@ Discovery App
 {# START Search and Message row DIV #}
 <div class="row" id="first-container">
  {% include 'discovery/snippets/search.html' %}
- {# START message DIV #}
- <div class="col-md-3 col-sm-3">
-  <div class="alert{% if msg.alert_type %} {{ msg.alert_type }}{% else %} alert-success{% endif %} alert-dismissable">
-   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> 
-   <h3>{% if msg.headline %}{{ msg.headline }}{% else %}No Messages{% endif %}</h3>
-   <p>{{ msg.body }}</p>
-  </div>
- {# END  message DIV #}
- </div>
+ {% include 'discovery/snippets/activity-widget.html' %}
 {# END Search and Message row DIV #}
+</div>
+{# START Facets and Content row DIV #}
+<div class="row">
+ {% include 'discovery/snippets/facets.html' %}
+ {% include 'discovery/snippets/content.html' %}
+{# END Facets and Content row DIV #}
 </div>
 {% endblock %}
 

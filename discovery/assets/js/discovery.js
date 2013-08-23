@@ -1,5 +1,7 @@
 function DiscoveryViewModel() {
   self = this;
+  self.contextHeading = ko.observable("Default Content Heading");
+
   self.searchChoices = ko.observableArray([
    { name: "Keyword", action: "kwSearch" },
    { name: "Author", action: "auSearch" },
@@ -17,15 +19,38 @@ function DiscoveryViewModel() {
  
   self.searchQuery = ko.observable();
   // Handlers for Search
-  self.searchPlatform = function(search_type) {
+  self.searchResults = ko.observableArray(); 
+  self.searchType = ko.observable("kw");
+  self.searchRLSP = function() {
+    var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     var data = {
-      type: search_type,
-      query: self.searchQuery()
+      csrfmiddlewaretoken: csrf_token,
+      q_type: self.searchType(),
+      q: self.searchQuery()
     }
-    alert(search_type + " Search on " + data['query']);
+    $.post('/apps/discovery/search', 
+           data,
+           function(server_response) {
+            if(server_response['result'] != "error") { 
+             self.searchResults.removeAll();
+             if(server_response["works"].length > 0) {
+               self.showResults(true);
+               for(work_num in server_response['works']) {
+                 var work = server_response['works'][work_num];
+                 self.searchResults.push(work);
+               } 
+             } else {
+              self.contextHeading("Search Returned 0 Works"); 
+             }
+           } else {
+             self.contextHeading("Error with Search " + self.searchQuery());
+             self.searchQuery(server_response['text']);
+             alert("Error with search\n" + server_response['text']);
+           }
+        });
 
   }
-  self.searchType = ko.observable("Select");
+  self.showResults = ko.observable(false);
 
   self.auSearch = function() {
   }

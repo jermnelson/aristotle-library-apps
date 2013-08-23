@@ -1,0 +1,56 @@
+{# START activity DIV #}
+<div class="col-md-4 col-sm-4">
+ <div class="alert alert-success alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> 
+  <b>Toolbar</b>
+  {# Activity Toolbar #}
+  <div class="btn-toolbar">
+    {# Account and Search History #}
+    <div class="btn-group">
+      <a href="#" 
+         class="btn btn-default" 
+         title="Your Account">
+        <i class="glyphicon glyphicon-user"></i>
+      </a>
+     <a href="#"
+        class="btn btn-default" 
+        title="Search History">
+        <i class="glyphicon glyphicon-list-alt"></i>
+     </a>
+    {# END Account and Search History #}
+    </div>
+   {# Citation and Export #}
+   <div class="btn-group" 
+        data-bind="visible: showResults">
+    {# Citation Dropdown #}
+    <div class="btn-group">
+     <a href="#"
+        class="btn btn-default dropdown-toggle"
+        data-toggle="dropdown">
+      <i class="glyphicon glyphicon-share"></i>
+      <span class="caret"></span>
+     </a>
+     <ul class="dropdown-menu">
+      <li><a href="#">ALA</a></li>
+      <li><a href="#">MLA</a></li>
+      <li><a href="#">Chicago</a></li>
+     </ul>
+    {# END Citation Dropdown #}
+    </div>
+   <a href="#"
+      class="btn btn-default"
+      title="Export to RefWorks">
+      <img src="{{ STATIC_URL }}ico/refworks.ico">
+     </a>
+    <a class="btn btn-default"
+       href="#"
+       title="Export to Zotero">
+      <img src="{{ STATIC_URL }}ico/zotero.ico">
+    </a>
+   {# END Citation and Export #}
+   </div>
+  </div>
+ {# END Activity Toolbar #}
+ </div>
+{# END activity DIV #}
+</div>
