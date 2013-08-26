@@ -3,7 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 import discovery.views
 
 urlpatterns = patterns('discovery.views',
@@ -19,6 +19,7 @@ urlpatterns = patterns('discovery.views',
     url(r"^(\w+)/(\d+)/?$",
         "bibframe_router",
         name="discovery-bibframe-router"),
+    url(r"^[f|F]acet/([\w|-]+)/([\w|-]+)$", "facet_detail"),
     url(r"^(?P<class_name>\w+)/(?P<slug>[-a-zA-Z0-9_]+)/?$",
         "bibframe_by_name"),
 ##    url(r"^authority/person/(\d+)/?$", "person", name="discovery-authority-person"),
@@ -37,6 +38,5 @@ urlpatterns = patterns('discovery.views',
 ##    url(r"^[w|W]ork/(\d+).json$", "creative_work_json_ld", name="discovery-work-json_ld"),
 ##    url(r"^[w|W]ork/(\d+)/?$", "creative_work", name="discovery-work"),
 ##    url(r"^[w|W]ork/(\d+)/?$", "creative_work", name="discovery-work"),
-    url(r"^facet/([\w ]+)/$", "facet_summary"),
-    url(r"^[f|F]acet/([\w|-]+)/([\w|-]+)$", "facet_detail"),
+    url(r"^facet/([\w ]+)/$", "facet_summary")
 )

@@ -107,8 +107,8 @@ def keyword_search(**kwargs):
             fields['thumbnail_alt'] = 'Icon for {0}'.format(
                 fields.get('title'))
             fields['work_url'] = '/apps/discovery/{0}/{1}'.format(
-                work_key_info[-1],
-                work_key_info[-2])
+                work_key_info[-2],
+                work_key_info[-1])
             fields['work_summary'] = 'by '
             for creator_key in redis_datastore.smembers(
                 '{0}:rda:isCreatorBy'.format(work_key)):

@@ -316,6 +316,14 @@ class RedisBibframeInterface(object):
                 else:
                     output[row] = getattr(self, row)
         return output
+
+    def get_url(self):
+        "Returns an url based on the entity's Redis Key"
+        if self.redis_key is None:
+            return
+        info = self.redis_key.split(":")
+        return '/apps/discovery/{0}/{1}'.format(info[-2],
+                                                info[-1])
    
 
     def save(self,

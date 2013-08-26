@@ -1,4 +1,4 @@
-{% extends 'app-base.html' %}
+{% extends 'app.html' %}
 {% load i18n %}
 {% load discovery_extras %}
 
@@ -7,47 +7,59 @@
 Discovery Work View
 {% endblock %}
 
-{% block more-css %}
-<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}css/discovery.less">
-{% endblock %}
-
-
-{% block action-view-subtitle %} Work{% endblock %}
-
-{% block body %}
-{# START content DIV #}
-<div class="container-fluid">
- {# START row-fluid DIV #}
- <div class="row-fluid">
-  {# START search DIV #}
-  <div class="row6">
-  {% include 'discovery/snippets/search.html' %}
-  {# END search DIV{% endcomment #}
+{% block content %}
+{# START title row #}
+<div class="row">
+ {# START title panel #}
+ <div class="col-sm-10 col-md-10 panel">
+  {# START title panel heading #}
+  <div class="panel-heading">
+   <h2>{{ creative_work|get_title }}
+    <sup>
+     <a href="#title-info"
+        class="btn btn-xs"
+        data-toggle="modal">
+      <i class="glyphicon glyphicon-exclamation-sign"></i> 
+     </a>
+    </sup>
+   </h2>
+  {# END title panel heading #}
   </div>
-  {# START pinned-corner DIV #}
-  <div class="span4 offset1">
-   {% include 'discovery/snippets/pinned.html' %}
-  {# END pinned-corner DIV #}
-  </div>
- {# row-fluid DIV #}
+ {# END title panel #}
  </div>
- {# START row-fluid DIV #}
- <div class="row-fluid">
-  {# START facets DIV{% endcomment #}
-  <div class="span2">
-    <h3>Related Works</h3>
-
-    <p><a href="#"><img src="{{ STATIC_URL }}img/redis-small.png" /></a></p>
-  {# END facets DIV{% endcomment #}
+{# END title row #}
+</div>
+{# START Creators, Detail, and Annotations row #}
+<div class="row">
+ {# START Creators Row Panel #}
+ <div class="col-sm-4 col-md-3">
+  {# START Creators panel #}
+  <div class="panel panel-info">
+   {# START Creators Panel heading #}
+   <div class="panel-heading">
+    <h3 class="panel-title">Creator(s)</h3>
+   {# END Creators Panel heading #}
+   </div>
+   {# START Creators Panel body #}
+   <div class="panel-body">
+    {{ creative_work|get_creators }}
+   {# END Creators Panel body #}
+   </div>
+  {# END Creators panel #}
   </div>
-  {# START work-canvas display DIV #}
-  <div class="span10">
-  {% include 'discovery/snippets/work-detail.html' %}
-  {# END work-canvas display DIV #}
-  </div>
- {% comment %}END row-fluid DIV{% endcomment %}
+ {# END Creators Row Panel #}
  </div>
-{% comment %}END content DIV{% endcomment %}
+ {# START Work Detail #}
+ <div class="col-sm-5 col-md-5">
+  {# START Work Detail Well #}
+  <div class="well well-sm">
+   <h3>Instances</h3>
+   {{ creative_work|get_instances }} 
+  {# END Work Detail Well #}
+  </div>
+ {# END Work Detail Well #}
+ </div>
+{# END Creators, Detail, and Annotations row #}
 </div>
 {% endblock %}
 
@@ -56,4 +68,45 @@ Discovery Work View
 <script src="{{ STATIC_URL }}js/knockout.js"></script>
 <script src="{{ STATIC_URL }}js/d3.js"></script>
 <script src="{{ STATIC_URL }}js/discovery.js"></script>
+{% endblock %}
+
+{% block more-dialogs %}
+{# START Work Title Info Dialog #}
+<div aria-labelledby="title-infoLabel"c
+     class="modal fade" 
+     id="title-info"
+     role="dialog"
+ {# START modal dialog #}
+ <div class="modal-dialog">
+  {# START modal dialog content #}
+  <div class="modal-content">
+   {# START modal dialog header #}
+   <div class="modal-header">
+    <button aria-hidden="true"
+            type="button" 
+            class="close" 
+            data-dismiss="modal">&times;</button>
+     <h2 class="modal-header">
+       {{ creative_work|get_title }}
+     </h2>
+   {# END  modal dialog header #}
+   </div>
+   {# START modal dialog body #}
+   <div class="modal-body">
+    <p class="lead">Information about Title Redis Key {{ creative_work.title }}</p>
+   {# END modal dialog body #}
+   </div>  
+   {# START modal dialog footer #}
+   <div class="modal-footer">
+    <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+   {# END modal dialog footer #}
+   </div>
+  {# END modal dialog content #}
+  </div>
+ {# END modal dialog #}
+ </div>
+{# END Work Title Info Dialog #}
+</div>
+     
+
 {% endblock %}

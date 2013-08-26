@@ -1,5 +1,6 @@
 {% extends 'app-base.html' %}
 {% load i18n %}
+{% load discovery_extras %}
 
 {% block head-title %}
 {% if institution %}{% trans institution.name %} Apps{% else %}{% trans "Aristotle Library Apps" %}{% endif %}
@@ -12,16 +13,24 @@ Discovery App
 
 
 {% block body %}
+
+{% block search-activity %}
 {# START Search and Message row DIV #}
 <div class="row" id="first-container">
  {% include 'discovery/snippets/search.html' %}
  {% include 'discovery/snippets/activity-widget.html' %}
 {# END Search and Message row DIV #}
 </div>
+{% endblock %}
+
 {# START Facets and Content row DIV #}
 <div class="row">
+{% block facets %}
  {% include 'discovery/snippets/facets.html' %}
+{% endblock %}
+{% block content %}
  {% include 'discovery/snippets/content.html' %}
+{% endblock %}
 {# END Facets and Content row DIV #}
 </div>
 {% endblock %}
@@ -29,6 +38,16 @@ Discovery App
 {% block more-js %}
 <script src="{{ STATIC_URL }}js/discovery.js"></script>
 <script>
- ko.applyBindings(new DiscoveryViewModel()); 
+var discoveryViewModel = new DiscoveryViewModel();
+ko.applyBindings(discoveryViewModel); 
+{% comment %}
+{% for work in results %]
+discoveryViewModel.searchResults.push({{ work|get_search_result }});
+{% endfor %}
+{% endcomment %}
 </script>
 {% endblock %}
+
+{% block page-js %}{% endblock %}
+
+
