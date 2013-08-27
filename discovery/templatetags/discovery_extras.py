@@ -531,26 +531,32 @@ def get_search_result(work):
     Parameter:
     work -- BIBFRAME Creative Work or decendant
     """
-    output = {'instance_alt': None,
-              'title': None,
+    title = get_title(work)
+    output = {'instance_alt': '{0} title'.format(title),
+              'title': title,
               'instance_thumbnail': None,
               'thumbnail_alt': None,
               'work_summary': None,
-              'work_url': work.get_url}
+              'work_url': work.get_url()}
     instance_keys = REDIS_DATASTORE.smembers(
         '{0}:hasInstance'.format(work.redis_key))
     if instance_keys is None:
         instance_keys = [REDIS_DATASTORE.hget(work.redis_key,
-                                              'hasInstance'), ]
-    output['instance_thumbnail'] = redis_datastore.hget(
-        'bf:Work:icons',
-        'bf:{0}'.format(work_key_info[-2]))
-##            if fields['instance_thumbnail'] is None:
-##                fields['instance_thumbnail'] = redis_datastore.hget(
-##                'bf:Work:icons',
-##                'bf:Work')
-##            fields['instance_thumbnail'] = '/static/img/{0}'.format(
-##                fields['instance_thumbnail'])
+                                              'hasInstance'),]
+    for instance_key in instance_keys:
+        for annotation_key in REDIS_DATASTORE.smembers(
+            '{0}:hasAnnotation'.format(instance_key)):
+            if annotation_key.startswith('bf:CoverArt'):
+                redis_id = annotation_key.split(":")[-1]
+                cover_url = '/apps/discovery/CoverArt/{0}-body.jpg'.format(
+                    redis_id)
+                output['instance_thumbnail'] = cover_url
+    if output['instance_thumbnail'] is None:
+        default_icon = REDIS_DATASTORE.hget(
+            'bf:Work:icons',
+            'bf:{0}'.format(work.name))
+        output['instance_thumbnail'] = '/static/img/{0}'.format(
+            default_icon)
     return mark_safe(json.dumps(output))
 
 @register.filter(is_safe=True)

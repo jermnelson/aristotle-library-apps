@@ -39,12 +39,19 @@ Discovery App
 <script src="{{ STATIC_URL }}js/discovery.js"></script>
 <script>
 var discoveryViewModel = new DiscoveryViewModel();
-ko.applyBindings(discoveryViewModel); 
-{% comment %}
-{% for work in results %]
+discoveryViewModel.searchResults.push({ thumbnail_alt: null, title: "Jane Austen", work_summary: null, instance_alt: "Jane Austen", work_url: null, instance_thumbnail: "/static/img/None"});
+ko.applyBindings(discoveryViewModel);
+{% for work in results %}
 discoveryViewModel.searchResults.push({{ work|get_search_result }});
 {% endfor %}
-{% endcomment %}
+/* 
+discoveryViewModel.searchResults([
+{% for work in results %}
+{{ work|get_search_result }}
+{% if not forloop.last %},{% endif %}
+{% endfor %}
+]); */
+alert("After load "+ discoveryViewModel.searchResults.length);
 </script>
 {% endblock %}
 

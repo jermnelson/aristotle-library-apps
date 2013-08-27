@@ -12,6 +12,10 @@ import title_search.redis_helpers as title_app
 
 import bibframe.models
 
+def init_datastore():
+    "Function initializes a number of redis keys with default values"
+    
+
 def slug_to_title(key):
     slug_name = key.split(":")[-1].replace("-"," ")
     slug_name = slug_name.title()
@@ -28,9 +32,6 @@ class Facet(object):
         self.redis_id = kwargs.get('redis_id')
         self.redis_keys = kwargs.get('keys')
         self.name = kwargs.get('name')
-
-
-        
 
 class FacetError(Exception):
     "Exception for errors with Facets"

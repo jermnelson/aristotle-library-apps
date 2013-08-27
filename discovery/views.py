@@ -253,7 +253,6 @@ def facet_detail(request, facet_name, facet_item):
                                     REDIS_DATASTORE.hget(label_key, facet_item))
     else:
         msg = "{0} of {1}".format(msg, facet_item)
-    print(records)
     return render(request,
                   'discovery/app.html',
                   {'app': APP,

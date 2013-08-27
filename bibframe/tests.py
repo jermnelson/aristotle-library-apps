@@ -397,3 +397,4 @@ from bibframe.ingesters.test_ProjectGutenbergRDF import TestProjectGutenbergInge
 from bibframe.ingesters.test_MODS import *
 from bibframe.ingesters.test_Ingester import TestPersonalNameParser
 from bibframe.ingesters.test_MARC import *
+from bibframe.ingesters.test_bibframeMARCParser import TestMARC21toBIBFRAMERegex
