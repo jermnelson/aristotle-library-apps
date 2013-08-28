@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xml:base="http://marc21rdf.info/elements/64X"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:reg="http://metadataregistry.org/uri/profile/RegAp/"
+  xmlns:status="http://metadataregistry.org/uri/RegStatus/">
+
+<!-- Element Set: MARC 21 Elements 2XX -->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/2XX">
+  <dc:title xml:lang="en">MARC 21 Elements 2XX</dc:title>
+  <foaf:homepage rdf:resource="http://www.loc.gov/marc/bibliographic/20x24x.html"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://marc21rdf.info/elements/2XX/M2100_2">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/2XX"/>
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001"/>
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInAbbreviatedTitleNoAddedEntryAbbreviatedKeyTitle</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Abbreviated Title (No added entry) (Abbreviated key title)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list for the abbreviated title, if the source is known. Used primarily when the second indicator position contains value 0. It may also be added when the second indicator contains value blank and another abbreviated title list uses the same abbreviation as the abbreviated key title. No added entry. Abbreviated key title.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  <skos:scopeNote xml:lang="en">tag: 210 (Abbreviated Title)<br />ind2: # (Abbreviated key title)<br />sub: 2 (Source of heading or term)<br />
+  </skos:scopeNote>
+</rdf:Description>
+
+</rdf:RDF>

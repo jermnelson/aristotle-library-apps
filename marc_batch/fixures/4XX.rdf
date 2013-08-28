@@ -1,0 +1,1273 @@
+<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xml:base="http://marc21rdf.info/elements/4XX"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:reg="http://metadataregistry.org/uri/profile/RegAp/"
+  xmlns:status="http://metadataregistry.org/uri/RegStatus/">
+
+<!-- Element Set: MARC 21 Elements 4XX -->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX">
+  <dc:title xml:lang="en">MARC 21 Elements 4XX</dc:title>
+  <foaf:homepage rdf:resource="http://www.loc.gov/marc/bibliographic/bd4xx.html"/>
+</rdf:Description>
+
+<!-- Properties -->
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_00">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_10">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_20">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_30">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_40">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_50">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_60">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_70">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_80">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_90">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Authority record control number. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_0w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_1w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_2w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_3w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_4w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_5w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_6w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_7w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_8w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_9w">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasBibliographicRecordControlNumberInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Bibliographic record control number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Bibliographic record control number. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: w (Bibliographic record control number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_08">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_18">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_28">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_38">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_48">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_58">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_68">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_78">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_88">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_98">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement Added Entry-Title [OBSOLETE]. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: 8 (Field link and sequence number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement (Series not traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4900_8">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementSeriesNotTraced</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement (Series not traced)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement. Series not traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Series Statement (Series traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4901_8">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSeriesStatementSeriesTraced</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Series Statement (Series traced)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Series Statement. Series traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind1: 1 (Series traced)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_0x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_1x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_2x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_3x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_4x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_5x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_6x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_7x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_8x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_9x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement (Series not traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4900_x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementSeriesNotTraced</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement (Series not traced)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number (ISSN) for a series title given in a series statement. Series not traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: International Standard Serial Number in Series Statement (Series traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4901_x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasInternationalStandardSerialNumberInSeriesStatementSeriesTraced</reg:name>
+  <rdfs:label xml:lang="en">International Standard Serial Number in Series Statement (Series traced)</rdfs:label>
+  <skos:definition xml:lang="en">International Standard Serial Number (ISSN) for a series title given in a series statement. Series traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind1: 1 (Series traced)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: x (International Standard Serial Number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Library of Congress call number in Series Statement (Series not traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4900_l">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLibraryOfCongressCallNumberInSeriesStatementSeriesNotTraced</reg:name>
+  <rdfs:label xml:lang="en">Library of Congress call number in Series Statement (Series not traced)</rdfs:label>
+  <skos:definition xml:lang="en">LC series call number when it is given as part of the series statement. Occurs when an item is issued as part of a series during a period of time and has been classified under the Library of Congress call number of that series for that period. Series not traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: l (Library of Congress call number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Library of Congress call number in Series Statement (Series traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4901_l">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLibraryOfCongressCallNumberInSeriesStatementSeriesTraced</reg:name>
+  <rdfs:label xml:lang="en">Library of Congress call number in Series Statement (Series traced)</rdfs:label>
+  <skos:definition xml:lang="en">LC series call number when it is given as part of the series statement. Occurs when an item is issued as part of a series during a period of time and has been classified under the Library of Congress call number of that series for that period. Series traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind1: 1 (Series traced)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: l (Library of Congress call number)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_06">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_16">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_26">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_36">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_46">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_56">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_66">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_76">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_86">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_96">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement Added Entry-Title [OBSOLETE]. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement (Series not traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4900_6">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementSeriesNotTraced</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement (Series not traced)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement. Series not traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Series Statement (Series traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4901_6">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSeriesStatementSeriesTraced</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Series Statement (Series traced)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Series Statement. Series traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind1: 1 (Series traced)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Series Statement (Series not traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4900_3">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSeriesStatementSeriesNotTraced</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Series Statement (Series not traced)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Series not traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Series Statement (Series traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4901_3">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSeriesStatementSeriesTraced</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Series Statement (Series traced)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Series traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind1: 1 (Series traced)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_0p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_1p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_2p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_3p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_4p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_5p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_6p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_7p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_8p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_9p">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNameOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Name of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Name of part or section of a work. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: p (Name of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_0n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_1n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_2n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_3n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_4n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_5n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_6n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_7n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_8n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_9n">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasNumberOfPartOrSectionOfAWorkInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Number of part or section of a work in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Number of part or section of a work. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: n (Number of part or section of a work)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Series statement in Series Statement (Series not traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4900_a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSeriesStatementInSeriesStatementSeriesNotTraced</reg:name>
+  <rdfs:label xml:lang="en">Series statement in Series Statement (Series not traced)</rdfs:label>
+  <skos:definition xml:lang="en">Series title that may also contain a statement of responsibility or other title information. Series not traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: a (Series statement)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Series statement in Series Statement (Series traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4901_a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSeriesStatementInSeriesStatementSeriesTraced</reg:name>
+  <rdfs:label xml:lang="en">Series statement in Series Statement (Series traced)</rdfs:label>
+  <skos:definition xml:lang="en">Series title that may also contain a statement of responsibility or other title information. Series traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind1: 1 (Series traced)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: a (Series statement)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_0a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_1a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_2a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_3a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_4a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_5a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_6a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_7a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_8a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Title in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_9a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasTitleInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Title in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Title. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: a (Title)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_0v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]0NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (0 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 0 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_1v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]1NonfilingCharacter</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (1 nonfiling character)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 1 nonfiling character.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (1 nonfiling character)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_2v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]2NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (2 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 2 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (2 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_3v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]3NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (3 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 3 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (3 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_4v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]4NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (4 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 4 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (4 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_5v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]5NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (5 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 5 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (5 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_6v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]6NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (6 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 6 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (6 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_7v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]7NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (7 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 7 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (7 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_8v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]8NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (8 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 8 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 8 (8 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M440_9v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeNumberOrSequentialDesignationInSeriesStatementAddedEntryTitle[Obsolete]9NonfilingCharacters</reg:name>
+  <rdfs:label xml:lang="en">Volume number or sequential designation in Series Statement Added Entry-Title [OBSOLETE] (9 nonfiling characters)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or sequential designation. 9 nonfiling characters.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 440 (Series Statement Added Entry-Title [OBSOLETE])&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 9 (9 nonfiling characters)&lt;br /&gt;sub: v (Volume number or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume or sequential designation in Series Statement (Series not traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4900_v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeOrSequentialDesignationInSeriesStatementSeriesNotTraced</reg:name>
+  <rdfs:label xml:lang="en">Volume or sequential designation in Series Statement (Series not traced)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or other sequential designation used in a series statement. Series not traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: v (Volume or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Volume or sequential designation in Series Statement (Series traced)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/4XX/M4901_v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/4XX" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasVolumeOrSequentialDesignationInSeriesStatementSeriesTraced</reg:name>
+  <rdfs:label xml:lang="en">Volume or sequential designation in Series Statement (Series traced)</rdfs:label>
+  <skos:definition xml:lang="en">Volume number or other sequential designation used in a series statement. Series traced.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 490 (Series Statement)&lt;br /&gt;ind1: 1 (Series traced)&lt;br /&gt;ind2: # (no caption)&lt;br /&gt;sub: v (Volume or sequential designation)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!-- Status properties used in this document  -->
+    <skos:Concept rdf:about="http://metadataregistry.org/uri/RegStatus/1001">
+        <skos:prefLabel xml:lang="en">Published</skos:prefLabel>
+    </skos:Concept>
+</rdf:RDF>

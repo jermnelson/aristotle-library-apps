@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xml:base="http://marc21rdf.info/elements/64X"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:reg="http://metadataregistry.org/uri/profile/RegAp/"
+  xmlns:status="http://metadataregistry.org/uri/RegStatus/">
+
+<!-- Element Set: MARC 21 Elements 64X -->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X">
+  <dc:title xml:lang="en">MARC 21 Elements 64X</dc:title>
+  <foaf:homepage rdf:resource="http://www.loc.gov/marc/bibliographic/bd6xx.html"/>
+</rdf:Description>
+
+<!-- Properties -->
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_50">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_10">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_00">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_20">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_30">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_60">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_40">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Authority record control number in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_70">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasAuthorityRecordControlNumberInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Authority record control number in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">System control number of the related authority record, or a standard identifier such as an International Standard Name Identifier (ISNI). The control number or identifier is preceded by the appropriate MARC Organization code (for a related authority record) or the Standard Identifier source code (for a standard identifier scheme), enclosed in parentheses. Surname. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_5y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_1y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_0y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_2y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_3y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_6y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_4y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_7y">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalSubdivisionInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Chronological subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that represents a period of time. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: y (Chronological subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_5a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_1a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_0a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_2a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_3a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_6a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_4a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Chronological term in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_7a">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasChronologicalTermInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Chronological term in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Chronological term. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: a (Chronological term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_58">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_18">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_08">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_28">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_38">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_68">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_48">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Field link and sequence number in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_78">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFieldLinkAndSequenceNumberInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Field link and sequence number in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Field link and sequence number for Subject Added Entry-Chronological Term. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: 8 (Field link and sequence number )&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_5v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_1v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_0v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_2v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_3v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_6v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_4v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Form subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_7v">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasFormSubdivisionInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Form subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Form subdivision that designates a specific kind or genre of material as defined by the thesaurus being used. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: v (Form subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_5x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_1x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_0x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_2x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_3x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_6x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_4x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: General subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_7x">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeneralSubdivisionInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">General subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Subject subdivision that is not more appropriately contained in subfields $v (Form subdivision), $y (Chronological subdivision), or $z (Geographic subdivision). Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: x (General subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_5z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_1z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_0z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_2z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_3z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_6z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_4z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Geographic subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_7z">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasGeographicSubdivisionInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Geographic subdivision in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Geographic subject subdivision. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: z (Geographic subdivision)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_56">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_16">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_06">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_26">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_36">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_66">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_46">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Linkage in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_76">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasLinkageInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Linkage in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Linkage data for Subject Added Entry-Chronological Term. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: 6 (Linkage)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_53">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_13">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_03">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_23">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_33">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_63">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_43">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Materials specified in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_73">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasMaterialsSpecifiedInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Materials specified in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">Part of the described materials to which the field applies. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: 3 (Materials specified)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (Canadian Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_52">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermCanadianSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (Canadian Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. Canadian Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 5 (Canadian Subject Headings)&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (LC subject headings for children's literature)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_12">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermLcSubjectHeadingsForChildrensLiterature</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (LC subject headings for children's literature)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. LC subject headings for children's literature.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 1 (LC subject headings for children's literature )&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_02">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermLibraryOfCongressSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (Library of Congress Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. Library of Congress Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (Medical Subject Headings)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_22">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermMedicalSubjectHeadings</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (Medical Subject Headings)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. Medical Subject Headings.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 2 (Medical Subject Headings )&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_32">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermNationalAgriculturalLibrarySubjectAuthorityFile</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (National Agricultural Library subject authority file)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. National Agricultural Library subject authority file.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 3 (National Agricultural Library subject authority file )&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_62">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermRépertoireDeVedettesMatière</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (Répertoire de vedettes-matière)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. Répertoire de vedettes-matière.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 6 (Répertoire de vedettes-matière )&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (Source not specified)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_42">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermSourceNotSpecified</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (Source not specified)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. Source not specified.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 4 (Source not specified )&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!--Property: Source of heading or term in Subject Added Entry-Chronological Term (Source specified in subfield $2)-->
+<rdf:Description rdf:about="http://marc21rdf.info/elements/64X/M648_72">
+  <rdfs:isDefinedBy rdf:resource="http://marc21rdf.info/elements/64X" />
+  <reg:status rdf:resource="http://metadataregistry.org/uri/RegStatus/1001" />
+  <reg:name xml:lang="en">hasSourceOfHeadingOrTermInSubjectAddedEntryChronologicalTermSourceSpecifiedInSubfield$2</reg:name>
+  <rdfs:label xml:lang="en">Source of heading or term in Subject Added Entry-Chronological Term (Source specified in subfield $2)</rdfs:label>
+  <skos:definition xml:lang="en">MARC code that identifies the source list from which the subject added entry was assigned. Source specified in subfield $2.</skos:definition>
+  <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+  <skos:scopeNote xml:lang="en">tag: 648 (Subject Added Entry-Chronological Term)&lt;br /&gt;ind1: # (no caption)&lt;br /&gt;ind2: 7 (Source specified in subfield $2)&lt;br /&gt;sub: 2 (Source of heading or term)&lt;br /&gt;</skos:scopeNote>
+</rdf:Description>
+
+
+<!-- Status properties used in this document  -->
+    <skos:Concept rdf:about="http://metadataregistry.org/uri/RegStatus/1001">
+        <skos:prefLabel xml:lang="en">Published</skos:prefLabel>
+    </skos:Concept>
+</rdf:RDF>
