@@ -22,14 +22,25 @@ class MARCModifier(object):
         if len(args) > 0:
             if __name__ == '__main__':
                 self.marc_reader = pymarc.MARCReader(open(args[0]),
-                                                     utf8_handling='strict')
+                                                     to_unicode=True)
+##                                                     utf8_handling='strict')
             else:
                 self.marc_reader = pymarc.MARCReader(args[0],
-                                                     utf8_handling='strict')
+                                                     to_unicode=True)
+##                                                     utf8_handling='strict')
         if len(args) == 2:
             self.marcfile_output = args[1]
         self.records = []
         self.stats = {'records':0}
+
+    def decode_fields(self, record):
+        "Decodes all fields in the record"
+        for field in record.fields:
+            for subfield in field.subfields:
+                subfield = subfield.decode('utf-8',
+                                           errors='ignore')
+        return record
+            
 
     def load(self):
         ''' Method iterates through MARC reader, loads specific MARC records
@@ -111,9 +122,15 @@ class MARCModifier(object):
 ##        #output = open(marcfile_output,'wb')
 ##        output = cStringIO.StringIO()
 ##        for record in self.records:
+####            if record.leader[9] == 'a':
+####                record = self.decode_fields(record)
+##            print("LDR pos 9={0} force_utf8={1}".format(
+##                record.leader[9],
+##                record.force_utf8))
 ##            record_str = record.as_marc()
-##            output.write(record_str.decode('utf8','ignore'))
-##        return output.getvalue()
+##            output.write(record_str.encode('utf8','ignore'))
+##        return output.getvalue()                
+                
 
     def output(self):
         output_string = cStringIO.StringIO()
@@ -249,7 +266,7 @@ class MARCModifier(object):
                         subfield_a = subfield_a[:-1].strip()
             new245 = Field(tag='245',
                            indicators=[indicator1,indicator2],
-                           subfields = ['a','{0} '.format(subfield_a)])
+                           subfields = ['a', u'{0} '.format(subfield_a)])
             b_subfields = field245.get_subfields('b')
             c_subfields = field245.get_subfields('c')
             n_subfields = field245.get_subfields('n')

@@ -14,9 +14,9 @@
    {% comment %}START forms row DIV{% endcomment %}
     <form action="/apps/marc_batch/update" method="POST">
       {% csrf_token %}
-   <div class="row-fluid">
+   <div class="row">
     {% comment %}START job log details DIV{% endcomment %}
-	 <div class="span4">
+	 <div class="col-sm-4 col-md-4">
       <a class="btn btn-success" href="{% url 'marc-download' %}">Download modified MARC file</a>
       <input type="hidden" value="{{ current_job.pk }}" name="job_id" />
 	  <input type="hidden" value="{{ current_log.pk }}" name="log_id" />
@@ -25,7 +25,7 @@
       {% comment %}END job log details DIV{% endcomment %}
      </div>
      {% comment %}START job log notes DIV{% endcomment %}
-     <div class="span4">
+     <div class="col-sm-4 col-md-4">
       {{ log_notes_form }}
      {% comment %}END job log notes DIV{% endcomment %}
      </div>
@@ -33,7 +33,7 @@
    </div>
    <div class="row-fluid">
 	 <div class="span3">
-      <input class="btn btn-large btn-primary" type="submit" value="Update" />
+      <input class="btn btn-lg btn-primary" type="submit" value="Update" />
      </div>
    </div>
    </form>

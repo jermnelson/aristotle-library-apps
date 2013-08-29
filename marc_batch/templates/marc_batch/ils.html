@@ -10,9 +10,9 @@
    <h1>{{ current_job.name }}</h1>
    <form method="POST" action="/apps/marc_batch/process" enctype="multipart/form-data">{% csrf_token %}
 	<input type="hidden" value="{{ current_job.pk }}" name="job_id" />
-   {{ marc_upload_form }}
+   {{ marc_upload_form.as_p }}
    <br/>
-   <input class="btn btn-large btn-warning" type="submit" value="Upload" />
+   <input class="btn btn-lg btn-warning" type="submit" value="Upload" />
    </form>
 {% endblock %}
  

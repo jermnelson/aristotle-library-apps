@@ -9,7 +9,8 @@ from models import ILSJobLog,JobLogNotes,RedisJobLog,SolrJobLog,marc_rec_types
 
 class MARCRecordUploadForm(forms.Form):
     """This form contains fields that are necessary for MARC record loads"""
-    raw_marc_record = forms.FileField(required=True,label="Single MARC File")
+    raw_marc_record = forms.FileField(required=True,
+                                      label="Single MARC File")
     record_type = forms.ChoiceField(required=True,
                                     label="Record Type",
                                     choices=marc_rec_types)

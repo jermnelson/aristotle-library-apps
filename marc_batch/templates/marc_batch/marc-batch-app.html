@@ -5,22 +5,22 @@
 
 
 {% block body %}
- {% comment %}START main-pane DIV{% endcomment %}
- <div class="row-fluid main-pane">
-  {% comment %}START left-jobs-col DIV{% endcomment %}
-  <div class="span2">
-   <ul class="nav nav-list">
+ {# START main-pane DIV #}
+ <div class="row main-pane" id="first-container">
+  {# START left-jobs-col DIV #}
+  <div class="col-sm-3 col-md-3">
+   <ul class="nav nav-pills nav-stacked">
    {% include 'snippets/left-nav-column-simple.html' %}
    {% block more-left-nav %}{% endblock %}   
    </ul>
-  {% comment %}END left-jobs-col DIV{% endcomment %}
+  {# END left-jobs-col DIV #}
   </div>
-  <div class="span7">
+  <div class="col-sm-8 col-md-7">
    {% block app-main-body %}
    <p>{{ app.description }}</p>
    {% endblock %}
   </div>
-{% comment %}END main-pane DIV{% endcomment %}
+{# END main-pane DIV #}
  </div>
 {% endblock %}
 
