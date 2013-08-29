@@ -164,16 +164,16 @@ class FilmsOnDemandJob(MARCModifier):
             raw_string = ''.join(field300.get_subfields('b'))
             good_300b = '{0}, {1}'.format('digital',
                                           DIGITAL_RE.sub('',raw_string).strip())
-            if good_300b[-1] == ',':
-                good_300b = good_300b[:-1]
-                good_300b +=  ' + '
-            if good_300b[-1] != '.':
-                good_300b = good_300b + '.'
-            last_char = good_300b[-1]
-            if last_char == '+':
-                good_300b = good_300b[:-1].strip()
+            if good300b[-1] == ",":
+                good300b = 
+            subfield_e = field300['e']
+            if subfield_e is not None:
+                good_300b += " + "
             field300.delete_subfield("b")
-            field300.add_subfield("b",good_300b)
+            field300.add_subfield("b", good_300b)
+            if subfield_e is not None:
+                field300.delete_subfield("e")
+                field300.add_subfield("e", subfield_e)
         return marc_record
 
               
