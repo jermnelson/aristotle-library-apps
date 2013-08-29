@@ -3,18 +3,34 @@
 
 {% block more-css %}
 <link href="{{ STATIC_URL }}css/colorado-college.css" rel="stylesheet">
+{% comment %}
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
 <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-
+{% endcomment %}
 {% endblock %}
 
 
-<div class="container-fluid">
+<div class="container">
 
 {% block navbar %}
- <div class="row-fluid">
-  <div class="span12 offset1">
-   <iframe src="/apps/website-header" class="website-header" scrolling="no"></iframe>
+ <div class="row">
+  <div class="col-sm-11 col-md-11 col-md-offset-1 visible-md visible-lg">
+   <iframe src="/apps/website-header" 
+           class="website-header" 
+           scrolling="no"></iframe>
+  </div>
+  <div class="col-sm-11 visible-sm visible-xs contact-row">
+   <div class="btn-group">
+    <button class="btn btn-primary btn-large dropdown-toggle" 
+            data-toggle="dropdown">
+      <i class="glyphicon glyphicon-align-justify"></i>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+     {% for link in institution.links %}
+      <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+     {% endfor %}      
+    </ul>
+   </div>
   </div>
  </div>
 {% endblock %}
@@ -25,8 +41,8 @@
   {% include 'discovery/cc-results.html' %}
 {% else %}
  {# START Contact and Search Row #}
- <div class="row-fluid" >
-  <div class="span11 offset1 contact-row">
+ <div class="row" >
+  <div class="col-md-11 col-sm-offset-1 contact-row">
   {% include 'cc-contact-info.html' %} 
   {% include 'cc-search-widget.html' %}
   </div>
@@ -34,14 +50,14 @@
  </div>
  {% if message %}
  {# START message #}
- <div class="row-fluid">
-  <div class="span8 offset2">
+ <div class="row">
+  <div class="col-md-8 col-md-offset-2">
    MESSAGE is {{ message }}
   </div>
  </div>
  {% endif %}
  {# START Facet and Content #}
- <div class="row-fluid">
+ <div class="row">
    {% include 'cc-left-column.html' %} 
    {% include 'cc-right-column.html' %} 
  {# END Facet and Content #}
@@ -50,8 +66,8 @@
 {% endblock %}
 
 {% block footer %}
-<div class="row-fluid">
-  <div class="span12 offset1">
+<div class="row">
+  <div class="col-md-12 col-md-offset-1">
    <iframe src="/apps/website-footer" class="website-footer" scrolling="no"></iframe>
   </div>
 </div>

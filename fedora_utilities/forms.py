@@ -17,7 +17,7 @@ DIGITAL_ORIGIN = [(1, 'born digital'),
 
 GENRE = [('choose', 'Choose...')]
 
-INSTITUTION = 'Colorado College'
+INSTITUTION_NAME = 'Colorado College'
 
 MARC_FREQUENCY = [('choose', 'Choose...'),
                   ('Semiweekly', 'Semiweekly - 2 times a week'),
@@ -102,7 +102,7 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                             attrs={'data-bind':'value: chosenContentModel, click: displayContentModel'}))
     organizations = forms.CharField(max_length=255,
                                     required=False,
-                                    initial=INSTITUTION)
+                                    initial=INSTITUTION_NAME)
     rights_holder = forms.CharField(max_length=255,
                                     label='Rights Statement',
                                     initial=RIGHTS_STATEMENT,

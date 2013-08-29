@@ -22,51 +22,27 @@
 
 
 {% block body %}
-{% comment %}START content DIV{% endcomment %}
-<div class="container-fluid">
- {% comment %}START row-fluid DIV{% endcomment %}
- <div class="row-fluid">
-  {% comment %}START fedora batch nav DIV{% endcomment %}
-  <div class="span2">
-   <ul class="nav nav-stacked" >
-     {% comment %}
-     <li>
+ {# START row-fluid DIV #}
+ <div class="row" id="first-container">
+  {# START fedora batch nav DIV #}
+  <div class="col-sm-3 col-md-2">
+   <ul class="nav nav-stacked nav-pills" >
+    <li>
       <i class="icon-chevron-right pull-right"></i>
-      <a href="#" >Batch Ingest</a>
-     </li>
-     <li>
-	  <i class="icon-chevron-right pull-right"></i>
-	  <a href="#modify" data-bind="click: displayModifyBatch">Batch Modify</a> 
-	 </li>
-     <li>
-	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#generate-marc" data-bind="click: displayMARC">Generate MARC Record</a>
-	 </li>	 
-     {% endcomment %}
-	 <li>
-	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="{% url 'pid-mover' %}">PID Object Mover</a>
-	 </li>
-         <li {% if active == 'add_stub' %} class="active"{% endif %}>
-           <i class="icon-chevron-right pull-right"></i>
-	   <a href="{% url 'add-obj-template' %}">Add Fedora Objects from Template</a>
-         </li>
-      {% comment %}
-
-	 <li>
-	   <i class="icon-chevron-right pull-right"></i>
-	   <a href="#index" data-bind="click: displaySolrIndex">Index into Solr</a>
-	 </li>
-      {% endcomment %}
-
+       <a href="{% url 'pid-mover' %}">PID Object Mover</a>
+    </li>
+    <li {% if active == 'add_stub' %} class="active"{% endif %}>
+      <i class="icon-chevron-right pull-right"></i>
+       <a href="{% url 'add-obj-template' %}">Add Fedora Objects from Template</a>
+    </li>
    </ul>
-  {% comment %}END fedora batch nav DIV{% endcomment %}
+  {# END fedora batch nav DIV #}
   </div>
-  {% comment %}START views DIV{% endcomment %}
-  <div class="span7">
+   {# START views DIV #}
+   <div class="col-sm-8 col-md-7">
    
    <div> 
-   <h2>{{ app.current_view.title }} App</h2>
+   <h1>{{ app.current_view.title }} App</h1>
     {% if message %}
      <div class="alert">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -79,111 +55,9 @@
     {% endif %}
    </div>
    {% block fedora_form %}{% endblock %}
+  {# END views DIV #}
+  </div>
 
- {% comment %}END row-fluid DIV{% endcomment %}
+ {# END row-fluid DIV #}
  </div>
-{% comment %}END content DIV{% endcomment %}
-</div>
 {% endblock %}
-
-
-
-{% comment  %}
-<script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
-<script src="{{ STATIC_URL }}js/knockout.js"></script>
-<script>
- function FedoraBatchViewModel() {
-   this.addStubObj = ko.observable(false);
-   this.batchIngest = ko.observable(false);
-   this.batchModify = ko.observable(false);
-   this.marcGenerate = ko.observable(false);
-   this.solrIndex = ko.observable(false);
-   this.pidMover = ko.observable(true);
-   this.JobStatus = ko.observable(true);
-   this.indexProgress = ko.observable(false);
-   this.indexMessages = ko.observableArray();
-
-   this.checkProgress = function() {
-     var view_model = this;
-     $.ajax({
-       type: "POST",
-       data: { csrfmiddlewaretoken: "{{ csrf_token }}"},
-       url: "{% url fedora_utilities.views.index_solr %}"
-     }).done(function (json_response) {
-       alert("In Done of $ajax call");
-       if(json_response['result'] == 'error') {
-          alert("Error! " + json_response['text']);
-       } 
-       //view_model.checkProgress();
-    
-
-     }); 
-
-   }
-
-   this.displayAddStubObj = function() {
-    this.hideAll();
-    this.addStubObj(true);
-   }
-
-   this.displayIngest = function() {
-     this.hideAll();
-     this.batchIngest(true);
-   }
-
-
-   this.displayModifyBatch = function() {
-     this.hideAll();
-     this.batchModify(true);
-   }
-
-   this.displayMARC = function() {
-     this.hideAll();
-     this.marcGenerate(true);
-
-   }
-
-   this.displayMover = function() {
-    this.hideAll();
-    this.pidMover(true);
-   }
-
-   this.displaySolrIndex = function() {
-    this.hideAll();
-    this.solrIndex(true);
-   }
-
-   this.hideAll = function() {
-     this.batchIngest(false);
-     this.batchModify(false);
-     this.marcGenerate(false);
-     this.pidMover(false);
-     this.solrIndex(false);
-   }
-
-   this.startIndexing = function() {
-     var view_model = this;
-     $.ajax({
-       type: "POST",
-       data: { start: "start", csrfmiddlewaretoken: "{{ csrf_token }}"},
-       url: "{% url fedora_utilities.views.index_solr %}"
-     }).done(function(json_response) {
-       view_model.indexProgress(true);
-       view_model.indexMessages.push(json_response['msg']);
-       view_model.checkProgress(); 
-     });
-   }
-
- }
-
-function UploadCompressedFile() {
-  var success = $('#ingest_form').submit();
-  //alert(success);
-
-}
-
-//$("#id_target_directory").change(TestEvent);
-ko.applyBindings(new FedoraBatchViewModel());
-// ko.applyBindings(PIDMoverViewModel);
-</script>
-{% endcomment %}

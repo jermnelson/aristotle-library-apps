@@ -13,8 +13,8 @@
          action="{% url 'add-obj-template' %}">
     {% csrf_token %}
     {# START Object Select #}
-    <div class="control-group">
-     <label class="control-label" 
+    <div class="form-group">
+     <label class="col-lg-4 control-label" 
             for="object_template">
       {{ add_obj_form.object_template.label }}
      </label>
@@ -24,8 +24,8 @@
     {# END Object Select #}
     </div>
     {# START title #}
-     <div class="control-group">
-     <label class="control-label" 
+    <div class="form-group">
+     <label class="col-lg-4 control-label" 
             for="title">
      {{ add_obj_form.title.label }}
      </label>
@@ -35,8 +35,10 @@
     {# END title #}
     </div>
     {# START alternate title #}
-    <div class="control-group" data-bind="visible: showAlternativeTitle">
-     <label class="control-label" for="alt_title">
+    <div class="form-group" 
+         data-bind="visible: showAlternativeTitle">
+     <label class="control-label
+                   col-lg-4" for="alt_title">
        {{ add_obj_form.alt_title.label }}
      </label>
      <div class="controls">
@@ -45,62 +47,74 @@
     {# END alternate title #}
     </div>
     {# START creators title #}
-    <div class="control-group">
-     <label class="control-label" for="creators">
+    <div class="form-group">
+     <label class="col-lg-4 control-label" for="creators">
        {{ add_obj_form.creators.label }}
      </label>
      <div class="controls">
        {{ add_obj_form.creators }}
-     <a href="#" data-bind="click: addCreator" id="AddCreatorBtn"><i class="icon-plus-sign"></i></a>
+     <a href="#" 
+        data-bind="click: addCreator" 
+        id="AddCreatorBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
 
      </div>
     {# END alternate creators #}
     </div>
 
      {# START corporate creators #}
-    <div class="control-group" data-bind="visible: showCorporateCreators">
-     <label class="control-label" for="corporate_contributors ">
+    <div class="form-group" 
+         data-bind="visible: showCorporateCreators">
+     <label class="control-label col-lg-4" for="corporate_contributors ">
      {{ add_obj_form.corporate_creators.label }}
      </label>
      <div class="controls">
      {{ add_obj_form.corporate_creators }}
      <a href="#" data-bind="click: addCorporateCreator" 
-                 id="AddCorporateCreatorBtn"><i class="icon-plus-sign"></i></a>
+                 id="AddCorporateCreatorBtn">
+      <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
      </div>
     {# END corporate creators #}
     </div>
 
 
     {# START contributors #}
-    <div class="control-group" data-bind="visible: showContributors">
-     <label class="control-label" for="contributors ">
+    <div class="form-group" data-bind="visible: showContributors">
+     <label class="control-label col-lg-4" for="contributors ">
      {{ add_obj_form.contributors.label }}
      </label>
      <div class="controls">
      {{ add_obj_form.contributors }}
      <a href="#" data-bind="click: addContributor" 
-                 id="AddContributorBtn"><i class="icon-plus-sign"></i></a>
+                 id="AddContributorBtn">
+      <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
+
      </div>
     {# END contributors #}
     </div>
 
 
     {# START corporate contributors #}
-    <div class="control-group" data-bind="visible: showCorporateCreators">
-     <label class="control-label" for="corporate_contributors ">
+    <div class="form-group" data-bind="visible: showCorporateCreators">
+     <label class="control-label col-lg-4" for="corporate_contributors ">
      {{ add_obj_form.corporate_contributors.label }}
      </label>
      <div class="controls">
      {{ add_obj_form.corporate_contributors }}
      <a href="#" data-bind="click: addCorporateContributor" 
-                 id="AddCorporateContributorBtn"><i class="icon-plus-sign"></i></a>
+                 id="AddCorporateContributorBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
      </div>
     {# END corporate contributors #}
     </div>
 
     {# START Date Created #}
-    <div class="control-group">
-     <label class="control-label" for="date_created">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="date_created">
        {{ add_obj_form.date_created.label }}
      </label>
      <div class="controls">
@@ -109,8 +123,8 @@
     {# END Date Created #}
     </div>
     {# START Digital Origin #}
-    <div class="control-group">
-     <label class="control-label" for="digital_origin">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="digital_origin">
       {{ add_obj_form.digital_origin.label }}
      </label>
      <div class="controls">
@@ -120,8 +134,8 @@
     </div>
 
     {# START Type of Resource #}
-    <div class="control-group">
-     <label class="control-label" for="type_of_resource">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="type_of_resource">
       {{ add_obj_form.type_of_resource.label }}
      </label>
      <div class="controls">
@@ -132,13 +146,12 @@
 
 
     {# START Genre #}
-    <div class="control-group" data-bind="visible: showGenre">
-     <label class="control-label" for="genre">
+    <div class="form-group" data-bind="visible: showGenre">
+     <label class="control-label col-lg-4" for="genre">
       {{ add_obj_form.genre.label }}
      </label>
      <div class="controls">
-      {{ add_obj_form.genre }}
-      <br><b>Or</b><br>
+      {{ add_obj_form.genre }} <strong>Or</strong> 
       {{ add_obj_form.genre_free_form.label }}: 
       {{ add_obj_form.genre_free_form }}
      </div>
@@ -146,8 +159,8 @@
     </div>
 
     {# START Form #}
-    <div class="control-group" data-bind="visible: showForm">
-     <label class="control-label" for="genre">
+    <div class="form-group" data-bind="visible: showForm">
+     <label class="control-label col-lg-4" for="genre">
       {{ add_obj_form.form.label }}
      </label>
      <div class="controls">
@@ -157,8 +170,8 @@
     </div>
 
     {# START description #}
-    <div class="control-group">
-     <label class="control-label" for="digital_origin">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="digital_origin">
      {{ add_obj_form.description.label }}
      </label>
      <div class="controls">
@@ -167,9 +180,9 @@
     {# END description #}
     </div>
     {# START extent #}
-    <div class="control-group" 
+    <div class="form-group" 
          data-bind="visible: showExtent">
-      <label class="control-label" for="extent">
+      <label class="control-label col-lg-4" for="extent">
        {{ add_obj_form.extent.label }}
       </label>
       <div class="controls">
@@ -178,8 +191,8 @@
     {# END extent #}
     </div>
     {# START admin_note #}
-    <div class="control-group">
-     <label class="control-label" for="admin_note">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="admin_note">
      {{ add_obj_form.admin_note.label }}
      </label>
      <div class="controls">
@@ -188,8 +201,8 @@
     {# END admin_note #}
     </div>
     {# START Use and Reproduction Rights Holder #}
-    <div class="control-group">
-     <label class="control-label" for="rights_holder">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="rights_holder">
      {{ add_obj_form.rights_holder.label }}
      </label>
      <div class="controls">
@@ -198,58 +211,67 @@
     {# END Use and Reproduction Rights Holder #}
     </div>
     {# START people subjects #}
-    <div class="control-group" data-bind="visible: meetingMinutesTemplate">
-     <label class="control-label" for="subject_people">
+    <div class="form-group" data-bind="visible: meetingMinutesTemplate">
+     <label class="control-label col-lg-4" for="subject_people">
      {{ add_obj_form.subject_people.label }}
      </label>
      <div class="controls">
      {{ add_obj_form.subject_people }}
-     <a href="#" data-bind="click: addPerson" id="AddPersonBtn"><i class="icon-plus-sign"></i></a>
+     <a href="#" data-bind="click: addPerson" id="AddPersonBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
      </div>
     {# END people subjects #}
     </div>
    {# START place subjects #}
-    <div class="control-group">
-     <label class="control-label" for="subject_places">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="subject_places">
      {{ add_obj_form.subject_places.label }}
      </label>
      <div class="controls">
      {{ add_obj_form.subject_places }}
-     <a href="#" data-bind="click: addPlace" id="AddPlaceBtn"><i class="icon-plus-sign"></i></a>
+     <a href="#" data-bind="click: addPlace" id="AddPlaceBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
      </div>
     {# END place subjects #}
     </div>
     {# START topic subjects #}
-    <div class="control-group">
-     <label class="control-label" for="sub_topics">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="sub_topics">
      {{ add_obj_form.subject_topics.label }}
      </label>
      <div class="controls">
      {{ add_obj_form.subject_topics }}
-     <a href="#" data-bind="click: addTopic" id="AddTopicBtn"><i class="icon-plus-sign"></i></a>
+     <a href="#" data-bind="click: addTopic" id="AddTopicBtn">
+      <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
+  
      </div>
     {# END topic subjects #}
     </div>
 
     {# START organizations #}
-    <div class="control-group">
-     <label class="control-label" for="organizations">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="organizations">
      {{ add_obj_form.organizations.label }}
      </label>
      <div class="controls">
      {{ add_obj_form.organizations }}
-     <a href="#" data-bind="click: addOrganization" id="AddOrgBtn"><i class="icon-plus-sign"></i></a>
+     <a href="#" data-bind="click: addOrganization" id="AddOrgBtn">
+      <i class="glyphicon glyphicon-plus-sign"></i>
+     </a>
      </div>
     {# END organizations #}
     </div>
     {# START frequency #}
-    <div class="control-group" data-bind="visible: newsletterTemplate">
-      <label class="control-label" for="frequency">
+    <div class="form-group" data-bind="visible: newsletterTemplate">
+      <label class="control-label col-lg-4" for="frequency">
       {{ add_obj_form.frequency.label }}
       </label>  
       <div class="controls">
       {{ add_obj_form.frequency }}
-      <br><b>Or</b><br>
+       <strong>Or</strong><br>
       {{ add_obj_form.frequency_free_form.label }}: 
       {{ add_obj_form.frequency_free_form }}
       </div>
@@ -257,8 +279,8 @@
     {# END frequency #}
 
     {# START Parent Collection PID #}
-    <div class="control-group">
-     <label class="control-label" for="collection_pid">
+    <div class="form-group">
+     <label class="control-label col-lg-4" for="collection_pid">
        {{ add_obj_form.collection_pid.label }}
      </label>
      <div class="controls">
@@ -267,8 +289,8 @@
     {# END Parent Collection PID #}
     </div> 
     {# START num_objects #}
-    <div class="control-group">
-      <label class="control-label" for="num_objects">
+    <div class="form-group">
+      <label class="control-label col-lg-4" for="num_objects">
       {{ add_obj_form.number_objects.label }}  
       </label>
       {# START num_objects controls #}
@@ -279,8 +301,8 @@
     {# END num_objects #}
     </div>
     {# START submit #}
-    <div class="control-group">
-     <div class="controls">
+    <div class="form-group">
+     <div class="controls col-lg-6">
       <input type="submit" class="btn btn-primary" value="Add Stub Record(s)">
      </div>
     {# END submit #}

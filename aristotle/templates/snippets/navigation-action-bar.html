@@ -14,7 +14,7 @@
       <span class="icon-bar"></span>
     </button>
     <a class="navbar-brand" 
-       href="{% if app.url %}{{ app.url }}{% else %}/apps/{% endif %}">
+       href="/apps/{% if app.url %}{{ app.url }}{% endif %}">
       Default {% if app.current_view %}{{ app.current_view.title }}{% else %}App Title{% endif %}
     </a>
  {# END Navbar Header #}
@@ -22,11 +22,12 @@
  {# START Navbar Collapse #}
  <div class="collapse navbar-collapse">
   <ul class="nav navbar-nav">
-    <li><a href="#" title="Home"> 
+    <li><a href="/apps/{% if app.url %}{{ app.url }}{% endif %}" 
+           title="Home"> 
         <i class="glyphicon glyphicon-home"></i>
         </a>
     </li>
-    <li><a href="#" title="All Apps"> 
+    <li><a href="/apps/" title="All Apps"> 
          <i class="glyphicon glyphicon-th"></i>
         </a>
     <li><a href="#" title="Comment">

@@ -17,6 +17,7 @@ from fedora_utilities.models import *
 import os
 import datetime
 
+print("INSTITUTION={0}".format(INSTITUTION))
 
 @login_required
 def default(request):
@@ -28,6 +29,7 @@ def default(request):
     batch_ingest_form = BatchIngestForm()
     batch_modify_form = BatchModifyMetadataForm()
     object_mover_form = ObjectMovementForm()
+    
     context = {'app': APP,
                'feedback_form':FeedbackForm({'subject':'Fedora Utilities App'}),
                'feedback_context':request.get_full_path(),

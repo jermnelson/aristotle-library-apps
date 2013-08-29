@@ -44,10 +44,12 @@ class AnnotationForm(forms.Form):
 class SearchForm(forms.Form):
     query = forms.CharField(max_length=255,
                             widget=forms.TextInput(
-                                attrs={'data-bind': 'value: QueryPhrase'}))
+                                attrs={'data-bind': 'value: QueryPhrase',
+                                       'class': 'form-control' }))
     query_type = forms.ChoiceField(choices=SEARCH_CHOICES,
                                    widget=forms.Select(
-                                       attrs={'data-bind': 'value: QueryType'}))
+                                       attrs={'class': 'form-control',
+                                              'data-bind': 'value: QueryType'}))
 
 
     
