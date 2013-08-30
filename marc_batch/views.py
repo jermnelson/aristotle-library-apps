@@ -173,7 +173,7 @@ def job_finished(request,job_log_pk):
     :param request: HTTP Request
     :param job_log_pk: Job Log's primary key
     """
-    job_log = JobLog.objects.get(pk=job_log_pk)
+    job_log = ILSJobLog.objects.get(pk=job_log_pk)
     return direct_to_template(request,
                               'marc_batch/finished.html',
                               {'app':APP,

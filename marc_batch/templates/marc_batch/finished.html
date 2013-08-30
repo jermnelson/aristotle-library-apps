@@ -4,9 +4,83 @@
 {% block more-css %}{% endblock %}
 
 
-{% block app-main-body %}
-   <h1>Finished {{ log.job.name }}</h1>
-   <p>
-   {{ log }}
-   </p>
+{% block body %}
+{# START title Row #}
+<div class="row" id="first-container">
+ <div class="col-sm-12 col-md-12">
+   <h1>Finished {{ log_entry.job.name }}</h1>
+{# END title Row #}
+</div>
+{# START log details row #}
+<div clas="row">
+ {# START log detail col #}
+ <div class="col-sm-6 col-md-6"> 
+   <div class="table-responsive">
+    <table class="table table-hover">
+     <tr>
+      <th>Processed on</th> 
+      <td>{{ log_entry.created_on|date:"F d, Y H:i a"}}</td>
+     </tr>
+     <tr>
+      <th>Description</th>
+      <td> 
+        {{ log_entry.description }}
+      </td>
+     </tr>
+     <tr>
+      <th>New Records</th>
+      <td>
+       {% if log_entry.new_records %}
+        {{ log_entry.new_records }}
+       {% else %}
+        0
+       {% endif %} 
+      </td>
+     </tr>
+     <tr>
+      <th>Overlaid Records</th>
+      <td>
+       {% if log_entry.overload_records %}
+        {{ log_entry.overload_records }}
+       {% else %}
+        0
+       {% endif %} 
+      </td>
+     </tr>
+     <tr>
+      <th>Rejected Records</th>
+      <td>
+       {% if log_entry.rejected_records %}
+        {{ log_entry.rejected_records }}
+       {% else %}
+        0
+       {% endif %} 
+      </td>
+     </tr>
+
+     <tr>
+       <th>Modified MARC File</th>
+       <td> <a class="btn btn-success btn-mini" 
+               title="Download Modified MARC File"
+               href="/apps/{{ app.url }}download?log_pk={{ log.pk }}">
+             <i class="glyphicon glyphicon-download-alt"></i>
+            </a>
+       </td>
+     </tr>
+     <tr>
+      <th>Original MARC File</th>
+      <td>
+         <a class="btn btn-success btn-mini" 
+            href="/apps/{{ app.url }}download?original=yes&log_pk={{ log.pk }}"
+            title="Download Original MARC File">
+          <i class="glyphicon glyphicon-download-alt"></i>
+         </a>
+      </td>
+     </tr>
+    </table>
+   </div>
+ {# END log detail col #}
+ </div>
+{# END log details row #}
+</div>
 {% endblock %}
