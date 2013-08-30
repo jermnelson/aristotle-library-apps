@@ -28,7 +28,7 @@ class FilmsOnDemandJob(MARCModifier):
 
         :param marc_file: MARC file
         """
-        MARCModifier.__init__(self,marc_file)
+        MARCModifier.__init__(self, marc_file)
 
     def load(self):
         """
@@ -153,6 +153,21 @@ class FilmsOnDemandJob(MARCModifier):
         return self.__remove_field__(marc_record=marc_record,
                                      tag='020')
 
+##    def validate245(self, marc_record):
+##        """Method removes all n and p subfields before calling parent method
+##
+##        Parameters:
+##        marc_record -- MARC record required
+##        """
+##        for field in marc_record.get_fields('245'):
+##            while 1:
+##                if not field.delete_subfield('n'):
+##                    break
+##            while 1:
+##                if not field.delete_subfield('p'):
+##                    break
+##        return MARCModifier.validate245(self, marc_record)
+
     def validate300(self,marc_record):
         """
         Method reorders 300 subfield b, removing the word *file*
@@ -164,11 +179,11 @@ class FilmsOnDemandJob(MARCModifier):
             raw_string = ''.join(field300.get_subfields('b'))
             good_300b = '{0}, {1}'.format('digital',
                                           DIGITAL_RE.sub('',raw_string).strip())
-            if good_300b[-1] == ",":
+            if [",", "+"].count(good_300b[-1]) > 0:
                 good_300b = good_300b[:-1]
             subfield_e = field300['e']
             if subfield_e is not None:
-                good_300b += " + "
+                good_300b += "+ "
             field300.delete_subfield("b")
             field300.add_subfield("b", good_300b)
             if subfield_e is not None:

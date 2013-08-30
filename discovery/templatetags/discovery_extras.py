@@ -18,6 +18,7 @@ from aristotle.settings import REDIS_DATASTORE
 register = Library()
 
 
+@register.filter(is_safe=True)
 def about_instance(instance):
     """
     Returns HTML for the about section in the Instance view
@@ -542,10 +543,10 @@ def get_search_result(work):
         '{0}:hasInstance'.format(work.redis_key))
     if instance_keys is None:
         instance_keys = [REDIS_DATASTORE.hget(work.redis_key,
-                                              'hasInstance'),]
+                                              'hasInstance'), ]
     for instance_key in instance_keys:
-        for annotation_key in REDIS_DATASTORE.smembers(
-            '{0}:hasAnnotation'.format(instance_key)):
+        instance_annotate_key = '{0}:hasAnnotation'.format(instance_key)
+        for annotation_key in REDIS_DATASTORE.smembers(instance_annotate_key):
             if annotation_key.startswith('bf:CoverArt'):
                 redis_id = annotation_key.split(":")[-1]
                 cover_url = '/apps/discovery/CoverArt/{0}-body.jpg'.format(
@@ -558,6 +559,7 @@ def get_search_result(work):
         output['instance_thumbnail'] = '/static/img/{0}'.format(
             default_icon)
     return mark_safe(json.dumps(output))
+
 
 @register.filter(is_safe=True)
 def get_subjects(creative_work):
@@ -630,7 +632,7 @@ def get_title(bibframe_entity):
     except:
         return ''
 
-register.filter('about_instance', about_instance)
+
 register.filter('get_annotations', get_annotations)
 register.filter('get_brief_heading', get_brief_heading)
 register.filter('get_cover_art', get_cover_art)

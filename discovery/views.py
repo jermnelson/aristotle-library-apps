@@ -7,29 +7,22 @@ __author__ = "Jeremy Nelson"
 import json
 import os
 import random
-
+import bibframe.models
 from django.shortcuts import render
-
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.contrib.syndication.views import Feed
-
 from aristotle.settings import INSTITUTION
 from aristotle.settings import REDIS_DATASTORE
 from aristotle.settings import FEATURED_INSTANCES
 from aristotle.views import json_view
 from aristotle.forms import FeedbackForm
-
 from app_settings import APP, PAGINATION_SIZE
 from bibframe.models import Work, Holding, Instance, Person
 from bibframe.models import CREATIVE_WORK_CLASSES
-
-import bibframe.models
 from bibframe.redis_helpers import get_json_linked_data
-
 from discovery.forms import SearchForm
 from discovery.redis_helpers import get_facets, get_result_facets, BIBFRAMESearch
 from discovery.redis_helpers import get_news
-
 from keyword_search import whoosh_helpers
 
 def app(request):
@@ -75,7 +68,7 @@ def app(request):
                   'discovery/app.html',
                   {'app': APP,
                    'example': {},
-                               'featured': featured_instances, 
+                   'featured': featured_instances, 
                    'feedback_form':FeedbackForm({'subject':'Discovery App Home'}),
                    'feedback_context':request.get_full_path(),
                    'institution': INSTITUTION,

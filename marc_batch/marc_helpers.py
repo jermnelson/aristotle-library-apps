@@ -271,6 +271,15 @@ class MARCModifier(object):
             c_subfields = field245.get_subfields('c')
             n_subfields = field245.get_subfields('n')
             p_subfields = field245.get_subfields('p')
+            # Order for 245 subfields are:
+            # $a $n $p $h $b $c
+            if len(n_subfields) > 0:
+                 for subfield_n in n_subfields:
+                    new245.add_subfield('n', subfield_n)
+            if len(p_subfields) > 0:
+                 for subfield_p in p_subfields:
+                    new245.add_subfield('p', subfield_p)
+            
             if len(c_subfields) > 0 and len(b_subfields) < 1:
                 new245.add_subfield('h','{0} / '.format(subfield_h_val))
             elif len(b_subfields) > 0:
@@ -282,13 +291,7 @@ class MARCModifier(object):
                     new245.add_subfield('b',subfield_b)
             if len(c_subfields) > 0:
                 for subfield_c in c_subfields:
-                    new245.add_subfield('c',subfield_c)
-            if len(n_subfields) > 0:
-                 for subfield_n in n_subfields:
-                    new245.add_subfield('n', subfield_n)
-            if len(p_subfields) > 0:
-                 for subfield_p in p_subfields:
-                    new245.add_subfield('p', subfield_p)
+                    new245.add_subfield('c',subfield_c)                
             marc_record.add_field(new245)
         return marc_record
 

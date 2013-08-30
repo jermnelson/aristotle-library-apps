@@ -198,14 +198,6 @@ def get_creators(bibframe_entity):
                              'rda:preferredNameForThePerson'))
     output += "</ul>"
     return mark_safe(output)
-        
-        
-    
-            
-        
-    
-        
-
 
 @register.filter(is_safe=True)
 def get_facet(facet):

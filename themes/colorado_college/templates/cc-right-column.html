@@ -1,42 +1,55 @@
+{% load discovery_extras %}
 {% load colorado_college_extras %}
-<div class="span8" data-bind="visible: DiscoveryHome">
+<div class="col-sm-8 col-md-8" data-bind="visible: DiscoveryHome">
+ {% if featured.length > 0 %}
  <h2>Featured Items</h2>
- <ul class="thumbnails">
-  <li class="span2">
-   <a href="#" class="thumbnail">
+ {# START thumbnails Row #}
+ <div class="row">
+  <div class="col-sm-4 col-md-3">
+   {% for work in featured %}
+    <div class="thumbnail">
      <img src="/assets/" style="width:150px; height:103">
-     <small>Featured Item Title</small>
-   </a>
-  </li>
-  <li class="span2">
-   <a href="#" class="thumbnail">
-     <img src="/assets/" style="width:150px; height:103">
-     <small>Featured Item Title</small>
-   </a>
-  </li>
- </ul>
- <div class="row-fluid">
-  <div class="span4 well well-small">
-  <h2>About our collection</h2>
-  <p class="lead">
+     <div class="caption">
+       <a href="#" class="thumbnail">{{ work|get_title }}</a>
+     </div>
+    </div>
+   {% endfor %}
+ {# END thumbnails Row #}
+ </div>
+ {% endif %}
+ {# START About and Action Row #}
+ <div class="row">
+  {# START About col #}
+  <div class="col-sm-6 col-md-4 well well-small">
+   <h2>About our collection</h2>
+   <p class="lead">
    Our library collection contains over <a href="#"><span style="font-size: 1.2em">{{ "Book"|get_work_total }}</span> Books</a>,
    <a href="#"><span style="font-size: 1.2em">{{ "MovingImage"|get_work_total }}</span> Movies</a>,
    <a href="#"><span style="font-size: 1.2em">{{ "Manuscript"|get_work_total }}</span> Manuscripts</a>
    
-  </p>
+   </p>
+  {# END About col #}
   </div>
-  <div class="span3 alert alert-block alert-info">
-   <button type="button" class="close" data-dismiss="alert">&times;</button> 
-   <ul class="unstyled">
-    <li><a href="#" class="btn"><i class="icon-search icon-large"></i></a> Find a Journal article</li>
-    <li><a href="#" class="btn"><i class="icon-share-alt icon-large"></i></a> Check-out a book</li>
-    <li><a href="#" class="btn"><i class="icon-comments icon-large"></i></a> Annotate a resource</li>
-    <li><a href="#">More...</a></li>
-   </ul>
-  </div>
+  {# START Action Column #}
+  <div class="col-md-4 col-sm-4">
+   {# START Action Alert #}
+   <div class="alert alert-block alert-info">
+    <button type="button" class="close" data-dismiss="alert">&times;</button> 
+    <ul class="list-unstyled">
+     <li><a href="#" class="btn"><i class="glyphicon glyphicon-search"></i></a> Find a Journal article</li>
+     <li><a href="#" class="btn"><i class="glyphicon glyphicon-shopping-cart"></i></a> Check-out a book</li>
+     <li><a href="#" class="btn"><i class="glyphicon glyphicon-comment"></i></a> Annotate a resource</li>
+     <li><a href="#" class="btn"><i class="glyphicon glyphicon-user"></i></a> User Settings &amp; History</li>
+
+     <li><a href="#" class="label label-default">More...</a></li>
+    </ul>
+   {# END Action Alert #}
+   </div>
+ {# END Action Column #}
  </div>
+{# END About and Action Row #}
 </div>
-<div class="span8" data-bind="visible: SearchResultsPane">
+<div class="col-sm-9 col-md-8" data-bind="visible: SearchResultsPane">
   <h2 data-bind="html: ResultsMessage"></h2>
    <div class="btn-toolbar">
     <div class="btn-group">
