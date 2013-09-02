@@ -35,7 +35,7 @@ class FilmsOnDemandJob(MARCModifier):
 
         :param marc_file: MARC file
         """
-        MARCModifier.__init__(self, marc_file)
+        MARCModifier.__init__(self, marc_file, True)
 
     def load(self):
         """

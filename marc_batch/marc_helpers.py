@@ -20,16 +20,13 @@ class MARCModifier(object):
     def __init__(self,
                  *args):
         if len(args) > 0:
-            if __name__ == '__main__':
-                self.marc_reader = pymarc.MARCReader(open(args[0]),
-                                                     to_unicode=True)
-##                                                     utf8_handling='strict')
+            marc_file_object = args[0]
+            if len(args) == 2:
+                to_unicode=args[1]
             else:
-                self.marc_reader = pymarc.MARCReader(args[0],
-                                                     to_unicode=True)
-##                                                     utf8_handling='strict')
-        if len(args) == 2:
-            self.marcfile_output = args[1]
+                to_unicode=False
+            self.marc_reader = pymarc.MARCReader(args[0],
+                                                 to_unicode=to_unicode)
         self.records = []
         self.stats = {'records':0}
 
