@@ -3,8 +3,15 @@
 """
 __author__ = "Cindy Tappan"
 __author__ = "Jeremy Nelson"
-import urlparse,urllib2,re
-import datetime,logging
+
+import datetime
+import cStringIO
+import logging
+import pymarc
+import re
+import urlparse
+import urllib2
+
 from marc_batch.marc_helpers import MARCModifier
 from  pymarc import Field
 
@@ -63,6 +70,7 @@ class FilmsOnDemandJob(MARCModifier):
             self.records.append(raw_record)
    
             self.stats['records'] += 1
+
 
     def processRecord(self,marc_record):
         """

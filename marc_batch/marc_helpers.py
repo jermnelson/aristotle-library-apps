@@ -116,35 +116,22 @@ class MARCModifier(object):
             marc_record.remove_field(field856)
             marc_record.add_field(new856)
         return marc_record    
-
-##    def output(self,marcfile_output=None):
-##        ''' Method writes all records to a MARC21 output file'''
-##        #output = open(marcfile_output,'wb')
-##        output = cStringIO.StringIO()
-##        for record in self.records:
-####            if record.leader[9] == 'a':
-####                record = self.decode_fields(record)
-##            print("LDR pos 9={0} force_utf8={1}".format(
-##                record.leader[9],
-##                record.force_utf8))
-##            record_str = record.as_marc()
-##            output.write(record_str.encode('utf8','ignore'))
-##        return output.getvalue()                
-                
+           
 
     def output(self):
+        "Outputs supporting unicode"
         output_string = cStringIO.StringIO()
-        marc_writer = pymarc.MARCWriter(output_string)
         for record in self.records:
+            record_str = record.as_marc()
             try:
-                marc_writer.write(record)
-            except UnicodeError, e:
-                record_str = record.as_marc()
-                output_string.write(record_str.decode('utf8',
+                output_string.write(record_str)
+            except UnicodeEncodeError:
+                output_string.write(record_str.encode('utf8',
                                                       'ignore'))
         return output_string.getvalue()
+        
 
-  
+
 
     def remove009(self,marc_record):
         """
