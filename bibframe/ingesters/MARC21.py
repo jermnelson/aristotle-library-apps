@@ -1853,6 +1853,7 @@ def ingest_marcfile(**kwargs):
         marc_file = open(marc_filename,'rb')
         count = 0
         marc_reader = pymarc.MARCReader(marc_file,
+##                                        to_unicode=True,
                                         utf8_handling='ignore')
         start_time = datetime.datetime.now()
         sys.stderr.write("Starting at {0}\n".format(start_time.isoformat()))

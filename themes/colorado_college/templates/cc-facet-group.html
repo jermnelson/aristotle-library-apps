@@ -2,7 +2,7 @@
 {# START Facet #}
 <div class="accordion-group">
  <div class="accordion-heading cc-facet-header">
-  <a href="#{{ facet.name }}-facet-body" 
+  <a href="#{{ facet.name|slugify }}-facet-body" 
      class="accordion-toggle"
      data-toggle="collapse"
       data-parent="#cc-facets">
@@ -10,7 +10,7 @@
       </a>
     </div>
     <div class="accordion-body collapse {% if expand %} in {%endif %}cc-facet-body"
-         id="{{ facet.name }}-facet-body">
+         id="{{ facet.name|slugify }}-facet-body">
      <div class="accordion-inner">
       <ul> 
       {% for item in facet.items %}

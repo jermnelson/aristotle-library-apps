@@ -698,7 +698,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": "marc:306__a
       }
     ], 
     "post-processing": null
