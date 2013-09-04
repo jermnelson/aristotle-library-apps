@@ -88,12 +88,6 @@ def conditional_MARC21(record, rule):
                         return parse_MARC21(
                             record,
                             rule.get('map'))
-                
-                    
-                    
-            
-            
-
 
 def parse_MARC21(record, mapping):
     """Function returns a list of values from a MARC record that match
@@ -119,4 +113,17 @@ def parse_MARC21(record, mapping):
             output.extend(subfields)
     return output
     
-    
+def post_processing(result, directive):
+    """Performs one or more opeations on the result of MARC21-to-BIBFRAME
+    mapping.
+
+    Parameters:
+    result -- result of parsing the MARC with BIBFRAME rule
+    directive -- Instructions for manipulating the result
+    """
+    # Combines all of results into a single string
+    if directive == 'concat':
+        return ''.join(result)
+    elif type(directive) == dict:
+        if directive.get('type') == 'delimiter':
+            return '{0}'.format(directive.get('value')).join(result)

@@ -144,4 +144,52 @@ class parse_MARC21Test(TestCase):
 
     def tearDown(self):
         TEST_REDIS.flushdb()
+
+class post_processingTest(TestCase):
+
+    def setUp(self):
+        self.marc_record = pymarc.Record()
+        self.marc_record.add_field(pymarc.Field(
+            tag='083',
+            indicators=[' ', ' '],
+            subfields=['a', '589.0994',
+                       'c', '589.10']))
+        self.rules = [{
+            "conditional": None,
+            "map": "marc:083__a"},
+                      {
+            "conditional": None,
+            "map": "marc:083__c"}]
+        self.results = []
+        for rule in self.rules:
+            self.results.extend(
+                parser.parse_MARC21(self.marc_record,
+                                    rule.get('map')))
+        self.directive =  {
+            "type": "delimiter",
+            "value": "-"}
+
+    def test_concat_post_processing(self):
+        value = parser.post_processing(["Title ", "2nd", "ed"],
+                                       'concat')
+        self.assertEquals(value,
+                          "Title 2nded")
+                                       
+                                    
+
+    def test_delimiter_post_processing(self):
+        value = parser.post_processing(self.results,
+                                       self.directive)
+        self.assertEquals(value,
+                          '589.0994-589.10')
+                                       
         
+                       
+            
+            
+
+    def tearDown(self):
+        TEST_REDIS.flushdb()
+
+
+

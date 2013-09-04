@@ -1,0 +1,988 @@
+{
+  "abbreviatedTitle": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:2100_a", 
+          "marc:2101_a", 
+          "marc:21000a", 
+          "marc:21010a", 
+          "marc:2100_b", 
+          "marc:2101_b", 
+          "marc:21000b", 
+          "marc:21010b"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "ansi": {
+    "marc": [
+      {
+        "conditional": "if marc:0247_2 is 'ansi'", 
+        "map": [
+          "marc:0247_a", 
+          "marc:0247_z"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "aspectRatio": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:007m04"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "associatedAgent": {
+    "marc": null, 
+    "post-processing": null
+  }, 
+  "awardNote": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:586__3", 
+          "marc:586__a"
+        ]
+      }
+    ], 
+    "post-processing": "concat"
+  }, 
+  "carrierType": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:007a01", 
+          "marc:007c01", 
+          "marc:007d01", 
+          "marc:007f01", 
+          "marc:007g01", 
+          "marc:007h01", 
+          "marc:007k01", 
+          "marc:007m01", 
+          "marc:007o01", 
+          "marc:007q01", 
+          "marc:007r01", 
+          "marc:007s01", 
+          "marc:007t01", 
+          "marc:007v01"
+        ]
+      }, 
+      {
+        "conditional": null, 
+        "map": [
+          "marc:338__a"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "coden": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:030__a", 
+          "marc:030__z"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "colorContent": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:007a03", 
+          "marc:007c03", 
+          "marc:007d03", 
+          "marc:007g03", 
+          "marc:007k03", 
+          "marc:007c03", 
+          "marc:007v03"
+        ]
+      }, 
+      {
+        "conditional": null, 
+        "map": [
+          "marc:007h09"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "contentAccessabilityNote": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "contents": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:5050_a", 
+          "marc:5052_a", 
+          "marc:5058_a"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "creditsNote": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:508__a"
+        ]
+      }
+    ], 
+    "post-processing": {
+      "action": "prepend", 
+      "value": "Credits: "
+    }
+  }, 
+  "custodialHistory": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:561__a", 
+          "marc:5610_a", 
+          "marc:5611_a"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "derivedFromLccn": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:010__a", 
+          "marc:010__z"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "dimensions": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:300__c"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "distribution": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:264_2a", 
+          "marc:264_2b", 
+          "marc:264_2c", 
+          "marc:26422a", 
+          "marc:26422b", 
+          "marc:26422c", 
+          "marc:26432a", 
+          "marc:26432b", 
+          "marc:26432c"
+        ]
+      }
+    ], 
+    "post-processing": "concat"
+  }, 
+  "doi": {
+    "marc": [
+      {
+        "conditional": "if marc:85678u.count('doi') > 0", 
+        "map": [
+          "marc:856__u", 
+          "marc:856_0u", 
+          "marc:856_1u", 
+          "marc:856_2u", 
+          "marc:856_8u", 
+          "marc:8560_u", 
+          "marc:85600u", 
+          "marc:85601u", 
+          "marc:85602u", 
+          "marc:85608u", 
+          "marc:8561_u", 
+          "marc:85610u", 
+          "marc:85611u", 
+          "marc:85612u", 
+          "marc:85618u", 
+          "marc:8562_u", 
+          "marc:85620u", 
+          "marc:85621u", 
+          "marc:85622u", 
+          "marc:85628u", 
+          "marc:8563_u", 
+          "marc:85630u", 
+          "marc:85631u", 
+          "marc:85632u", 
+          "marc:85638u", 
+          "marc:8564_u", 
+          "marc:85640u", 
+          "marc:85641u", 
+          "marc:85642u", 
+          "marc:85648u", 
+          "marc:8567_u", 
+          "marc:85670u", 
+          "marc:85671u", 
+          "marc:85672u", 
+          "marc:85678u"
+        ]
+      }, 
+      {
+        "conditional": "if marc:85678u.count('doi') > 0", 
+        "map": [
+          "marc:0247_a", 
+          "marc:02471a", 
+          "marc:02470a"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "duration": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "marc:306__a"
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "ean": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "edition": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "editionResponsibility": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "extent": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "fingerprint": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "formatOfMusic": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "frequency": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "frequencyNote": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "hasAnnotation": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": null
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "hdl": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "illustrativeContentNote": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "immediateAcquisition": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "instanceOf": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": null
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "intendedAudience": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "isbn10": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "isbn13": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "ismn": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "iso": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "isrc": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "issue-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "keyTitle": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "language": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "lc-overseas-acq": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "legal-deposit": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "local": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "manufacture": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "matrix-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "mediaType": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "mediumOfMusic": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "modeOfIssuance": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "music-plate": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "music-publisher": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "nban": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "nbn": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "notation": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "note": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "organizationSystem": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "performerNote": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "philatelicIssue": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "postal-registration": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "preferredCitation": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "primaryLanguage": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "production": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "provider": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "publication": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "publisher-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "relatedInstance": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": null
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "report-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "responsibilityStatement": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "serialFirstIssue": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "serialLastIssue": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "sici": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "soundContent": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "stock-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "strn": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "study-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "summary": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": null
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "supplementaryContentNote": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "system-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "title": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "titleVariation": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "upc": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "uri": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "urn": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }, 
+  "videorecording-identifier": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          null
+        ]
+      }
+    ], 
+    "post-processing": null
+  }
+}

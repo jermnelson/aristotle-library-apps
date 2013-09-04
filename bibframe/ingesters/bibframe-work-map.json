@@ -36,102 +36,11 @@
     ], 
     "post-processing": "concat"
   }, 
-  "ansi": {
-    "marc": [
-      {
-        "conditional": "if marc:0247_2 is 'ansi'", 
-        "map": "marc:0247_a"
-      }, 
-      {
-        "conditional": "if marc:0247_2 is 'ansi'", 
-        "map": "marc:0247_z"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "aspectRatio": {
+  "associatedAgent": {
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:007m04"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "awardNote": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:586__3"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:586__a"
-      }
-    ], 
-    "post-processing": "concat"
-  }, 
-  "carrierType": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:007a01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007c01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007d01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007f01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007g01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007h01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007k01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007m01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007o01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007q01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007r01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007s01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007t01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007v01"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:338__a"
+        "map": []
       }
     ], 
     "post-processing": null
@@ -140,11 +49,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:084__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:086__a"
+        "map": []
       }
     ], 
     "post-processing": null
@@ -153,75 +58,16 @@
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:082__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:083__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:083__c"
+        "map": []
       }
     ], 
-    "post-processing": {
-      "maps": [
-        "marc:083__a", 
-        "marc:083__c"
-      ], 
-      "type": "delimiter", 
-      "value": "-"
-    }
+    "post-processing": null
   }, 
   "class-lcc": {
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:05000a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:05004a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:05010a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:05014a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:06000a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:06004a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:06010a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:06014a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:051__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:061__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:071__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:051__a"
+        "map": []
       }
     ], 
     "post-processing": null
@@ -230,74 +76,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:080__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:0800_a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:0801_a"
-      }
-    ], 
-    "post-processing": "concat"
-  }, 
-  "coden": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:030__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:030__z"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "colorContent": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:007a03"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007c03"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007d03"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007g03"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007k03"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007c03"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007v03"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:007h09"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "contentAccessabilityNote": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -306,15 +85,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:513__b"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:518__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:522__a"
+        "map": []
       }
     ], 
     "post-processing": null
@@ -323,124 +94,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:336__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:336__b"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24500k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24501k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24502k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24503k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24504k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24505k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24506k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24507k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24508k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24509k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24510k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24511k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24512k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24513k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24514k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24515k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24516k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24517k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24518k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:24519k"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:516__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:5168_a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:008BK24"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:008CR24"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "contents": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:5050_a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:5052_a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:5058_a"
+        "map": []
       }
     ], 
     "post-processing": null
@@ -452,325 +106,13 @@
         "map": "marc:508__a"
       }
     ], 
-    "post-processing": {
-      "action": "prepend", 
-      "value": "Credits: "
-    }
-  }, 
-  "custodialHistory": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:561__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:5610_a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:5611_a"
-      }
-    ], 
     "post-processing": null
   }, 
-  "derivedFromLccn": {
+  "expressionOf": {
     "marc": [
       {
         "conditional": null, 
-        "map": "marc:010__a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:010__z"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "dimensions": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:300__c"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "distribution": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:264_2a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:264_2b"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:264_2c"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:26422a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:26422b"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:26422c"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:26432a"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:26432b"
-      }, 
-      {
-        "conditional": null, 
-        "map": "marc:26432c"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "doi": {
-    "marc": [
-      {
-        "conditional": "if marc:0247_2 is 'doi'", 
-        "map": "marc:0247_a"
-      }, 
-      {
-        "conditional": "if marc:024702 is 'doi'", 
-        "map": "marc:02470a"
-      }, 
-      {
-        "conditional": "if marc:024712 is 'doi'", 
-        "map": "marc:02471a"
-      }, 
-      {
-        "conditional": "if marc:856__u.count('doi') > 0", 
-        "map": "marc:856__u"
-      }, 
-      {
-        "conditional": "if marc:856_0u.count('doi') > 0", 
-        "map": "marc:856_0u"
-      }, 
-      {
-        "conditional": "if marc:856_1u.count('doi') > 0", 
-        "map": "marc:856_1u"
-      }, 
-      {
-        "conditional": "if marc:856_2u.count('doi') > 0", 
-        "map": "marc:856_2u"
-      }, 
-      {
-        "conditional": "if marc:856_8u.count('doi') > 0", 
-        "map": "marc:856_8u"
-      }, 
-      {
-        "conditional": "if marc:8560_u.count('doi') > 0", 
-        "map": "marc:8560_u"
-      }, 
-      {
-        "conditional": "if marc:85600u.count('doi') > 0", 
-        "map": "marc:85600u"
-      }, 
-      {
-        "conditional": "if marc:85601u.count('doi') > 0", 
-        "map": "marc:85601u"
-      }, 
-      {
-        "conditional": "if marc:85602u.count('doi') > 0", 
-        "map": "marc:85602u"
-      }, 
-      {
-        "conditional": "if marc:85608u.count('doi') > 0", 
-        "map": "marc:85608u"
-      }, 
-      {
-        "conditional": "if marc:8561_u.count('doi') > 0", 
-        "map": "marc:8561_u"
-      }, 
-      {
-        "conditional": "if marc:85610u.count('doi') > 0", 
-        "map": "marc:85610u"
-      }, 
-      {
-        "conditional": "if marc:85611u.count('doi') > 0", 
-        "map": "marc:85611u"
-      }, 
-      {
-        "conditional": "if marc:85612u.count('doi') > 0", 
-        "map": "marc:85612u"
-      }, 
-      {
-        "conditional": "if marc:85618u.count('doi') > 0", 
-        "map": "marc:85618u"
-      }, 
-      {
-        "conditional": "if marc:8562_u.count('doi') > 0", 
-        "map": "marc:8562_u"
-      }, 
-      {
-        "conditional": "if marc:85620u.count('doi') > 0", 
-        "map": "marc:85620u"
-      }, 
-      {
-        "conditional": "if marc:85621u.count('doi') > 0", 
-        "map": "marc:85621u"
-      }, 
-      {
-        "conditional": "if marc:85622u.count('doi') > 0", 
-        "map": "marc:85622u"
-      }, 
-      {
-        "conditional": "if marc:85628u.count('doi') > 0", 
-        "map": "marc:85628u"
-      }, 
-      {
-        "conditional": "if marc:8563_u.count('doi') > 0", 
-        "map": "marc:8563_u"
-      }, 
-      {
-        "conditional": "if marc:85630u.count('doi') > 0", 
-        "map": "marc:85630u"
-      }, 
-      {
-        "conditional": "if marc:85631u.count('doi') > 0", 
-        "map": "marc:85631u"
-      }, 
-      {
-        "conditional": "if marc:85632u.count('doi') > 0", 
-        "map": "marc:85632u"
-      }, 
-      {
-        "conditional": "if marc:85638u.count('doi') > 0", 
-        "map": "marc:85638u"
-      }, 
-      {
-        "conditional": "if marc:8564_u.count('doi') > 0", 
-        "map": "marc:8564_u"
-      }, 
-      {
-        "conditional": "if marc:85640u.count('doi') > 0", 
-        "map": "marc:85640u"
-      }, 
-      {
-        "conditional": "if marc:85641u.count('doi') > 0", 
-        "map": "marc:85641u"
-      }, 
-      {
-        "conditional": "if marc:85642u.count('doi') > 0", 
-        "map": "marc:85642u"
-      }, 
-      {
-        "conditional": "if marc:85648u.count('doi') > 0", 
-        "map": "marc:85648u"
-      }, 
-      {
-        "conditional": "if marc:8567_u.count('doi') > 0", 
-        "map": "marc:8567_u"
-      }, 
-      {
-        "conditional": "if marc:85670u.count('doi') > 0", 
-        "map": "marc:85670u"
-      }, 
-      {
-        "conditional": "if marc:85671u.count('doi') > 0", 
-        "map": "marc:85671u"
-      }, 
-      {
-        "conditional": "if marc:85672u.count('doi') > 0", 
-        "map": "marc:85672u"
-      }, 
-      {
-        "conditional": "if marc:85678u.count('doi') > 0", 
-        "map": "marc:85678u"
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "duration": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": "marc:306__a
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "ean": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "edition": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "editionResponsibility": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "extent": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "fingerprint": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "formatOfMusic": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "frequency": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "frequencyNote": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -779,43 +121,34 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
   }, 
-  "hdl": {
+  "hasAnnotation": {
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
   }, 
-  "identifier": {
+  "hasExpression": {
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
   }, 
-  "illustrativeContentNote": {
+  "hasInstance": {
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "immediateAcquisition": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -833,7 +166,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -842,66 +175,12 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "isbn10": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "isbn13": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "ismn": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "iso": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "isrc": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
   }, 
   "issn-l": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "issue-number": {
     "marc": [
       {
         "conditional": null, 
@@ -923,16 +202,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "keyTitle": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -941,61 +211,16 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
   }, 
-  "lc-overseas-acq": {
+  "languageOfWork": {
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "legal-deposit": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "local": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "manufacture": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "matrix-number": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "mediaType": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -1004,61 +229,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "modeOfIssuance": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "music-plate": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "music-publisher": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "nban": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "nbn": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "notation": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -1067,48 +238,12 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "organizationSystem": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
   }, 
   "performerNote": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "philatelicIssue": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "postal-registration": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "preferredCitation": {
     "marc": [
       {
         "conditional": null, 
@@ -1126,128 +261,11 @@
     ], 
     "post-processing": null
   }, 
-  "production": {
+  "relatedWork": {
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "provider": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "publication": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "publisher-number": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "relatedResource": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "report-number": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "responsibilityStatement": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "serialFirstIssue": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "serialLastIssue": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "sici": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "soundContent": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "stock-number": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "strn": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "study-number": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -1261,38 +279,11 @@
     ], 
     "post-processing": null
   }, 
-  "supplementaryContentNote": {
+  "summary": {
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "system-number": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "title": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "titleVariation": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -1301,43 +292,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "upc": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "uri": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "urn": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
-      }
-    ], 
-    "post-processing": null
-  }, 
-  "videorecording-identifier": {
-    "marc": [
-      {
-        "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
