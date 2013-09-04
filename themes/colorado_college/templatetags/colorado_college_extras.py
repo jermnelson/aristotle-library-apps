@@ -7,7 +7,7 @@ __author__ = "Jeremy Nelson"
 from django import template
 from django.utils.safestring import mark_safe
 from bibframe.models import Instance
-from aristotle.settings import REDIS_DATASTORE
+from aristotle.settings import REDIS_DATASTORE, STATIC_URL
 from discovery.forms import AnnotationForm
 register = template.Library()
 
@@ -54,7 +54,8 @@ def display_network_toolbar(redis_entity):
     network_toolbar_template = template.loader.get_template(
         'cc-network-toolbar.html')
     return mark_safe(network_toolbar_template.render(
-        template.Context({'entity': redis_entity})))
+        template.Context({'entity': redis_entity,
+                          'STATIC_URL': STATIC_URL})))
 
 @register.filter(is_safe=True)
 def display_pagination(current_shard):
