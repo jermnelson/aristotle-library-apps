@@ -12,7 +12,7 @@ import re
 import urlparse
 import urllib2
 
-from marc_batch.marc_helpers import MARCModifier
+from marc_batch.marc_helpers import MARCModifier, clean_unicode
 from  pymarc import Field
 
 DIGITAL_RE = re.compile(r'digital\s?(file)?[.]?')
@@ -87,6 +87,7 @@ class FilmsOnDemandJob(MARCModifier):
         marc_record = self.validate538processURLS(marc_record)    
         marc_record = self.validateAll5xxs(marc_record)
         marc_record = self.validate730(marc_record)
+        marc_record = clean_unicode(marc_record)
         return marc_record
     
 

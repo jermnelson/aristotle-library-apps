@@ -9,6 +9,72 @@ import cStringIO
 from pymarc import Field
 import pymarc
 
+UNICODE_CHAR_REPLACEMENT = {
+    u'a`': u'\xe0',
+    u'O\xa8': u'\xd6',
+    u'U\xb4': u'\xda',
+    u'e`': u'\xe8',
+    u'U\xa8': u'\xdc',
+    u'i`': u'\xec',
+    u'O\xb4': u'\xd3',
+    u'u\xa8': u'\xfc',
+    u'E\xa8': u'\xcb',
+    u'i^': u'\xee',
+    u'u\xb4': u'\xfa',
+    u'I\xb4': u'\xcd',
+    u'I\xa8': u'\xcf',
+    u'e^': u'\xea',
+    u'A\xb4': u'\xc1',
+    u'n~': u'\xf1',
+    u'E\xb4': u'\xc9',
+    u'o\xb4': u'\xf3',
+    u'a^': u'\xe2',
+    u'u^': u'\xfb',
+    u'e\xa8': u'\xeb',
+    u'I^': u'\xce',
+    u'a\xa8': u'\xe4',
+    u'i\xb4': u'\xed',
+    u'O`': u'\xd2',
+    u'o^': u'\xf4',
+    u'E^': u'\xca',
+    u'a\xb4': u'\xe1',
+    u'e\xb4': u'\xe9',
+    u'U`': u'\xd9',
+    u'A^': u'\xc2',
+    u'A`': u'\xc0',
+    u'U^': u'\xdb',
+    u'i\xa8': u'\xef',
+    u'o\xa8': u'\xf6',
+    u'E`': u'\xc8',
+    u'o`': u'\xf2',
+    u'O^': u'\xd4',
+    u'c\xb8': u'\xe7',
+    u'A\xa8': u'\xc4',
+    u'I`': u'\xcc',
+    u'u`': u'\xf9',
+    u'a\xb0': u'\xe5'}
+    
+
+def clean_unicode(record):
+    """Function goes through a MARC record searching for invalid unicode
+    characters and replacing with correct character.
+
+    Parameter:
+    record -- MARC21 record
+    """
+    bad_chars = UNICODE_CHAR_REPLACEMENT.keys()
+    for field in record.fields:
+        for char in bad_chars:
+            if unicode(field).find(char) > -1:
+                for i, subfield in enumerate(field.subfields):
+                    if len(subfield) > 1: # Subfield codes are usually 1 char
+                        field.subfields[i] = subfield.replace(
+                            char,
+                            UNICODE_CHAR_REPLACEMENT.get(char))
+                    
+    return record
+                                     
+        
 
 class MARCModifier(object):
     """
