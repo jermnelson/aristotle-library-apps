@@ -125,9 +125,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": [
-          null
-        ]
+        "map": []
       }
     ], 
     "post-processing": null
@@ -283,7 +281,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -293,9 +290,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": [
-          null
-        ]
+        "map": []
       }
     ], 
     "post-processing": null
@@ -304,9 +299,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": [
-          null
-        ]
+        "map": []
       }
     ], 
     "post-processing": null
@@ -316,7 +309,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -327,7 +319,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -338,7 +329,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -349,7 +339,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -360,7 +349,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -370,7 +358,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -380,7 +368,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -391,7 +378,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -402,7 +388,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -412,7 +397,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -422,7 +407,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -433,7 +417,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -444,7 +427,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -455,7 +437,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -466,7 +447,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -477,7 +457,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -488,7 +467,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -499,7 +477,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -510,7 +487,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -521,7 +497,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -532,7 +507,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -543,7 +517,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -554,7 +527,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -565,7 +537,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -576,7 +547,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -587,7 +557,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -598,7 +567,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -609,7 +577,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -620,7 +587,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -631,7 +597,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -642,7 +607,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -653,7 +617,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -664,7 +627,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -675,7 +637,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -686,7 +647,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -697,7 +657,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -708,7 +667,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -719,7 +677,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -730,7 +687,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -741,7 +697,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -752,7 +707,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -763,7 +717,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -773,9 +726,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": [
-          null
-        ]
+        "map": []
       }
     ], 
     "post-processing": null
@@ -784,7 +735,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -794,7 +745,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -805,7 +755,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -816,7 +765,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -827,7 +775,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -838,7 +785,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -849,7 +795,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -860,7 +805,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -871,7 +815,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -882,7 +825,7 @@
       {
         "conditional": null, 
         "map": [
-          null
+          "marc:036__a"
         ]
       }
     ], 
@@ -892,7 +835,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": null
+        "map": []
       }
     ], 
     "post-processing": null
@@ -902,7 +845,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -913,7 +855,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -924,7 +865,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -935,7 +875,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -946,7 +885,12 @@
       {
         "conditional": null, 
         "map": [
-          null
+          "marc:0241_a",
+          "marc:02410a",
+          "marc:02411a",
+          "marc:0241_z",
+          "marc:02410z",
+          "marc:02411z"          
         ]
       }
     ], 
@@ -955,9 +899,10 @@
   "uri": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional":"if marc:0247_2 is 'uri'", 
         "map": [
-          null
+          "marc:0247_a", 
+          "marc:0247_z"
         ]
       }
     ], 
@@ -968,7 +913,6 @@
       {
         "conditional": null, 
         "map": [
-          null
         ]
       }
     ], 
@@ -978,9 +922,7 @@
     "marc": [
       {
         "conditional": null, 
-        "map": [
-          null
-        ]
+        "map": []
       }
     ], 
     "post-processing": null

@@ -12,10 +12,10 @@ class conditional_MARC21Test(TestCase):
     def setUp(self):
         self.rule1 = {
         "conditional": "if marc:0247_2 is 'isbn'", 
-        "map": "marc:0247_a"}
+        "map": ["marc:0247_a"]}
         self.rule2 = {
         "conditional": "if marc:85600u.count('doi') > 0", 
-        "map": "marc:85600u"}
+        "map": ["marc:85600u"]}
         self.marc_record = pymarc.Record()
         self.marc_record.add_field(pymarc.Field(
             tag='024',
@@ -141,6 +141,27 @@ class parse_MARC21Test(TestCase):
                           ['eng'])
 
     
+
+    def tearDown(self):
+        TEST_REDIS.flushdb()
+
+class parse_variable_fieldTest(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_marc02840a(self):
+        field028 = pymarc.Field(
+            tag='028',
+            indicators=['4', '0'],
+            subfields = ['a', 'video-3456'])
+        search = parser.MARC_FLD_RE.search("marc:02840a")
+        re_group = search.groupdict()
+        result = parser.parse_variable_field(
+            field028,
+            re_group)
+        self.assertEquals(result,
+                          ['video-3456'])
 
     def tearDown(self):
         TEST_REDIS.flushdb()

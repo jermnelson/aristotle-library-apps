@@ -21,6 +21,7 @@ from bibframe.models import NotatedMusic, SoftwareOrMultimedia, StillImage
 from bibframe.models import RemoteSensingImage, TitleEntity, ThreeDimensionalObject
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.ingesters import tutt_maps, marc21_maps, web_services
+from bibframe.ingesters.bibframeMARCParser import MARCParser
 from discovery.redis_helpers import slug_to_title
 from django.template.defaultfilters import slugify
 from call_number.redis_helpers import generate_call_number_app
@@ -36,7 +37,6 @@ from lxml import etree
 from rdflib import RDF, RDFS, Namespace
 
 from bibframe.classifiers import simple_fuzzy
-
 
 import aristotle.settings as settings
 from aristotle.settings import REDIS_DATASTORE
@@ -399,11 +399,55 @@ class MARC21toFacets(MARC21Ingester):
         self.add_language_facet(instance=instance)
         
 
+class MARCRuleLoader(object):
+
+    def __init__(self, bibframe_json_file):
+        self.rules = json.load(
+            os.path.join(
+                PROJECT_HOME,
+                "bibframe",
+                "ingesters",
+                bibframe_json_file))
+
+    
+        
+        
+
+class MARC21toInstance(MARCParser):
+
+    def __init__(self, **kwargs):
+        kwargs['rules_filename'] = 'bibframe-instance-map.json'
+        super(MARC21toInstance, self).__init__(**kwargs)
+        self.redis_datastore = kwargs.get('redis_datastore',
+                                          REDIS_DATASTORE)
+        if kwargs.has_key('instanceOf'):
+            self.entity_info['instanceOf'] = kwargs.get('instanceOf')
+
+    def add_instance(self):
+        self.instance = Instance(redis_datastore=self.redis_datastore)
+        for key, value in self.entity_info.iteritems():
+            if key is not None and value is not None:
+                setattr(self.instance,
+                        key,
+                        value)
+        self.instance.save()
+        
+
+    def ingest(self):
+        self.parse()
+        #! Should do duplication before calling add_instance
+        self.add_instance()
+        
+        
+        
+        
+
+    
+        
+
 
 isbn_regex = re.compile(r'([0-9\-]+)')
-
-
-class MARC21toInstance(MARC21Ingester):
+class OldMARC21toInstance(MARC21Ingester):
     """
     MARC21toInstance ingests a MARC record into the BIBFRAME Redis datastore
     """
