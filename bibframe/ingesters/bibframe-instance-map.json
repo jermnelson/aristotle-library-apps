@@ -90,6 +90,7 @@
     "marc": [
       {
         "conditional": null, 
+        "invalid": ["marc:030__z"],
         "map": [
           "marc:030__a", 
           "marc:030__z"
@@ -108,7 +109,6 @@
           "marc:007d03", 
           "marc:007g03", 
           "marc:007k03", 
-          "marc:007c03", 
           "marc:007v03"
         ]
       }, 
@@ -899,7 +899,7 @@
   "uri": {
     "marc": [
       {
-        "conditional":"if marc:0247_2 is 'uri'", 
+        "conditional": "if marc:0247_2 is 'uri'", 
         "map": [
           "marc:0247_a", 
           "marc:0247_z"
@@ -911,8 +911,10 @@
   "urn": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional": "if marc:0247_2 is 'urn'", 
         "map": [
+          "marc:0247_a", 
+          "marc:0247_z"
         ]
       }
     ], 
@@ -922,7 +924,13 @@
     "marc": [
       {
         "conditional": null, 
-        "map": []
+        "map": [
+          "marc:02840a",
+          "marc:02841a",
+          "marc:02842a",
+          "marc:02842a"
+
+        ]
       }
     ], 
     "post-processing": null

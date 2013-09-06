@@ -399,27 +399,12 @@ class MARC21toFacets(MARC21Ingester):
         self.add_language_facet(instance=instance)
         
 
-class MARCRuleLoader(object):
-
-    def __init__(self, bibframe_json_file):
-        self.rules = json.load(
-            os.path.join(
-                PROJECT_HOME,
-                "bibframe",
-                "ingesters",
-                bibframe_json_file))
-
-    
-        
-        
-
 class MARC21toInstance(MARCParser):
 
     def __init__(self, **kwargs):
         kwargs['rules_filename'] = 'bibframe-instance-map.json'
         super(MARC21toInstance, self).__init__(**kwargs)
-        self.redis_datastore = kwargs.get('redis_datastore',
-                                          REDIS_DATASTORE)
+
         if kwargs.has_key('instanceOf'):
             self.entity_info['instanceOf'] = kwargs.get('instanceOf')
 

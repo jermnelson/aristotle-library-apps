@@ -1,0 +1,80 @@
+{
+  "a": {
+    "03": {
+      "a": "One color", 
+      "c": "Multicolored", 
+      "|": "No attempt to code"
+    }
+  }, 
+  "c": {
+    "03": {
+      "a": "One color", 
+      "b": "Black-and-white", 
+      "c": "Multicolored", 
+      "g": "Gray scale", 
+      "m": "Mixed", 
+      "n": "Not applicable", 
+      "u": "Unknown", 
+      "z": "Other", 
+      "|": "No attempt to code"
+    }
+  }, 
+  "d": {
+    "03": {
+      "a": "One color", 
+      "c": "Multicolored", 
+      "|": "No attempt to code"
+    }
+  }, 
+  "g": {
+    "03": {
+      "a": "One color", 
+      "b": "Black-and-white", 
+      "c": "Multicolored", 
+      "h": "Hand colored", 
+      "m": "Mixed", 
+      "n": "Not applicable", 
+      "u": "Unknown", 
+      "z": "Other", 
+      "|": "No attempt to code"
+    }
+  }, 
+  "k": {
+    "03": {
+      "a": "One color", 
+      "b": "Black-and-white", 
+      "c": "Multicolored", 
+      "h": "Hand colored", 
+      "m": "Mixed", 
+      "n": "Not applicable", 
+      "u": "Unknown", 
+      "z": "Other", 
+      "|": "No attempt to code"
+    }
+  }, 
+  "m": {
+    "04": {
+      "a": "Standard sound aperture (reduced frame)", 
+      "b": "Nonanamorphic (wide-screen)", 
+      "c": "3D", 
+      "d": "Anamorphic (wide-screen)", 
+      "e": "Other wide-screen format", 
+      "f": "Standard silent aperture (full frame)", 
+      "u": "Unknown", 
+      "z": "Other", 
+      "|": "No attempt to code"
+    }
+  }, 
+  "v": {
+    "03": {
+      "a": "One color", 
+      "b": "Black-and-white", 
+      "c": "Multicolored", 
+      "m": "Mixed", 
+      "n": "Not applicable", 
+      "u": "Unknown", 
+      "z": "Other", 
+      "|": "No attempt to code"
+    }
+  }
+}

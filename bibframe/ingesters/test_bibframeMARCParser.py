@@ -71,6 +71,15 @@ class MARC21toBIBFRAMERegexTest(TestCase):
         self.assertEquals(result.get('subfield'),
                           'a')
 
+    def test_marc_fixed_field_re(self):
+        result = parser.MARC_FX_FLD_RE.search('marc:007v01').groupdict()
+        self.assertEquals(result.get('tag'),
+                          '007')
+        self.assertEquals(result.get('position'),
+                          '01')
+        self.assertEquals(result.get('code'),
+                          'v')
+
     def tearDown(self):
         TEST_REDIS.flushdb()
 
@@ -141,6 +150,25 @@ class parse_MARC21Test(TestCase):
                           ['eng'])
 
     
+
+    def tearDown(self):
+        TEST_REDIS.flushdb()
+
+class parse_fixed_fieldTest(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_marc007m04(self):
+        field007 = pymarc.Field(
+            tag='007',
+            data='m   a')
+        search = parser.MARC_FX_FLD_RE.search("marc:007m04")
+        result = parser.parse_fixed_field(
+            field007,
+            search.groupdict())
+        self.assertEquals(result,
+                          ['Standard sound aperture (reduced frame)'])
 
     def tearDown(self):
         TEST_REDIS.flushdb()

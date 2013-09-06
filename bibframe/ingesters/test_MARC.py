@@ -416,200 +416,200 @@ class MARC21toInstanceTest(TestCase):
     def test_init(self):
         self.assert_(self.instance_ingester.instance.redis_key)
 
-##    def test_extract_ansi(self):
-##        self.assertEquals(list(self.instance_ingester.instance.ansi)[0],
-##                          'stdNumber-1224')
-##
-##    def test_aspect_ratio(self):
-##        self.assertEquals(list(self.instance_ingester.instance.aspectRatio)[0],
-##                          'Standard sound aperture (reduced frame)')
-##
-##    def test_award_note(self):
-##        self.assertEquals(list(self.instance_ingester.instance.awardNote)[0],
-##                          'Certificate Book of the Year')
-##
-##    def test_extract_coden(self):
-##        self.assertEquals(list(self.instance_ingester.instance.coden)[0],
-##                          'ASITAF')
-##        self.assertEquals(list(self.instance_ingester.instance.coden)[1],
-##                          'ASIRAF')
-##        self.assert_(TEST_REDIS.sismember('identifiers:CODEN:invalid',
-##                                          list(self.instance_ingester.instance.coden)[0]))
-##
-##    def test_extract_color_content(self):
-##        
-##        self.assertEquals(list(self.instance_ingester.instance.colorContent)[0],
-##                          'Gray scale')
-##
-##    def test_extract_duration(self):
-##        self.assertEquals(list(self.instance_ingester.instance.duration)[0],
-##                          '014500')
-##
-##    def test_extract_ean(self):
-##        self.assertEquals(list(self.instance_ingester.instance.ean)[0],
-##                          '9780838934326-9000')
-##
-##
-##    def test_fingerprint(self):
-##        self.assertEquals(list(self.instance_ingester.instance.fingerprint)[0],
-##                          'dete nkck vess lodo 3 Anno Domini MDCXXXVI 3')
-##
-##    def test_extract_hdl(self):
-##        self.assertEquals(list(self.instance_ingester.instance.hdl)[0],
-##                          'http://hdl.handle.net/10176/coccc:6854')
-##
-##    def test_extract_illustrative_content_note(self):
-##        self.assertEquals(list(self.instance_ingester.instance.illustrativeContentNote)[0], 
-##                          'ill.')
-##
-##    def test_intended_audience(self):
-##        self.assertEquals(list(self.instance_ingester.instance.intendedAudience)[0],
-##                          "Interest grade level 7 & up")
-##  
-##    def test_extract_lccn(self):
-##        self.assertEquals(list(self.instance_ingester.instance.lccn)[0],
-##                          '95030619')
-##        self.assertEquals(list(self.instance_ingester.instance.lccn)[1],
-##                          '95030619x')
-##        self.assert_(TEST_REDIS.sismember('identifiers:lccn:invalid','95030619x'))
-## 
-##    def test_extract_issue_number(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'issue-number'))[0],
-##                          'STMA 8007')
-##
-##    def test_language(self):
-##        self.assertEquals(list(self.instance_ingester.instance.language)[0],
-##                          'English')
-##
-##    def test_extract_legal_deposit(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'legal-deposit'))[0],
-##                          'DL 80-0-1524')
-##        self.assert_(TEST_REDIS.sismember("identifiers:legal-deposit:invalid",
-##                                          "M444120-2006"))
-##
-##
-##    def test_local(self):
-##        self.assertEquals(list(self.instance_ingester.instance.local)[0],
-##                          'b45647')
-##        self.assertEquals(list(self.instance_ingester.instance.local)[0],
-##                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
-##                                          "local"))
-##
-##    def test_ils_bib_number(self):
-##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
-##                          'b1112223')
-##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
-##                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
-##                                          'ils-bib-number'))
-##
-##    def test_sudoc(self):
-##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
-##                          'HE 20.6209:13/45')
-##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
-##                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
-##                                          "sudoc"))
-##
-##    def test_extract_lc_overseas_acq(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'lc-overseas-acq'))[0],
-##                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
-##                                         'lc-overseas-acq'))
-##
-##    def test_extract_ismn(self):
-##        self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
-##                          '979-0-2600-0043-8')
-##        self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
-##                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
-##                                          'ismn'))
-##
-##    def test_issn(self):
-##        self.assertEquals(list(self.instance_ingester.instance.issn)[0],
-##                         '0264-2875')
-##
-##    def test_iso(self):
-##        self.assertEquals(list(self.instance_ingester.instance.iso)[0],
-##                          '19200 Baud')
-##        self.assert_(TEST_REDIS.sismember('identifiers:iso:invalid','2400 Baud'))
-##
-##    def test_isrc(self):
-##        self.assertEquals(list(self.instance_ingester.instance.isrc)[0],
-##                          'NLC018413261')
-##        self.assertEquals(list(TEST_REDIS.sinter("identifiers:isrc:invalid",
-##                                                 "{0}:isrc".format(self.instance_ingester.instance.redis_key)))[0],
-##                          "NLC018403261")
-##
-##    def test_medium_of_music(self):
-##        self.assertEquals(list(self.instance_ingester.instance.mediumOfMusic)[0],
-##                          'mixed voices')
-##
-##    def test_music_plate(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'music-plate'))[0],
-##                          'B. & H. 8797')
-##        self.assertEquals(TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
-##                                          'music-plate'),
-##                         'B. & H. 8797')
-##
-##    def test_music_publisher(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'music-publisher'))[0],
-##                          'L27410X')
-##
-##
-##    def test_nban(self):
-##        self.assertEquals(list(self.instance_ingester.instance.nban)[0],
-##                          '890000298')
-##
-##    def test_nbn(self):
-##        self.assertEquals(list(self.instance_ingester.instance.nbn)[0],
-##                          'B67-25185')
-##
-##    def test_organization_system(self):
-##        self.assertEquals(list(self.instance_ingester.instance.organizationSystem)[0],
-##                          'Records Organized into four subgroups Arranged by office of origin=Series')
-##
-##    def test_performer_note(self):
-##        self.assertEquals(list(self.instance_ingester.instance.performerNote)[0],
-##                          'Cast: Cate Blanchett')
-##
-##    def test_publisher_number(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,
-##                                       'publisher-number'))[0],
-##                          'VA4567')
-##
-##
-##    def test_sici(self):
-##        self.assertEquals(list(self.instance_ingester.instance.sici)[0],
-##                          '8756-2324(198603/04)65:2L.4:QTP:1-P')
-##
-##    def test_sound_content(self):
-##        self.assertEquals(list(self.instance_ingester.instance.soundContent)[0],
-##                          'Sound')
-##
-##    def test_extract_stock_number(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
-##                          '240-951/147')
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
-##                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
-##                                          "stock-number"))
-##
-##    def test_extract_strn(self):
-##        self.assertEquals(list(self.instance_ingester.instance.strn)[0],
-##                          'FOA--89-40265/C--SE')
-## 
-##    def test_study_number(self):
-##        self.assertEquals(getattr(self.instance_ingester.instance,
-##                                  'study-number'),
-##                          ['CPS 495441']) 
-##
-##
-##    def test_extract_supplementaryContentNote(self):
-##        self.assertEquals(list(self.instance_ingester.instance.supplementaryContentNote)[0],
-##                          'Literature cited: p. 67-68. References: 19')
-##        self.assertEquals(list(TEST_REDIS.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[1],
-##                          'Has numerous supplements')
-##
-##    def test_system_number(self):
-##        self.assertEquals(list(getattr(self.instance_ingester.instance,'system-number'))[0],
-##                          '(COCC)S30545600')
-##
+    def test_extract_ansi(self):
+        self.assertEquals(self.instance_ingester.instance.ansi,
+                          ['stdNumber-1224'])
+
+    def test_aspect_ratio(self):
+        self.assertEquals(self.instance_ingester.instance.aspectRatio,
+                          ['Standard sound aperture (reduced frame)'])
+
+    def test_award_note(self):
+        self.assertEquals(self.instance_ingester.instance.awardNote,
+                          'Certificate Book of the Year')
+
+    def test_extract_coden(self):
+        self.assertEquals(self.instance_ingester.instance.coden[0],
+                          'ASIRAF')
+        self.assertEquals(self.instance_ingester.instance.coden[1],
+                          'ASITAF')
+        self.assert_(TEST_REDIS.sismember('identifiers:coden:invalid',
+                                          self.instance_ingester.instance.coden[1]))
+
+    def test_extract_color_content(self):
+        
+        self.assertEquals(self.instance_ingester.instance.colorContent,
+                          ['Gray scale'])
+
+    def test_extract_duration(self):
+        self.assertEquals(self.instance_ingester.instance.duration,
+                          ['014500'])
+
+    def test_extract_ean(self):
+        self.assertEquals(list(self.instance_ingester.instance.ean)[0],
+                          '9780838934326-9000')
+
+
+    def test_fingerprint(self):
+        self.assertEquals(list(self.instance_ingester.instance.fingerprint)[0],
+                          'dete nkck vess lodo 3 Anno Domini MDCXXXVI 3')
+
+    def test_extract_hdl(self):
+        self.assertEquals(list(self.instance_ingester.instance.hdl)[0],
+                          'http://hdl.handle.net/10176/coccc:6854')
+
+    def test_extract_illustrative_content_note(self):
+        self.assertEquals(list(self.instance_ingester.instance.illustrativeContentNote)[0], 
+                          'ill.')
+
+    def test_intended_audience(self):
+        self.assertEquals(list(self.instance_ingester.instance.intendedAudience)[0],
+                          "Interest grade level 7 & up")
+  
+    def test_extract_lccn(self):
+        self.assertEquals(list(self.instance_ingester.instance.lccn)[0],
+                          '95030619')
+        self.assertEquals(list(self.instance_ingester.instance.lccn)[1],
+                          '95030619x')
+        self.assert_(TEST_REDIS.sismember('identifiers:lccn:invalid','95030619x'))
+ 
+    def test_extract_issue_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'issue-number'))[0],
+                          'STMA 8007')
+
+    def test_language(self):
+        self.assertEquals(list(self.instance_ingester.instance.language)[0],
+                          'English')
+
+    def test_extract_legal_deposit(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'legal-deposit'))[0],
+                          'DL 80-0-1524')
+        self.assert_(TEST_REDIS.sismember("identifiers:legal-deposit:invalid",
+                                          "M444120-2006"))
+
+
+    def test_local(self):
+        self.assertEquals(list(self.instance_ingester.instance.local)[0],
+                          'b45647')
+        self.assertEquals(list(self.instance_ingester.instance.local)[0],
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
+                                          "local"))
+
+    def test_ils_bib_number(self):
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
+                          'b1112223')
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
+                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+                                          'ils-bib-number'))
+
+    def test_sudoc(self):
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
+                          'HE 20.6209:13/45')
+        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
+                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+                                          "sudoc"))
+
+    def test_extract_lc_overseas_acq(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'lc-overseas-acq'))[0],
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
+                                         'lc-overseas-acq'))
+
+    def test_extract_ismn(self):
+        self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
+                          '979-0-2600-0043-8')
+        self.assertEquals(list(self.instance_ingester.instance.ismn)[0],
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
+                                          'ismn'))
+
+    def test_issn(self):
+        self.assertEquals(list(self.instance_ingester.instance.issn)[0],
+                         '0264-2875')
+
+    def test_iso(self):
+        self.assertEquals(list(self.instance_ingester.instance.iso)[0],
+                          '19200 Baud')
+        self.assert_(TEST_REDIS.sismember('identifiers:iso:invalid','2400 Baud'))
+
+    def test_isrc(self):
+        self.assertEquals(list(self.instance_ingester.instance.isrc)[0],
+                          'NLC018413261')
+        self.assertEquals(list(TEST_REDIS.sinter("identifiers:isrc:invalid",
+                                                 "{0}:isrc".format(self.instance_ingester.instance.redis_key)))[0],
+                          "NLC018403261")
+
+    def test_medium_of_music(self):
+        self.assertEquals(list(self.instance_ingester.instance.mediumOfMusic)[0],
+                          'mixed voices')
+
+    def test_music_plate(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'music-plate'))[0],
+                          'B. & H. 8797')
+        self.assertEquals(TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
+                                          'music-plate'),
+                         'B. & H. 8797')
+
+    def test_music_publisher(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'music-publisher'))[0],
+                          'L27410X')
+
+
+    def test_nban(self):
+        self.assertEquals(list(self.instance_ingester.instance.nban)[0],
+                          '890000298')
+
+    def test_nbn(self):
+        self.assertEquals(list(self.instance_ingester.instance.nbn)[0],
+                          'B67-25185')
+
+    def test_organization_system(self):
+        self.assertEquals(list(self.instance_ingester.instance.organizationSystem)[0],
+                          'Records Organized into four subgroups Arranged by office of origin=Series')
+
+    def test_performer_note(self):
+        self.assertEquals(list(self.instance_ingester.instance.performerNote)[0],
+                          'Cast: Cate Blanchett')
+
+    def test_publisher_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,
+                                       'publisher-number'))[0],
+                          'VA4567')
+
+
+    def test_sici(self):
+        self.assertEquals(list(self.instance_ingester.instance.sici)[0],
+                          '8756-2324(198603/04)65:2L.4:QTP:1-P')
+
+    def test_sound_content(self):
+        self.assertEquals(list(self.instance_ingester.instance.soundContent)[0],
+                          'Sound')
+
+    def test_extract_stock_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
+                          '240-951/147')
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
+                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
+                                          "stock-number"))
+
+    def test_extract_strn(self):
+        self.assertEquals(list(self.instance_ingester.instance.strn)[0],
+                          'FOA--89-40265/C--SE')
+ 
+    def test_study_number(self):
+        self.assertEquals(getattr(self.instance_ingester.instance,
+                                  'study-number'),
+                          ['CPS 495441']) 
+
+
+    def test_extract_supplementaryContentNote(self):
+        self.assertEquals(list(self.instance_ingester.instance.supplementaryContentNote)[0],
+                          'Literature cited: p. 67-68. References: 19')
+        self.assertEquals(list(TEST_REDIS.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[1],
+                          'Has numerous supplements')
+
+    def test_system_number(self):
+        self.assertEquals(list(getattr(self.instance_ingester.instance,'system-number'))[0],
+                          '(COCC)S30545600')
+
     def test_upc(self):
         self.assertEquals(self.instance_ingester.instance.upc,
                           ['7822183031'])
