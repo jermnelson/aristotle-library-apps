@@ -453,10 +453,21 @@
     "post-processing": null
   }, 
   "isrc": {
+    "invalid": [
+          "marc:0240_z",
+          "marc:02400z",
+          "marc:02401z"
+    ],
     "marc": [
       {
         "conditional": null, 
         "map": [
+          "marc:0240_a",
+          "marc:02400a",
+          "marc:02401a",
+          "marc:0240_z",
+          "marc:02400z",
+          "marc:02401z"
         ]
       }
     ], 
@@ -487,8 +498,21 @@
       {
         "conditional": null, 
         "map": [
+          "marc:041__a",
+          "marc:0410_a", 
+          "marc:0411_a",  
+          "marc:041_7a",
+          "marc:04107a", 
+          "marc:04117a"  
+        ]
+      },
+      {
+        "conditional": null, 
+        "map": [
+          "marc:00835-37" 
         ]
       }
+
     ], 
     "post-processing": null
   }, 
@@ -513,10 +537,15 @@
     "post-processing": null
   }, 
   "local": {
+    "invalid": [
+      "marc:0247_z"
+    ],
     "marc": [
       {
-        "conditional": null, 
+        "conditional": "if marc:0247_2 is 'local'", 
         "map": [
+          "marc:0247_a", 
+          "marc:0247_z"
         ]
       }
     ], 
@@ -557,6 +586,12 @@
       {
         "conditional": null, 
         "map": [
+          "marc:382__a",
+          "marc:3821_a",
+          "marc:3820_a",
+          "marc:382_1a",
+          "marc:38211a",
+          "marc:38201a"
         ]
       }
     ], 
@@ -567,7 +602,7 @@
       {
         "conditional": null, 
         "map": [
-        ]
+              ]
       }
     ], 
     "post-processing": null
@@ -577,6 +612,10 @@
       {
         "conditional": null, 
         "map": [
+          "marc:02820a",
+          "marc:02821a",
+          "marc:02822a",
+          "marc:02823a"
         ]
       }
     ], 
@@ -587,26 +626,41 @@
       {
         "conditional": null, 
         "map": [
+          "marc:02830a",
+          "marc:02831a",
+          "marc:02832a",
+          "marc:02833a"
         ]
       }
     ], 
     "post-processing": null
   }, 
   "nban": {
+    "invalid": [
+      "marc:016__z",
+      "marc:0167_z"
+    ],
     "marc": [
       {
         "conditional": null, 
         "map": [
+          "marc:016__a",
+          "marc:0167_a",
+          "marc:016__z",
+          "marc:0167_z"
         ]
       }
     ], 
     "post-processing": null
   }, 
   "nbn": {
+    "invalid": ["marc:015__z"],
     "marc": [
       {
         "conditional": null, 
         "map": [
+          "marc:015__a",
+          "marc:015__z"
         ]
       }
     ], 
@@ -637,20 +691,31 @@
       {
         "conditional": null, 
         "map": [
+          "marc:351__3",
+          "marc:351__a",
+          "marc:351__b",
+          "marc:351__c"
         ]
       }
     ], 
-    "post-processing": null
+    "post-processing": {
+       "type": "second2last",
+       "value": "="
+    }
   }, 
   "performerNote": {
     "marc": [
       {
         "conditional": null, 
         "map": [
+          "marc:5111_a"
         ]
       }
     ], 
-    "post-processing": null
+    "post-processing": {
+      "type": "prepend",
+      "value": "Cast:"
+    } 
   }, 
   "philatelicIssue": {
     "marc": [
@@ -726,7 +791,12 @@
     "marc": [
       {
         "conditional": null, 
-        "map": []
+        "map": [
+          "marc:02850a",
+          "marc:02851a",
+          "marc:02852a", 
+          "marc:02852a"
+       ]
       }
     ], 
     "post-processing": null
@@ -781,10 +851,22 @@
     "post-processing": null
   }, 
   "sici": {
+    "invalid": [
+       "marc:0244_z",
+       "marc:02440z",
+       "marc:02441z"
+     ],
     "marc": [
       {
         "conditional": null, 
         "map": [
+         "marc:0244_a",
+         "marc:02440a",
+         "marc:02441a",
+         "marc:0244_z",
+         "marc:02440z",
+         "marc:02441z"
+
         ]
       }
     ], 
@@ -795,6 +877,7 @@
       {
         "conditional": null, 
         "map": [
+          "marc:007c05"
         ]
       }
     ], 
@@ -855,6 +938,7 @@
       {
         "conditional": null, 
         "map": [
+          "marc:035__a"
         ]
       }
     ], 

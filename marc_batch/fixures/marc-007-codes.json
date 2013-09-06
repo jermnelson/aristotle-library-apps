@@ -17,6 +17,12 @@
       "u": "Unknown", 
       "z": "Other", 
       "|": "No attempt to code"
+    }, 
+    "05": {
+      " ": "No sound (silent)", 
+      "a": "Sound", 
+      "u": "Unknown", 
+      "|": "No attempt to code"
     }
   }, 
   "d": {

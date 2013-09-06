@@ -31,7 +31,13 @@ MARC_FIXED_CODES = {
             PROJECT_HOME,
             'marc_batch',
             'fixures',
-            'marc-007-codes.json')))}
+            'marc-007-codes.json'))),
+    'lang': json.load(
+        open(os.path.join(
+            PROJECT_HOME,
+            'marc_batch',
+            'fixures',
+            'marc-language-code-list.json')))}
 
     
 BASIC_CONDITIONAL_RE = re.compile(r"""
@@ -63,6 +69,15 @@ MARC_FX_FLD_RE = re.compile(r"""
 (?P<tag>\d{3,3})        # Matches specific MARC tags
 (?P<code>\w{1,1})     # Code value in fixed position
 (?P<position>\d{2,2})  # Postition in fixed field
+""",
+                            re.VERBOSE)
+
+MARC_FX_FLD_RANGE_RE = re.compile(r"""
+[marc:]                   # Matches M or underscore
+(?P<tag>\d{3,3})        # Matches specific MARC tags
+(?P<start>\d{2,2})     # start fixed position
+-
+(?P<end>\d{2,2})  # End fixed position
 """,
                             re.VERBOSE)
 
@@ -133,9 +148,9 @@ class MARCParser(object):
                 if len(marc_value) > 0:
                     self.entity_info[property_name].extend(marc_value)
             if rule.get('post-processing', None):
-                self.entity_info[property_name] = post_processing(
+                self.entity_info[property_name] = [post_processing(
                     self.entity_info[property_name],
-                    rule.get('post-processing'))
+                    rule.get('post-processing'))]
 
 def conditional_MARC21(record, rule):
     """Function takes a conditional and a mapping dict (called a rule)
@@ -206,6 +221,16 @@ def parse_fixed_field(field, re_dict):
     re_dict -- Regular Expression dictgroup
     """
     output = []
+    if re_dict.has_key('start'):
+        # Range operation on fixed field
+        tag = re_dict.get('tag')
+        if tag != field.tag:
+            return output
+        start = re_dict.get('start')
+        end = re_dict.get('end')
+        range_value = field.data[int(start):int(end)]
+        if range_value is not None:
+            output.append(range_value)
     if field.data[0] == re_dict.get('code'):
         tag = re_dict.get('tag')
         code = re_dict.get('code')
@@ -221,6 +246,7 @@ def parse_fixed_field(field, re_dict):
                 MARC_FIXED_CODES[tag][code][position].get(position_code))
     return output
 
+    
 def parse_variable_field(field, re_dict):
     """Function takes a MARC21 field and the Regex dictgroup and
     return a list of the subfields that match the Regex patterns.
@@ -284,5 +310,18 @@ def post_processing(result, directive):
     if directive == 'concat':
         return ' '.join(result)
     elif type(directive) == dict:
-        if directive.get('type') == 'delimiter':
-            return '{0}'.format(directive.get('value')).join(result)
+        type_of = directive.get('type')
+        value = directive.get('value')
+        if type_of == 'delimiter':
+            return '{0}'.format(value).join(result)
+        elif type_of == 'lang-lookup':
+            return [MARC_FIXED_CODES['lang'][code] for code in result]
+        elif type_of == 'prepend':
+            output = '{0} {1}'.format(value,
+                                      ', '.join(result))
+            return output
+        elif type_of == 'second2last':
+            # Used for organizational system
+            return "{0}{1}{2}".format(" ".join(result[:-1]),
+                                      value,
+                                      result[-1])

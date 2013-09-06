@@ -336,7 +336,7 @@ class MARC21toInstanceTest(TestCase):
                                            indicators=['4','0'],
                                            subfields=['a','VM600167']))
         marc_record.add_field(pymarc.Field(tag='028',
-                                           indicators=['5',' '],
+                                           indicators=['5','1'],
                                            subfields=['a','VA4567']))
         marc_record.add_field(pymarc.Field(tag='030',
                                            indicators=[' ',' '],
@@ -393,7 +393,7 @@ class MARC21toInstanceTest(TestCase):
                                            indicators=[' ',' '],
                                            subfields=['a','mixed voices']))
         marc_record.add_field(pymarc.Field(tag='511',
-                                           indicators=[' ',' '],
+                                           indicators=['1',' '],
                                            subfields=['a','Cate Blanchett']))
 
         marc_record.add_field(pymarc.Field(tag='586',
@@ -426,7 +426,7 @@ class MARC21toInstanceTest(TestCase):
 
     def test_award_note(self):
         self.assertEquals(self.instance_ingester.instance.awardNote,
-                          'Certificate Book of the Year')
+                          ['Certificate Book of the Year'])
 
     def test_extract_coden(self):
         self.assertEquals(self.instance_ingester.instance.coden[0],
@@ -478,7 +478,7 @@ class MARC21toInstanceTest(TestCase):
                           'STMA 8007')
 
     def test_language(self):
-        self.assertEquals(list(self.instance_ingester.instance.language)[0],
+        self.assertEquals(self.instance_ingester.instance.language,
                           'English')
 
     def test_extract_legal_deposit(self):
@@ -495,19 +495,12 @@ class MARC21toInstanceTest(TestCase):
                           TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
                                           "local"))
 
-    def test_ils_bib_number(self):
-        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
-                          'b1112223')
-        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
-                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
-                                          'ils-bib-number'))
-
-    def test_sudoc(self):
-        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
-                          'HE 20.6209:13/45')
-        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['sudoc'],
-                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
-                                          "sudoc"))
+##    def test_ils_bib_number(self):
+##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
+##                          'b1112223')
+##        self.assertEquals(self.instance_ingester.instance.attributes['rda:identifierForTheManifestation']['ils-bib-number'],
+##                          TEST_REDIS.hget("{0}:rda:identifierForTheManifestation".format(self.instance_ingester.instance.redis_key),
+##                                          'ils-bib-number'))
 
     def test_extract_lc_overseas_acq(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'lc-overseas-acq'))[0],
@@ -531,15 +524,15 @@ class MARC21toInstanceTest(TestCase):
         self.assert_(TEST_REDIS.sismember('identifiers:iso:invalid','2400 Baud'))
 
     def test_isrc(self):
-        self.assertEquals(list(self.instance_ingester.instance.isrc)[0],
-                          'NLC018413261')
+        self.assertEquals(self.instance_ingester.instance.isrc,
+                          ['NLC018413261'])
         self.assertEquals(list(TEST_REDIS.sinter("identifiers:isrc:invalid",
-                                                 "{0}:isrc".format(self.instance_ingester.instance.redis_key)))[0],
-                          "NLC018403261")
+                                                 "{0}:isrc".format(self.instance_ingester.instance.redis_key))),
+                          ["NLC018403261"])
 
     def test_medium_of_music(self):
-        self.assertEquals(list(self.instance_ingester.instance.mediumOfMusic)[0],
-                          'mixed voices')
+        self.assertEquals(self.instance_ingester.instance.mediumOfMusic,
+                          ['mixed voices'])
 
     def test_music_plate(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'music-plate'))[0],
@@ -549,30 +542,31 @@ class MARC21toInstanceTest(TestCase):
                          'B. & H. 8797')
 
     def test_music_publisher(self):
-        self.assertEquals(list(getattr(self.instance_ingester.instance,'music-publisher'))[0],
-                          'L27410X')
+        self.assertEquals(getattr(self.instance_ingester.instance,
+                                  'music-publisher'),
+                          ['L27410X'])
 
 
     def test_nban(self):
-        self.assertEquals(list(self.instance_ingester.instance.nban)[0],
-                          '890000298')
+        self.assertEquals(self.instance_ingester.instance.nban,
+                          ['890000298'])
 
     def test_nbn(self):
-        self.assertEquals(list(self.instance_ingester.instance.nbn)[0],
-                          'B67-25185')
+        self.assertEquals(self.instance_ingester.instance.nbn,
+                          ['B67-25185'])
 
     def test_organization_system(self):
-        self.assertEquals(list(self.instance_ingester.instance.organizationSystem)[0],
-                          'Records Organized into four subgroups Arranged by office of origin=Series')
+        self.assertEquals(self.instance_ingester.instance.organizationSystem,
+                          ['Records Organized into four subgroups Arranged by office of origin=Series'])
 
     def test_performer_note(self):
-        self.assertEquals(list(self.instance_ingester.instance.performerNote)[0],
-                          'Cast: Cate Blanchett')
+        self.assertEquals(self.instance_ingester.instance.performerNote,
+                          ['Cast: Cate Blanchett'])
 
     def test_publisher_number(self):
-        self.assertEquals(list(getattr(self.instance_ingester.instance,
-                                       'publisher-number'))[0],
-                          'VA4567')
+        self.assertEquals(getattr(self.instance_ingester.instance,
+                                  'publisher-number'),
+                          ['VA4567'])
 
 
     def test_sici(self):
@@ -607,8 +601,8 @@ class MARC21toInstanceTest(TestCase):
                           'Has numerous supplements')
 
     def test_system_number(self):
-        self.assertEquals(list(getattr(self.instance_ingester.instance,'system-number'))[0],
-                          '(COCC)S30545600')
+        self.assertEquals(getattr(self.instance_ingester.instance,'system-number'),
+                          ['(COCC)S30545600'])
 
     def test_upc(self):
         self.assertEquals(self.instance_ingester.instance.upc,
