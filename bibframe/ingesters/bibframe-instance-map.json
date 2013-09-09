@@ -21,6 +21,9 @@
     "marc": [
       {
         "conditional": "if marc:0247_2 is 'ansi'", 
+        "invalid": [
+          "marc:0247_z"
+        ],
         "map": [
           "marc:0247_a", 
           "marc:0247_z"
@@ -215,51 +218,29 @@
   "doi": {
     "marc": [
       {
-        "conditional": "if marc:85678u.count('doi') > 0", 
+        "conditional": "if marc:8564Xu.count('doi') > 0", 
         "map": [
-          "marc:856__u", 
-          "marc:856_0u", 
-          "marc:856_1u", 
-          "marc:856_2u", 
-          "marc:856_8u", 
-          "marc:8560_u", 
-          "marc:85600u", 
-          "marc:85601u", 
-          "marc:85602u", 
-          "marc:85608u", 
-          "marc:8561_u", 
-          "marc:85610u", 
-          "marc:85611u", 
-          "marc:85612u", 
-          "marc:85618u", 
-          "marc:8562_u", 
-          "marc:85620u", 
-          "marc:85621u", 
-          "marc:85622u", 
-          "marc:85628u", 
-          "marc:8563_u", 
-          "marc:85630u", 
-          "marc:85631u", 
-          "marc:85632u", 
-          "marc:85638u", 
           "marc:8564_u", 
           "marc:85640u", 
           "marc:85641u", 
           "marc:85642u", 
-          "marc:85648u", 
-          "marc:8567_u", 
-          "marc:85670u", 
-          "marc:85671u", 
-          "marc:85672u", 
-          "marc:85678u"
-        ]
+          "marc:85648u"        ]
       }, 
       {
-        "conditional": "if marc:85678u.count('doi') > 0", 
+        "conditional": " if marc:0247_2 is 'doi'", 
+        "invalid": [
+         "marc:0247_z", 
+         "marc:02471z", 
+         "marc:02470z"
+        ],
         "map": [
           "marc:0247_a", 
           "marc:02471a", 
-          "marc:02470a"
+          "marc:02470a",
+          "marc:0247_z", 
+          "marc:02471z", 
+          "marc:02470z"
+
         ]
       }
     ], 
@@ -277,20 +258,40 @@
     "post-processing": null
   }, 
   "ean": {
+    "invalid": [
+          "marc:0243_z",
+          "marc:02430z",
+          "marc:02431z"
+    ],
     "marc": [
       {
+
         "conditional": null, 
         "map": [
+          "marc:0243_a",
+          "marc:02430a",
+          "marc:02431a",
+          "marc:0243_z",
+          "marc:02430z",
+          "marc:02431z",
+          "marc:0243_d",
+          "marc:02430d",
+          "marc:02431d"
         ]
       }
     ], 
-    "post-processing": null
+    "post-processing": {
+      "type": "delimiter", 
+      "value": "-"
+    }
   }, 
   "edition": {
     "marc": [
       {
         "conditional": null, 
-        "map": []
+        "map": [
+          "marc:250__a"
+        ]
       }
     ], 
     "post-processing": null
@@ -366,8 +367,21 @@
   "hdl": {
     "marc": [
       {
-        "conditional": null, 
+       "conditional": "if marc:8564Xu.count('hdl') > 0", 
         "map": [
+          "marc:8564_u", 
+          "marc:85640u", 
+          "marc:85641u", 
+          "marc:85642u", 
+          "marc:85648u" 
+        ]
+      },
+      {
+        "conditional": "if marc:555XXu.count('hdl') > 0", 
+        "map": [
+          "marc:555__u",
+          "marc:5550_u",
+          "marc:5550_u"
         ]
       }
     ], 
@@ -436,7 +450,18 @@
     "marc": [
       {
         "conditional": null, 
+        "invalid": [
+          "marc:0242_z",
+          "marc:02420z",
+          "marc:02421z"
+        ],
         "map": [
+          "marc:0242_a",
+          "marc:02420a",
+          "marc:02421a",
+          "marc:0242_z",
+          "marc:02420z",
+          "marc:02421z"
         ]
       }
     ], 
@@ -445,22 +470,26 @@
   "iso": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional": "if marc:0247_2 is 'iso'", 
+        "invalid": ["marc:0247_z"],
         "map": [
+         "marc:0247_a",
+         "marc:0247_z"
         ]
       }
     ], 
     "post-processing": null
   }, 
   "isrc": {
-    "invalid": [
-          "marc:0240_z",
-          "marc:02400z",
-          "marc:02401z"
-    ],
+    
     "marc": [
       {
         "conditional": null, 
+        "invalid": [
+          "marc:0240_z",
+          "marc:02400z",
+          "marc:02401z"
+        ],
         "map": [
           "marc:0240_a",
           "marc:02400a",

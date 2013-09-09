@@ -106,10 +106,7 @@ class MARCParser(object):
         property_name -- property name
         value -- Value to add to set
         """
-        redis_key = "identifiers:{0}:invalid".format(property_name)
-        self.redis_datastore.sadd(
-            redis_key,
-            value)
+        
 
     def parse(self):
         """Method parses through rules and applies conditional, retriving,
@@ -130,7 +127,6 @@ class MARCParser(object):
                         marc_value = result
                 else:
                     mapping = marc_rule.get('map')
-                    invalid_pattern = marc_rule.get('invalid', [])
                     if mapping is not None:
                         for marc_pattern in mapping:
                             result = parse_MARC21(
@@ -138,19 +134,42 @@ class MARCParser(object):
                                 marc_pattern)
                             if len(result) > 0:
                                 marc_value.extend(result)
-                                if invalid_pattern.count(marc_pattern) > 0:
-                                    for row in result:
-                                        self.add_invalid_value(
-                                            property_name,
-                                            row)
-                                        
-                                
+                                self.test_validity(
+                                    marc_pattern,
+                                    marc_rule,
+                                    property_name,
+                                    result)
                 if len(marc_value) > 0:
                     self.entity_info[property_name].extend(marc_value)
             if rule.get('post-processing', None):
                 self.entity_info[property_name] = [post_processing(
                     self.entity_info[property_name],
                     rule.get('post-processing'))]
+
+    def test_validity(self,
+                      current_pattern,
+                      marc_rule,
+                      property_name,
+                      result,
+                      key_base='identifiers'):
+        """Method takes a marc mapping, tests to see if it invalid, and then
+        applies the result to a Redis set for invalid values of property, usually
+        an identifier, and saves to a sorted set in the Redis datastore.
+
+        Parameters:
+        current_pattern -- Current pattern being evaluated
+        property_name -- BIBFRAME entity property
+        result -- Result from applying rule to MARC record
+        key_base -- Redis key base, defaults to identifiers
+        """
+        invalid_pattern = marc_rule.get('invalid', [])
+        if len(invalid_pattern) > 0 or invalid_pattern.count(marc_rule) < 0:
+            return
+        redis_key = "{0}:{1}:invalid".format(key_base,
+                                             property_name)
+        for row in result:
+            self.redis_datastore.sadd(redis_key, row)
+        
 
 def conditional_MARC21(record, rule):
     """Function takes a conditional and a mapping dict (called a rule)
@@ -181,7 +200,29 @@ def conditional_MARC21(record, rule):
             if len(fields) < 1:
                 return output
             for field in fields:
-                if ['is', '='].count(operator) > 0:
+                test_result = parse_conditional_field(
+                        field,
+                        condition_marc_result)
+                if condition_result.has_key('method'):
+
+                    for row in test_result:
+                        if not hasattr(row,
+                                       condition_result.get('method')):
+                            return output
+                        test_value =  getattr(
+                            row,
+                            condition_result.get('method'))(
+                                condition_result.get('param'))
+                        if eval("{0} {1} {2}".format(
+                            test_value,
+                            operator,
+                            condition_result.get('string'))):
+                            output.extend(
+                                parse_variable_field(
+                                    field,
+                                    result))
+                            
+                elif ['is', '='].count(operator) > 0:
                     test_result = parse_variable_field(
                         field,
                         condition_marc_result)
@@ -189,27 +230,36 @@ def conditional_MARC21(record, rule):
                     if test_result == test_condition:
                         output.extend(parse_variable_field(field,
                                                  result))
-
-##        if condition_result.has_key('method'):
-##            for value in marc_values:
-##                method_value = getattr(value,
-##                                       condition_result.get('method'))(
-##                                           condition_result.get('param'))
-##                value = method_value
-
-##        
-##        if len(marc_values) > 0:
-##        for row in marc_values:
-##            if ['is', '='].count(operator) > 0:
-##                if unicode(row) == condition_result.get('string'):
-##                        __apply_map__(rule.get('map'))
-##                elif operator == '>':
-##                    if row > condition_result.get('string'):
-##                        __apply_map__(rule.get('map'))
-##                elif operator == '<':
-##                    if row < condition_result.get('string'):
-##                        __apply_map__(rule.get('map'))
+                
     return output
+
+def parse_conditional_field(field,
+                            condition_marc_result):
+    """Function takes a field and if the condition_marc_result mapping
+    includes X in either indicators, iterators through indicators and
+    returns a listing of matches.
+
+    Parameter:
+    Field -- MARC field
+    condition_marc_result -- Regex results from testing condition
+    """
+    output = []
+    test_indicator1 = condition_marc_result.get('ind1')
+    test_indicator2 = condition_marc_result.get('ind2')
+    if test_indicator1 != 'X' and test_indicator2 != 'X':
+        if field.indicators == [test_indicator1, test_indicator2]:
+            output = field.get_subfields(
+                condition_marc_result.get('subfield'))
+    elif test_indicator1 == 'X' and test_indicator2 != 'X':
+        if field.indicators[1] == test_indicator2:
+            output = field.get_subfields(
+                condition_marc_result.get('subfield'))
+    elif test_indicator1 != 'X' and test_indicator2 == 'X':
+        if field.indicators[0] == test_indicator1:
+            output = field.get_subfields(
+                condition_marc_result.get('subfield'))
+    return output
+        
 
 def parse_fixed_field(field, re_dict):
     """Function takes a MARC21 field and the Regex dictgroup
@@ -228,7 +278,7 @@ def parse_fixed_field(field, re_dict):
             return output
         start = re_dict.get('start')
         end = re_dict.get('end')
-        range_value = field.data[int(start):int(end)]
+        range_value = field.data[int(start):int(end)+1]
         if range_value is not None:
             output.append(range_value)
     if field.data[0] == re_dict.get('code'):
@@ -276,6 +326,8 @@ def parse_MARC21(record, mapping):
     output = []
     var_field_search = MARC_FLD_RE.search(mapping)
     fixed_field_search = MARC_FX_FLD_RE.search(mapping)
+    if fixed_field_search is None:
+        fixed_field_search = MARC_FX_FLD_RANGE_RE.search(mapping)
     if var_field_search is None and fixed_field_search is None:
         return output
     if fixed_field_search:
@@ -289,6 +341,7 @@ def parse_MARC21(record, mapping):
         if hasattr(field, 'indicators'):
             fld_result = parse_variable_field(field,
                                               regex_result)
+            
             
         else:
             fld_result = parse_fixed_field(field,
@@ -325,3 +378,6 @@ def post_processing(result, directive):
             return "{0}{1}{2}".format(" ".join(result[:-1]),
                                       value,
                                       result[-1])
+        
+    
+    

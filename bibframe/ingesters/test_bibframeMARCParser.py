@@ -219,10 +219,10 @@ class post_processingTest(TestCase):
             "value": "-"}
 
     def test_concat_post_processing(self):
-        value = parser.post_processing(["Title ", "2nd", "ed"],
+        value = parser.post_processing(["Title", "2nd", "ed"],
                                        'concat')
         self.assertEquals(value,
-                          "Title 2nded")
+                          "Title 2nd ed")
                                        
                                     
 

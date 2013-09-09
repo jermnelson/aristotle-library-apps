@@ -446,7 +446,7 @@ class MARC21toInstanceTest(TestCase):
                           ['014500'])
 
     def test_extract_ean(self):
-        self.assertEquals(list(self.instance_ingester.instance.ean)[0],
+        self.assertEquals(self.instance_ingester.instance.ean[0],
                           '9780838934326-9000')
 
 
@@ -514,21 +514,18 @@ class MARC21toInstanceTest(TestCase):
                           TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
                                           'ismn'))
 
-    def test_issn(self):
-        self.assertEquals(list(self.instance_ingester.instance.issn)[0],
-                         '0264-2875')
-
     def test_iso(self):
-        self.assertEquals(list(self.instance_ingester.instance.iso)[0],
+        self.assertEquals(self.instance_ingester.instance.iso[0],
                           '19200 Baud')
-        self.assert_(TEST_REDIS.sismember('identifiers:iso:invalid','2400 Baud'))
+        print(self.instance_ingester.instance.iso)
+        self.assert_(TEST_REDIS.sismember('identifiers:iso:invalid',
+                                          '2400 Baud'))
 
     def test_isrc(self):
-        self.assertEquals(self.instance_ingester.instance.isrc,
-                          ['NLC018413261'])
-        self.assertEquals(list(TEST_REDIS.sinter("identifiers:isrc:invalid",
-                                                 "{0}:isrc".format(self.instance_ingester.instance.redis_key))),
-                          ["NLC018403261"])
+        self.assertEquals(self.instance_ingester.instance.isrc[0],
+                          'NLC018413261')
+        self.assert_(TEST_REDIS.sismember("identifiers:isrc:invalid",
+                                          "NLC018403261"))
 
     def test_medium_of_music(self):
         self.assertEquals(self.instance_ingester.instance.mediumOfMusic,
