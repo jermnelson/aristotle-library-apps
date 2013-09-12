@@ -165,20 +165,14 @@ LOGGING = {
 
 try:
     from local_settings import *
-    INSTALLED_APPS.extend(ACTIVE_APPS)
-    STATICFILES_DIRS.extend(ACTIVE_STATICFILES_DIRS)
-    TEMPLATE_DIRS.extend(ACTIVE_TEMPLATE_DIRS)
-    
-##    if REDIS_CLUSTER_MODE is True:
-##   
-##        REDIS_DATASTORE = REDIS_DATASTORE
-##        
-##    else:
-##        import redis
-##        REDIS_DATASTORE = redis.StrictRedis(host=REDIS_MASTER_HOST,
-##                                            port=REDIS_MASTER_PORT)
-##    if len(CUSTOM_AUTHENTICATION_BACKENDS) > 0:
-##        AUTHENTICATION_BACKENDS.extend(CUSTOM_AUTHENTICATION_BACKENDS)
-        
+# If no local_settings.py exist, attempts to load rlsp_basic settings
+# for standalone
 except ImportError:
-    pass
+    try:
+        from rlsp_basic_settings import *
+    except ImportError:
+        pass
+
+INSTALLED_APPS.extend(ACTIVE_APPS)
+STATICFILES_DIRS.extend(ACTIVE_STATICFILES_DIRS)
+TEMPLATE_DIRS.extend(ACTIVE_TEMPLATE_DIRS)

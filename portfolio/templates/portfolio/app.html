@@ -17,7 +17,7 @@
  <div class="row">
   {% for app in portfolio %}
    <div class="col-sm-3 col-md-2">
-     <div class="thumbnail">
+     <div class="thumbnail" style="text-align: center">
       <button type="button" class="close" data-dismiss="thumbnail" aria-hidden="true">&times;</button>
       <a href="/apps/{{ app.url }}" 
         class="btn btn-default">
@@ -28,11 +28,14 @@
         {{ app.current_view.title }}
         <sup>
             <a href="#"
-                title="Expand" 
-                data-bind="click: toggleDescription">+</a>
+               title="Description"
+               data-container="body"
+               data-placement="top"
+               data-toggle="popover"
+               data-content="{{ app.description }}"
+               >?</a>
         </sup>
         </h4>
-        <p style="visible: none" id="app-{{ app.url }}-desc">{{ app.description }}</p>
       </div>
      </div>
    </div>
@@ -43,13 +46,10 @@
 <script>
  function PortfolioViewModel() {
   self = this;
-  self.toggleDescription = function() {
-    alert("In toggleDescription");
-  }
-
 
  } 
  ko.applyBindings(new PortfolioViewModel());
+ $("[data-toggle=popover]").popover();
 
 </script>
 {% endblock %}
