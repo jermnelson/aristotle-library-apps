@@ -1,0 +1,11 @@
+{
+  "a": "Preschool", 
+  "b": "Primary", 
+  "c": "Pre-adolescent", 
+  "d": "Adolescent", 
+  "e": "Adult", 
+  "f": "Specialized", 
+  "g": "General", 
+  "j": "Juvenile", 
+  "|": "No attempt to code"
+}

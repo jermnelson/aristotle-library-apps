@@ -320,6 +320,7 @@
       {
         "conditional": null, 
         "map": [
+            "marc:026__e"
         ]
       }
     ], 
@@ -391,7 +392,9 @@
     "marc": [
       {
         "conditional": null, 
+        "lookup": ["marc-illustration-codes"],
         "map": [
+          "marc:00818-21"
         ]
       }
     ], 
@@ -507,6 +510,10 @@
       {
         "conditional": null, 
         "map": [
+          "marc:02800a",
+          "marc:02801a",
+          "marc:02802a",
+          "marc:02803a"
         ]
       }
     ], 
@@ -526,6 +533,9 @@
     "marc": [
       {
         "conditional": null, 
+        "lookup": [
+          "marc-language-code-list"
+        ],
         "map": [
           "marc:041__a",
           "marc:0410_a", 
@@ -537,6 +547,9 @@
       },
       {
         "conditional": null, 
+        "lookup": [
+           "marc-language-code-list"
+        ],
         "map": [
           "marc:00835-37" 
         ]
@@ -550,6 +563,7 @@
       {
         "conditional": null, 
         "map": [
+          "marc:025__a"
         ]
       }
     ], 
@@ -559,7 +573,15 @@
     "marc": [
       {
         "conditional": null, 
+        "invalid": [
+          "marc:017__z",
+          "marc:017_8z"
+        ],
         "map": [
+          "marc:017__a",
+          "marc:017_8a",
+          "marc:017__z",
+          "marc:017_8z"
         ]
       }
     ], 
@@ -665,13 +687,13 @@
     "post-processing": null
   }, 
   "nban": {
-    "invalid": [
-      "marc:016__z",
-      "marc:0167_z"
-    ],
-    "marc": [
+   "marc": [
       {
         "conditional": null, 
+        "invalid": [
+          "marc:016__z",
+          "marc:0167_z"
+        ],
         "map": [
           "marc:016__a",
           "marc:0167_a",
@@ -683,10 +705,10 @@
     "post-processing": null
   }, 
   "nbn": {
-    "invalid": ["marc:015__z"],
-    "marc": [
+      "marc": [
       {
         "conditional": null, 
+        "invalid": ["marc:015__z"],
         "map": [
           "marc:015__a",
           "marc:015__z"
@@ -917,6 +939,7 @@
       {
         "conditional": null, 
         "map": [
+          "marc:037__a"
         ]
       }
     ], 
@@ -926,7 +949,12 @@
     "marc": [
       {
         "conditional": null, 
+        "invalid": [
+          "marc:027__z"
+        ],
         "map": [
+          "marc:027__a",
+          "marc:027__z"
         ]
       }
     ], 
@@ -957,10 +985,13 @@
       {
         "conditional": null, 
         "map": [
+          "marc:504__a",
+          "marc:504__b"
         ]
       }
     ], 
-    "post-processing": null
+    "post-processing": "concat"
+    
   }, 
   "system-number": {
     "marc": [

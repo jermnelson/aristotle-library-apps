@@ -401,7 +401,7 @@ class MARC21toInstanceTest(TestCase):
                                            subfields=['a','Book of the Year',
                                                       '3','Certificate']))
         marc_record.add_field(pymarc.Field(tag='856',
-                                           indicators=[' ',' '],
+                                           indicators=['4',' '],
                                            subfields=['u','http://hdl.handle.net/10176/coccc:6854']))
 
 ##        marc_record.add_field(pymarc.Field(tag='907',
@@ -451,8 +451,8 @@ class MARC21toInstanceTest(TestCase):
 
 
     def test_fingerprint(self):
-        self.assertEquals(list(self.instance_ingester.instance.fingerprint)[0],
-                          'dete nkck vess lodo 3 Anno Domini MDCXXXVI 3')
+        self.assertEquals(self.instance_ingester.instance.fingerprint,
+                          ['dete nkck vess lodo 3 Anno Domini MDCXXXVI 3'])
 
     def test_extract_hdl(self):
         self.assertEquals(list(self.instance_ingester.instance.hdl)[0],
@@ -465,13 +465,6 @@ class MARC21toInstanceTest(TestCase):
     def test_intended_audience(self):
         self.assertEquals(list(self.instance_ingester.instance.intendedAudience)[0],
                           "Interest grade level 7 & up")
-  
-    def test_extract_lccn(self):
-        self.assertEquals(list(self.instance_ingester.instance.lccn)[0],
-                          '95030619')
-        self.assertEquals(list(self.instance_ingester.instance.lccn)[1],
-                          '95030619x')
-        self.assert_(TEST_REDIS.sismember('identifiers:lccn:invalid','95030619x'))
  
     def test_extract_issue_number(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'issue-number'))[0],
@@ -479,11 +472,12 @@ class MARC21toInstanceTest(TestCase):
 
     def test_language(self):
         self.assertEquals(self.instance_ingester.instance.language,
-                          'English')
+                          ['English'])
 
     def test_extract_legal_deposit(self):
         self.assertEquals(list(getattr(self.instance_ingester.instance,'legal-deposit'))[0],
                           'DL 80-0-1524')
+        
         self.assert_(TEST_REDIS.sismember("identifiers:legal-deposit:invalid",
                                           "M444120-2006"))
 
@@ -517,7 +511,6 @@ class MARC21toInstanceTest(TestCase):
     def test_iso(self):
         self.assertEquals(self.instance_ingester.instance.iso[0],
                           '19200 Baud')
-        print(self.instance_ingester.instance.iso)
         self.assert_(TEST_REDIS.sismember('identifiers:iso:invalid',
                                           '2400 Baud'))
 
@@ -575,11 +568,12 @@ class MARC21toInstanceTest(TestCase):
                           'Sound')
 
     def test_extract_stock_number(self):
-        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
-                          '240-951/147')
-        self.assertEquals(list(getattr(self.instance_ingester.instance,'stock-number'))[0],
-                          TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
-                                          "stock-number"))
+        self.assertEquals(getattr(self.instance_ingester.instance,
+                                  'stock-number'),
+                          ['240-951/147'])
+        self.assertEquals(getattr(self.instance_ingester.instance,'stock-number'),
+                          [TEST_REDIS.hget(self.instance_ingester.instance.redis_key,
+                                          "stock-number")])
 
     def test_extract_strn(self):
         self.assertEquals(list(self.instance_ingester.instance.strn)[0],
@@ -592,8 +586,8 @@ class MARC21toInstanceTest(TestCase):
 
 
     def test_extract_supplementaryContentNote(self):
-        self.assertEquals(list(self.instance_ingester.instance.supplementaryContentNote)[0],
-                          'Literature cited: p. 67-68. References: 19')
+        self.assertEquals(self.instance_ingester.instance.supplementaryContentNote,
+                          ['Literature cited: p. 67-68. References: 19'])
         self.assertEquals(list(TEST_REDIS.smembers('{0}:supplementaryContentNote'.format(self.instance_ingester.instance.redis_key)))[1],
                           'Has numerous supplements')
 

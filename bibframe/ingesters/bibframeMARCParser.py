@@ -24,20 +24,23 @@ from aristotle.settings import PROJECT_HOME, REDIS_DATASTORE
 ##             'title': '245 $a',
 ##             'upi': '0247-+2"uri"/a,z'}
 
+MARC_FIXED_CODES = {}
+for key in ['marc-illustration-codes',
+            'marc-language-code-list']:
+    MARC_FIXED_CODES[key] = json.load(
+        open(os.path.join(
+            PROJECT_HOME,
+            'marc_batch',
+            'fixures',
+            '{0}.json'.format(key))))
+MARC_FIXED_CODES['007'] = json.load(
+        open(os.path.join(
+            PROJECT_HOME,
+            'marc_batch',
+            'fixures',
+            'marc-007-codes.json')))
 
-MARC_FIXED_CODES = {
-    '007': json.load(
-        open(os.path.join(
-            PROJECT_HOME,
-            'marc_batch',
-            'fixures',
-            'marc-007-codes.json'))),
-    'lang': json.load(
-        open(os.path.join(
-            PROJECT_HOME,
-            'marc_batch',
-            'fixures',
-            'marc-language-code-list.json')))}
+    
 
     
 BASIC_CONDITIONAL_RE = re.compile(r"""
@@ -66,7 +69,7 @@ MARC_FLD_RE = re.compile(r"""
 
 MARC_FX_FLD_RE = re.compile(r"""
 [marc:]                   # Matches M or underscore
-(?P<tag>\d{3,3})        # Matches specific MARC tags
+(?P<tag>\d{3,3}|ldr)      # Matches specific MARC tags or ldr
 (?P<code>\w{1,1})     # Code value in fixed position
 (?P<position>\d{2,2})  # Postition in fixed field
 """,
@@ -125,6 +128,7 @@ class MARCParser(object):
                         marc_rule)
                     if len(result) > 0:
                         marc_value = result
+                        
                 else:
                     mapping = marc_rule.get('map')
                     if mapping is not None:
@@ -140,6 +144,15 @@ class MARCParser(object):
                                     property_name,
                                     result)
                 if len(marc_value) > 0:
+                    if 'lookup' in marc_rule:
+                        temp_values = []
+                        lookup_keys = marc_rule.get('lookup')
+                        for lookup_key in lookup_keys:
+                            for value in marc_value:
+                                if MARC_FIXED_CODES[lookup_key].has_key(value):
+                                    temp_values.append(
+                                        MARC_FIXED_CODES[lookup_key][value])
+                        marc_value = temp_values
                     self.entity_info[property_name].extend(marc_value)
             if rule.get('post-processing', None):
                 self.entity_info[property_name] = [post_processing(
@@ -162,13 +175,15 @@ class MARCParser(object):
         result -- Result from applying rule to MARC record
         key_base -- Redis key base, defaults to identifiers
         """
-        invalid_pattern = marc_rule.get('invalid', [])
-        if len(invalid_pattern) > 0 or invalid_pattern.count(marc_rule) < 0:
+        if not 'invalid' in marc_rule:
             return
+        invalid_pattern = marc_rule['invalid']
         redis_key = "{0}:{1}:invalid".format(key_base,
                                              property_name)
         for row in result:
             self.redis_datastore.sadd(redis_key, row)
+
+        
         
 
 def conditional_MARC21(record, rule):
@@ -246,6 +261,7 @@ def parse_conditional_field(field,
     output = []
     test_indicator1 = condition_marc_result.get('ind1')
     test_indicator2 = condition_marc_result.get('ind2')
+    
     if test_indicator1 != 'X' and test_indicator2 != 'X':
         if field.indicators == [test_indicator1, test_indicator2]:
             output = field.get_subfields(
