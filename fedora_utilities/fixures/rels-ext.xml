@@ -7,6 +7,6 @@
          xmlns:fedora-model="info:fedora/fedora-system:def/model#">
  <rdf:Description rdf:about="info:fedora/{{ object_pid }}">
    <fedora:isMemberOfCollection rdf:resource="info:fedora/{{ parent_pid }}"></fedora:isMemberOfCollection>
-   <fedora-model:hasModel rdf:resource="info:fedora/{{ content_model }}"></fedora-model:hasModel>}
+   <fedora-model:hasModel rdf:resource="info:fedora/{{ content_model }}"></fedora-model:hasModel>
  </rdf:Description>
 </rdf:RDF>

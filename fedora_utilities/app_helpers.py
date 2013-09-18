@@ -101,6 +101,7 @@ def create_stubs(mods_xml,
                                      dsLabel="RELS-EXT",
                                      mimeType="application/rdf+xml",
                                      content=rels_ext)
+        print("New pid is {0}".format(new_pid))
     return
         
         

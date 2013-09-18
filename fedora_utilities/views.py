@@ -17,8 +17,6 @@ from fedora_utilities.models import *
 import os
 import datetime
 
-print("INSTITUTION={0}".format(INSTITUTION))
-
 @login_required
 def default(request):
     """
@@ -136,7 +134,7 @@ def add_stub_from_template(request):
                     mods_context['digitalOrigin'] = row[1]
             mods_context['language'] = 'English'
             mods_context['publication_place'] = PUBLICATION_PLACE
-            mods_context['publisher'] = INSTITUTION
+            mods_context['publisher'] = PUBLISHER
             extent = add_obj_template_form.cleaned_data['extent']
             if len(extent) > 0:
                 mods_context['extent'] = extent
@@ -158,7 +156,7 @@ def add_stub_from_template(request):
                                            mods_context)
                 mods_context['typeOfResource'] = 'text'
                 mods_context['corporate_contributors'] = []
-                mods_context['publisher'] = INSTITUTION
+                mods_context['publisher'] = PUBLISHER
                 mods_context['subject_topics'] = list(set(mods_context['subject_topics']))
             elif object_template == 3:
                 mods_context['schema_type'] = 'AudioObject'

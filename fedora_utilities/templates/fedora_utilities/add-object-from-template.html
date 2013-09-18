@@ -18,8 +18,10 @@
             for="object_template">
       {{ add_obj_form.object_template.label }}
      </label>
-     <div class="controls">
-      {{ add_obj_form.object_template }}
+     <div class="col-lg-6">
+      <div class="controls">
+       {{ add_obj_form.object_template }}
+      </div>
      </div>
     {# END Object Select #}
     </div>
@@ -29,8 +31,10 @@
             for="title">
      {{ add_obj_form.title.label }}
      </label>
-     <div class="controls"> 
-      {{ add_obj_form.title }}
+     <div class="col-lg-8">
+      <div class="controls"> 
+       {{ add_obj_form.title }}
+      </div>
      </div>
     {# END title #}
     </div>
@@ -41,8 +45,10 @@
                    col-lg-4" for="alt_title">
        {{ add_obj_form.alt_title.label }}
      </label>
-     <div class="controls">
-       {{ add_obj_form.alt_title }}
+     <div class="col-lg-8">
+      <div class="controls">
+        {{ add_obj_form.alt_title }}
+      </div>
      </div>
     {# END alternate title #}
     </div>
@@ -51,14 +57,16 @@
      <label class="col-lg-4 control-label" for="creators">
        {{ add_obj_form.creators.label }}
      </label>
-     <div class="controls">
-       {{ add_obj_form.creators }}
-     <a href="#" 
-        data-bind="click: addCreator" 
-        id="AddCreatorBtn">
-       <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
 
+     <div class="col-lg-4">
+      <div class="controls">
+       {{ add_obj_form.creators }}
+      <a href="#" 
+         data-bind="click: addCreator" 
+         id="AddCreatorBtn">
+        <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
+      </div>
      </div>
     {# END alternate creators #}
     </div>
@@ -69,12 +77,14 @@
      <label class="control-label col-lg-4" for="corporate_contributors ">
      {{ add_obj_form.corporate_creators.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.corporate_creators }}
-     <a href="#" data-bind="click: addCorporateCreator" 
-                 id="AddCorporateCreatorBtn">
-      <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.corporate_creators }}
+      <a href="#" data-bind="click: addCorporateCreator" 
+                  id="AddCorporateCreatorBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
+      </div>
      </div>
     {# END corporate creators #}
     </div>
@@ -85,13 +95,15 @@
      <label class="control-label col-lg-4" for="contributors ">
      {{ add_obj_form.contributors.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.contributors }}
-     <a href="#" data-bind="click: addContributor" 
-                 id="AddContributorBtn">
-      <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.contributors }}
+      <a href="#" data-bind="click: addContributor" 
+                  id="AddContributorBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
 
+      </div>
      </div>
     {# END contributors #}
     </div>
@@ -102,12 +114,14 @@
      <label class="control-label col-lg-4" for="corporate_contributors ">
      {{ add_obj_form.corporate_contributors.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.corporate_contributors }}
-     <a href="#" data-bind="click: addCorporateContributor" 
-                 id="AddCorporateContributorBtn">
-       <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.corporate_contributors }}
+      <a href="#" data-bind="click: addCorporateContributor" 
+                  id="AddCorporateContributorBtn">
+        <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
+      </div>
      </div>
     {# END corporate contributors #}
     </div>
@@ -117,8 +131,10 @@
      <label class="control-label col-lg-4" for="date_created">
        {{ add_obj_form.date_created.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.date_created }}
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.date_created }}
+      </div>
      </div>
     {# END Date Created #}
     </div>
@@ -127,9 +143,11 @@
      <label class="control-label col-lg-4" for="digital_origin">
       {{ add_obj_form.digital_origin.label }}
      </label>
-     <div class="controls">
-      {{ add_obj_form.digital_origin }}
-     </div>
+     <div class="col-lg-4">
+      <div class="controls">
+       {{ add_obj_form.digital_origin }}
+      </div>
+      </div>
     {# END digital origin #}
     </div>
 
@@ -138,9 +156,11 @@
      <label class="control-label col-lg-4" for="type_of_resource">
       {{ add_obj_form.type_of_resource.label }}
      </label>
-     <div class="controls">
+     <div class="col-lg-4">
+      <div class="controls">
        {{ add_obj_form.type_of_resource }}
-     </div>
+      </div>
+      </div>
     {# END Type of Resource  #}
     </div>
 
@@ -150,10 +170,12 @@
      <label class="control-label col-lg-4" for="genre">
       {{ add_obj_form.genre.label }}
      </label>
-     <div class="controls">
-      {{ add_obj_form.genre }} <strong>Or</strong> 
-      {{ add_obj_form.genre_free_form.label }}: 
-      {{ add_obj_form.genre_free_form }}
+     <div class="col-lg-6">
+      <div class="controls">
+       {{ add_obj_form.genre }} <strong>Or</strong> 
+       {{ add_obj_form.genre_free_form.label }}: 
+       {{ add_obj_form.genre_free_form }}
+      </div>
      </div>
     {# END Genre #}
     </div>
@@ -163,8 +185,10 @@
      <label class="control-label col-lg-4" for="genre">
       {{ add_obj_form.form.label }}
      </label>
-     <div class="controls">
-      {{ add_obj_form.form }}
+     <div class="col-lg-4">
+      <div class="controls">
+       {{ add_obj_form.form }}
+      </div>
      </div>
     {# END Genre #}
     </div>
@@ -174,8 +198,10 @@
      <label class="control-label col-lg-4" for="digital_origin">
      {{ add_obj_form.description.label }}
      </label>
-     <div class="controls">
-     {{  add_obj_form.description }}
+     <div class="col-lg-8">
+      <div class="controls">
+      {{  add_obj_form.description }}
+      </div>
      </div>
     {# END description #}
     </div>
@@ -185,9 +211,11 @@
       <label class="control-label col-lg-4" for="extent">
        {{ add_obj_form.extent.label }}
       </label>
-      <div class="controls">
-       {{ add_obj_form.extent }}
-      </div> 
+      <div class="col-lg-4">
+       <div class="controls">
+        {{ add_obj_form.extent }}
+       </div> 
+      </div>
     {# END extent #}
     </div>
     {# START admin_note #}
@@ -195,8 +223,10 @@
      <label class="control-label col-lg-4" for="admin_note">
      {{ add_obj_form.admin_note.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.admin_note }}
+     <div class="col-lg-8">
+      <div class="controls">
+      {{ add_obj_form.admin_note }}
+      </div>
      </div>
     {# END admin_note #}
     </div>
@@ -205,8 +235,10 @@
      <label class="control-label col-lg-4" for="rights_holder">
      {{ add_obj_form.rights_holder.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.rights_holder }}
+     <div class="col-lg-8">
+      <div class="controls">
+      {{ add_obj_form.rights_holder }}
+      </div> 
      </div>
     {# END Use and Reproduction Rights Holder #}
     </div>
@@ -215,11 +247,13 @@
      <label class="control-label col-lg-4" for="subject_people">
      {{ add_obj_form.subject_people.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.subject_people }}
-     <a href="#" data-bind="click: addPerson" id="AddPersonBtn">
-       <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.subject_people }}
+      <a href="#" data-bind="click: addPerson" id="AddPersonBtn">
+        <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
+      </div>
      </div>
     {# END people subjects #}
     </div>
@@ -228,11 +262,13 @@
      <label class="control-label col-lg-4" for="subject_places">
      {{ add_obj_form.subject_places.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.subject_places }}
-     <a href="#" data-bind="click: addPlace" id="AddPlaceBtn">
-       <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
+     <div class="col-lg-4">
+      <div class="controls">
+       {{ add_obj_form.subject_places }}
+       <a href="#" data-bind="click: addPlace" id="AddPlaceBtn">
+        <i class="glyphicon glyphicon-plus-sign"></i>
+       </a>
+      </div>
      </div>
     {# END place subjects #}
     </div>
@@ -241,14 +277,31 @@
      <label class="control-label col-lg-4" for="sub_topics">
      {{ add_obj_form.subject_topics.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.subject_topics }}
-     <a href="#" data-bind="click: addTopic" id="AddTopicBtn">
-      <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
-  
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.subject_topics }}
+      <a href="#" data-bind="click: addTopic" id="AddTopicBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
+      </div>
      </div>
     {# END topic subjects #}
+    </div>
+
+    {# START date subjects #}
+    <div class="form-group" data-bind="visible: showSubjectDates">
+     <label class="control-label col-lg-4" for="subject_dates">
+     {{ add_obj_form.subject_dates.label }}
+     </label>
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.subject_dates }}
+      <a href="#" data-bind="click: addDate" id="AddDateBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
+      </div>
+     </div>
+    {# END date subjects #}
     </div>
 
     {# START organizations #}
@@ -256,11 +309,13 @@
      <label class="control-label col-lg-4" for="organizations">
      {{ add_obj_form.organizations.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.organizations }}
-     <a href="#" data-bind="click: addOrganization" id="AddOrgBtn">
-      <i class="glyphicon glyphicon-plus-sign"></i>
-     </a>
+     <div class="col-lg-4">
+      <div class="controls">
+      {{ add_obj_form.organizations }}
+      <a href="#" data-bind="click: addOrganization" id="AddOrgBtn">
+       <i class="glyphicon glyphicon-plus-sign"></i>
+      </a>
+      </div>
      </div>
     {# END organizations #}
     </div>
@@ -268,12 +323,14 @@
     <div class="form-group" data-bind="visible: newsletterTemplate">
       <label class="control-label col-lg-4" for="frequency">
       {{ add_obj_form.frequency.label }}
-      </label>  
-      <div class="controls">
-      {{ add_obj_form.frequency }}
+      </label> 
+      <div class="col-lg-6"> 
+       <div class="controls">
+        {{ add_obj_form.frequency }}
        <strong>Or</strong><br>
-      {{ add_obj_form.frequency_free_form.label }}: 
-      {{ add_obj_form.frequency_free_form }}
+       {{ add_obj_form.frequency_free_form.label }}: 
+       {{ add_obj_form.frequency_free_form }}
+       </div>
       </div>
     </div>
     {# END frequency #}
@@ -283,8 +340,10 @@
      <label class="control-label col-lg-4" for="collection_pid">
        {{ add_obj_form.collection_pid.label }}
      </label>
-     <div class="controls">
-     {{ add_obj_form.collection_pid }}
+     <div class="col-lg-4">
+       <div class="controls">
+       {{ add_obj_form.collection_pid }}
+       </div>
      </div>
     {# END Parent Collection PID #}
     </div> 
@@ -294,10 +353,12 @@
       {{ add_obj_form.number_objects.label }}  
       </label>
       {# START num_objects controls #}
-      <div class="controls">
-        {{ add_obj_form.number_objects }}  
-      {# END num_objects controls #}
-      </div>
+      <div class="col-lg-4">
+       <div class="controls">
+         {{ add_obj_form.number_objects }}  
+       {# END num_objects controls #}
+       </div>
+      <?div>
     {# END num_objects #}
     </div>
     {# START submit #}
@@ -329,6 +390,7 @@
    self.showExtent = ko.observable(false);
    self.showGenre = ko.observable(false);
    self.showForm = ko.observable(false);
+   self.showSubjectDates = ko.observable(false);
    self.meetingMinutesTemplate = ko.observable(false);
    self.topicOne = ko.observable();
    self.genreOptions = ko.observableArray();
@@ -347,7 +409,7 @@
             self.showExtent(true);
             self.typeOfResource("text"); 
             var topic_one = $('#AddTopicBtn').prev(); 
-            topic_one.after("<input name='subject_topics' type='text' value='Universities and colleges'></input>");
+            topic_one.after("<input name='subject_topics' class='form-control' type='text' value='Universities and colleges'></input>");
             break;
 
         // Newsletter
@@ -397,6 +459,7 @@
           self.showGenre(true);
           self.showExtent(true);
           self.showForm(true);
+          self.showSubjectDates(true);
           break;
 
         default:
@@ -407,7 +470,7 @@
 
    self.addAdditionalField = function(btn_name, name) {
      var last_field = $("#" + btn_name).prev();
-     last_field.after("<input name='" + name + "' type='text' maxlength='255'></input>");
+     last_field.after("<input name='" + name + "' type='text' class='form-control' maxlength='255'></input>");
    }
 
    self.addCorporateCreator = function() {
@@ -424,6 +487,10 @@
 
    self.addCreator = function() {
     self.addAdditionalField("AddCreatorBtn", 'creators');
+   }
+
+   self.addDate = function() {
+    self.addAdditionalField("AddDateBtn", 'subject_dates');
    }
 
    self.addOrganization = function() {
@@ -455,6 +522,7 @@
      self.showAlternativeTitle(false);
      self.showContributors(false);
      self.showCorporateCreators(false);
+     self.showSubjectDates(false);
      self.topicOne("");
      self.typeOfResource(""); 
 

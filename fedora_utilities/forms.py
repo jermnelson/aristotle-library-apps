@@ -45,6 +45,7 @@ OBJECT_TEMPLATES = [(0, 'Choose model'),
 
 RIGHTS_STATEMENT = "Copyright restrictions apply. Contact Colorado College for permission to publish."
 PLACE = 'Colorado Springs (Colo.)'
+PUBLISHER = "Colorado College"
 PUBLICATION_PLACE = 'Colorado Springs, Colorado'
 
 class AddFedoraObjectFromTemplate(forms.Form):
@@ -52,79 +53,129 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                  max_length=1500,
                                  required=False,
                                  widget=forms.Textarea(
-                                      attrs={'rows':5}))
+                                      attrs={'rows':5,
+                                             'class': 'form-control'}))
     alt_title = forms.CharField(label='Alternative Title',
-                                required=False)
+                                required=False,
+                                widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
     collection_pid = forms.CharField(max_length=20,
-                                     label="PID of Parent Collection")
+                                     label="PID of Parent Collection",
+                                     widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
     
-    contributors = forms.CharField(required=False)
+    contributors = forms.CharField(required=False,
+                                   widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
     corporate_contributors = forms.CharField(
-        required=False)
+        required=False,
+        widget=forms.TextInput(
+            attrs={'class': 'form-control'}))
     corporate_creators = forms.CharField(
-        required=False)
-    creators = forms.CharField(required=False)
-    date_created = forms.CharField(label='Date Created')
+        required=False,
+        widget=forms.TextInput(
+            attrs={'class': 'form-control'}))
+    creators = forms.CharField(required=False,
+                               widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
+    date_created = forms.CharField(label='Date Created',
+                                   widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
     digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
                                        label='Digital Origin',
-                                       initial=1)
+                                       initial=1,
+                                       widget=forms.Select(
+                                            attrs={
+                                                 'class': 'form-control'}))
     description = forms.CharField(label='Description',
                                   max_length=1500,
                                   widget=forms.Textarea(
-                                      attrs={'rows':5}),
+                                      attrs={'class': 'form-control',
+                                             'rows':5}),
                                   required=False)
     extent = forms.CharField(label='Extent',
                              max_length=1500,
                              widget=forms.Textarea(
                                  attrs={'rows':5,
+                                        'class': 'form-control',
                                         'data-bind': 'value: extentValue'}),
                              required=False)
     form = forms.CharField(label='Form',
                            required=False,
                            widget=forms.TextInput(
-                               attrs={'data-bind': 'value: formValue'}))
-    frequency_free_form = forms.CharField(label='Other', required=False)
+                               attrs={
+                                   'class': 'form-control',
+                                   'data-bind': 'value: formValue'}))
+    frequency_free_form = forms.CharField(label='Other',
+                                          required=False,
+                                          widget=forms.TextInput(
+                                              attrs={'class': 'form-control'}))
     frequency = forms.ChoiceField(choices=MARC_FREQUENCY,
                                   label='Frequency',
-                                  required=False)
+                                  required=False,
+                                  widget=forms.Select(
+                                      attrs={'class': 'form-control'}))
     genre = forms.ChoiceField(
         label='Genre',
         required=False,
         widget=forms.Select(
-            attrs={'data-bind': "options: genreOptions, optionsText: 'name', optionsValue: 'value'"}))
-    genre_free_form = forms.CharField(label='Other', required=False)
+            attrs={'data-bind': "options: genreOptions, optionsText: 'name', optionsValue: 'value'",
+                   'class': 'form-control'}))
+    genre_free_form = forms.CharField(label='Other',
+                                      required=False,
+                                      widget=forms.TextInput(
+                                              attrs={'class': 'form-control'}))
     number_objects = forms.CharField(initial=1,
                                      label='Number of stub records',
-                                     max_length=5)
+                                     max_length=5,
+                                     widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
     object_template = forms.ChoiceField(label='Content Model Template',
                                         choices=OBJECT_TEMPLATES,
                                         widget=forms.Select(
-                                            attrs={'data-bind':'value: chosenContentModel, click: displayContentModel'}))
+                                            attrs={
+                                                 'class': 'form-control',
+                                                 'data-bind':'value: chosenContentModel, click: displayContentModel'}))
     organizations = forms.CharField(max_length=255,
                                     required=False,
-                                    initial=INSTITUTION_NAME)
+                                    initial=INSTITUTION_NAME,
+                                    widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
     rights_holder = forms.CharField(max_length=255,
                                     label='Rights Statement',
                                     initial=RIGHTS_STATEMENT,
                                     widget=forms.Textarea(
-                                        attrs={'rows': 3}))
+                                        attrs={'rows': 3,
+                                               'class': 'form-control'}))
+    subject_dates = forms.CharField(label='Subject -- Dates',
+                                    required=False,
+                                    widget=forms.TextInput(
+                                         {'class': 'form-control'}))
     subject_people = forms.CharField(label='Subject -- People',
-                                     required=False)
+                                     required=False,
+                                     widget=forms.TextInput(
+                                         {'class': 'form-control'}))
     subject_places = forms.CharField(label='Subject -- Places',
                                      required=False,
-                                     initial=PLACE)
+                                     initial=PLACE,
+                                     widget=forms.TextInput(
+                                         {'class': 'form-control'}))
     subject_topics = forms.CharField(
         label='Subject -- Topic',
         required=False,
         widget=forms.TextInput(
-            attrs={'data-bind': 'value: topicOne'}))
+            attrs={'data-bind': 'value: topicOne',
+                   'class': 'form-control'}))
     title = forms.CharField(max_length=120,
-                            label='Title')
+                            label='Title',
+                            widget=forms.TextInput(
+                                         attrs={'class': 'form-control'}))
     type_of_resource = forms.CharField(
         label='Type of Resource',
         required=False,
         widget=forms.TextInput(
-            attrs={'data-bind': 'value: typeOfResource'}))
+            attrs={'data-bind': 'value: typeOfResource',
+                   'class': 'form-control'}))
 
     def clean(self):
         if self._errors.has_key('genre'):
