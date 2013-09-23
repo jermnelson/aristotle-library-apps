@@ -79,6 +79,7 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                widget=forms.TextInput(
                                          attrs={'class': 'form-control'}))
     date_created = forms.CharField(label='Date Created',
+                                   required=False,
                                    widget=forms.TextInput(
                                          attrs={'class': 'form-control'}))
     digital_origin = forms.ChoiceField(choices=DIGITAL_ORIGIN,
