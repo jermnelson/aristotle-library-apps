@@ -297,6 +297,7 @@ def parse_fixed_field(field, re_dict):
         range_value = field.data[int(start):int(end)+1]
         if range_value is not None:
             output.append(range_value)
+    
     if field.data[0] == re_dict.get('code'):
         tag = re_dict.get('tag')
         code = re_dict.get('code')

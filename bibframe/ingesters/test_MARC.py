@@ -459,6 +459,7 @@ class MARC21toInstanceTest(TestCase):
                           'http://hdl.handle.net/10176/coccc:6854')
 
     def test_extract_illustrative_content_note(self):
+        print(self.instance_ingester.instance.illustrativeContentNote)
         self.assertEquals(list(self.instance_ingester.instance.illustrativeContentNote)[0], 
                           'ill.')
 
