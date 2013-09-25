@@ -80,6 +80,15 @@ class MARC21toBIBFRAMERegexTest(TestCase):
         self.assertEquals(result.get('code'),
                           'v')
 
+    def test_marc_fixed_field_range_re(self):
+        result = parser.MARC_FX_FLD_RANGE_RE.search("marc:00818-21").groupdict()
+        self.assertEquals(result.get('tag'),
+                          '008')
+        self.assertEquals(result.get('start'),
+                          '18')
+        self.assertEquals(result.get('end'),
+                          '21')
+
     def tearDown(self):
         TEST_REDIS.flushdb()
 

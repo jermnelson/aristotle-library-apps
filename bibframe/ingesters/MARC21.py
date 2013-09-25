@@ -420,7 +420,7 @@ class MARC21toInstance(MARCParser):
 
     def ingest(self):
         self.parse()
-        #! Should do duplication before calling add_instance
+        #! Should do duplication check before calling add_instance
         self.add_instance()
 
         

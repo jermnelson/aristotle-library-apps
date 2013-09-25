@@ -109,6 +109,7 @@ class MARCParser(object):
         property_name -- property name
         value -- Value to add to set
         """
+        pass
         
 
     def parse(self):
@@ -120,44 +121,47 @@ class MARCParser(object):
             marc_rules = rule.get('marc')
             if not marc_rules:
                 continue
-            for marc_rule in rule.get('marc'):
-                marc_value = []
-                if marc_rule.get('conditional', None):
-                    result = conditional_MARC21(
-                        self.record,
-                        marc_rule)
-                    if len(result) > 0:
-                        marc_value = result
-                        
-                else:
-                    mapping = marc_rule.get('map')
-                    if mapping is not None:
-                        for marc_pattern in mapping:
-                            result = parse_MARC21(
-                                self.record,
-                                marc_pattern)
-                            if len(result) > 0:
-                                marc_value.extend(result)
-                                self.test_validity(
-                                    marc_pattern,
-                                    marc_rule,
-                                    property_name,
-                                    result)
-                if len(marc_value) > 0:
-                    if 'lookup' in marc_rule:
-                        temp_values = []
-                        lookup_keys = marc_rule.get('lookup')
-                        for lookup_key in lookup_keys:
-                            for value in marc_value:
-                                if MARC_FIXED_CODES[lookup_key].has_key(value):
-                                    temp_values.append(
-                                        MARC_FIXED_CODES[lookup_key][value])
-                        marc_value = temp_values
-                    self.entity_info[property_name].extend(marc_value)
-            if rule.get('post-processing', None):
-                self.entity_info[property_name] = [post_processing(
-                    self.entity_info[property_name],
-                    rule.get('post-processing'))]
+            try:
+                for marc_rule in rule.get('marc'):
+                    marc_value = []
+                    if marc_rule.get('conditional', None):
+                        result = conditional_MARC21(
+                            self.record,
+                            marc_rule)
+                        if len(result) > 0:
+                            marc_value = result
+                            
+                    else:
+                        mapping = marc_rule.get('map')
+                        if mapping is not None:
+                            for marc_pattern in mapping:
+                                result = parse_MARC21(
+                                    self.record,
+                                    marc_pattern)
+                                if len(result) > 0:
+                                    marc_value.extend(result)
+                                    self.test_validity(
+                                        marc_pattern,
+                                        marc_rule,
+                                        property_name,
+                                        result)
+                    if len(marc_value) > 0:
+                        if 'lookup' in marc_rule:
+                            temp_values = []
+                            lookup_keys = marc_rule.get('lookup')
+                            for lookup_key in lookup_keys:
+                                for value in marc_value:
+                                    if MARC_FIXED_CODES[lookup_key].has_key(value):
+                                        temp_values.append(
+                                            MARC_FIXED_CODES[lookup_key][value])
+                            marc_value = temp_values
+                        self.entity_info[property_name].extend(marc_value)
+                if rule.get('post-processing', None):
+                    self.entity_info[property_name] = [post_processing(
+                        self.entity_info[property_name],
+                        rule.get('post-processing'))]
+            except:
+                print("Problem ingesting {0}".format(rule))
 
     def test_validity(self,
                       current_pattern,

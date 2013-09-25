@@ -422,9 +422,31 @@
   "intendedAudience": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional": null,
+        "lookup": ["marc-target-audience"],
         "map": [
+          "marc:008a22",
+          "marc:008b22",
+          "marc:008c22",
+          "marc:008d22",
+          "marc:008e22",
+          "marc:008e22",
+          "marc:008f22",
+          "marc:008g22",
+          "marc:008j22"
         ]
+      },
+      {
+        "conditional": null,
+        "map": [
+          "marc:521__a",
+          "marc:5210_a",
+          "marc:5212_a",
+          "marc:5213_a",
+          "marc:5214_a",
+          "marc:5218_a"
+        ],
+        "post-processing": 
       }
     ], 
     "post-processing": null
