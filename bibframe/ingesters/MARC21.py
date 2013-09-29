@@ -1137,7 +1137,7 @@ class MARC21toCreativeWork(MARC21Ingester):
             self.creative_work.save()            
                 
                 
-class MARC21toTitleEntity(MARC21Ingester):
+class MARC21toTitleEntity(MARCParser):
     "Extracts BIBFRAME TitleEntity info from MARC21 record"
 
     def __init__(self, **kwargs):
@@ -1145,11 +1145,23 @@ class MARC21toTitleEntity(MARC21Ingester):
 
         Parameters:
         """
+        kwargs['rules_filename'] = 'bibframe-title-entity-map.json'
         super(MARC21toTitleEntity, self).__init__(**kwargs)
         self.title_entity = None
 
+    def __add_title_entity__(self):
+        "Helper method adds a new TitleEntity"
+        self.title_entity = TitleEntity(redis_datastore=self.redis_datastore)
+        for key, value in self.entity_info.iteritems():
+            if key is not None and value is not None:
+                setattr(self.title_entity,
+                        key,
+                        value)
+        self.title_entity.save()
+
     def __get_or_add_title_entity__(self):
         "Helper method returns new or existing TitleEntity"
+        
         existing_titles = []
         if self.entity_info.get('titleValue') is not None:
             title_string = title
@@ -1157,18 +1169,12 @@ class MARC21toTitleEntity(MARC21Ingester):
                 title_string += " {0}".format(
                     self.entity_info.get('subtitle'))
             self.entity_info['label'] = title_string
-            
-                
-                                    
 
     def ingest(self):
         "Method finds or creates a TitleEntity in RLSP"
-        for attribute, rules in TitleEntity.marc_map.iteritems():
-            values = []
-            for rule in rules:
-                values.extend(self.__rule_one__(rule))
-            if len(values) > 0:
-                self.entity_info[attribute] = values
+        self.parse()
+        self.__add_title_entity__()
+
         
 
 def check_marc_exists(instance_ds, record, marc_tag='907'):

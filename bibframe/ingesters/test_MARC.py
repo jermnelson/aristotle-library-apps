@@ -614,6 +614,8 @@ class MARC21toInstanceTest(TestCase):
         TEST_REDIS.flushdb()
 
 
+
+
 class TestMARC21toLibraryHolding(TestCase):
 
     def setUp(self):
@@ -994,3 +996,89 @@ class TestMARC21toPerson(TestCase):
 ##        TEST_REDIS.flushdb()
 ##
         
+class TestMARC21toTitleEntity(TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_date(self):
+        # Works for both Authority and Bib Records
+        record = pymarc.Record()
+        record.add_field(pymarc.Field(tag='046',
+                                      indicators=[' ', ' '],
+                                      subfields=['k', '1902',
+                                                 'l', '1905']))
+        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
+                                           record=record)
+        title_parser.ingest()
+        self.assertEquals(title_parser.title_entity.date,
+                          ['1902 1905'])
+
+    def test_date2(self):
+        # Authority Record
+        record = pymarc.Record()
+        record.add_field(pymarc.Field(tag='130',
+                                      indicators=[' ', '0'],
+                                      subfields=['f', '1902']))
+        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
+                                           record=record)
+        title_parser.ingest()
+        self.assertEquals(title_parser.title_entity.date,
+                          ['1902'])
+
+    def test_form(self):
+        # Authority Record
+        record = pymarc.Record()
+        record.add_field(pymarc.Field(tag='730',
+                                      indicators=[' ', '3'],
+                                      subfields=['k', 'Manuscript']))
+        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
+                                           record=record)
+        title_parser.ingest()
+        self.assertEquals(title_parser.title_entity.form,
+                          ['Manuscript'])
+
+    def test_subtitle(self):
+        # Bib Record
+        record = pymarc.Record()
+        record.add_field(pymarc.Field(tag='242',
+                                      indicators=['1', '4'],
+                                      subfields=[
+                                          'a', 'Colorado heritage',
+                                          'b', 'the journal of the Colorado Historical Society.']))
+        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
+                                           record=record)
+        title_parser.ingest()
+        self.assertEquals(title_parser.title_entity.subtitle,
+                          ['the journal of the Colorado Historical Society.'])
+
+    def test_titleValue(self):
+        # Authority Record
+        record = pymarc.Record()
+        record.add_field(pymarc.Field(tag='130',
+                                      indicators=[' ', '0'],
+                                      subfields=[
+                                          'a', 'Beowulf']))
+        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
+                                           record=record)
+        title_parser.ingest()
+        self.assertEquals(title_parser.title_entity.titleValue,
+                          ['Beowulf'])
+
+    def test_titleValue2(self):
+        # Bib Record
+        record = pymarc.Record()
+        record.add_field(pymarc.Field(tag='245',
+                                      indicators=['0', '2'],
+                                      subfields=[
+                                          'a', 'Beowulf']))
+        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
+                                           record=record)
+        title_parser.ingest()
+        self.assertEquals(title_parser.title_entity.titleValue,
+                          ['Beowulf'])
+        
+
+
+    def tearDown(self):
+        TEST_REDIS.flushdb()
