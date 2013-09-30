@@ -87,6 +87,21 @@
     ], 
     "post-processing": null
   }, 
+  "lccn": {
+    "marc": [
+      {
+        "conditional": null, 
+        "invalid": [
+          "marc:010__z"
+        ],
+        "map": [
+          "marc:010__a",
+          "marc:010__z"
+        ],
+        "type": "authority"
+      }
+    ]
+  },
   "medium": {
     "marc": [
       {

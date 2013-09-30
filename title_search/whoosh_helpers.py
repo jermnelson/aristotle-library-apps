@@ -8,9 +8,11 @@ from bibframe.ingesters.MARC21 import MARC21toTitleEntity
 
 from whoosh.fields import Schema, TEXT, KEYWORD, STORED, ID
 from whoosh.index import create_in, open_dir, EmptyIndexError
+from whoosh.qparser import QueryParser
 
 TITLE_SCHEMA = Schema(
     title_key = ID(stored=True),
+    uniform_title = TEXT(stored=True),
     content = TEXT)
 
 TITLE_INDEX_FILE_STORAGE = os.path.join(
@@ -43,16 +45,51 @@ def index_marc(**kwargs):
     if ingester.title_entity is None:
         # Failed to ingest, return without indexing
         return
+    if marc_record['130'] is not None:
+        uniform_title = ' '.join(
+            [field.value() for field in marc_record.get_fields('130')])
+    else:
+        uniform_title = u''
     raw_content = u''
     for tag in ['130', '210', '222', '245', '246', '247', '730', '830']:
         fields = marc_record.get_fields(tag)
         for field in fields:
-            raw_content += unicode(field.value(),
-                                   errors='ignore')
+            raw_content += field.value()
+##            raw_content += unicode(field.value(),
+##                                   errors='ignore')
     writer = indexer.writer()
     writer.add_document(title_key=unicode(ingester.title_entity.redis_key),
-                        content=raw_content)
+                        content=raw_content,
+                        uniform_title=uniform_title)
     writer.commit()
+
+def title_search(**kwargs):
+    """function takes a number args and search title indexer
+
+    Keywords:
+    indexer -- Whoosh indexer object, defaults to module INDEXER
+    schema -- Whoosh Schema object, default to module's BF_SCHEMA
+    redis_datastore -- RLSP datastore, defaults to Aristotle Settings
+    query_text -- Text to search on
+    """
+    hits = []
+    indexer = kwargs.get('indexer', INDEXER)
+    schema = kwargs.get('schema', BF_SCHEMA)
+    redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
+    query_text = kwargs.get('query_text', None)
+    if query_text is None:
+        raise ValueError('Keyword search query cannot be None')
+    with indexer.searcher() as searcher:
+        query = QueryParser("content", schema).parse(query_text)
+        results = searcher.search(query)
+        for hit in results:
+            fields = hit.fields()
+            title_key = fields.get('title_key')
+            uniform_title = fields.get('uniform_title')
+            hits.append((title_key, uniform_title))
+    return hits
+    
+            
     
     
                                    

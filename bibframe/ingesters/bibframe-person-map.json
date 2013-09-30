@@ -1,0 +1,131 @@
+{
+  "authorizedAccessPoint": {
+    "marc": []
+  }, 
+  "description": {
+    "marc": []
+  }, 
+  "descriptionRole": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "If 100,110,111 then = \"primary\""
+        ]
+      }
+    ]
+  }, 
+  "hasAnnotation": {
+    "marc": []
+  }, 
+  "hasAuthority": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "$0, 035"
+        ]
+      }
+    ]
+  }, 
+  "identifier": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "0XX..."
+        ]
+      }
+    ]
+  }, 
+  "identifierLabel": {
+    "marc": []
+  }, 
+  "isni": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "authority:0247-+2\"isni\"/a,z"
+        ]
+      }
+    ]
+  }, 
+  "label": {
+    "marc": []
+  }, 
+  "orcid": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "authority:0247-+2\"orcid\"/a,z"
+        ]
+      }
+    ]
+  }, 
+  "relatedResource": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "787"
+        ]
+      }, 
+      {
+        "conditional": null, 
+        "map": [
+          "700,710,711, with $t and i2 not 2"
+        ]
+      }, 
+      {
+        "conditional": null, 
+        "map": [
+          "730,740, and i2 not 2"
+        ]
+      }
+    ]
+  }, 
+  "resourceRole": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "if 111,411,611,711,811--j,4"
+        ]
+      }, 
+      {
+        "conditional": null, 
+        "map": [
+          "100,400,600,700,800, 110,410,610,710,810--/e,4"
+        ]
+      }
+    ]
+  }, 
+  "system-number": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "$0"
+        ]
+      }, 
+      {
+        "conditional": null, 
+        "map": [
+          "035--/a,z"
+        ]
+      }
+    ]
+  }, 
+  "viaf": {
+    "marc": [
+      {
+        "conditional": null, 
+        "map": [
+          "authority:0247-+2\"via,zf\"/a,z"
+        ]
+      }
+    ]
+  }
+}
