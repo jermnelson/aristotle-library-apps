@@ -115,7 +115,7 @@ class FormatFacet(Facet):
         facet_key = 'bf:Facet:{0}'.format(kwargs['redis_id'])
         kwargs['name'] = get_facet_label(kwargs['redis'],
                                          facet_key,
-                                         'Access (Carrier Media)')
+                                         'Format (Carrier Media)')
         kwargs['items'] = []
         # Formats are sorted by number of instances
         format_item_keys = kwargs['redis'].zrevrange(
