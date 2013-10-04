@@ -50,7 +50,10 @@ urlpatterns = patterns('',
 )
 
 for app in ACTIVE_APPS:
-    print(r'^apps/{0}[$|/]'.format(app), '{0}.urls'.format(app))
+    if app == 'ccetd':
+        urlpatterns.append(
+            url(r'^apps/etd[$|/]',
+                include('ccetd.urls')))       
     urlpatterns.append(
         url(r'^apps/{0}[$|/]'.format(app),
             include('{0}.urls'.format(app))))
