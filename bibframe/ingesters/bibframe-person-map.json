@@ -44,10 +44,15 @@
   "isni": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional": "if marc:0247_2 is 'isni'",
+        "invalid": [
+         "marc:0247_z"
+        ],
         "map": [
-          "authority:0247-+2\"isni\"/a,z"
-        ]
+          "marc:0247_a", 
+          "marc:0247_z"
+        ],
+        "type": "authority"
       }
     ]
   }, 
@@ -57,10 +62,15 @@
   "orcid": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional": "if marc:0247_2 is 'orcid'", 
+        "invalid":[
+          "marc:0247_z"
+        ],
         "map": [
-          "authority:0247-+2\"orcid\"/a,z"
-        ]
+          "marc:0247_a",
+          "marc:0247_z"
+        ],
+        "type": "authority"
       }
     ]
   }, 
@@ -105,15 +115,13 @@
   "system-number": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional": null,
+        "invalid": [
+         "marc:035__z"
+        ], 
         "map": [
-          "$0"
-        ]
-      }, 
-      {
-        "conditional": null, 
-        "map": [
-          "035--/a,z"
+          "marc:035__a",
+          "marc:035__z"
         ]
       }
     ]
@@ -121,9 +129,13 @@
   "viaf": {
     "marc": [
       {
-        "conditional": null, 
+        "conditional": :if marc:0247_2 is 'via,zf'", 
+        "invalid": [
+          "marc:0237_z"
+        ],
         "map": [
-          "authority:0247-+2\"via,zf\"/a,z"
+          "marc:0247_a",
+          "marc:0237_z"
         ]
       }
     ]

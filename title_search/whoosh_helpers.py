@@ -51,7 +51,7 @@ def index_marc(**kwargs):
     else:
         uniform_title = u''
     raw_content = u''
-    for tag in ['130', '210', '222', '245', '246', '247', '730', '830']:
+    for tag in ['130', '210', '222', '245', '246', '247', '430', '730', '830']:
         fields = marc_record.get_fields(tag)
         for field in fields:
             raw_content += field.value()
