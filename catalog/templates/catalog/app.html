@@ -1,0 +1,43 @@
+{% extends 'app-base.html' %}
+{% load i18n %}
+
+{% block head-title %}{{ INSTITUTION.name }} {% trans "Catalog" %}{% endblock %}
+
+{% block meta %}
+ <meta name="description" content="Default Catalog View for Redis Library Services Platform">
+ <meta name="author" content="Jeremy Nelson">
+{% endblock %}
+
+{% block more-css %}
+<link href=" {{ STATIC_URL }}css/catalog.css" rel="stylesheet">
+{% endblock %}
+
+{% block navbar %}
+ {% include 'snippets/header.html' %}
+ {% include 'snippets/search-logging.html' %}
+{% endblock %} 
+
+{% block body %}
+<div class="row">
+ {# START Search query display #}
+ <div class="col-md-12">
+   <h2 class="search-query" data-bind="visible: showResults">{% trans "You searched for" %} "<span class="search-terms" data-bind="text: searchQuery"></span>"</h2>
+ {# END Search query display #}
+ </div>
+ {% include 'snippets/results.html' %}
+</div>
+{% endblock %}
+
+{% block footer %}
+ {% include 'snippets/footer.html' %}
+{% endblock %}
+
+{% block more-js %}
+<script src="{{ STATIC_URL }}js/catalog.js"></script>
+<script>
+  var catalogViewModel = new CatalogViewModel();
+  ko.applyBindings(catalogViewModel);
+
+</script>
+{% endblock %}
+

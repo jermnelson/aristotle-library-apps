@@ -1,0 +1,20 @@
+{% load i18n %}
+{# START header #}
+<header>
+ <div class="row">
+  {# START Library Name #}
+  <div class="col-md-9 col-md-offset-1">
+   <h1>{{ INSTITUTION.name }}</h1>
+  {# END Library Name #}
+  </div>
+
+  {# START Library Hours #}
+  <div class="col-xs-6 col-sm-6 col-md-2">
+    <h3>{{ INSTITUTION.hours.week }}<br>
+        {{ INSTITUTION.hours.weekend }}</h3>
+  {# END Library Hours #}
+  </div>
+</div>
+{# END header #}
+</header>
+

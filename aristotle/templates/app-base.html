@@ -56,16 +56,16 @@
   {# END main DIV #}
   </div>
 
+  {% block footer %}
   {# START footer DIV #}
   <div id="footer">
-   {% block footer %}
    <div class="container">
      {% include 'snippets/footer-action-bar.html' %}
    </div>
-   {% endblock %} 
   {# END footer DIV #}
   </div> 
-  {% block dialogs %}
+ {% endblock %} 
+    {% block dialogs %}
     {% include 'snippets/about.html' %}
     {% include 'snippets/help.html' %}
     {% include 'snippets/feedback.html' %}

@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="row">
+ <div class="col-md-5">
+  <div class="form-search">
+   <form class="form form-inline" role="form">
+    {% csrf_token %}
+    <h4>Find Library Items</h4>
+    <div class="form-group">
+     <input class="form-control" 
+            data-bind="value: searchQuery"
+            id="query" 
+            name="query" 
+            type="text">
+    </div>
+    <div class="form-group">
+     <button type="button"
+             class="btn btn-info" 
+             data-bind="click: runSearch">Go</button>
+    </div>
+   </form>
+  </div>
+ </div>
+ <div class="col-md-2 col-md-offset-5 user-log-btn" >
+   <a class="pull-right"
+      href="/accounts/{% if user.is_authenticated %}logout">{% trans "Log out" %}{% else %}login">{% trans "Log in" %}{% endif %}</a>
+ </div>
+</div>
+
