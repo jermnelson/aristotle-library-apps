@@ -1,9 +1,9 @@
 # Django settings for aristotle project.
 import os.path
 
-
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_HOME = os.path.split(PROJECT_ROOT)[0]
+
 DEFAULT_CHARSET = 'utf-8'
 DEBUG = True
 OFFSET = 25 # Default shard size for discover results is 25
