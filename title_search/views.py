@@ -4,29 +4,30 @@
 __author__ = "Jeremy Nelson"
 
 from app_settings import APP
-from django.views.generic.simple import direct_to_template
+
 from django.http import HttpResponse
+from django.shortcuts import redirect, render
 from django.template import Context,Template,loader
 import aristotle.settings as settings
 from aristotle.views import json_view
 import json,sys,logging
 import title_search.redis_helpers as redis_helpers
 
-authority_redis = settings.AUTHORITY_REDIS
-instance_redis = settings.INSTANCE_REDIS
-work_redis = settings.CREATIVE_WORK_REDIS
-
+##authority_redis = settings.AUTHORITY_REDIS
+##instance_redis = settings.INSTANCE_REDIS
+##work_redis = settings.CREATIVE_WORK_REDIS
+##
 def app(request):
     """
     Returns app view for Title Search App
 
     :param request: HTTP Request
     """
-    return direct_to_template(request,
-                              'title_search/app.html',
-                              {'app':APP,
-                               'aristotle_url':settings.DISCOVERY_RECORD_URL,
-			       'institution':settings.INSTITUTION})
+    return render(request,
+                  'title_search/app.html',
+                  {'app':APP,
+                   'aristotle_url':settings.DISCOVERY_RECORD_URL,
+                   'institution':settings.INSTITUTION})
 
 
 

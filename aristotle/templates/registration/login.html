@@ -9,20 +9,20 @@
 <h3>Please login</h3>
 <form class="form-horizontal" method="post" action="/accounts/login/">
  {% csrf_token %}
-  <div class="control-group">
+  <div>
     <label for="id_username" class="control-label">{{ form.username.label_tag }}</label>
-    <div class="controls">
+    <div>
       {{ form.username }}
     </div>
   </div>
-  <div class="control-group">
+  <div>
    <label for="id_password" class="control-label">{{ form.password.label_tag }}</label>
-   <div class="controls">
+   <div class="">
      {{ form.password }}
     </div>
   </div>
-  <div class="control-group">
-    <div class="controls">
+  <div>
+    <div class="">
       <input type="submit" class="btn btn-primary" value="Login" />
     </div>
   </div>
