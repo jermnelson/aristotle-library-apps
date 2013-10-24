@@ -1,12 +1,15 @@
 {% load i18n %}
 {# START Results row #}
 <div class="row" >
+ <div class="col-md-4" data-bind="visible: showFilters">
+
+ </div>
  <div class="col-md-1">
    <button class="btn btn-lg"
            data-bind="click: prevResultsPage"><span class="glyphicon glyphicon-chevron-left"></span></button>
  </div>
  {# START Results Size DIV #}
- <div class="col-md-10">
+ <div data-bind="attr: { class: resultPaneSize }">
    <ul class="list-inline" {# data-bind="foreach: searchResults"#} >
      <li> 
       <img data-bind="attr: { src: coverURL }" class="img-rounded"> 
@@ -18,7 +21,7 @@
                 data-bind="attr: { title: title, 
                                    'data-content': instanceLocation">{% trans "Find in Library" %}</button>
         <button class="btn btn-details"
-                data-toggle="popover">{% trans "Item Detail" %}</button>
+                data-toggle="popover">{% trans "Item Details" %}</button>
 
 
       </div>

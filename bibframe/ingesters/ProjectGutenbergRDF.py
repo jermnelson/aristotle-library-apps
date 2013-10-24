@@ -98,7 +98,6 @@ class ProjectGutenbergIngester(Ingester):
                     holding.redis_key)
                 instances.append(new_instance.redis_key)
         return instances
-           
 
     def __extract_creators__(self, rdf_xml):
         """
@@ -110,7 +109,8 @@ class ProjectGutenbergIngester(Ingester):
         creators = []
         agents = rdf_xml.findall("{{{0}}}agent".format(PGTERMS))
         for agent in agents:
-            person = {'identifiers': {'pg': agent.attrib['{{{0}}}about'.format(RDF)]}}
+            person = {'identifiers': {'pg': agent.attrib['{{{0}}}about'.format(RDF)]},
+                      'rda:variantNameForThePerson': []}
             for element in agent.getchildren():
                 if element.tag == '{{{0}}}name'.format(PGTERMS):
                     person['rda:preferredNameForThePerson'] = element.text
@@ -123,6 +123,19 @@ class ProjectGutenbergIngester(Ingester):
                     person['rda:dateOfBirth'] = element.text
                 if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
                     person['rda:dateOfDeath'] = element.text
+                if element.tag == "{{{0}}}webpage".format(PGTERMS):
+                    #! Harvest from vcard from wikipedia
+                    pass
+                    
+                
+            aliases = agent.findall("{{{0}}}alias".format(PGTERMS))
+            for row in aliases:
+                if row.text == person.get('rda:preferredNameForThePerson'):
+                    pass
+                else:
+                    person['rda:variantNameForThePerson'].append(
+                        row.text)
+            
             person_result = get_or_generate_person(
                 person,
                 redis_datastore=self.redis_datastore)
@@ -177,6 +190,18 @@ class ProjectGutenbergIngester(Ingester):
             raise ValueError("Title not found")
 
 
+    def __generate_cover_art__(self, work):
+        """
+        Method generates Cover Art image based on searching openlibrary.org for the
+        title terms
+
+        Parameter:
+        work -- Creative Work
+        """
+        if work.title is not None:
+            title_string = self.redis_datastore.hget(work.title, 'titleValue')
+            
+
     def ingest(self, filepath):
         """
         Method takes a filepath to an RDF xml file from Project Gutenberg and
@@ -195,6 +220,7 @@ class ProjectGutenbergIngester(Ingester):
         lcc_values = self.__extract_lcc__(rdf_xml)
         try:
             work['title'] = self.__extract_title__(rdf_xml)
+            self.__generate_cover_art__(work)
         except ValueError, e:
             return
         classifier = self.classifier(redis_datastore=self.redis_datastore,

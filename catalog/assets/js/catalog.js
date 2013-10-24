@@ -37,7 +37,7 @@ function CatalogViewModel() {
              if(server_response["instances"].length > 0) {
                self.showResults(true);
                for(instance_num in server_response['instances']) {
-                 var instance = server_response['instances'][work_num];
+                 var instance = server_response['instances'][instance_num];
                  self.searchResults.push(instance);
                } 
              } else {
@@ -53,6 +53,15 @@ function CatalogViewModel() {
   }
 
   // Handlers for Results
+  self.displayFilters = function() {
+   if(self.showFilters() == true) {
+     self.showFilters(true);
+   } else {
+     self.showFilters(false);
+   }
+
+  }
+
   self.nextResultsPage = function() {
 
   }
@@ -60,7 +69,11 @@ function CatalogViewModel() {
 
   }
 
+  self.resultPaneSize = ko.observable("col-md-10");
+  self.resultSize = ko.observable(0);
+  self.resultSliceSize = ko.observable(5);
 
+  self.showFilters = ko.observable(false);
   self.showResults = ko.observable(false);
 
   self.auSearch = function() {
