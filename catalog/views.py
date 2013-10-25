@@ -7,6 +7,8 @@ from aristotle.views import json_view
 from aristotle.settings import INSTITUTION
 from app_settings import APP
 
+from keyword_search.whoosh_helpers import keyword_search
+
 def app(request):
     """
     Default view for Catalog

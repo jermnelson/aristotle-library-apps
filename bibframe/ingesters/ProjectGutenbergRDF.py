@@ -13,10 +13,13 @@ from bibframe.models import Holding, SoftwareOrMultimedia
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.ingesters.marc21_maps import LC_CALLNUMBER_MAP
 from bibframe.classifiers import simple_fuzzy
+from bibframe.ingesters.open_library_helpers import cover_art_from_title
 
+from keyword_search.whoosh_helpers import index_rdf_kw
 from organization_authority.redis_helpers import get_or_add_organization
 from person_authority.redis_helpers import get_or_generate_person
 from title_search.redis_helpers import index_title
+from title_search.whoosh_helpers import index_title_entity
 
 
 
@@ -135,7 +138,9 @@ class ProjectGutenbergIngester(Ingester):
                 else:
                     person['rda:variantNameForThePerson'].append(
                         row.text)
-            
+            if len(person['rda:variantNameForThePerson']) > 0:
+                person['rda:variantNameForThePerson'] = set(
+                    person['rda:variantNameForThePerson'])
             person_result = get_or_generate_person(
                 person,
                 redis_datastore=self.redis_datastore)
@@ -185,21 +190,11 @@ class ProjectGutenbergIngester(Ingester):
                                        titleValue=dc_title.text)
             title_entity.save()
             index_title(title_entity, self.redis_datastore)
+            index_title_entity(title_key=title_entity.redis_key,
+                               redis_datastore=self.redis_datastore)
             return title_entity.redis_key
         else:
             raise ValueError("Title not found")
-
-
-    def __generate_cover_art__(self, work):
-        """
-        Method generates Cover Art image based on searching openlibrary.org for the
-        title terms
-
-        Parameter:
-        work -- Creative Work
-        """
-        if work.title is not None:
-            title_string = self.redis_datastore.hget(work.title, 'titleValue')
             
 
     def ingest(self, filepath):
@@ -210,9 +205,10 @@ class ProjectGutenbergIngester(Ingester):
 
         :param filepath: Filepath to RDF XML
         """
+        cover_art = None
         work = {}
         if os.path.exists(filepath) is True:
-            rdf_xml = etree.XML(open(filepath, 'rb').read())
+            rdf_xml = etree.parse(filepath)
         else:
             raise IOError("{0} not found".format(filepath))
         work['rda:isCreatedBy'] = self.__extract_creators__(rdf_xml)
@@ -220,7 +216,10 @@ class ProjectGutenbergIngester(Ingester):
         lcc_values = self.__extract_lcc__(rdf_xml)
         try:
             work['title'] = self.__extract_title__(rdf_xml)
-            self.__generate_cover_art__(work)
+            cover_art = cover_art_from_title(
+                self.redis_datastore.hget(work.get('title'),
+                                          'titleValue'),
+                self.redis_datastore)
         except ValueError, e:
             return
         classifier = self.classifier(redis_datastore=self.redis_datastore,
@@ -260,9 +259,22 @@ class ProjectGutenbergIngester(Ingester):
             for instance_key in instances:
                 self.redis_datastore.sadd('{0}:hasInstance'.format(work_key),
                                            instance_key)
-                
+                if cover_art is not None:
+                    self.redis_datastore.sadd(
+                        '{0}:annotates'.format(cover_art.redis_key),
+                        instance_key)
             title_key = self.redis_datastore.hget(work_key,
                                                   'title')
             self.redis_datastore.sadd('{0}:relatedResource'.format(title_key),
                                       work_key)
+            index_rdf_kw(rdf_xml=rdf_xml,
+                         author_keys = work['rda:isCreatedBy'],
+                         work_key=work_key,
+                         instance_keys=instances,
+                         title=self.redis_datastore.hget(work.get('title'),
+                                                         'titleValue'))
+                      
+                      
+                      
+            
             

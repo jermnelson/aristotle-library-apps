@@ -32,9 +32,28 @@ else:
         TITLE_INDEX_FILE_STORAGE,
         TITLE_SCHEMA)
 
+def index_title_entity(**kwargs):
+    """Function indexes title information from a titleEntity
+    """
+    indexer = kwargs.get('indexer', INDEXER)
+    title_key = kwargs.get('title_key')
+    redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
+    raw_content = u''
+    for value in redis_datastore.hvals(title_key):
+        raw_content += u" {0}".format(value)
+    if redis_datastore.exists("{0}:rda:variantTitle".format(
+        title_key)):
+        for title in redis_datastore.smembers(
+            "{0}:rda:variantTitle".format(title_key)):
+            raw_content += u" {0}".format(title)
+    writer = indexer.writer()
+    writer.add_document(title_key=unicode(title_key),
+                        content=raw_content)
+    writer.commit()
+
 def index_marc(**kwargs):
     """function indexes title information from either MARC authority or
-    bibliogrpahic record"""
+    bibliographic record"""
     indexer = kwargs.get('indexer', INDEXER)
     marc_record = kwargs.get('record', None)
     redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)

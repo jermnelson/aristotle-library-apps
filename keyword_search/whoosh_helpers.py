@@ -32,6 +32,42 @@ else:
                         BF_SCHEMA)
 
 
+def index_rdf_kw(**kwargs):
+    """function indexes all elements in an XML RDF
+
+    Keywords:
+    indexer -- Whoosh indexer object, defaults to module INDEXER
+    schema -- Whoosh Schema object, default to module's BF_SCHEMA
+    work_key -- BIBFRAME Creative Work or subclass Redis key, defaults to None
+    instance_keys -- List of BIBFRAME Instance keys
+    author_keys -- List of BIBFRAME Author keys
+    commit -- Boolean, default is True
+    rdf_xml -- Lxml RDF object
+    """
+    indexer = kwargs.get('indexer', INDEXER)
+    schema = kwargs.get('schema', BF_SCHEMA)
+    rdf_xml = kwargs.get('rdf_xml')
+    author_keys = kwargs.get('author_keys')
+    commit = kwargs.get('commit', True)
+    work_key = kwargs.get('work_key')
+    instance_keys = kwargs.get('instance_key', [])
+    title = kwargs.get('title')
+    raw_content = u''
+    
+    for tags in rdf_xml.getroot().iter():
+        if tags.text is None or len(tags.text) < 1:
+            pass
+        raw_content += u" {0}".format(tags.text)
+    writer = indexer.writer()
+    writer.add_document(instance_keys= u' '.join(instance_keys),
+                        work_key=unicode(work_key, errors='ignore'),
+                        title=unicode(title,
+                                      errors='ignore'),
+                        content=raw_content)
+    if commit is True:
+        writer.commit()
+    
+
 
 def index_marc(**kwargs):
     """function indexes MARC21 file for BIBFRAME searching
