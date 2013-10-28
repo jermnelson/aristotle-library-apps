@@ -70,6 +70,7 @@ function CatalogViewModel() {
   }
 
   self.resultPaneSize = ko.observable("col-md-10");
+
   self.resultSize = ko.observable(0);
   self.resultSliceSize = ko.observable(5);
 

@@ -86,4 +86,5 @@ span.search-terms {
   text-transform: uppercase;
 }
 
- 
+img.img-result { height: 120px; width: auto; }
+img.img-result { height: auto; width: 90px; } 

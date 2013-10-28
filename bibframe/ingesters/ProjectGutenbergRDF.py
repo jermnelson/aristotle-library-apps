@@ -233,6 +233,7 @@ class ProjectGutenbergIngester(Ingester):
                 self.redis_datastore.sadd(
                     '{0}:resourceRole:aut'.format(creator_key),
                     work_key)
+            print(work_key, creator_key)
             # Adds LCC Facet annotations to datastore
             for lcc in lcc_values:
                 facet_key = "bf:Annotation:Facet:LOCFirstLetter:{0}".format(
@@ -263,6 +264,9 @@ class ProjectGutenbergIngester(Ingester):
                     self.redis_datastore.sadd(
                         '{0}:annotates'.format(cover_art.redis_key),
                         instance_key)
+                    self.redis_datastore.sadd(
+                        '{0}:hasAnnotation'.format(instance_key),
+                        cover_art.redis_key)
             title_key = self.redis_datastore.hget(work_key,
                                                   'title')
             self.redis_datastore.sadd('{0}:relatedResource'.format(title_key),

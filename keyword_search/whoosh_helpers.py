@@ -2,6 +2,7 @@
 __author__ = "Jeremy Nelson"
 
 import os
+import urllib
 
 from aristotle.settings import REDIS_DATASTORE, PROJECT_HOME
 
@@ -127,33 +128,56 @@ def keyword_search(**kwargs):
         query = QueryParser("content", schema).parse(query_text)
         results = searcher.search(query)
         for hit in results:
+            
             fields = hit.fields()
+            instance_info = {'title': fields.get('title')}
             work_key = fields.get('work_key')
-            work_key_info = work_key.split(":")
-            instance_key = fields.get('instance_key')
-            fields['instance_thumbnail'] = redis_datastore.hget(
-                'bf:Work:icons',
-                'bf:{0}'.format(work_key_info[-2]))
-            if fields['instance_thumbnail'] is None:
-                fields['instance_thumbnail'] = redis_datastore.hget(
-                'bf:Work:icons',
-                'bf:Work')
-            fields['instance_thumbnail'] = '/static/img/{0}'.format(
-                fields['instance_thumbnail'])
-            fields['thumbnail_alt'] = 'Icon for {0}'.format(
-                fields.get('title'))
-            fields['work_url'] = '/apps/discovery/{0}/{1}'.format(
-                work_key_info[-2],
-                work_key_info[-1])
-            fields['work_summary'] = 'by '
-            for creator_key in redis_datastore.smembers(
-                '{0}:rda:isCreatorBy'.format(work_key)):
-                creator_key_info = creator_key.split(":")
-                fields['work_summary'] += """<a href="/apps/discovery/{0}/{1}">{2}</a>,
-""".format(creator_key_info[-2],
-           creator_key_info[-1],
-           redis_datastore.hget(creator_key,
-                                'rda:preferredNameForThePerson'))
-                                
-            hits.append(fields)
+            for instance_key in redis_datastore.smembers(
+                '{0}:hasInstance'.format(work_key)):
+                # Tries to extract cover image and holdings statement
+                for annotation_key in redis_datastore.smembers(
+                    '{0}:hasAnnotation'.format(instance_key)):
+                    if annotation_key.startswith('bf:CoverArt'):
+                        cover_id = annotation_key.split(":")[-1]
+                        instance_info[
+                            'coverURL'] = 'CoverArt/{0}-body.jpg'.format(cover_id)
+                    if annotation_key.startswith('bf:Holding'):
+                        instance_info[
+                            'instanceLocation'] = redis_datastore.hget(
+                                annotation_key,
+                                'label')
+            if not 'coverURL' in instance_info:
+                instance_info['coverURL'] = 'http://placeholder.it/90x120&{0}'.format(
+                     urllib.urlencode({'text': fields.get('title')}))
+            hits.append(instance_info)
+                
+                        
+                
+##            work_key_info = work_key.split(":")
+##            instance_key = fields.get('instance_key')
+##            fields['instance_thumbnail'] = redis_datastore.hget(
+##                'bf:Work:icons',
+##                'bf:{0}'.format(work_key_info[-2]))
+##            if fields['instance_thumbnail'] is None:
+##                fields['instance_thumbnail'] = redis_datastore.hget(
+##                'bf:Work:icons',
+##                'bf:Work')
+##            fields['instance_thumbnail'] = '/static/img/{0}'.format(
+##                fields['instance_thumbnail'])
+##            fields['thumbnail_alt'] = 'Icon for {0}'.format(
+##                fields.get('title'))
+##            fields['work_url'] = '/apps/discovery/{0}/{1}'.format(
+##                work_key_info[-2],
+##                work_key_info[-1])
+##            fields['work_summary'] = 'by '
+##            for creator_key in redis_datastore.smembers(
+##                '{0}:rda:isCreatorBy'.format(work_key)):
+##                creator_key_info = creator_key.split(":")
+##                fields['work_summary'] += """<a href="/apps/discovery/{0}/{1}">{2}</a>,
+##""".format(creator_key_info[-2],
+##           creator_key_info[-1],
+##           redis_datastore.hget(creator_key,
+##                                'rda:preferredNameForThePerson'))
+##                                
+##            hits.append(fields)
     return hits

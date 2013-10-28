@@ -10,16 +10,19 @@
  </div>
  {# START Results Size DIV #}
  <div data-bind="attr: { class: resultPaneSize }">
-   <ul class="list-inline" {# data-bind="foreach: searchResults"#} >
+   <ul class="list-inline" data-bind="foreach: searchResults" >
      <li> 
-      <img data-bind="attr: { src: coverURL }" class="img-rounded"> 
+      <h3 data-bind="text: title"></h3>
+      <p style="text-align: center">
+      <img data-bind="attr: { src: coverURL }" class="img-rounded img-result"> 
+      </p>
       <div class="btn-group-vertical">
         <button class="btn btn-reserve"
-                data-bind="click: reserveInstance">{% trans "Reserve now" %}</button>
+             >{% trans "Reserve now" %}</button>
         <button class="btn btn-find"
                 data-toogle="popover"
-                data-bind="attr: { title: title, 
-                                   'data-content': instanceLocation">{% trans "Find in Library" %}</button>
+                data-bind="attr: { title: title }">{% trans "Find in Library" %}</button>
+
         <button class="btn btn-details"
                 data-toggle="popover">{% trans "Item Details" %}</button>
 
