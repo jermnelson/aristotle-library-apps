@@ -36,6 +36,14 @@ header h1 {
   text-transform: uppercase;
 }
 
+div.result-nav { 
+ line-height: 350px;
+}
+
+div.result-nav button {
+ vertical-align: middle;
+}
+
 div.user-log-btn {
   background-color: rgb(5, 163, 206);
   border-bottom-left-radius: 1em;

@@ -47,7 +47,9 @@ def display_cover_image(request, redis_id, type_of, image_ext):
 @json_view
 def search(request):
     results = keyword_search(query_text=request.POST.get('q'))
-    return {'message': 'ok', 'instances': results}
+    return {'message': 'ok',
+            'instances': results.get('hits'),
+            'total': results.get('total')}
 
     
 

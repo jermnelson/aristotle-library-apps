@@ -34,12 +34,14 @@ function CatalogViewModel() {
            function(server_response) {
             if(server_response['result'] != "error") { 
              self.searchResults.removeAll();
+            self.resultSize(server_response["total"]);             
              if(server_response["instances"].length > 0) {
                self.showResults(true);
                for(instance_num in server_response['instances']) {
                  var instance = server_response['instances'][instance_num];
                  self.searchResults.push(instance);
                } 
+              $(".instance-action").popover();
              } else {
               self.contextHeading("Search Returned 0 Works"); 
              }
@@ -62,17 +64,40 @@ function CatalogViewModel() {
 
   }
 
-  self.nextResultsPage = function() {
+  self.findInLibrary = function(instance) {
+    var info = "<p>" + instance['title'] + " is located at " + instance['instanceLocation'] + "</p>";
+    $('#' + instance['instance_key']).popover({content: info, html: true}); 
+    $('#' + instance['instance_key']).popover('show');
+    alert("Item title is " + instance['title']);
 
   }
+
+  self.itemDetails = function(instance) {
+    alert("Should display instance popover for " + instance['instance_key']);
+
+  }
+
+  self.nextResultsPage = function() {
+   var start_position = self.resultStartSlice();
+   var end_position = self.resultEndSlice();
+   for(i=start_position; i<= self.resultEndSlice(); i++) {
+      self.searchResults()[i-1]['isActive']= false;
+   }
+   for(i=end_position+1; i <= end_position+6; i++) {
+      self.searchResults()[i-1]['isActive'] = true;
+
+   }
+  }
+
   self.prevResultsPage = function() {
 
   }
 
   self.resultPaneSize = ko.observable("col-md-10");
 
-  self.resultSize = ko.observable(0);
-  self.resultSliceSize = ko.observable(5);
+  self.resultStartSlice = ko.observable(1);
+  self.resultEndSlice = ko.observable(5);
+  self.resultSize = ko.observable(5);
 
   self.showFilters = ko.observable(false);
   self.showResults = ko.observable(false);

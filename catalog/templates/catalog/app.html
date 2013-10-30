@@ -23,7 +23,7 @@
  <div class="col-md-12">
    <h2 class="search-query" data-bind="visible: showResults">{% trans "You searched for" %} "<span class="search-terms" data-bind="text: searchQuery"></span>"
     <span class="search-stats" >
-     <span data-bind="text: resultSliceSize"></span>/<span data-bind="text: resultSize"></span>
+     <span data-bind="text: resultStartSlice"></span>-<span data-bind="text: resultEndSlice"></span>/<span data-bind="text: resultSize"></span>
     <a href="#" data-bind="click: displayFilters" style="font-size: .75em"><span class="glyphicon glyphicon-forward"></span></a>
     </span>
    </h2>
@@ -42,7 +42,6 @@
 <script>
   var catalogViewModel = new CatalogViewModel();
   ko.applyBindings(catalogViewModel);
-
 </script>
 {% endblock %}
 

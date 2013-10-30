@@ -117,7 +117,7 @@ def keyword_search(**kwargs):
     redis_datastore -- RLSP datastore, defaults to Aristotle Settings
     query_text -- Text to search on
     """
-    hits = []
+    output = {'hits' : []}
     indexer = kwargs.get('indexer', INDEXER)
     schema = kwargs.get('schema', BF_SCHEMA)
     redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
@@ -127,13 +127,17 @@ def keyword_search(**kwargs):
     with indexer.searcher() as searcher:
         query = QueryParser("content", schema).parse(query_text)
         results = searcher.search(query)
-        for hit in results:
-            
+        output['total'] = len(results)
+        for i,hit in enumerate(results):
             fields = hit.fields()
-            instance_info = {'title': fields.get('title')}
+            instance_info = {'isActive': False,
+                             'title': fields.get('title')}
+            if i < 5:
+                instance_info['isActive'] = True
             work_key = fields.get('work_key')
             for instance_key in redis_datastore.smembers(
                 '{0}:hasInstance'.format(work_key)):
+                instance_info['instance_key'] = instance_key
                 # Tries to extract cover image and holdings statement
                 for annotation_key in redis_datastore.smembers(
                     '{0}:hasAnnotation'.format(instance_key)):
@@ -147,9 +151,8 @@ def keyword_search(**kwargs):
                                 annotation_key,
                                 'label')
             if not 'coverURL' in instance_info:
-                instance_info['coverURL'] = 'http://placeholder.it/90x120&{0}'.format(
-                     urllib.urlencode({'text': fields.get('title')}))
-            hits.append(instance_info)
+                instance_info['coverURL'] = '/static/img/no-cover.png'
+            output['hits'].append(instance_info)
                 
                         
                 
@@ -180,4 +183,4 @@ def keyword_search(**kwargs):
 ##                                'rda:preferredNameForThePerson'))
 ##                                
 ##            hits.append(fields)
-    return hits
+    return output

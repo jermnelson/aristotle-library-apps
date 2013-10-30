@@ -4,27 +4,29 @@
  <div class="col-md-4" data-bind="visible: showFilters">
 
  </div>
- <div class="col-md-1">
+ <div class="col-md-1 result-nav">
    <button class="btn btn-lg"
            data-bind="click: prevResultsPage"><span class="glyphicon glyphicon-chevron-left"></span></button>
  </div>
  {# START Results Size DIV #}
  <div data-bind="attr: { class: resultPaneSize }">
    <ul class="list-inline" data-bind="foreach: searchResults" >
-     <li> 
-      <h3 data-bind="text: title"></h3>
+     <li data-bind="visible: isActive"> 
+      <h3 data-bind="text: title" style="width: 150px"></h3>
       <p style="text-align: center">
       <img data-bind="attr: { src: coverURL }" class="img-rounded img-result"> 
       </p>
       <div class="btn-group-vertical">
         <button class="btn btn-reserve"
              >{% trans "Reserve now" %}</button>
-        <button class="btn btn-find"
-                data-toogle="popover"
-                data-bind="attr: { title: title }">{% trans "Find in Library" %}</button>
-
-        <button class="btn btn-details"
-                data-toggle="popover">{% trans "Item Details" %}</button>
+        <button class="btn btn-find instance-action"
+                data-container="body"
+                {# data-title="Library Location" #}
+                data-bind="attr: { id: instance_key }, click: $root.findInLibrary">{% trans "Find in Library" %}</button>
+                                   
+        <button class="btn btn-details instance-action"
+                data-toggle="popover"
+                data-bind="click: $root.itemDetails">{% trans "Item Details" %}</button>
 
 
       </div>
@@ -32,7 +34,7 @@
    </ul>
  {# END Results Size DIV #}
  </div>
- <div class="col-md-1">
+ <div class="col-md-1 result-nav">
    <button class="btn btn-lg"
            data-bind="click: nextResultsPage"><span class="glyphicon glyphicon-chevron-right"></span></button>
  
