@@ -1,0 +1,11 @@
+{% load i18n %}
+<div>
+ <ul class="list-unstyled">
+  {% if isbn %}
+  <li>ISBN: {{ isbn }}</li>
+  {% endif %}
+  {% if url %}
+   <li>Download: <a href="{{ url }}">{{ url }}</a></li> 
+  {% endif %}
+ </ul>
+</div>

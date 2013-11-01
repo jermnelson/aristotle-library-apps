@@ -6,6 +6,8 @@ import urllib
 
 from aristotle.settings import REDIS_DATASTORE, PROJECT_HOME
 
+from django.template import Context, loader
+
 from whoosh.analysis import StemmingAnalyzer
 from whoosh.fields import Schema, TEXT, KEYWORD, STORED, ID
 from whoosh.index import create_in, open_dir, EmptyIndexError
@@ -144,12 +146,22 @@ def keyword_search(**kwargs):
                     if annotation_key.startswith('bf:CoverArt'):
                         cover_id = annotation_key.split(":")[-1]
                         instance_info[
-                            'coverURL'] = 'CoverArt/{0}-body.jpg'.format(cover_id)
+                            'coverURL'] = '/apps/catalog/CoverArt/{0}-body.jpg'.format(cover_id)
                     if annotation_key.startswith('bf:Holding'):
-                        instance_info[
-                            'instanceLocation'] = redis_datastore.hget(
-                                annotation_key,
-                                'label')
+                        location_key = redis_datastore.hget(
+                            annotation_key,
+                            'schema:contentLocation')
+                        holding_template = loader.get_template("find-in-library.html")
+                        instance_info['instanceLocation'] = holding_template.render(
+                            Context({'label': redis_datastore.hget(
+                                location_key,
+                                'label'),
+                                     'url': redis_datastore.hget(
+                                         location_key,
+                                         'url')}))
+                item_detail_template = loader.get_template("item-details.html")
+                instance_info['instanceDetail'] = item_detail_template.render(
+                    Context({'url': redis_datastore.hget(instance_key, 'url')}))
             if not 'coverURL' in instance_info:
                 instance_info['coverURL'] = '/static/img/no-cover.png'
             output['hits'].append(instance_info)

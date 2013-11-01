@@ -41,7 +41,7 @@ function CatalogViewModel() {
                  var instance = server_response['instances'][instance_num];
                  self.searchResults.push(instance);
                } 
-              $(".instance-action").popover();
+              $(".instance-action").popover({ html: true });
              } else {
               self.contextHeading("Search Returned 0 Works"); 
              }

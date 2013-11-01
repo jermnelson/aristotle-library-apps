@@ -4,15 +4,16 @@
  <div class="col-md-4" data-bind="visible: showFilters">
 
  </div>
- <div class="col-md-1 result-nav">
+ <div class="col-md-1 result-nav" >
    <button class="btn btn-lg"
-           data-bind="click: prevResultsPage"><span class="glyphicon glyphicon-chevron-left"></span></button>
+           data-bind="click: prevResultsPage"><span data-bind="visible: showResults" class="glyphicon glyphicon-chevron-left"></span></button>
  </div>
  {# START Results Size DIV #}
  <div data-bind="attr: { class: resultPaneSize }">
    <ul class="list-inline" data-bind="foreach: searchResults" >
      <li data-bind="visible: isActive"> 
       <h3 data-bind="text: title" style="width: 150px"></h3>
+      {# <p data-bind="html: authors"></p> #}
       <p style="text-align: center">
       <img data-bind="attr: { src: coverURL }" class="img-rounded img-result"> 
       </p>
@@ -20,13 +21,14 @@
         <button class="btn btn-reserve"
              >{% trans "Reserve now" %}</button>
         <button class="btn btn-find instance-action"
+                data-toggle="popover"
                 data-container="body"
-                {# data-title="Library Location" #}
-                data-bind="attr: { id: instance_key }, click: $root.findInLibrary">{% trans "Find in Library" %}</button>
+                data-title="Find it here" 
+                data-bind="attr: { 'data-content': instanceLocation }">{% trans "Find in Library" %}</button>
                                    
         <button class="btn btn-details instance-action"
                 data-toggle="popover"
-                data-bind="click: $root.itemDetails">{% trans "Item Details" %}</button>
+                data-bind="attr: { 'data-content': instanceDetail }">{% trans "Item Details" %}</button>
 
 
       </div>
@@ -34,7 +36,7 @@
    </ul>
  {# END Results Size DIV #}
  </div>
- <div class="col-md-1 result-nav">
+ <div class="col-md-1 result-nav" data-bind="visible: showResults">
    <button class="btn btn-lg"
            data-bind="click: nextResultsPage"><span class="glyphicon glyphicon-chevron-right"></span></button>
  

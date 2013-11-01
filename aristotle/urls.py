@@ -17,7 +17,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
 ##    url(r'^$', 'discovery.views.app', name='home'),
-    url(r'^$','portfolio.views.default', name='portfolio.home'),
+    url(r'^$', 'catalog.views.app', name='home'),
+##    url(r'^$','portfolio.views.default', name='portfolio.home'),
     url(r'^feedback', 'aristotle.views.feedback'),
     url(r'^background.html$','aristotle.views.background', name='background'),
     url(r'^getting-started.html$','aristotle.views.starting', name='getting-started'),
