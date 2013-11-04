@@ -121,6 +121,7 @@ def keyword_search(**kwargs):
     """
     output = {'hits' : []}
     indexer = kwargs.get('indexer', INDEXER)
+    html_output = kwargs.get('html_output', True)
     schema = kwargs.get('schema', BF_SCHEMA)
     redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
     query_text = kwargs.get('query_text', None)
@@ -151,17 +152,28 @@ def keyword_search(**kwargs):
                         location_key = redis_datastore.hget(
                             annotation_key,
                             'schema:contentLocation')
-                        holding_template = loader.get_template("find-in-library.html")
-                        instance_info['instanceLocation'] = holding_template.render(
-                            Context({'label': redis_datastore.hget(
+                        location_label = redis_datastore.hget(
                                 location_key,
-                                'label'),
-                                     'url': redis_datastore.hget(
-                                         location_key,
-                                         'url')}))
-                item_detail_template = loader.get_template("item-details.html")
-                instance_info['instanceDetail'] = item_detail_template.render(
-                    Context({'url': redis_datastore.hget(instance_key, 'url')}))
+                                'label')
+                        location_url = redis_datastore.hget(
+                                location_key,
+                                'url')
+                        if html_output:
+                            holding_template = loader.get_template("find-in-library.html")
+                            instance_info['instanceLocation'] = holding_template.render(
+                                Context({'label': location_label,
+                                         'url': location_label}))
+                        else:
+                            instance_info['instanceLocation'] = {
+                                'label': location_label,
+                                'url': location_url}
+                if html_output:
+                    item_detail_template = loader.get_template("item-details.html")
+                    instance_info['instanceDetail'] = item_detail_template.render(
+                        Context({'url': redis_datastore.hget(instance_key, 'url')}))
+                else:
+                    instance_info['instanceDetail'] = {
+                        'url': redis_datastore.hget(instance_key, 'url')}
             if not 'coverURL' in instance_info:
                 instance_info['coverURL'] = '/static/img/no-cover.png'
             output['hits'].append(instance_info)

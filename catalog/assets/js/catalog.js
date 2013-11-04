@@ -34,7 +34,10 @@ function CatalogViewModel() {
            function(server_response) {
             if(server_response['result'] != "error") { 
              self.searchResults.removeAll();
-            self.resultSize(server_response["total"]);             
+            self.resultSize(server_response["total"]);
+            if(server_response["total"] < 5) {
+              self.resultEndSlice(server_response["total"]);
+            }             
              if(server_response["instances"].length > 0) {
                self.showResults(true);
                for(instance_num in server_response['instances']) {
