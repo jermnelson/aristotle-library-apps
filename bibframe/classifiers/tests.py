@@ -6,16 +6,15 @@ __author__ = "Jeremy Nelson"
 import redis
 import simple_fuzzy
 import unittest
-from bibframe.models import Book, TitleEntity
+from bibframe.models import Book, Title
 from title_search.redis_helpers import index_title
 from aristotle.settings import TEST_REDIS
 
 class TestWorkClassifier(unittest.TestCase):
 
     def setUp(self):
-        self.title_entity = TitleEntity(redis_datastore = TEST_REDIS,
-                                        label='Pride and Prejudice',
-                                        titleValue='Pride and Prejudice')
+        self.title_entity = Title(redis_datastore = TEST_REDIS,
+                                  titleValue='Pride and Prejudice')
         self.title_entity.save()
         index_title(self.title_entity, TEST_REDIS)
         self.work = Book(redis_datastore=TEST_REDIS,

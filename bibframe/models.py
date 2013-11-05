@@ -11,6 +11,7 @@ import os
 import sys
 import urllib2
 
+from collections import OrderedDict
 from lxml import etree
 from rdflib import RDF, RDFS, Namespace
 
@@ -55,7 +56,7 @@ ACTIVE_ENTITIES = ['Agent',
                    'Tactile',
                    'TemporalConcept',
                    'ThreeDimensionalObject',
-                   'TitleEntity',
+                   'Title',
                    'TopicalConcept',
                    'Work']
 
@@ -78,13 +79,12 @@ def load_rdf():
                                          'bibframe',
                                          'fixures',
                                          'vocab.rdf'))
-    rdf_classes = {}
-    rdf_class_order = []
+    rdf_classes = OrderedDict()
     rdfs_class_elems = vocab_rdf.findall('{{{0}}}Class'.format(RDFS))
     for row in rdfs_class_elems:
         class_name = os.path.split(
             row.attrib.get('{{{0}}}about'.format(RDF)))[-1]
-        rdf_class_order.append(class_name)
+        class_label = row.find("{{{0}}}label".format(RDFS))
         parent_class = row.find("{{{0}}}subClassOf".format(RDFS))
         if parent_class is not None:
             parent_url = parent_class.attrib.get('{{{0}}}resource'.format(RDF))
@@ -93,7 +93,7 @@ def load_rdf():
                 rdf_classes[parent_name]['children'].append(class_name)
             else:
                 rdf_classes[parent_name] = {'children': [class_name,],
-                                            'attributes': {},
+                                            'attributes': {'label': class_label.text},
                                             'parent': None}
         else:
             parent_name = None
@@ -126,21 +126,34 @@ def load_rdf():
                 continue
 ##                raise ValueError("Unknown BIBFRAME class {0}".format(
 ##                    domain_name))
-            rdf_classes[domain_name]['attributes'][attrib_name] = None
+            if 'TitleEntity' == domain_name:
+                rdf_classes['Title']['attributes'][attrib_name] = None
+            else:
+                rdf_classes[domain_name]['attributes'][attrib_name] = None
             if marc_mapping is not None:
                 if rdf_classes[domain_name]['attributes'].has_key('marc_map'):
                     rdf_classes[domain_name]['attributes']['marc_map'].update(
                         marc_mapping)
                 else:
                     rdf_classes[domain_name]['attributes']['marc_map'] = marc_mapping
-                
+
+##    # Create stubs classes
+##    for class_name in rdf_classes.keys():
+##        new_class = type(class_name,
+##                         (object,),
+##                         {})
+##        setattr(sys.modules[__name__],
+##                class_name,
+##                new_class)
+##                         
     # Creates Classes with class hiearchy
-    for class_name in rdf_class_order:
+    for class_name in rdf_classes.keys():
         parent_class = RedisBibframeInterface
         # Adds any missing marc mapping in the parent class to the child
         # classes.
         if rdf_classes[class_name]['parent'] is not None:
             parent_name = rdf_classes[class_name]['parent']
+            
             if rdf_classes[
                 parent_name]['attributes'].has_key('marc_map'):         
                 for parent_map_key, parent_map_rule in rdf_classes[
@@ -152,15 +165,21 @@ def load_rdf():
                                 'marc_map'].has_key(parent_map_key):
                             rdf_classes[class_name]['attributes'][
                                 'marc_map'][parent_map_key] = parent_map_rule
+            if class_name == 'TitleEntity':
+                class_name = 'Title'
+            
             parent_class = getattr(sys.modules[__name__],
                                    rdf_classes[class_name]['parent'])
-                                   
+        
+            
+                               
         new_class = type(class_name,
                          (parent_class,),
                          rdf_classes[class_name].get('attributes'))
         setattr(sys.modules[__name__],
                 class_name,
                 new_class)
+        
                    
 
 def process_key(bibframe_key,

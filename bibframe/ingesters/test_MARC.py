@@ -996,7 +996,7 @@ class TestMARC21toPerson(TestCase):
 ##        TEST_REDIS.flushdb()
 ##
         
-class TestMARC21toTitleEntity(TestCase):
+class TestMARC21toTitle(TestCase):
 
     def setUp(self):
         pass
@@ -1008,8 +1008,8 @@ class TestMARC21toTitleEntity(TestCase):
                                       indicators=[' ', ' '],
                                       subfields=['k', '1902',
                                                  'l', '1905']))
-        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
-                                           record=record)
+        title_parser = MARC21toTitle(redis_datastore=TEST_REDIS,
+                                     record=record)
         title_parser.ingest()
         self.assertEquals(title_parser.title_entity.date,
                           ['1902 1905'])
@@ -1020,8 +1020,8 @@ class TestMARC21toTitleEntity(TestCase):
         record.add_field(pymarc.Field(tag='130',
                                       indicators=[' ', '0'],
                                       subfields=['f', '1902']))
-        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
-                                           record=record)
+        title_parser = MARC21toTitle(redis_datastore=TEST_REDIS,
+                                     record=record)
         title_parser.ingest()
         self.assertEquals(title_parser.title_entity.date,
                           ['1902'])
@@ -1032,8 +1032,8 @@ class TestMARC21toTitleEntity(TestCase):
         record.add_field(pymarc.Field(tag='730',
                                       indicators=[' ', '3'],
                                       subfields=['k', 'Manuscript']))
-        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
-                                           record=record)
+        title_parser = MARC21toTitle(redis_datastore=TEST_REDIS,
+                                     record=record)
         title_parser.ingest()
         self.assertEquals(title_parser.title_entity.form,
                           ['Manuscript'])
@@ -1046,8 +1046,8 @@ class TestMARC21toTitleEntity(TestCase):
                                       subfields=[
                                           'a', 'Colorado heritage',
                                           'b', 'the journal of the Colorado Historical Society.']))
-        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
-                                           record=record)
+        title_parser = MARC21toTitle(redis_datastore=TEST_REDIS,
+                                     record=record)
         title_parser.ingest()
         self.assertEquals(title_parser.title_entity.subtitle,
                           ['the journal of the Colorado Historical Society.'])
@@ -1059,8 +1059,8 @@ class TestMARC21toTitleEntity(TestCase):
                                       indicators=[' ', '0'],
                                       subfields=[
                                           'a', 'Beowulf']))
-        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
-                                           record=record)
+        title_parser = MARC21toTitle(redis_datastore=TEST_REDIS,
+                                     record=record)
         title_parser.ingest()
         self.assertEquals(title_parser.title_entity.titleValue,
                           ['Beowulf'])
@@ -1072,8 +1072,8 @@ class TestMARC21toTitleEntity(TestCase):
                                       indicators=['0', '2'],
                                       subfields=[
                                           'a', 'Beowulf']))
-        title_parser = MARC21toTitleEntity(redis_datastore=TEST_REDIS,
-                                           record=record)
+        title_parser = MARC21toTitle(redis_datastore=TEST_REDIS,
+                                     record=record)
         title_parser.ingest()
         self.assertEquals(title_parser.title_entity.titleValue,
                           ['Beowulf'])

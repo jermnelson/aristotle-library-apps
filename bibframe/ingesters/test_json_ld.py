@@ -27,7 +27,7 @@ TEST_WORK = {'@context': {'bf': 'http://bibframe.org/vocab/',
                  'bf:label': u'Kiowa Indians',
                  'prov:Generation': {'prov:atTime': '2013-07-31T21:38:17.191000',
                                      'prov:wasGeneratedBy': 'http://id.loc.gov/authorities/names/n84168445'}}],
- 'bf:title': {'@type': 'bf:TitleEntity',
+ 'bf:title': {'@type': 'bf:Title',
               'bf:titleValue': 'John P. Harrington Papers 1907-1959 (some earlier) Microfilm 5, Reel 6 Dictionary'},
  'prov:Generation': {'prov:atTime': '2013-07-31T21:38:17.191000',
                      'prov:wasGeneratedBy': 'http://id.loc.gov/authorities/names/n84168445'},
@@ -79,9 +79,9 @@ class TestJSONLinkedDataIngester(unittest.TestCase):
         ingester = JSONLinkedDataIngester(redis_datastore=TEST_REDIS)
         self.assertEquals(ingester.__extract_title_entity__(
             TEST_WORK.get('bf:title')),
-            'bf:TitleEntity:1')
+            'bf:Title:1')
         self.assertEquals(TEST_WORK.get('bf:title').get('bf:titleValue'),
-            TEST_REDIS.hget('bf:TitleEntity:1', 'titleValue'))
+            TEST_REDIS.hget('bf:Title:1', 'titleValue'))
             
 
     def test_extract_topics(self):

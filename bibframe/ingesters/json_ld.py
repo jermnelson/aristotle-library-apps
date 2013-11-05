@@ -60,13 +60,13 @@ class JSONLinkedDataIngester(Ingester):
            
 
     def __extract_title_entity__(self, title_info):
-        """Helper function gets existing bf:TitleEntity or creates a
-        new bf:TitleEntity, returns bf:TitleEntity redis key
+        """Helper function gets existing bf:Title or creates a
+        new bf:Title, returns bf:Title redis key
 
         Parameters:
         title_info -- JSON dict of title information
         """
-        new_title = models.TitleEntity(redis_datastore=self.redis_datastore)
+        new_title = models.Title(redis_datastore=self.redis_datastore)
         new_title.titleValue = title_info.get('bf:titleValue')
         new_title.label = new_title.titleValue
         new_title.save()

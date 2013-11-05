@@ -42,6 +42,7 @@ function CatalogViewModel() {
                self.showResults(true);
                for(instance_num in server_response['instances']) {
                  var instance = server_response['instances'][instance_num];
+                 
                  self.searchResults.push(instance);
                } 
               $(".instance-action").popover({ html: true });

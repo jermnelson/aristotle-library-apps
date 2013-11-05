@@ -60,7 +60,7 @@ class WorkClassifier(SimpleFuzzyClassifier):
         if self.entity_info.has_key('title'):
             # Searches Redis
             redis_title = self.entity_info['title']
-            # Returns a label if redis_title is a bf:TitleEntity
+            # Returns a label if redis_title is a bf:Title
             title_label = self.redis_datastore.hget(
                 redis_title,
                 'label')

@@ -362,15 +362,15 @@ class TestLibraryHolding(TestCase):
 class TestTitleInfo(TestCase):
 
     def setUp(self):
-        self.new_title = TitleEntity(redis_datastore=TEST_REDIS,
-                                     titleDate=1813,
-                                     titleValue='Pride and Prejudice')
+        self.new_title = Title(redis_datastore=TEST_REDIS,
+                               titleDate=1813,
+                               titleValue='Pride and Prejudice')
         self.new_title.save()
         
     def test_init(self):
         self.assert_(self.new_title is not None)
         self.assertEquals(self.new_title.redis_key,
-                          'bf:TitleEntity:1')
+                          'bf:Title:1')
 
     def test_titleDate(self):
         self.assertEquals(TEST_REDIS.hget(self.new_title.redis_key,

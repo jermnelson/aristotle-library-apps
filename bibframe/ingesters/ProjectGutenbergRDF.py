@@ -8,11 +8,12 @@ import os
 
 from lxml import etree
 
-from bibframe.models import Instance, Person, Work, TitleEntity
+from bibframe.models import Instance, Person, Work, Title
 from bibframe.models import Holding, SoftwareOrMultimedia
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.ingesters.marc21_maps import LC_CALLNUMBER_MAP
 from bibframe.classifiers import simple_fuzzy
+from bibframe.ingesters.dbpedia_helpers import enhance_authority
 from bibframe.ingesters.open_library_helpers import cover_art_from_title
 
 from keyword_search.whoosh_helpers import index_rdf_kw
@@ -80,11 +81,13 @@ class ProjectGutenbergIngester(Ingester):
             new_instance = None
             format_value = file_format.find(
                               "{{{0}}}Description/{{{0}}}value".format(RDF))
-            if format_value.text == 'text/html':
+            if format_value.text.startswith('text/html'):
                 instance_info['rda:carrierTypeManifestation'] = 'online resource'
-                new_instance = Instance(redis_datastore=self.redis_datastore)
             if format_value.text == 'text/plain; charset=us-ascii':
                 instance_info['rda:carrierTypeManifestation'] = 'online resource'
+            if format_value.text.startswith('application/octet-stream'):
+                instance_info['rda:carrierTypeManifestation'] = 'online resource'
+            if 'rda:carrierTypeManifestation' in instance_info:
                 new_instance = Instance(redis_datastore=self.redis_datastore)
             if new_instance is not None:
                 for key, value in instance_info.iteritems():
@@ -127,10 +130,16 @@ class ProjectGutenbergIngester(Ingester):
                 if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
                     person['rda:dateOfDeath'] = element.text
                 if element.tag == "{{{0}}}webpage".format(PGTERMS):
-                    #! Harvest from vcard from wikipedia
-                    pass
-                    
-                
+                    wikipedia_page = element.attrib.get(
+                        "{{{0}}}about".format(RDF))
+                    wiki_name = os.path.split(wikipedia_page)[-1]
+                    dbpedia_result = enhance_authority(wiki_name)
+                    if len(dbpedia_result) > 0:
+                        for key, value in dbpedia_result.iteritems():
+                            if len(value) == 1:
+                                person[key] = value[0]
+                            else:
+                                person[key] = value
             aliases = agent.findall("{{{0}}}alias".format(PGTERMS))
             for row in aliases:
                 if row.text == person.get('rda:preferredNameForThePerson'):
@@ -185,9 +194,9 @@ class ProjectGutenbergIngester(Ingester):
         ebook = rdf_xml.find('{{{0}}}ebook'.format(PGTERMS))
         dc_title = ebook.find('{{{0}}}title'.format(DCTERMS))
         if dc_title is not None:
-            title_entity = TitleEntity(redis_datastore=self.redis_datastore,
-                                       label=dc_title.text,
-                                       titleValue=dc_title.text)
+            title_entity = Title(redis_datastore=self.redis_datastore,
+                                 label=dc_title.text,
+                                 titleValue=dc_title.text)
             title_entity.save()
             index_title(title_entity, self.redis_datastore)
             index_title_entity(title_key=title_entity.redis_key,
@@ -211,8 +220,10 @@ class ProjectGutenbergIngester(Ingester):
             rdf_xml = etree.parse(filepath)
         else:
             raise IOError("{0} not found".format(filepath))
+        ebook = rdf_xml.find('{{{0}}}ebook'.format(PGTERMS))
         work['rda:isCreatedBy'] = self.__extract_creators__(rdf_xml)
         work['associatedAgents'] = work['rda:isCreatedBy']
+        work['identifier'] = {'pg': ebook.attrib["{{{0}}}about".format(RDF)]}
         lcc_values = self.__extract_lcc__(rdf_xml)
         try:
             work['title'] = self.__extract_title__(rdf_xml)

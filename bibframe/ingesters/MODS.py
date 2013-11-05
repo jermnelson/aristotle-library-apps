@@ -17,10 +17,10 @@ from bibframe.classifiers import simple_fuzzy
 from bibframe.ingesters.Ingester import personal_name_parser, Ingester
 from bibframe.ingesters.Ingester import HONORIFIC_PREFIXES, HONORIFIC_SUFFIXES
 from bibframe.models import Annotation, Organization, Work, Holding, Instance 
-from bibframe.models import Person, Audio, Book, Cartography, LanguageMaterial
+from bibframe.models import Person, Audio, Book, Cartography, Text
 from bibframe.models import MixedMaterial, MovingImage, MusicalAudio
 from bibframe.models import NonmusicalAudio, NotatedMusic 
-from bibframe.models import SoftwareOrMultimedia, StillImage, TitleEntity
+from bibframe.models import SoftwareOrMultimedia, StillImage, Title
 from bibframe.models import ThreeDimensionalObject
 
 from discovery.redis_helpers import slug_to_title
@@ -71,7 +71,7 @@ class MODSIngester(Ingester):
         # List of enumerated typeOfResource comes from the following website:
         # http://www.loc.gov/standards/mods/mods-outline.html#typeOfResource
         if type_of == "text":
-            self.work_class = LanguageMaterial
+            self.work_class = Text
         elif type_of == "cartographic":
             self.work_class = Cartography
         elif type_of == "notated music":
@@ -358,8 +358,8 @@ class MODSIngester(Ingester):
                 if partTitle is not None and len(partTitle.text) > 0:
                     output['partTitle'] = partTitle.text
             if len(output) > 0:
-                title_entity = TitleEntity(redis_datastore=self.redis_datastore,
-                                           **output)
+                title_entity = Title(redis_datastore=self.redis_datastore,
+                                     **output)
                 title_entity.save()
                 index_title(title_entity, self.redis_datastore)
                 title_entities.append(title_entity.redis_key)

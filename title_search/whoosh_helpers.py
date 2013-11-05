@@ -4,7 +4,7 @@ import datetime
 import os
 
 from aristotle.settings import REDIS_DATASTORE, PROJECT_HOME
-from bibframe.ingesters.MARC21 import MARC21toTitleEntity
+from bibframe.ingesters.MARC21 import MARC21toTitle
 
 from whoosh.fields import Schema, TEXT, KEYWORD, STORED, ID
 from whoosh.index import create_in, open_dir, EmptyIndexError
@@ -58,8 +58,8 @@ def index_marc(**kwargs):
     marc_record = kwargs.get('record', None)
     redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
     schema = kwargs.get('schema', TITLE_SCHEMA)
-    ingester = MARC21toTitleEntity(redis_datastore=redis_datastore,
-                                   record=marc_record)
+    ingester = MARC21toTitle(redis_datastore=redis_datastore,
+                             record=marc_record)
     ingester.ingest()
     if ingester.title_entity is None:
         # Failed to ingest, return without indexing
