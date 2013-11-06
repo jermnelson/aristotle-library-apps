@@ -30,18 +30,19 @@ def enhance_authority(wiki_form,
     else:
         raise ValueError("Cannot retrieve {0}".format(
             DBEDIA_DATA_URL.format(wiki_form)))
-    dbpedia_resource_url = urllib2.urlopen(DBEDIA_RESOURCE_URL.format(
-        wiki_form))
+    dbpedia_resource_url = DBEDIA_RESOURCE_URL.format(wiki_form)
+    if not dbpedia_resource_url in dbpedia_json:
+        return output
     lccn_result = dbpedia_json.get(
         dbpedia_resource_url).get("http://dbpedia.org/property/lccn")
     if lccn_result is not None:
         output['lccn'] = []
         for row in lccn_result:
-            lccn_raw = lccn.get('value').replace("n/","n")
+            lccn_raw = row.get('value').replace("n/","n")
             lccn_raw = lccn_raw.replace("/","0")
             output['lccn'].append(lccn_raw)
     viaf_result = dbpedia_json.get(
-        dbpedia_resource_url).get("http://dbpedia.org/property/lccn")
+        dbpedia_resource_url).get("http://dbpedia.org/property/viaf")
     if viaf_result is not None:
         output['viaf'] = []
         for row in viaf_result:

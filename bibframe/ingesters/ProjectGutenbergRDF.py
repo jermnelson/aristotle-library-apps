@@ -131,7 +131,7 @@ class ProjectGutenbergIngester(Ingester):
                     person['rda:dateOfDeath'] = element.text
                 if element.tag == "{{{0}}}webpage".format(PGTERMS):
                     wikipedia_page = element.attrib.get(
-                        "{{{0}}}about".format(RDF))
+                        "{{{0}}}resource".format(RDF))
                     wiki_name = os.path.split(wikipedia_page)[-1]
                     dbpedia_result = enhance_authority(wiki_name)
                     if len(dbpedia_result) > 0:
@@ -244,7 +244,6 @@ class ProjectGutenbergIngester(Ingester):
                 self.redis_datastore.sadd(
                     '{0}:resourceRole:aut'.format(creator_key),
                     work_key)
-            print(work_key, creator_key)
             # Adds LCC Facet annotations to datastore
             for lcc in lcc_values:
                 facet_key = "bf:Annotation:Facet:LOCFirstLetter:{0}".format(
