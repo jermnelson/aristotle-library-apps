@@ -13,8 +13,10 @@ from bibframe.models import Holding, SoftwareOrMultimedia
 from bibframe.ingesters.Ingester import Ingester
 from bibframe.ingesters.marc21_maps import LC_CALLNUMBER_MAP
 from bibframe.classifiers import simple_fuzzy
-from bibframe.ingesters.dbpedia_helpers import enhance_authority
+from bibframe.ingesters.loc_helpers import get_uniform_name
 from bibframe.ingesters.open_library_helpers import cover_art_from_title
+from bibframe.ingesters.viaf_helpers import enhance_authority
+
 
 from keyword_search.whoosh_helpers import index_rdf_kw
 from organization_authority.redis_helpers import get_or_add_organization
@@ -120,26 +122,35 @@ class ProjectGutenbergIngester(Ingester):
             for element in agent.getchildren():
                 if element.tag == '{{{0}}}name'.format(PGTERMS):
                     person['rda:preferredNameForThePerson'] = element.text
+                    
                     all_names = [name.strip() for name in element.text.split(",")]
                     person['schema:familyName'] = all_names.pop(0)
                     if len(all_names) > 0:
                         remaining_names = ' '.join(all_names)
                         person['schema:givenName'] = [name.strip() for name in remaining_names.split(' ')][0]
-                if element.tag == '{{{0}}}birthdate'.format(PGTERMS):
-                    person['rda:dateOfBirth'] = element.text
-                if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
-                    person['rda:dateOfDeath'] = element.text
-                if element.tag == "{{{0}}}webpage".format(PGTERMS):
-                    wikipedia_page = element.attrib.get(
-                        "{{{0}}}resource".format(RDF))
-                    wiki_name = os.path.split(wikipedia_page)[-1]
-                    dbpedia_result = enhance_authority(wiki_name)
-                    if len(dbpedia_result) > 0:
-                        for key, value in dbpedia_result.iteritems():
+                    viaf_result = enhance_authority(element.text)
+                    if len(viaf_result) > 0:
+                        for key, value in viaf_result.iteritems():
                             if len(value) == 1:
                                 person[key] = value[0]
                             else:
                                 person[key] = value
+                    if 'lccn' in person:
+                        authoritative_label = get_uniform_name(
+                            person['lccn'])
+                        if authoritative_label is not None:
+                            if authoritative_label != person.get("skos:prefLabel"):
+                                person["skos:prefLabel"] = authoritative_label                        
+                if element.tag == '{{{0}}}birthdate'.format(PGTERMS):
+                    person['rda:dateOfBirth'] = element.text
+                if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
+                    person['rda:dateOfDeath'] = element.text
+##                if element.tag == "{{{0}}}webpage".format(PGTERMS):
+##                    wikipedia_page = element.attrib.get(
+##                        "{{{0}}}resource".format(RDF))
+##                    wiki_name = os.path.split(wikipedia_page)[-1]
+                    
+                            
             aliases = agent.findall("{{{0}}}alias".format(PGTERMS))
             for row in aliases:
                 if row.text == person.get('rda:preferredNameForThePerson'):

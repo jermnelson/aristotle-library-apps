@@ -38,7 +38,11 @@ def cover_art_from_title(title,
         OPEN_LIBRARY_URL,
         'search.json?{0}'.format(
             urllib.urlencode({'title': title})))
-    search_results = json.load(urllib2.urlopen(search_url))
+    try:
+        search_results = json.load(urllib2.urlopen(search_url))
+    except urllib2.HTTPError, e:
+        print("Cannot open url of {0}".format(search_url))
+        return
     thumbnail, annotationBody = None, None
     if search_results.get('numFound') > 0:
         # Iterates through all found docs, creates and returns CoverArt
