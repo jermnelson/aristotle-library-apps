@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load colorado_college_extras %}
+
+{# START header #}
+<header>
+ <div class="row">
+  {# START Library Name #}
+  <div class="col-md-6 col-md-offset-1">
+   <h1>{{ INSTITUTION.name }}</h1>
+  {# END Library Name #}
+  </div>
+
+  {# START Library Hours #}
+  <div class="col-xs-6 col-sm-6 col-md-5">
+    {{ INSTITUTION.openingHoursSpecification|cc_hours }} 
+
+  {# END Library Hours #}
+  </div>
+</div>
+{# END header #}
+</header>
+

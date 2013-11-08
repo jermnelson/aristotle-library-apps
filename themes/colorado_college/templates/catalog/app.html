@@ -4,12 +4,14 @@
 {% block head-title %}{{ INSTITUTION.name }} {% trans "Catalog" %}{% endblock %}
 
 {% block meta %}
- <meta name="description" content="Default Catalog View for Redis Library Services Platform">
+ <meta name="description" content="Colorado College Catalog View using Redis Library Services Platform with design assistance by 
+  Aaron Schmidt and Influx">
  <meta name="author" content="Jeremy Nelson">
 {% endblock %}
 
 {% block more-css %}
-<link href=" {{ STATIC_URL }}css/catalog.css" rel="stylesheet">
+<link href="{{ STATIC_URL }}css/catalog.css" rel="stylesheet">
+<link href="{{ STATIC_URL }}css/colorado-college.css" rel="stylesheet">
 {% endblock %}
 
 {% block navbar %}

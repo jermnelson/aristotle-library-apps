@@ -1,3 +1,22 @@
+@font-face {
+  font-family: "NeoFill",
+  src: url("/static/fonts/NEORD___-webfont.woff");
+}
+
+
+footer {
+  background-color: #2D4873 !important;
+}
+
+header {
+ background-color: #2D4873 !important;
+ font-family: "NeoFill", Verdana !important;
+}
+
+.form-search {
+ background-color: #1B3153 !important;
+}
+
 .cc-about-work {
   background-color: #F1ECE6;
   border: 1px solid #CCCCCC;
@@ -88,6 +107,7 @@
 
 .cc-facet-header a, a.visited {
  font-size: 1.2em;
+ 
  color: #594738; 
 }
 
