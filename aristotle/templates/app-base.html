@@ -8,8 +8,10 @@
     <title>
 	{% block head-title %}{% trans "Aristotle Library Apps" %}{% endblock %}
     </title>
+    {% block meta %}
     <meta name="description" content="Aristotle Library Apps Interface" >
     <meta name="author" content="Jeremy Nelson">
+    {% endblock %}
     {% block more-meta %}{% endblock %}
     
     <link rel="shortcut icon" href="{{ STATIC_URL }}ico/favicon.png">
@@ -57,14 +59,15 @@
   </div>
 
   {# START footer DIV #}
+  {% block footer %}
   <div id="footer">
-   {% block footer %}
    <div class="container">
      {% include 'snippets/footer-action-bar.html' %}
    </div>
-   {% endblock %} 
-  {# END footer DIV #}
+     {# END footer DIV #}
   </div> 
+  {% endblock %} 
+
   {% block dialogs %}
     {% include 'snippets/about.html' %}
     {% include 'snippets/help.html' %}
