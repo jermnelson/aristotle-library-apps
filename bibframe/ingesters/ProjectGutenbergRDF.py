@@ -129,18 +129,18 @@ class ProjectGutenbergIngester(Ingester):
                         remaining_names = ' '.join(all_names)
                         person['schema:givenName'] = [name.strip() for name in remaining_names.split(' ')][0]
                     viaf_result = enhance_authority(element.text)
-                    if len(viaf_result) > 0:
-                        for key, value in viaf_result.iteritems():
-                            if len(value) == 1:
-                                person[key] = value[0]
-                            else:
-                                person[key] = value
-                    if 'lccn' in person:
-                        authoritative_label = get_uniform_name(
-                            person['lccn'])
-                        if authoritative_label is not None:
-                            if authoritative_label != person.get("skos:prefLabel"):
-                                person["skos:prefLabel"] = authoritative_label                        
+##                    if len(viaf_result) > 0:
+##                        for key, value in viaf_result.iteritems():
+##                            if len(value) == 1:
+##                                person[key] = value[0]
+##                            else:
+##                                person[key] = value
+##                    if 'lccn' in person:
+##                        authoritative_label = get_uniform_name(
+##                            person['lccn'])
+##                        if authoritative_label is not None:
+##                            if authoritative_label != person.get("skos:prefLabel"):
+##                                person["skos:prefLabel"] = authoritative_label                        
                 if element.tag == '{{{0}}}birthdate'.format(PGTERMS):
                     person['rda:dateOfBirth'] = element.text
                 if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
@@ -238,10 +238,10 @@ class ProjectGutenbergIngester(Ingester):
         lcc_values = self.__extract_lcc__(rdf_xml)
         try:
             work['title'] = self.__extract_title__(rdf_xml)
-            cover_art = cover_art_from_title(
-                self.redis_datastore.hget(work.get('title'),
-                                          'titleValue'),
-                self.redis_datastore)
+##            cover_art = cover_art_from_title(
+##                self.redis_datastore.hget(work.get('title'),
+##                                          'titleValue'),
+##                self.redis_datastore)
         except ValueError, e:
             return
         classifier = self.classifier(redis_datastore=self.redis_datastore,
