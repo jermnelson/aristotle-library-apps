@@ -64,23 +64,27 @@ def index_marc(**kwargs):
     if ingester.title_entity is None:
         # Failed to ingest, return without indexing
         return
-    if marc_record['130'] is not None:
-        uniform_title = ' '.join(
-            [field.value() for field in marc_record.get_fields('130')])
     else:
-        uniform_title = u''
-    raw_content = u''
-    for tag in ['130', '210', '222', '245', '246', '247', '430', '730', '830']:
-        fields = marc_record.get_fields(tag)
-        for field in fields:
-            raw_content += field.value()
-##            raw_content += unicode(field.value(),
-##                                   errors='ignore')
-    writer = indexer.writer()
-    writer.add_document(title_key=unicode(ingester.title_entity.redis_key),
-                        content=raw_content,
-                        uniform_title=uniform_title)
-    writer.commit()
+        index_title_entity(title_key=ingester.title_entity,
+                           indexer=indexer,
+                           redis_datastore=redis_datastore)
+##    if marc_record['130'] is not None:
+##        uniform_title = ' '.join(
+##            [field.value() for field in marc_record.get_fields('130')])
+##    else:
+##        uniform_title = u''
+##    raw_content = u''
+##    for tag in ['130', '210', '222', '245', '246', '247', '430', '730', '830']:
+##        fields = marc_record.get_fields(tag)
+##        for field in fields:
+##            raw_content += field.value()
+####            raw_content += unicode(field.value(),
+####                                   errors='ignore')
+##    writer = indexer.writer()
+##    writer.add_document(title_key=unicode(ingester.title_entity.redis_key),
+##                        content=raw_content,
+##                        uniform_title=uniform_title)
+##    writer.commit()
 
 def title_search(**kwargs):
     """function takes a number args and search title indexer

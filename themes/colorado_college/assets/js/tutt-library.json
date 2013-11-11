@@ -1,0 +1,53 @@
+{
+  "@context": {
+    "@vocab": "http://schema.org/"
+  }, 
+  "@id": "http://www.coloradocollege.edu/library", 
+  "@type": "Library", 
+  "address": {
+    "@type": "PostalAddress", 
+    "addressCountry": "United States", 
+    "addressLocality": "Colorado Springs", 
+    "addressRegion": "Colorado",
+    "postalCode": 80103, 
+    "streetAddress": "1021 North Cascade Avenue"
+  }, 
+  "email": "tuttref@coloradocollege.edu", 
+  "name": "Tutt Library",
+  "openingHoursSpecification":[
+   {
+    "@type": "OpeningHoursSpecification",
+    "closes": "2 am",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+    "opens": "7:45 am",
+    "validFrom": "2013-10-28",
+    "validThrough": "2013-11-20"
+   },
+   { 
+    "@type": "OpeningHoursSpecification",
+    "closes": "10 pm",
+    "dayOfWeek": ["Friday"],
+    "opens": "7:45 am",
+    "validFrom": "2013-10-28",
+    "validThrough": "2013-11-20"
+   },
+   {
+    "@type": "OpeningHoursSpecification",
+    "closes": "5 pm",
+    "dayOfWeek": ["Saturday"],
+    "opens": "10 am",
+    "validFrom": "2013-10-28",
+    "validThrough": "2013-11-20"
+   },
+   {
+    "@type": "OpeningHoursSpecification",
+    "closes": "2 am",
+    "dayOfWeek": ["Sunday"],
+    "opens": "10 am",
+    "validFrom": "2013-10-28",
+    "validThrough": "2013-11-20"
+   }
+  ],
+  "telephone": "(719) 389-6662", 
+  "url": "http://www.coloradocollege.edu/library"
+}

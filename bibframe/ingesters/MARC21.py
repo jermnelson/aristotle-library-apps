@@ -458,8 +458,6 @@ class MARC21toBIBFRAME(MARC21Ingester):
                     return True
         return False
     
-        
-        
 
     def ingest(self):
         "Method runs a complete ingestion of a MARC21 record into RLSP"
@@ -467,15 +465,22 @@ class MARC21toBIBFRAME(MARC21Ingester):
         # like Book, Article, MusicalAudio, or MovingImage
         if self.__duplicate_check__('ils-bib-numbers') is True:
             return
+        self.marc2title =  MARC21toTitle(record=self.record,
+                                         redis_datastore=self.redis_datastore)
+        self.marc2title.ingest()
         self.marc2creative_work = MARC21toCreativeWork(
             redis_datastore=self.redis_datastore,
-            record=self.record)
+            record=self.record,
+            title=self.marc2title.title_entity)
         self.marc2creative_work.ingest()
         
         # Exit ingest if a creative work is missing
         if self.marc2creative_work.creative_work is None:
             return
         work_key = self.marc2creative_work.creative_work.redis_key
+        self.redis_datastore.hset('bf:Title:works-hash',
+                                  self.marc2title.title_entity.redis_key,
+                                  work_key)
         # Add work_key to the relatedRole:aut set, should support other
         # roles based on MARC mapping
         if self.marc2creative_work.entity_info.has_key('rda:isCreatedBy'):
@@ -963,6 +968,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         """
         super(MARC21toCreativeWork, self).__init__(**kwargs)
         self.creative_work, self.work_class  = None, None
+        self.title_entity = kwargs.get('title', None)
 
     def __classify_work_class__(self):
         "Classifies the work as specific Work class based on BIBFRAME website"
@@ -1083,17 +1089,6 @@ class MARC21toCreativeWork(MARC21Ingester):
             #! NEED Title to check for duplicates
             if attribute == 'uniformTitle':
                 pass
-            if attribute == 'title':
-                rule = rules[0]
-                titleValue = ' '.join(self.__rule_one__(rule))
-                title_entity = Title(redis_datastore=self.redis_datastore,
-                                     titleValue=titleValue,
-                                     label=self.record.title())
-                title_entity.save()
-                index_title(title_entity, self.redis_datastore)
-                self.entity_info[attribute] = title_entity.redis_key
-                work_titles.append(title_entity.redis_key)
-                continue
             for rule in rules:
                 result = list(set(self.__rule_one__(rule)))
                 values.extend(result)
@@ -1130,6 +1125,7 @@ class MARC21toCreativeWork(MARC21Ingester):
         # assumes that the Creative Work is the same.
         work_classifier = classifer(entity_info = self.entity_info,
                                     redis_datastore=self.redis_datastore,
+                                    title_key=self.title_entity.redis_key,
                                     work_class=self.work_class)
         work_classifier.classify()
         self.creative_work = work_classifier.creative_work

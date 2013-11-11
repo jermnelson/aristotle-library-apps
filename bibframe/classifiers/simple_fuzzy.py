@@ -52,14 +52,15 @@ class WorkClassifier(SimpleFuzzyClassifier):
         self.work_class = kwargs.get('work_class', Work)
         self.entity_info = kwargs.get('entity_info', {})
         self.strict = kwargs.get('strict', True)
+        self.title_key = kwargs.get('title_key', None)
         
         super(WorkClassifier, self).__init__(**kwargs)
 
     def classify(self):
         "method attempts to classify a Work as either an existing or new work"
-        if self.entity_info.has_key('title'):
+        if self.title_key is not None:
             # Searches Redis
-            redis_title = self.entity_info['title']
+            redis_title = self.title_key
             # Returns a label if redis_title is a bf:Title
             title_label = self.redis_datastore.hget(
                 redis_title,

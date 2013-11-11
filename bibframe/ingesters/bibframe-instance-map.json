@@ -88,7 +88,7 @@
       }
     ], 
     "post-processing": null
-  }, 
+  },
   "coden": {
     "marc": [
       {
@@ -123,8 +123,8 @@
       }
     ], 
     "post-processing": null
-  }, 
-  "contentAccessabilityNote": {
+  },
+   "contentAccessabilityNote": {
     "marc": [
       {
         "conditional": null, 
@@ -172,7 +172,7 @@
       }
     ], 
     "post-processing": null
-  }, 
+  },
   "derivedFromLccn": {
     "marc": [
       {
@@ -256,8 +256,8 @@
       }
     ], 
     "post-processing": null
-  }, 
-  "ean": {
+  },
+   "ean": {
     "invalid": [
           "marc:0243_z",
           "marc:02430z",
@@ -355,7 +355,7 @@
       }
     ], 
     "post-processing": null
-  }, 
+  },
   "hasAnnotation": {
     "marc": [
       {
@@ -387,7 +387,7 @@
       }
     ], 
     "post-processing": null
-  }, 
+  },
   "illustrativeContentNote": {
     "marc": [
       {
@@ -409,8 +409,8 @@
       }
     ], 
     "post-processing": null
-  }, 
-  "instanceOf": {
+  },
+    "instanceOf": {
     "marc": [
       {
         "conditional": null, 
@@ -446,12 +446,12 @@
           "marc:5214_a",
           "marc:5218_a"
         ],
-        "post-processing": 
+        "post-processing": null
       }
     ], 
     "post-processing": null
   }, 
-  "isbn10": {
+   "isbn10": {
     "marc": [
       {
         "conditional": null, 
@@ -540,8 +540,8 @@
       }
     ], 
     "post-processing": null
-  }, 
-  "keyTitle": {
+  },
+   "keyTitle": {
     "marc": [
       {
         "conditional": null, 

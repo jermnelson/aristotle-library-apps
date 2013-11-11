@@ -12,6 +12,32 @@ from discovery.forms import AnnotationForm
 register = template.Library()
 
 
+
+## ======================== ##
+# Catalog specific filters   #
+## ======================== ##
+@register.filter(is_safe=True)
+def cc_hours(openingHours):
+    "Generates an Hours display for the catalog"
+    output = ""
+    # Assumes first is standard M-Thursday
+    output += "<h3>{0}-{1}: {2}-{3} ".format(
+        openingHours[0]["dayOfWeek"][0][0],
+        openingHours[0]["dayOfWeek"][-1][0],
+        openingHours[0]["opens"],
+        openingHours[0]["closes"])
+    output += "{0}: {1}-{2}<br>".format(
+            openingHours[1]["dayOfWeek"][0][0],
+            openingHours[1]["opens"],
+            openingHours[1]["closes"])
+    for row in openingHours[2:]:
+        output += "{0}: {1}-{2} ".format(
+            row["dayOfWeek"][0][0:2],
+            row["opens"],
+            row["closes"])
+    output += "</h3>"
+    return mark_safe(output)
+
 @register.filter(is_safe=True)
 def author_of(person):
     "Returns div with a list of Works that the person is an author of"
