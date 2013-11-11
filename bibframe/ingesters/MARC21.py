@@ -478,6 +478,9 @@ class MARC21toBIBFRAME(MARC21Ingester):
         if self.marc2creative_work.creative_work is None:
             return
         work_key = self.marc2creative_work.creative_work.redis_key
+        self.redis_datastore.hset('bf:Title:works-hash',
+                                  self.marc2title.title_entity.redis_key,
+                                  work_key)
         # Add work_key to the relatedRole:aut set, should support other
         # roles based on MARC mapping
         if self.marc2creative_work.entity_info.has_key('rda:isCreatedBy'):
