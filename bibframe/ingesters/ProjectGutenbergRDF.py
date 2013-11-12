@@ -128,7 +128,7 @@ class ProjectGutenbergIngester(Ingester):
                     if len(all_names) > 0:
                         remaining_names = ' '.join(all_names)
                         person['schema:givenName'] = [name.strip() for name in remaining_names.split(' ')][0]
-                    viaf_result = enhance_authority(element.text)
+##                    viaf_result = enhance_authority(element.text)
 ##                    if len(viaf_result) > 0:
 ##                        for key, value in viaf_result.iteritems():
 ##                            if len(value) == 1:
