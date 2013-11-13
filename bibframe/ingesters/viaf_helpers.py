@@ -33,7 +33,7 @@ def enhance_authority(raw_name,
     except:
         name_quoted = raw_name.replace(" ", "+")
     viaf_autosuggest_url = urllib2.urlopen(
-        VIAF_AUTOSUGGEST_BASE.format(name_quoted)
+        VIAF_AUTOSUGGEST_BASE.format(name_quoted))
     if viaf_autosuggest_url.getcode() == 200:
         viaf_json = json.load(viaf_autosuggest_url)
     else:

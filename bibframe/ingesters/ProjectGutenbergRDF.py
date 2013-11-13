@@ -128,19 +128,19 @@ class ProjectGutenbergIngester(Ingester):
                     if len(all_names) > 0:
                         remaining_names = ' '.join(all_names)
                         person['schema:givenName'] = [name.strip() for name in remaining_names.split(' ')][0]
-                    viaf_result = enhance_authority(element.text)
-                    if len(viaf_result) > 0:
-                        for key, value in viaf_result.iteritems():
-                            if len(value) == 1:
-                                person[key] = value[0]
-                            else:
-                                person[key] = value
-                    if 'lccn' in person:
-                        authoritative_label = get_uniform_name(
-                            person['lccn'])
-                        if authoritative_label is not None:
-                            if authoritative_label != person.get("skos:prefLabel"):
-                                person["skos:prefLabel"] = authoritative_label                        
+##                    viaf_result = enhance_authority(element.text)
+##                    if len(viaf_result) > 0:
+##                        for key, value in viaf_result.iteritems():
+##                            if len(value) == 1:
+##                                person[key] = value[0]
+##                            else:
+##                                person[key] = value
+##                    if 'lccn' in person:
+##                        authoritative_label = get_uniform_name(
+##                            person['lccn'])
+##                        if authoritative_label is not None:
+##                            if authoritative_label != person.get("skos:prefLabel"):
+##                                person["skos:prefLabel"] = authoritative_label                        
                 if element.tag == '{{{0}}}birthdate'.format(PGTERMS):
                     person['rda:dateOfBirth'] = element.text
                 if element.tag == '{{{0}}}deathdate'.format(PGTERMS):
@@ -238,10 +238,10 @@ class ProjectGutenbergIngester(Ingester):
         lcc_values = self.__extract_lcc__(rdf_xml)
         try:
             work['title'] = self.__extract_title__(rdf_xml)
-            cover_art = cover_art_from_title(
-                self.redis_datastore.hget(work.get('title'),
-                                          'titleValue'),
-                self.redis_datastore)
+##            cover_art = cover_art_from_title(
+##                self.redis_datastore.hget(work.get('title'),
+##                                          'titleValue'),
+##                self.redis_datastore)
         except ValueError, e:
             return
         classifier = self.classifier(redis_datastore=self.redis_datastore,
@@ -274,7 +274,7 @@ class ProjectGutenbergIngester(Ingester):
                     facet_key)
             # Adds work_key to title entity relatedResources set
             self.redis_datastore.sadd(
-                "{0}:relatedResources".format(
+                "{0}:relatedResource".format(
                     classifier.creative_work.title),
                 work_key)
             instances = self.__create_instances__(rdf_xml, work_key)
@@ -288,10 +288,6 @@ class ProjectGutenbergIngester(Ingester):
                     self.redis_datastore.sadd(
                         '{0}:hasAnnotation'.format(instance_key),
                         cover_art.redis_key)
-            title_key = self.redis_datastore.hget(work_key,
-                                                  'title')
-            self.redis_datastore.sadd('{0}:relatedResource'.format(title_key),
-                                      work_key)
             index_rdf_kw(rdf_xml=rdf_xml,
                          author_keys = work['rda:isCreatedBy'],
                          work_key=work_key,

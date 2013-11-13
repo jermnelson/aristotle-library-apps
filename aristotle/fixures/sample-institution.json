@@ -1,0 +1,53 @@
+{
+  "@context": {
+    "@vocab": "http://schema.org/"
+  }, 
+  "@id": null, 
+  "@type": "Library", 
+  "address": {
+    "@type": "PostalAddress", 
+    "addressCountry": "United States", 
+    "addressLocality": "Plainville", 
+    "addressRegion": "USA", 
+    "postalCode": 80103, 
+    "streetAddress": "143 Lucky Hi-way"
+  }, 
+  "email": "info@plainvillelibrary.org", 
+  "location": {
+    "@type": "Place", 
+    "geo": {
+      "@type": "GeoCoordinates", 
+      "elevation": "6,035 feet", 
+      "latitude": 38.84872, 
+      "longitude": -104.82386
+    }
+  }, 
+  "name": "Plainville Library", 
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification", 
+      "closes": "9", 
+      "dayOfWeek": [
+        "Monday", 
+        "Tuesday", 
+        "Wednesday", 
+        "Thursday", 
+        "Friday", 
+        "Saturday"
+      ], 
+      "opens": "9", 
+      "validFrom": "2013-11-12"
+    }, 
+    {
+      "@type": "OpeningHoursSpecification", 
+      "closes": "5", 
+      "dayOfWeek": [
+        "Sunday"
+      ], 
+      "opens": "1", 
+      "validFrom": "2013-11-12"
+    }
+  ], 
+  "telephone": "555-555-5555", 
+  "url": "http://www.plainvillelibrary.org"
+}

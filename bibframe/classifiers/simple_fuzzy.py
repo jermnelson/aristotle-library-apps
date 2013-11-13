@@ -53,6 +53,8 @@ class WorkClassifier(SimpleFuzzyClassifier):
         self.entity_info = kwargs.get('entity_info', {})
         self.strict = kwargs.get('strict', True)
         self.title_key = kwargs.get('title_key', None)
+        if 'title' in self.entity_info:
+            self.title_key = self.entity_info.get('title')
         
         super(WorkClassifier, self).__init__(**kwargs)
 
