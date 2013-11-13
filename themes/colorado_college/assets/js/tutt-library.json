@@ -13,6 +13,15 @@
     "streetAddress": "1021 North Cascade Avenue"
   }, 
   "email": "tuttref@coloradocollege.edu", 
+  "location": {
+    "@type": "Place",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "elevation": "6,035 feet",
+      "latitude": 38.84872,
+      "longitude": -104.82386
+    }
+  },
   "name": "Tutt Library",
   "openingHoursSpecification":[
    {
