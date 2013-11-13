@@ -274,7 +274,7 @@ class ProjectGutenbergIngester(Ingester):
                     facet_key)
             # Adds work_key to title entity relatedResources set
             self.redis_datastore.sadd(
-                "{0}:relatedResources".format(
+                "{0}:relatedResource".format(
                     classifier.creative_work.title),
                 work_key)
             instances = self.__create_instances__(rdf_xml, work_key)
@@ -288,10 +288,6 @@ class ProjectGutenbergIngester(Ingester):
                     self.redis_datastore.sadd(
                         '{0}:hasAnnotation'.format(instance_key),
                         cover_art.redis_key)
-            title_key = self.redis_datastore.hget(work_key,
-                                                  'title')
-            self.redis_datastore.sadd('{0}:relatedResource'.format(title_key),
-                                      work_key)
             index_rdf_kw(rdf_xml=rdf_xml,
                          author_keys = work['rda:isCreatedBy'],
                          work_key=work_key,

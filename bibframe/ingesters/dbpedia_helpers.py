@@ -35,7 +35,6 @@ def enhance_authority(wiki_form,
         return output
     lccn_result = dbpedia_json.get(
         dbpedia_resource_url).get("http://dbpedia.org/property/lccn")
-    print("LCCN Result={0}".format(lccn_result))
     if lccn_result is not None:
         output['lccn'] = []
         for row in lccn_result:
