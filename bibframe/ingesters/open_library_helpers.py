@@ -89,8 +89,9 @@ def enhance_bibframe_entity(title_entity,
             cover_art = cover_art_from_title(doc, redis_ds)
             if cover_art is not None:
                 if len(instance_keys) == 1:
-                    redis_ds.sadd("{0}:hasInstance".format(
-                        instance_keys[0]))
+                    redis_ds.sadd("{0}:hasAnnotation".format(
+                        instance_keys[0]),
+                                  cover_art.redis_key)
     return instance_keys
                 
                 

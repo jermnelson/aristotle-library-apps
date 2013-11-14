@@ -1,6 +1,6 @@
 __author__ = "Jeremy Nelson"
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render
 
 from aristotle.settings import REDIS_DATASTORE
@@ -44,11 +44,19 @@ def display_cover_image(request, redis_id, type_of, image_ext):
     return HttpResponse(raw_image, 
                         mimetype="image/{0}".format(image_ext))
 
+def display_entity(request, entity_key):
+    redis_key = "bf:{0}".format(entity_key)
+    if not REDIS_DATASTORE.exists(redis_key):
+        raise Http404
+    return HttpResponse("Entity is {0}".format(redis_key))
+
 @json_view
 def search(request):
-    results = keyword_search(query_text=request.POST.get('q'))
+    results = keyword_search(query_text=request.POST.get('q'),
+                             page=request.POST.get('page'))
     return {'message': 'ok',
             'instances': results.get('hits'),
+            'page': results.get('page'),
             'total': results.get('total')}
 
     

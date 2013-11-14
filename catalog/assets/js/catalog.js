@@ -1,7 +1,10 @@
 function CatalogViewModel() {
   self = this;
   self.contextHeading = ko.observable("Default Content Heading");
-
+  self.errorMessage = ko.observable();
+  self.pageNumber = ko.observable(1);
+  self.activeNext = ko.observable(true);
+  self.activePrevious = ko.observable(true);
   self.searchChoices = ko.observableArray([
    { name: "Keyword", action: "kwSearch" },
    { name: "Author", action: "auSearch" },
@@ -18,42 +21,71 @@ function CatalogViewModel() {
    { name: "OCLC Number", action: "oclcSearch" }]);
  
   self.searchQuery = ko.observable();
+  self.showError = ko.observable(false);
 
   // Handlers for Search
   self.searchResults = ko.observableArray(); 
 
+  self.newSearch = function() {
+   self.pageNumber(1);
+   self.runSearch();
+  }
+
   self.runSearch = function() {
+    self.showError(false);
+    self.searchResults.removeAll();
     var csrf_token = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     var data = {
       csrfmiddlewaretoken: csrf_token,
 //      q_type: self.searchType(),
-      q: self.searchQuery()
+      q: self.searchQuery(),
+      page: self.pageNumber()
     }
     $.post('/apps/catalog/search', 
            data,
            function(server_response) {
-            if(server_response['result'] != "error") { 
-             self.searchResults.removeAll();
+            if(server_response['result'] == 'error'){
+             self.showError(true);
+             self.errorMessage("Error with search: " + server_response['text']);
+             return;
+            }
+            
             self.resultSize(server_response["total"]);
             if(server_response["total"] < 5) {
               self.resultEndSlice(server_response["total"]);
-            }             
-             if(server_response["instances"].length > 0) {
+              self.activeNext(false);
+            } else {
+               var calcEndSlice = parseInt(server_response['page']) * 5;
+               if(calcEndSlice >= parseInt(server_response["total"])) {
+                 calcEndSlice = parseInt(server_response["total"]);
+                 self.activeNext(false);
+               } else {
+                 self.activeNext(true);
+               }
+               self.resultEndSlice(calcEndSlice);  
+            }
+
+            var startSlice = parseInt(self.resultEndSlice()) - 5;
+            if(startSlice < 1) { 
+              startSlice = 1; 
+              self.activePrevious(false);
+            } else {
+              self.activePrevious(true);
+            }
+            self.resultStartSlice(startSlice); 
+            self.pageNumber(server_response['page']); 
+                       
+            if(server_response["instances"].length > 0) {
                self.showResults(true);
                for(instance_num in server_response['instances']) {
                  var instance = server_response['instances'][instance_num];
                  
                  self.searchResults.push(instance);
-               } 
+              } 
               $(".instance-action").popover({ html: true });
              } else {
               self.contextHeading("Search Returned 0 Works"); 
-             }
-           } else {
-             self.contextHeading("Error with Search " + self.searchQuery());
-             self.searchQuery(server_response['text']);
-             alert("Error with search\n" + server_response['text']);
-           }
+            }
         });
 
   }
@@ -82,19 +114,15 @@ function CatalogViewModel() {
   }
 
   self.nextResultsPage = function() {
-   var start_position = self.resultStartSlice();
-   var end_position = self.resultEndSlice();
-   for(i=start_position; i<= self.resultEndSlice(); i++) {
-      self.searchResults()[i-1]['isActive']= false;
-   }
-   for(i=end_position+1; i <= end_position+6; i++) {
-      self.searchResults()[i-1]['isActive'] = true;
-
-   }
+   var current_page = parseInt(self.pageNumber());
+   self.pageNumber(current_page + 1);
+   self.runSearch();
+    
   }
 
   self.prevResultsPage = function() {
-
+   self.pageNumber(parseInt(self.pageNumber()) - 1);
+   self.runSearch();
   }
 
   self.resultPaneSize = ko.observable("col-md-10");

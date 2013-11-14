@@ -10,8 +10,12 @@
 
   {# START Library Hours #}
   <div class="col-xs-6 col-sm-6 col-md-2">
-    <h3>{{ INSTITUTION.hours.week }}<br>
-        {{ INSTITUTION.hours.weekend }}</h3>
+    <h3>{{ INSTITUTION.openingHoursSpecification.0.dayOfWeek.0.0 }}-{{ INSTITUTION.openingHoursSpecification.0.dayOfWeek.5.0 }}:
+        {{ INSTITUTION.openingHoursSpecification.0.opens }}-{{ INSTITUTION.openingHoursSpecification.0.closes }}
+        <br>
+        {{ INSTITUTION.openingHoursSpecification.1.dayOfWeek.0|slice:"0:3" }}: 
+        {{ INSTITUTION.openingHoursSpecification.1.opens }}-{{ INSTITUTION.openingHoursSpecification.1.closes }}
+    </h3>
   {# END Library Hours #}
   </div>
 </div>

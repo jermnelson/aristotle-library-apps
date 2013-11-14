@@ -27,6 +27,7 @@
     <a href="#" data-bind="click: displayFilters" style="font-size: .75em"><span class="glyphicon glyphicon-forward"></span></a>
     </span>
    </h2>
+   <h2 class="text-danger" data-bind="visible: showError, text: errorMessage"></h2>
  {# END Search query display #}
  </div>
  {% include 'catalog/snippets/results.html' %}
