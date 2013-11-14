@@ -50,7 +50,7 @@ def cover_art_from_title(search_results,
             annotationBody = urllib2.urlopen(
                 body_cover_url).read()
         if not thumbnail and not annotationBody:
-            continue
+            return
         cover_art = CoverArt(redis_datastore=rlsp_ds)
         if thumbnail:
             setattr(cover_art,
@@ -92,6 +92,11 @@ def enhance_bibframe_entity(title_entity,
                     redis_ds.sadd("{0}:hasAnnotation".format(
                         instance_keys[0]),
                                   cover_art.redis_key)
+                else:
+                    for instance_key in instance_keys:
+                        redis_ds.sadd("{0}:hasAnnotation".format(
+                            instance_key),
+                                      cover_art.redis_key)
     return instance_keys
                 
                 

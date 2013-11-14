@@ -138,10 +138,7 @@ def keyword_search(**kwargs):
             fields = hit.fields()
             instance_info = {'title': fields.get('title')}
             work_key = fields.get('work_key')
-            work_parts = work_key.split(":")
-            instance_info['workURL'] = "/apps/catalog/{0}/{1}".format(
-                work_parts[-2],
-                work_parts[-1])
+            instance_info['workURL'] = "/apps/catalog/{0}".format(work_key)
             for instance_key in redis_datastore.smembers(
                 '{0}:hasInstance'.format(work_key)):
                 
