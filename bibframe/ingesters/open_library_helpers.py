@@ -24,7 +24,7 @@ def __get_image__(url):
 
 
 
-def cover_art_from_title(search_results,
+def cover_art_from_title(doc,
                          rlsp_ds=REDIS_DATASTORE):
     """Helper function takes a single document result from an Open Library
     record and Redis datastore, if cover_id exists for the item, attempts to
@@ -88,15 +88,13 @@ def enhance_bibframe_entity(title_entity,
             isbns = doc.get('isbn')
             cover_art = cover_art_from_title(doc, redis_ds)
             if cover_art is not None:
-                if len(instance_keys) == 1:
+                for instance_key in instance_keys:
                     redis_ds.sadd("{0}:hasAnnotation".format(
-                        instance_keys[0]),
+                        instance_key),
                                   cover_art.redis_key)
-                else:
-                    for instance_key in instance_keys:
-                        redis_ds.sadd("{0}:hasAnnotation".format(
-                            instance_key),
-                                      cover_art.redis_key)
+                    redis_ds.sadd("{0}:hasInstance".format(
+                        cover_art.redis_key),
+                                  instance_key)
     return instance_keys
                 
                 
