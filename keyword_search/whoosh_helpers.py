@@ -170,9 +170,27 @@ def keyword_search(**kwargs):
                                 'label': location_label,
                                 'url': location_url}
                 if html_output:
+                    authors = []
+                    if redis_datastore.hexists(work_key,
+                                               'rda:isCreatedBy'):
+                        author_key = redis_datastore.hget(
+                            work_key,
+                            'rda:isCreatedBy')
+                        authors.append({'name': redis_datastore.hget(
+                            author_key,
+                            'rda:preferredNameForThePerson'),
+                                    'key': author_key})
+                    elif redis_datastore.exists('{0}:rda:isCreatedBy'.format(work_key)):
+                        for person_key in redis_datastore.smembers(
+                            '{0}:rda:isCreatedBy'.format(work_key)):
+                            authors.append({'name': redis_datastore.hget(
+                                person_key,
+                                'rda:preferredNameForThePerson'),
+                                            'key': person_key})
                     item_detail_template = loader.get_template("item-details.html")
                     instance_info['instanceDetail'] = item_detail_template.render(
-                        Context({'url': redis_datastore.hget(instance_key, 'url')}))
+                        Context({'authors': authors,
+                                 'url': redis_datastore.hget(instance_key, 'url')}))
                 else:
                     instance_info['instanceDetail'] = {
                         'url': redis_datastore.hget(instance_key, 'url')}
