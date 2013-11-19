@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:marc-fields="http://bibframe.org/marc/" xmlns:rda-fields="http://bibframe.org/rda/" xmlns:bf-abstract="http://bibframe.org/model-abstract/" xmlns:bframe="http://bibframe.org/vocab/frame" xmlns:bfmain="http://bibframe.org/vocab/main" xmlns:dcterms="http://purl.org/dc/terms/" xml:base="http://bibframe.org/vocab/">
+  <owl:Ontology rdf:about="">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Initially automatically generated.</owl:versionInfo>
+    <dcterms:modified>2013-11-14T18:18:16.333101Z</dcterms:modified>
+  </owl:Ontology>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Resource">
+    <rdfs:label>Resource</rdfs:label>
+    <bf-abstract:definition>Any BIBFRAME object.</bf-abstract:definition>
+    <bf-abstract:sort>1a</bf-abstract:sort>
+    <bf-abstract:pos>1</bf-abstract:pos>
+    <bf-abstract:status>Frame</bf-abstract:status>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Work">
+    <rdfs:label>Work</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>A resource reflecting a conceptual essence of the cataloging resource.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
+    <bf-abstract:sort>2c</bf-abstract:sort>
+    <bf-abstract:pos>2</bf-abstract:pos>
+    <bf-abstract:status>Frame</bf-abstract:status>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Instance">
+    <rdfs:label>Instance</rdfs:label>
+    <bf-abstract:marcField>260</bf-abstract:marcField>
+    <bf-abstract:marcField>856 [859]...</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>A resource reflecting an individual, material embodiment of the Work.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11737193"/>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15716616"/>
+    <bf-abstract:sort>3c</bf-abstract:sort>
+    <bf-abstract:pos>16</bf-abstract:pos>
+    <bf-abstract:status>Frame</bf-abstract:status>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Agent">
+    <rdfs:label>Agent</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <bf-abstract:definition>Entity having a role in a resource (Person, Organization, etc.).</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17159572"/>
+    <bf-abstract:sort>4c</bf-abstract:sort>
+    <bf-abstract:pos>18</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Authority">
+    <rdfs:label>Authority</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>A resource reflecting key authority concepts that have defined relationships reflected in the Work and Instance.</bf-abstract:definition>
+    <bf-abstract:sort>4c</bf-abstract:sort>
+    <bf-abstract:pos>17</bf-abstract:pos>
+    <bf-abstract:status>Frame</bf-abstract:status>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Place">
+    <rdfs:label>Place</rdfs:label>
+    <bf-abstract:marcField>651</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <bf-abstract:definition>Controlled term for a geographic area.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15599751"/>
+    <bf-abstract:sort>4c</bf-abstract:sort>
+    <bf-abstract:pos>38</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Temporal">
+    <rdfs:label>Temporal Concept</rdfs:label>
+    <bf-abstract:marcField>648</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <bf-abstract:definition>Controlled term for a chronological period.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15599751"/>
+    <bf-abstract:sort>4c</bf-abstract:sort>
+    <bf-abstract:pos>37</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Topic">
+    <rdfs:label>Topic</rdfs:label>
+    <bf-abstract:marcField>650</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <bf-abstract:definition>Controlled term for a subject/topic.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15875548"/>
+    <bf-abstract:sort>4c</bf-abstract:sort>
+    <bf-abstract:pos>36</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Family">
+    <rdfs:label>Family</rdfs:label>
+    <bf-abstract:marcField>100,400,600,700,800 I1=2</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <bf-abstract:definition>Controlled family name.</bf-abstract:definition>
+    <bf-abstract:sort>5d</bf-abstract:sort>
+    <bf-abstract:pos>20</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Jurisdiction">
+    <rdfs:label>Jurisdiction</rdfs:label>
+    <bf-abstract:marcField>110,410,610,710,810 I1=3</bf-abstract:marcField>
+    <bf-abstract:rdaField>RDA corporate jurisdiction</bf-abstract:rdaField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <bf-abstract:definition>Controlled jurisdiction (city/government, etc.) name.</bf-abstract:definition>
+    <bf-abstract:sort>5d</bf-abstract:sort>
+    <bf-abstract:pos>22</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Meeting">
+    <rdfs:label>Meeting</rdfs:label>
+    <bf-abstract:marcField>111,411,611,711,811</bf-abstract:marcField>
+    <bf-abstract:rdaField>RDA corporate conference</bf-abstract:rdaField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <bf-abstract:definition>Controlled corporate meeting/conference name.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13894436"/>
+    <bf-abstract:sort>5d</bf-abstract:sort>
+    <bf-abstract:pos>23</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Organization">
+    <rdfs:label>Organization</rdfs:label>
+    <bf-abstract:marcField>110,410,610,710,810 I1=0 or 2</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <bf-abstract:definition>Controlled corporate/organization name.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16514537"/>
+    <bf-abstract:sort>5d</bf-abstract:sort>
+    <bf-abstract:pos>21</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Person">
+    <rdfs:label>Person</rdfs:label>
+    <bf-abstract:marcField>100,400,600,700,800 I1=0 or 1</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <bf-abstract:definition>Controlled personal name.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15798171"/>
+    <bf-abstract:sort>5d</bf-abstract:sort>
+    <bf-abstract:pos>19</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Annotation">
+    <rdfs:label>Annotation</rdfs:label>
+    <bf-abstract:marcField>856, 520</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>A resource that asserts additional information about other BIBFRAME resource.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13428604"/>
+    <bf-abstract:sort>6c</bf-abstract:sort>
+    <bf-abstract:pos>24</bf-abstract:pos>
+    <bf-abstract:status>Frame</bf-abstract:status>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/CoverArt">
+    <rdfs:label>Cover Art Annotation</rdfs:label>
+    <bf-abstract:marcField>856</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <bf-abstract:definition>Link to a cover illustration of an instance.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16574557"/>
+    <bf-abstract:sort>6d</bf-abstract:sort>
+    <bf-abstract:pos>26</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Description">
+    <rdfs:label>Description Annotation</rdfs:label>
+    <bf-abstract:marcField>856</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <bf-abstract:definition>Description of the content of a resource, such as an abstract, summary, etc..</bf-abstract:definition>
+    <bf-abstract:sort>6d</bf-abstract:sort>
+    <bf-abstract:pos>28</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Holding">
+    <rdfs:label>Holding</rdfs:label>
+    <bf-abstract:marcField>852</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <bf-abstract:definition>Individual institution's holding/shelflisting information about a resource.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
+    <bf-abstract:sort>6d</bf-abstract:sort>
+    <bf-abstract:pos>25</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Review">
+    <rdfs:label>Review Annotation</rdfs:label>
+    <bf-abstract:marcField>856</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Annotation"/>
+    <bf-abstract:definition>Critique of a resource, such as a book review, analysis, etc.</bf-abstract:definition>
+    <bf-abstract:sort>6d</bf-abstract:sort>
+    <bf-abstract:pos>27</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Arrangement">
+    <rdfs:label>Organization of materials information</rdfs:label>
+    <bf-abstract:marcField>351, $3abc</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Information about the organization and arrangement of a collection of items. For instance, for computer files, organization and arrangement information may be the file structure and sort sequence of a file; for visual materials, this information may be how a collection is arranged.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11628622"/>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>32</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Classification">
+    <rdfs:label>Classification Entity</rdfs:label>
+    <bf-abstract:marcField>050,051,055,060,061,070,071,080,082,083,084,086--/a</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>A system of coding, assorting and organizing materials according to their subject.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/15798171"/>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>30</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Date">
+    <rdfs:label>Date</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Time stated in year, month, day, hour, etc.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>52</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Event">
+    <rdfs:label>Event Entity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Time or space of an event.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>33</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Genre">
+    <rdfs:label>Genre Entity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Authority"/>
+    <bf-abstract:definition>A distinctive type, form, or category of a resource.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>54</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Identifier">
+    <rdfs:label>Identifier</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>A token or name that is associated with a resource, such as a URI, or an ISBN, etc..</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>29</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/IntendedAudience">
+    <rdfs:label>Intended Audience Information</rdfs:label>
+    <bf-abstract:marcField>521--</bf-abstract:marcField>
+    <bf-abstract:marcField>008/22MU+BK+CF+VM</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Information that identifies the specific intended or target audience orintellectual level for which the content described item is considered appropriate. Used to record interest and motivation levels and special learnercharacteristics.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>31</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Language">
+    <rdfs:label>Language Entity</rdfs:label>
+    <bf-abstract:marcField>041, 546 $3a</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Language entity.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5485844"/>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>34</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Note">
+    <rdfs:label>Note Entity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>A brief comment or explanation about a resource.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>55</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Philatelic">
+    <rdfs:label>Philatelic Entity</rdfs:label>
+    <bf-abstract:marcField>258</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Issuing jurisdiction and denomination information about philatelic material,such as postage stamps, postal stationery (postal cards, etc., made available by apostal administration bearing a stamped impression (indicium) of denomination), revenuestamps (tax stamps), postage due stamps, and registered mail stamps. These are usuallyvalid within a defined area and carry a value signifying prepayment or payment due forservices or taxes.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>39</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Provider">
+    <rdfs:label>Provider Entity</rdfs:label>
+    <bf-abstract:marcField>260, 264</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Name of agent relating to the publication, printing, distribution, issue,release, or production of a resource.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>40</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Relationship">
+    <rdfs:label>Relationship</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>How one resource is related to another.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>53</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Title">
+    <rdfs:label>Title Entity</rdfs:label>
+    <bf-abstract:marcField>240, 245, 246, 247</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <bf-abstract:definition>Title information relating to a resource: title proper, translated title, orvariant form of title.</bf-abstract:definition>
+    <bf-abstract:sort>8c</bf-abstract:sort>
+    <bf-abstract:pos>35</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Text">
+    <rdfs:label>Language Material</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A form of notation for language intended to be perceived visually and understood through the use of language in written or spoken form.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16484626"/>
+    <bf-abstract:sort>9ab</bf-abstract:sort>
+    <bf-abstract:pos>3</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Article">
+    <rdfs:label>Article</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A subclass of Text for articles.</bf-abstract:definition>
+    <bf-abstract:sort>9aba</bf-abstract:sort>
+    <bf-abstract:pos>44</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Book">
+    <rdfs:label>Book</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A subclass of Text for physical books.</bf-abstract:definition>
+    <bf-abstract:sort>9aba</bf-abstract:sort>
+    <bf-abstract:pos>41</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Dissertation">
+    <rdfs:label>Dissertation</rdfs:label>
+    <bf-abstract:marcField>502</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A subclass of Text used to describe students' works such as theses, dissertations, etc.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16872934"/>
+    <bf-abstract:sort>9aba</bf-abstract:sort>
+    <bf-abstract:pos>46</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Legislation">
+    <rdfs:label>Legislation</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A subclass of Text for legislative materials.</bf-abstract:definition>
+    <bf-abstract:sort>9aba</bf-abstract:sort>
+    <bf-abstract:pos>45</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Newspaper">
+    <rdfs:label>Newspaper</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A subclass of Text for newspapers.</bf-abstract:definition>
+    <bf-abstract:sort>9aba</bf-abstract:sort>
+    <bf-abstract:pos>43</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Serial">
+    <rdfs:label>Serial</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A subclass of Text for journals and other serially issuedtexts.</bf-abstract:definition>
+    <bf-abstract:sort>9aba</bf-abstract:sort>
+    <bf-abstract:pos>42</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Cartography">
+    <rdfs:label>Cartography</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A resource that show spatial information, including maps, atlases, globes,digital maps, and other cartographic items.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/5485844"/>
+    <bf-abstract:sort>9b</bf-abstract:sort>
+    <bf-abstract:pos>4</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Globe">
+    <rdfs:label>Globe</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A Resource that shows spatial information, in a spherical format.</bf-abstract:definition>
+    <bf-abstract:sort>9bb</bf-abstract:sort>
+    <bf-abstract:pos>48</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Map">
+    <rdfs:label>Map</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A Resource that shows spatial information, usually on a planesurface.</bf-abstract:definition>
+    <bf-abstract:sort>9bb</bf-abstract:sort>
+    <bf-abstract:pos>47</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/RemoteSensingImage">
+    <rdfs:label>Remote Sensing Image</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A Resource that shows information about an object or phenomenon collectedwithout making physical contact with the object. The term generally refers to the use ofaerial sensor technologies to detect and classify objects on Earth (both on the surface,and in the atmosphere and oceans) by means of propagated signals (e.g. electromagneticradiation emitted from aircraft or satellites).</bf-abstract:definition>
+    <bf-abstract:sort>9bb</bf-abstract:sort>
+    <bf-abstract:pos>49</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Dataset">
+    <rdfs:label>Dataset</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>Data encoded in a defined structure. Includes numeric data, environmental data,etc., used by applications software to calculate averages, correlations, etc., or toproduce models, etc., but not normally displayed in its raw form.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17082740"/>
+    <bf-abstract:sort>9c</bf-abstract:sort>
+    <bf-abstract:pos>5</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/NotatedMusic">
+    <rdfs:label>Notated Music</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>Graphic, non-realized representations of musical works intended to be perceivedvisually.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16997191"/>
+    <bf-abstract:sort>9d</bf-abstract:sort>
+    <bf-abstract:pos>6</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/NotatedMovement">
+    <rdfs:label>Notated Movement</rdfs:label>
+    <bf-abstract:marcField>336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>Graphic, non-realized representations of movement intended to be perceivedvisually, e.g. dance.</bf-abstract:definition>
+    <bf-abstract:sort>9e</bf-abstract:sort>
+    <bf-abstract:pos>7</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Audio">
+    <rdfs:label>Audio</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>Resources expressed in an audible form, including music or othersounds.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14480689"/>
+    <bf-abstract:sort>9f</bf-abstract:sort>
+    <bf-abstract:pos>8</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/MusicalAudio">
+    <rdfs:label>Musical Audio</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>Resources expressed in an audible form that is musical.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14480689"/>
+    <bf-abstract:sort>9fa</bf-abstract:sort>
+    <bf-abstract:pos>51</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/NonmusicalAudio">
+    <rdfs:label>Nonmusical Audio</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>Resources expressed in an audible form that is not musical.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14480689"/>
+    <bf-abstract:sort>9fa</bf-abstract:sort>
+    <bf-abstract:pos>50</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/StillImage">
+    <rdfs:label>Still Image</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A resource expressed through line, shape, shading, etc., intended to beperceived visually as a still image or images in two dimensions. Includestwo-dimensional images and slides and transparencies.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16891726"/>
+    <bf-abstract:sort>9g</bf-abstract:sort>
+    <bf-abstract:pos>9</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/MovingImage">
+    <rdfs:label>Moving Image</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>Images intended to be perceived as moving, including motion pictures (using liveaction and/or animation), film and video recordings of performances, events,etc.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/11515605"/>
+    <bf-abstract:sort>9h</bf-abstract:sort>
+    <bf-abstract:pos>10</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/ThreeDimensionalObject">
+    <rdfs:label>Three-dimensional Object</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A Resource in a form intended to be perceived visually in three-dimensions.Includes man-made objects such as models, sculptures, clothing, and toys, as well asnaturally occurring objects such as specimens mounted for viewing.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/16574557"/>
+    <bf-abstract:sort>9i</bf-abstract:sort>
+    <bf-abstract:pos>11</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/SoftwareOrMultimedia">
+    <rdfs:label>Software or Multimedia</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>An electronic resource that is a computer program (i.e. digitally encodedinstructions intended to be processed and performed by a computer) or which consist ofmultiple media types that are software driven. Examples include videogames andwebsites.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/17432593"/>
+    <bf-abstract:sort>9j</bf-abstract:sort>
+    <bf-abstract:pos>12</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/MixedMaterial">
+    <rdfs:label>Mixed Material</rdfs:label>
+    <bf-abstract:marcField>Ldr/06, 007</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A resource comprised of multiple types which are not driven by software. Thismay include materials in two or more forms that are related by virtue of their havingbeen accumulated by or about a person or body, e.g. archival forms.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/14923309"/>
+    <bf-abstract:sort>9k</bf-abstract:sort>
+    <bf-abstract:pos>13</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Manuscript">
+    <rdfs:label>Manuscript</rdfs:label>
+    <bf-abstract:marcField>Ldr/06</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A resource that is written in handwriting or typescript. These are generallyunique resources.</bf-abstract:definition>
+    <bf-abstract:marcExample rdf:resource="http://id.loc.gov/resources/bibs/13294949"/>
+    <bf-abstract:sort>9l</bf-abstract:sort>
+    <bf-abstract:pos>14</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://bibframe.org/vocab/Tactile">
+    <rdfs:label>Tactile Expression</rdfs:label>
+    <bf-abstract:marcField>007, 336</bf-abstract:marcField>
+    <rdfs:subClassOf rdf:resource="http://bibframe.org/vocab/Work"/>
+    <bf-abstract:definition>A resources that is intended to be perceived by touch.</bf-abstract:definition>
+    <bf-abstract:sort>9m</bf-abstract:sort>
+    <bf-abstract:pos>15</bf-abstract:pos>
+    <bf-abstract:status/>
+  </rdfs:Class>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/architect">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Architect role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>2</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/arranger">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Arranger role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>14</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/cartographer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Cartographer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>3</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/choreographer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Choreographer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>4</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/cinematographer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Cinematographer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>5</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/compiler">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Compiler role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>6</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/composer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Composer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>7</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/conductor">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Conductor role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>18</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/creator">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Creator role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:definition>Generalized creative responsibility role.</bf-abstract:definition>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>1</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/designer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Designer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>8</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/director">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Director role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>9</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/editor">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Editor role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>15</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/illustrator">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Illustrator role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>16</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/librettist">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Librettist role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>10</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/lyricist">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Lyricist role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>11</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/performer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Performer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>17</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/photographer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Photographer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>12</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/producer">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Producer role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>13</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/translator">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:label>Translator role</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Agent"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/agent"/>
+    <bf-abstract:sort>07n</bf-abstract:sort>
+    <bf-abstract:pos>19</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/heldWith">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/HeldItem"/>
+    <rdfs:label>Held item</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/HeldMaterial"/>
+    <bf-abstract:definition>Link to held material</bf-abstract:definition>
+    <bf-abstract:sort>15e</bf-abstract:sort>
+    <bf-abstract:pos>29</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/circulationStatus">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/HeldItem"/>
+    <rdfs:label>Circulation status</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/HeldMaterial"/>
+    <bf-abstract:definition>Circulatoin status of an item.</bf-abstract:definition>
+    <bf-abstract:sort>15f</bf-abstract:sort>
+    <bf-abstract:pos>28</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/itemId">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/HeldItem"/>
+    <rdfs:label>System item identifier</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/HeldMaterial"/>
+    <bf-abstract:definition>Identification number assigned to data about one item held.</bf-abstract:definition>
+    <bf-abstract:sort>15f</bf-abstract:sort>
+    <bf-abstract:pos>27</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/adminInfo">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/Resource"/>
+    <rdfs:label>Description administrative information</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/DescriptionAdminInfo"/>
+    <bf-abstract:definition>Administrative metadata generally pertinent to the metadata in the description.</bf-abstract:definition>
+    <bf-abstract:sort>18c</bf-abstract:sort>
+    <bf-abstract:pos>20</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/changeDate">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/DescriptionAdminInfo"/>
+    <rdfs:label>Description change date</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Date"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/adminInfo"/>
+    <bf-abstract:definition>Date or date and time on which the metadata was modified.</bf-abstract:definition>
+    <bf-abstract:sort>18e</bf-abstract:sort>
+    <bf-abstract:pos>21</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/creationDate">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/DescriptionAdminInfo"/>
+    <rdfs:label>Description creation date</rdfs:label>
+    <rdfs:range rdf:resource="http://bibframe.org/vocab/Date"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/adminInfo"/>
+    <bf-abstract:definition>Date or date and time on which the original metadata first created.</bf-abstract:definition>
+    <bf-abstract:sort>18e</bf-abstract:sort>
+    <bf-abstract:pos>22</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/descriptionConventions">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/DescriptionAdminInfo"/>
+    <rdfs:label>Description conventions</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/adminInfo"/>
+    <bf-abstract:definition>Rules used for the descriptive content of the description.</bf-abstract:definition>
+    <bf-abstract:sort>18e</bf-abstract:sort>
+    <bf-abstract:pos>23</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/descriptionLanguage">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/DescriptionAdminInfo"/>
+    <rdfs:label>Description language process</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/adminInfo"/>
+    <bf-abstract:definition>Language used for the metadata.</bf-abstract:definition>
+    <bf-abstract:sort>18e</bf-abstract:sort>
+    <bf-abstract:pos>24</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/descriptionSource">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/DescriptionAdminInfo"/>
+    <rdfs:label>Description source</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/adminInfo"/>
+    <bf-abstract:definition>Code for name of entity that created or modified the metadata.</bf-abstract:definition>
+    <bf-abstract:sort>18e</bf-abstract:sort>
+    <bf-abstract:pos>25</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+  <rdfs:Resource rdf:about="http://bibframe.org/vocab/generationProcess">
+    <rdf:type rdf:resource="http://bibframe.org/model-abstract/BFProperty"/>
+    <rdfs:domain rdf:resource="http://bibframe.org/vocab/DescriptionAdminInfo"/>
+    <rdfs:label>Description generation process</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:subPropertyOf rdf:resource="http://bibframe.org/vocab/adminInfo"/>
+    <bf-abstract:definition>Indication of whether the description was machine generated or particular transformations that were applied.</bf-abstract:definition>
+    <bf-abstract:sort>18e</bf-abstract:sort>
+    <bf-abstract:pos>26</bf-abstract:pos>
+    <bf-abstract:status>accepted</bf-abstract:status>
+  </rdfs:Resource>
+</rdf:RDF>

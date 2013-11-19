@@ -1,129 +1,116 @@
+"""
+ Python Models for Schema.org entities
+"""
 __author__ = "Jeremy Nelson"
-import json, os
-from stdnet import odm
 
-from aristotle.settings import PROJECT_HOME
-from aristotle.settings import ANNOTATION_REDIS, AUTHORITY_REDIS, CREATIVE_WORK_REDIS, INSTANCE_REDIS
+import os
+import sys
+import xml.etree.ElementTree as etree
 
-SCHEMA_RDFS = json.load(open(os.path.join(PROJECT_HOME,
-                                          'schema_org',
-                                          'fixures',
-                                          'all.json'),
-                             'rb'))
 
-class Thing(odm.StdModel):
+PROJECT_HOME = os.path.abspath(os.path.dirname(__file__))
+
+try:
+    from rdflib import RDF, RDFS, OWL
+except ImportError:
+    OWL = ''
+    RDF = ''
+    RDFS = ''
+
+SCHEMA_OWL = etree.parse(os.path.join(
+    PROJECT_HOME,
+    "fixures",
+    "schemaorg.owl"))
+
+def add_properties(schema_dict):
+    # Extracts and saves all unique schema.org class properties
+    for owl_element_name  in ['DatatypeProperty',
+                              'ObjectProperty']:
+        properties = SCHEMA_OWL.findall(
+            "{{{0}}}{1}".format(OWL,
+                                owl_element_name))
+        for row in properties:
+            property_name = row.attrib['{{{0}}}about'.format(RDF)].split(
+                "/")[-1]
+            descriptions = row.findall(
+                "{{{0}}}domain/{{{1}}}Class/{{{1}}}unionOf/{{{2}}}Description".format(
+                    RDFS,
+                    OWL,
+                    RDF))
+            for desc in descriptions:
+                class_name = desc.attrib['{{{0}}}about'.format(RDF)].split("/")[-1]
+                if not 'properties' in schema_dict[class_name]:
+                    print("ERROR {0} should have properties".format(schema_dict[class_name]))
+                if not property_name in schema_dict[class_name]['properties']:
+                    schema_dict[class_name]['properties'].append(property_name)
+    # Adds all parent class properties to each class
+    for key in schema_dict.keys():
+        if 'parent' in schema_dict[key]:
+            parent = schema_dict[key].get('parent')
+            if 'properties' in schema_dict[parent]:
+                schema_dict[key]['properties'].extend(schema_dict[parent]['properties'])
+        for property_name in schema_dict[key]['properties']:
+            for child in schema_dict[key]['children']:
+                if not property_name in schema_dict[child]['properties']:
+                    schema_dict[child]['properties'].append(property_name)
+    return schema_dict
+
+
+def get_classes():
     """
-    Schema.org Thing Base Model available at http://schema.org/Thing
+    Extracts classes from schemaorg.owl fixure
     """
-    additionalType = odm.ForeignField()
-    description = odm.CharField()
-    image = odm.CharField()
-    name = odm.SymbolField()
-    url = odm.SymbolField()
+    schema_dict = {}
+    schema_classes = SCHEMA_OWL.findall(
+        "{{{0}}}Class".format(OWL))
+    for row in schema_classes:
+        about = row.attrib['{{{0}}}about'.format(RDF)]
+        name = about.split("/")[-1]
+        doc_string = "{0} - URL is {1}\n{2}".format(
+            name,
+            about,
+            row.find("{{{0}}}comment".format(RDFS)).text)
+        if name in schema_dict:
+            if not 'properties' in schema_dict[name]:
+                schema_dict[name]['properties'] = []
+            if not '__doc__' in schema_dict[name]:
+                schema_dict[name]['__doc__'] = doc_string
+        else:
+            schema_dict[name] = {'children': [],
+                                 'properties': [],
+                                 '__doc__': doc_string}
+        subClassOf = row.find("{{{0}}}subClassOf".format(RDFS))
+        if subClassOf is not None:
+            parent = subClassOf.attrib['{{{0}}}resource'.format(RDF)]
+            parent_name = parent.split("/")[-1]
+            schema_dict[name]['parent'] = parent_name
+            if parent_name in schema_dict:
+                schema_dict[parent_name]['children'].append(name)
+            else:
+                schema_dict[parent_name] = {'url': parent, 'children': [name,]}
+    return schema_dict
 
-    def __unicode__(self):
-        return self.name
 
-    class Meta:
-        abstract = True
-
-class CreativeWork(Thing):
+def load_owl():
     """
-    Schema.org Creative Work Model available at http://schema.org/CreativeWork
+    Loads schemaorg.owl file and creates lightweight Python objects for each owl:Class
     """
-    about = odm.ForeignField()
-    accountablePerson = odm.ForeignField('Person')
-    aggregateRating = odm.SymbolField()
-    alternativeHeadline = odm.SymbolField()
-    associatedMedia = odm.SymbolField()
-    audience = odm.SymbolField()
-    audio = odm.CharField()
-    author = odm.ManyToManyField()
-    award = odm.ListField()
-    comment = odm.ManyToManyField('UserComments')
-    contentLocation = odm.ForeignField('Place')
-    contentRating = odm.SymbolField()
-    contributor = odm.ManyToManyField()
-    copyrightHolder = odm.ForeignField()
-    copyrightYear = odm.DateField()
-    creator = odm.ManyToManyField()
-    dateCreated = odm.SymbolField()
-    dateModified = odm.SymbolField()
-    datePublished = odm.SymbolField()
-    discussionUrl = odm.SymbolField()
-    editor = odm.ForeignField('Person')
-    encoding = odm.ForeignField('MediaObject')
-    genre = odm.SymbolField()
-    headline = odm.CharField()
-    inLanguage = odm.SymbolField()
-    interactionCount = odm.SymbolField()
-    isFamilyFriendly = odm.BooleanField()
-    keywords = odm.SetField()
-    mentions = odm.ManyToManyField()
-    offers = odm.ManyToManyField('Offer')
-    provider = odm.ManyToManyField()
-    publisher = odm.ManyToManyField()
-    publishingPrinciples = odm.CharField()
-    review = odm.SymbolField('Review')
-    sourceOrganization = odm.ForeignField('Organization')
-    text = odm.CharField()
-    thumbnailUrl = odm.CharField()
-    version = odm.FloatField()
-    video = odm.ForeignField('VideoObject')
+    schema_classes = add_properties(get_classes())
+    for name in schema_classes.keys():
         
+        parent_class = object
+        if 'parent' in schema_classes[name] and  hasattr(sys.modules[__name__],
+                                                         schema_classes[name]['parent']): 
+            parent_class = getattr(sys.modules[__name__],
+                                   schema_classes[name]['parent'])
+        attributes = {'__doc__': schema_classes[name].get('__doc__')}
+        for row in schema_classes[name].get('properties', []):
+            attributes[row] = None
+        new_class = type(name,
+                         (parent_class,),
+                         attributes)
+        setattr(sys.modules[__name__],
+                name,
+                new_class)
 
-
-class Person(Base):
-    additionalType = odm.SymbolField()
-    description = odm.SymbolField()
-    image = odm.SymbolField()
-    name = odm.SymbolField()
-    url = odm.SymbolField()
-    additionalName = odm.SymbolField()
-    address = odm.SymbolField()
-    affiliation = odm.SymbolField()
-    alumniOf = odm.SymbolField()
-    award = odm.SymbolField()
-    awards = odm.SymbolField()
-    birthDate = odm.SymbolField()
-    brand = odm.SymbolField()
-    children = odm.SymbolField()
-    colleague = odm.SymbolField()
-    colleagues = odm.SymbolField()
-    contactPoint = odm.SymbolField()
-    contactPoints = odm.SymbolField()
-    deathDate = odm.SymbolField()
-    duns = odm.SymbolField()
-    email = odm.SymbolField()
-    familyName = odm.SymbolField()
-    faxNumber = odm.SymbolField()
-    follows = odm.SymbolField()
-    gender = odm.SymbolField()
-    givenName = odm.SymbolField()
-    globalLocationNumber = odm.SymbolField()
-    hasPOS = odm.SymbolField()
-    homeLocation = odm.SymbolField()
-    honorificPrefix = odm.SymbolField()
-    honorificSuffix = odm.SymbolField()
-    interactionCount = odm.SymbolField()
-    isicV4 = odm.SymbolField()
-    jobTitle = odm.SymbolField()
-    knows = odm.SymbolField()
-    makesOffer = odm.SymbolField()
-    memberOf = odm.SymbolField()
-    naics = odm.SymbolField()
-    nationality = odm.SymbolField()
-    owns = odm.SymbolField()
-    parent = odm.SymbolField()
-    parents = odm.SymbolField()
-    performerIn = odm.SymbolField()
-    relatedTo = odm.SymbolField()
-    seeks = odm.SymbolField()
-    sibling = odm.SymbolField()
-    siblings = odm.SymbolField()
-    spouse = odm.SymbolField()
-    taxID = odm.SymbolField()
-    telephone = odm.SymbolField()
-    vatID = odm.SymbolField()
-    workLocation = odm.SymbolField()
-    worksFor = odm.SymbolField()
+load_owl()

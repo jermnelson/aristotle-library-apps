@@ -4,15 +4,23 @@
  <div class="col-md-4" data-bind="visible: showFilters">
 
  </div>
- <div class="col-md-1 result-nav" >
+ <div class="col-md-1 result-nav" data-bind="visible: showResults">
    <button class="btn btn-lg"
-           data-bind="click: prevResultsPage"><span data-bind="visible: showResults" class="glyphicon glyphicon-chevron-left"></span></button>
+           data-bind="click: prevResultsPage, enable: activePrevious"><span class="glyphicon glyphicon-chevron-left"></span></button>
  </div>
  {# START Results Size DIV #}
  <div data-bind="attr: { class: resultPaneSize }">
+   <span data-bind="text: pageNumber, visible: false" id="pageNumber"></span>
    <ul class="list-inline" data-bind="foreach: searchResults" >
-     <li data-bind="visible: isActive"> 
-      <h3 data-bind="text: title" style="width: 150px"></h3>
+     <li> 
+      <h3  style="width: 150px">
+       <span data-bind="text: title"></span>
+       <sup>
+       <a data-bind="attr: { href: workURL }">
+       <span style="font-size: .75em" 
+             class="glyphicon glyphicon-info-sign"></span></a>
+       </sup>
+      </h3>
       {# <p data-bind="html: authors"></p> #}
       <p style="text-align: center">
       <img data-bind="attr: { src: coverURL }" class="img-rounded img-result"> 
@@ -38,7 +46,7 @@
  </div>
  <div class="col-md-1 result-nav" data-bind="visible: showResults">
    <button class="btn btn-lg"
-           data-bind="click: nextResultsPage"><span class="glyphicon glyphicon-chevron-right"></span></button>
+           data-bind="click: nextResultsPage, enable: activeNext"><span class="glyphicon glyphicon-chevron-right"></span></button>
  
  </div>
 {# END Results row #}

@@ -122,24 +122,26 @@ def keyword_search(**kwargs):
     output = {'hits' : []}
     indexer = kwargs.get('indexer', INDEXER)
     html_output = kwargs.get('html_output', True)
-    schema = kwargs.get('schema', BF_SCHEMA)
-    redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
+    page = kwargs.get('page', 1)
     query_text = kwargs.get('query_text', None)
+    redis_datastore = kwargs.get('redis_datastore', REDIS_DATASTORE)
+    schema = kwargs.get('schema', BF_SCHEMA)
     if query_text is None:
         raise ValueError('Keyword search query cannot be None')
     with indexer.searcher() as searcher:
         query = QueryParser("content", schema).parse(query_text)
-        results = searcher.search(query)
+        results = searcher.search_page(query, int(page), pagelen=5)
+        output['page'] = page
         output['total'] = len(results)
+        
         for i,hit in enumerate(results):
             fields = hit.fields()
-            instance_info = {'isActive': False,
-                             'title': fields.get('title')}
-            if i < 5:
-                instance_info['isActive'] = True
+            instance_info = {'title': fields.get('title')}
             work_key = fields.get('work_key')
+            instance_info['workURL'] = "/apps/catalog/{0}".format(work_key)
             for instance_key in redis_datastore.smembers(
                 '{0}:hasInstance'.format(work_key)):
+                
                 instance_info['instance_key'] = instance_key
                 # Tries to extract cover image and holdings statement
                 for annotation_key in redis_datastore.smembers(
@@ -168,9 +170,27 @@ def keyword_search(**kwargs):
                                 'label': location_label,
                                 'url': location_url}
                 if html_output:
+                    authors = []
+                    if redis_datastore.hexists(work_key,
+                                               'rda:isCreatedBy'):
+                        author_key = redis_datastore.hget(
+                            work_key,
+                            'rda:isCreatedBy')
+                        authors.append({'name': redis_datastore.hget(
+                            author_key,
+                            'rda:preferredNameForThePerson'),
+                                    'key': author_key})
+                    elif redis_datastore.exists('{0}:rda:isCreatedBy'.format(work_key)):
+                        for person_key in redis_datastore.smembers(
+                            '{0}:rda:isCreatedBy'.format(work_key)):
+                            authors.append({'name': redis_datastore.hget(
+                                person_key,
+                                'rda:preferredNameForThePerson'),
+                                            'key': person_key})
                     item_detail_template = loader.get_template("item-details.html")
                     instance_info['instanceDetail'] = item_detail_template.render(
-                        Context({'url': redis_datastore.hget(instance_key, 'url')}))
+                        Context({'authors': authors,
+                                 'url': redis_datastore.hget(instance_key, 'url')}))
                 else:
                     instance_info['instanceDetail'] = {
                         'url': redis_datastore.hget(instance_key, 'url')}

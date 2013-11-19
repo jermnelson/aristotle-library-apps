@@ -1,11 +1,19 @@
 {% load i18n %}
 <div>
  <ul class="list-unstyled">
+  {% if authors %}
+  <li>Author(s): 
+  {% for author in authors %}
+   <a href="/apps/catalog/{{ author.key }}">{{ author.name }}</a>
+   {% if not forloop.last %},{% endif %}
+  {% endfor %}
+  </li>
+  {% endif %}
   {% if isbn %}
   <li>ISBN: {{ isbn }}</li>
   {% endif %}
   {% if url %}
-   <li>Download: <a href="{{ url }}">{{ url }}</a></li> 
+  <li>Download: <a href="{{ url }}">{{ url }}</a></li> 
   {% endif %}
  </ul>
 </div>

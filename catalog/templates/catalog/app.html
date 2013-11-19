@@ -18,7 +18,7 @@
 {% endblock %} 
 
 {% block body %}
-<div class="row">
+<div class="row" style="height: 250px">
  {# START Search query display #}
  <div class="col-md-12">
    <h2 class="search-query" data-bind="visible: showResults">{% trans "You searched for" %} "<span class="search-terms" data-bind="text: searchQuery"></span>"
@@ -27,6 +27,7 @@
     <a href="#" data-bind="click: displayFilters" style="font-size: .75em"><span class="glyphicon glyphicon-forward"></span></a>
     </span>
    </h2>
+   <h2 class="text-danger" data-bind="visible: showError, text: errorMessage"></h2>
  {# END Search query display #}
  </div>
  {% include 'catalog/snippets/results.html' %}
