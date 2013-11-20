@@ -26,7 +26,7 @@ class SpringerEBookJob(MARCModifier):
         :param public_note: Optional public note, default is 'View online'
         :param note_prefix: Optional note prefix, default is 'Available via Internet'
         '''
-        MARCModifier.__init__(self,marc_file)
+        MARCModifier.__init__(self, marc_file, True)
         self.spr_url = 'http://www.springerlink.com/openurl.asp?genre=book&id=doi:'
         if kwargs.has_key('proxy'):
             self.spr_proxy = kwargs.get('proxy')

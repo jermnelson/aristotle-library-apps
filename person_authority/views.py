@@ -3,13 +3,13 @@
 """
 __author__ = "Jeremy Nelson"
 from app_settings import APP
-from django.views.generic.simple import direct_to_template
+from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
+from django.shortcuts import render
 from aristotle.views import json_view
-from aristotle.settings import AUTHORITY_REDIS, INSTANCE_REDIS
+from aristotle.settings import REDIS_DATASTORE
 from redis_helpers import person_search, process_name
 from bibframe.redis_helpers import get_brief
 
-authority_redis = AUTHORITY_REDIS
 
 def app(request):
     """

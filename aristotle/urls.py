@@ -6,7 +6,8 @@
 """
 __author__ = "Jeremy Nelson"
 
-from aristotle.settings import ACTIVE_APPS
+import os
+from aristotle.settings import ACTIVE_APPS, PROJECT_HOME
 from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
@@ -54,10 +55,13 @@ for app in ACTIVE_APPS:
     if app == 'ccetd':
         urlpatterns.append(
             url(r'^apps/etd[$|/]',
-                include('ccetd.urls')))       
-    urlpatterns.append(
-        url(r'^apps/{0}[$|/]'.format(app),
-            include('{0}.urls'.format(app))))
+                include('ccetd.urls')))
+    if os.path.exists(os.path.join(PROJECT_HOME,
+                                   app,
+                                   'urls.py')):
+        urlpatterns.append(
+            url(r'^apps/{0}[$|/]'.format(app),
+                include('{0}.urls'.format(app))))
     
 # Uncomment the admin/doc line below to enable admin documentation:
 urlpatterns.append(url(r'^admin/doc/',

@@ -11,7 +11,7 @@
     "addressRegion": "Colorado",
     "postalCode": 80103, 
     "streetAddress": "1021 North Cascade Avenue"
-  }, 
+  },
   "email": "tuttref@coloradocollege.edu", 
   "location": {
     "@type": "Place",
@@ -21,6 +21,19 @@
       "latitude": 38.84872,
       "longitude": -104.82386
     }
+  },
+  "member": {
+    "@type": "CollegeOrUniversity",
+    "address": {
+      "@type": "PostalAddress", 
+      "addressCountry": "United States", 
+      "addressLocality": "Colorado Springs", 
+      "addressRegion": "Colorado",
+      "postalCode": 80103, 
+      "streetAddress": "14 East Cache La Poudre St."
+    },
+    "name": "Colorado College",
+    "url": "http://www.coloradocollege.edu/"
   },
   "name": "Tutt Library",
   "openingHoursSpecification":[

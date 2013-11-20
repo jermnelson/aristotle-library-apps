@@ -90,7 +90,7 @@ class MARCModifier(object):
             if len(args) == 2:
                 to_unicode=args[1]
             else:
-                to_unicode=False
+                to_unicode=True
             self.marc_reader = pymarc.MARCReader(args[0],
                                                  to_unicode=to_unicode)
         self.records = []

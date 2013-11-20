@@ -14,7 +14,7 @@ urlpatterns = patterns('catalog.views',
     url(r"^(\w+:\w+:\d+)$",
         "display_entity",
         name="entity-display"),
-    url(r"^save$", "save", name="catalog-save"),
+##    url(r"^save$", "save", name="catalog-save"),
     url(r"^search$", "search", name="catalog-search"),
 )
 
