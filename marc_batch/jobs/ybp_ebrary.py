@@ -21,7 +21,9 @@ class ybp_ebrary(MARCModifier):
 
         :param marc_file: File location of MARC records
         """
-        MARCModifier.__init__(self,marc_file)
+        MARCModifier.__init__(self,
+                              marc_file,
+                              False)
 
     def processRecord(self,
                       marc_record):

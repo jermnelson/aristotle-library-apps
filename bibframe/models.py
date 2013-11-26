@@ -126,8 +126,11 @@ def load_rdf():
                 continue
 ##                raise ValueError("Unknown BIBFRAME class {0}".format(
 ##                    domain_name))
-            if 'TitleEntity' == domain_name:
-                rdf_classes['Title']['attributes'][attrib_name] = None
+##            if 'TitleEntity' == domain_name:
+##                if 'Title' in rdf_classes:
+##                    rdf_classes['Title']['attributes'][attrib_name] = None
+##                else:
+##                    rdf_classes['Title'] = {'attributes': {attrib_name: None}}
             else:
                 rdf_classes[domain_name]['attributes'][attrib_name] = None
             if marc_mapping is not None:
@@ -165,8 +168,8 @@ def load_rdf():
                                 'marc_map'].has_key(parent_map_key):
                             rdf_classes[class_name]['attributes'][
                                 'marc_map'][parent_map_key] = parent_map_rule
-            if class_name == 'TitleEntity':
-                class_name = 'Title'
+##            if class_name == 'TitleEntity':
+##                class_name = 'Title'
             
             parent_class = getattr(sys.modules[__name__],
                                    rdf_classes[class_name]['parent'])
