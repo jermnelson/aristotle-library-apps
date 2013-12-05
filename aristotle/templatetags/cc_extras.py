@@ -79,7 +79,7 @@ def cache_js(library_soup):
            not src.startswith('http'):
             tag.attrs['src'] = urllib2.urlparse.urljoin(COLLEGE_URL,
                                                          src)
-        output += "{0}\n".format(tag.prettify())
+        output += u"{0}\n".format(tag.prettify())
     cache.set('lib-js', output)
 
 CSS_IMG_RE = re.compile(r"url\((.+)\)")

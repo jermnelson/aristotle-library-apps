@@ -95,6 +95,7 @@ TEMPLATE_LOADERS = (
 )
 
 AUTHENTICATION_BACKENDS = [
+    "aristotle.backends.IIIUserBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
