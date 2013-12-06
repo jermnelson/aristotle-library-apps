@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 import django.utils.simplejson as json
 from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
 from fixures import json_loader,rst_loader
 from aristotle.settings import REDIS_DATASTORE
 
@@ -69,9 +70,9 @@ def app_login(request):
         if user.is_active:
             login(request, user)
             if len(next_page) > 0:
-	        return redirect(next_page)
+                return HttpResponseRedirect(next_page)
             else:
-                return redirect('/apps')
+                return HttpResponseRedirect('/')
 	else:
             logging.error("User not active")
             raise Http404
@@ -90,7 +91,7 @@ def app_logout(request):
     else:
         next_page = '/apps'
     logout(request)
-    return redirect(next_page)
+    return HttpResponseRedirect(next_page)
    
 
 def feedback(request):

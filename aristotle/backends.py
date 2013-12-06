@@ -27,6 +27,7 @@ class IIIUserBackend(ModelBackend):
          ``iii_id`` fail to authenticate.
         """
         raw_html = urllib2.urlopen(ILS_PATRON_URL.format(iii_id)).read()
+        print(last_name, iii_id, raw_html)
         if re.search(r'ERRMSG=',raw_html):
             logging.error("INVALID SEARCH {0}".format(raw_html))
             is_valid = False
