@@ -3,7 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('person_authority.views',
     url(r"$^","app",name="person-authority-default"),

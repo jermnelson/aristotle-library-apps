@@ -7,6 +7,7 @@ import os
 import sys
 import xml.etree.ElementTree as etree
 
+from backends import RedisStorage
 
 PROJECT_HOME = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,6 +22,22 @@ SCHEMA_OWL = etree.parse(os.path.join(
     PROJECT_HOME,
     "fixures",
     "schemaorg.owl"))
+
+class SchemaBase(object):
+
+    def __init__(self, storage=None):
+        """Base object for Schema.org using a plug-in data
+        server and storage
+
+        :param storage: Storage backend, default is None
+        """
+        self.storage = storage
+
+    def save(self):
+        """Method saves the current state of the object to the
+        storage backend."""
+        if self.storage is not None:
+            self.storage.save(self)
 
 def add_properties(schema_dict):
     # Extracts and saves all unique schema.org class properties

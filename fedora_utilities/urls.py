@@ -3,7 +3,7 @@
 """
 __author__ = "Jeremy Nelson"
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns('fedora_utilities.views',
     url(r"$^", "default", name="fedora-batch-default"),

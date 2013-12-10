@@ -5,6 +5,7 @@ __author__ = 'Jeremy Nelson'
 
 import logging,sys, datetime
 from django.http import HttpResponse, Http404
+from urllib2 import HTTPError
 
 from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
 from django.shortcuts import render
@@ -64,8 +65,13 @@ def app_login(request):
     try:
         user = authenticate(last_name=username,
 	                    iii_id=password)
+    except HTTPError:
+        user = authenticate(username=username,
+                            password=password)
     except KeyError:
         user = None
+    
+        
     if user is not None:
         if user.is_active:
             login(request, user)
