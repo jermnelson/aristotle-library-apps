@@ -57,8 +57,6 @@ def app_login(request):
 
     :param request: HTTP Request
     """
-    if request.method == 'GET':
-        return HttpResponse("IN GET App Login")
     username = request.POST['username']
     password = request.POST['password']
     next_page = request.REQUEST.get('next')
