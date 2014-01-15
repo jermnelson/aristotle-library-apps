@@ -63,7 +63,7 @@ class AddFedoraObjectFromTemplate(forms.Form):
                                      label="PID of Parent Collection",
                                      widget=forms.TextInput(
                                          attrs={'class': 'form-control'}))
-    
+
     contributors = forms.CharField(required=False,
                                    widget=forms.TextInput(
                                          attrs={'class': 'form-control'}))
@@ -183,7 +183,7 @@ class AddFedoraObjectFromTemplate(forms.Form):
             del self._errors['genre']
         return self.cleaned_data
 
-                                        
+
 
 class BatchIngestForm(forms.Form):
     collection_pid = forms.CharField(max_length=20)
@@ -194,12 +194,12 @@ class BatchIngestForm(forms.Form):
 ##                                       widget=forms.ClearableFileInput(attrs={"webkitdirectory":"",
 ##                                                                              "directory":"",
 ##                                                                              "mozdirectory":""}))
-    
+
 class BatchModifyMetadataForm(forms.ModelForm):
 
     class Meta:
         model = BatchModifyMetadataLog
-        exclude = ('created_on')
+        exclude = ('created_on',)
 
 class ObjectMovementForm(forms.Form):
     """

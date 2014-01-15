@@ -9,7 +9,7 @@ from urllib2 import HTTPError
 
 from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout 
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 import django.utils.simplejson as json
 from django.shortcuts import redirect
@@ -28,7 +28,7 @@ def background(request):
                               'background.html',
                               {'app':None,
                                'history':rst_loader.get('project-history'),
-                               'institution':json_loader.get('institution'),                               
+                               'institution':json_loader.get('institution'),
                                'navbar_menus':json_loader.get('navbar-menus'),
                                'related_resources':rst_loader.get('related-resources'),
                                'user':None})
@@ -41,11 +41,11 @@ def default(request):
     :rtype: Generated HTML template
     """
     app_listing = []
-    
+
     return direct_to_template(request,
                               'index.html',
                               {'app':None,
-                               'institution':json_loader.get('institution'),                               
+                               'institution':json_loader.get('institution'),
                                'navbar_menus':json_loader.get('navbar-menus'),
                                'portfolio':app_listing,
                                'vision':rst_loader.get('vision-for-aristotle-library-apps'),
@@ -53,7 +53,7 @@ def default(request):
 
 def app_login(request):
     """
-    Attempts to authenticate a user to Aristotle Library Apps 
+    Attempts to authenticate a user to Aristotle Library Apps
 
     :param request: HTTP Request
     """
@@ -68,8 +68,8 @@ def app_login(request):
                             password=password)
     except KeyError:
         user = None
-    
-        
+
+
     if user is not None:
         if user.is_active:
             login(request, user)
@@ -86,7 +86,7 @@ def app_login(request):
 
 def app_logout(request):
     """
-    Attempts to logout a user from the Aristotle Library Apps 
+    Attempts to logout a user from the Aristotle Library Apps
 
     :param request: HTTP Request
     """
@@ -96,7 +96,7 @@ def app_logout(request):
         next_page = '/apps'
     logout(request)
     return HttpResponseRedirect(next_page)
-   
+
 
 def feedback(request):
     """
@@ -110,18 +110,18 @@ def feedback(request):
     feedback_id = REDIS_DATASTORE.incr(
         "global feedback:{0}:{1}".format(today.year,
                                          today.month))
-    feedback_key = "feedback:{0}:{1}:{2}".format(today.year, 
-		                                 today.month, 
+    feedback_key = "feedback:{0}:{1}:{2}".format(today.year,
+		                                 today.month,
 						 feedback_id)
     REDIS_DATASTORE.hset(feedback_key, "created", today.isoformat())
     REDIS_DATASTORE.hset(feedback_key, "comment", request.POST.get('comment'))
     REDIS_DATASTORE.hset(feedback_key, "context", request.POST.get('context'))
     if request.POST.has_key('sender'):
         REDIS_DATASTORE.hset(feedback_key, "sender", request.POST.get('sender'))
-    
+
     return redirect(REDIS_DATASTORE.hget(feedback_key, "context"))
-    
-    
+
+
 
 
 def starting(request):
@@ -135,7 +135,7 @@ def starting(request):
                               'getting-started.html',
                               {'app':None,
                                'steps':[rst_loader.get('installing')],
-                               'institution':json_loader.get('institution'),                               
+                               'institution':json_loader.get('institution'),
                                'navbar_menus':json_loader.get('navbar-menus'),
                                'user':None})
 
@@ -144,7 +144,7 @@ def website_footer(request):
     """
     Displays a footer replaced by a harvested footer from a website. This
     function is for one example of website interoperbility of the an App
- 
+
     :param request: HTTP Request
     """
     return direct_to_template(request,
@@ -156,15 +156,17 @@ def website_header(request):
     """
     Displays a footer replaced by a harvested footer from a website. This
     function is for one example of website interoperbility of the an App
- 
+
     :param request: HTTP Request
     """
+##    from django.core.cache import cache
+##    cache.clear()
     return direct_to_template(request,
                               'snippets/website-header.html',
                              {})
 
 
-    
+
 def json_view(func):
     """
     Returns JSON results from method call, from Django snippets

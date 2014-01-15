@@ -1,5 +1,5 @@
 """
- :mod:`cc_extras` Colorado College Specific Tags and functionality 
+ :mod:`cc_extras` Colorado College Specific Tags and functionality
 """
 __author__ = "Jeremy Nelson"
 
@@ -39,14 +39,31 @@ def __filter_anchors__(element):
 
 def __filter_imgs__(element):
     """
-    Helper function iteraties through all of the img tags in the 
+    Helper function iteraties through all of the img tags in the
     element and makes all img links absolute.
 
     :param element: Element
     """
     for img in element.find_all('img'):
-        pass
-        
+        src = img.attrs.get('src')
+        img.attrs['src'] = urllib2.urlparse.urljoin(COLLEGE_URL,
+                                                    src)
+
+def __filter_search_form__(element):
+    """
+    Helper function takes an element, extracts the form elements and
+    makes the form's action an absolute URL
+
+    :param element: Element
+    """
+    search_form_list = element.select("#search")
+    if len(search_form_list) > 0:
+        search_form = search_form_list[0]
+        action = search_form.attrs.get('action')
+        search_form['action'] = urllib2.urlparse.urljoin(COLLEGE_URL,
+                                                         action)
+        search_form['target'] = '__top__'
+
 def cache_css(library_soup):
     """
     Retrieves and caches a string of all of the stylesheets from the
@@ -86,7 +103,7 @@ CSS_IMG_RE = re.compile(r"url\((.+)\)")
 def cache_tabs(library_soup):
     """
     Function retrieves, modifies, and caches the library tabs
-    
+
     :param library_soup: Library Homepage
     """
     cache_input = ''
@@ -94,7 +111,7 @@ def cache_tabs(library_soup):
     if len(div_feature_result) == 1:
         div_feature = div_feature_result[0]
         bkgrd_rel_url = CSS_IMG_RE.search(div_feature.attrs.get('style')).groups()[0]
-        bkgrd_url = urllib2.urlparse.urljoin(COLLEGE_URL, 
+        bkgrd_url = urllib2.urlparse.urljoin(COLLEGE_URL,
                                              bkgrd_rel_url)
         style = '''background-image: url({0}); height: 193px;'''.format(bkgrd_url)
         div_feature.attrs['style'] = style
@@ -108,7 +125,7 @@ def cache_tabs(library_soup):
                                                          'top:-175px')
         cache_input += u"\n{0}".format(library_tabs.prettify())
     cache.set('lib-cc-tabs',cache_input)
-    
+
 def harvest_homepage():
     """
     Function retrieves latest snapshot from live library website,
@@ -124,12 +141,14 @@ def harvest_homepage():
         if len(result) == 1:
             element = result[0]
             __filter_anchors__(element)
+            __filter_imgs__(element)
+            __filter_search_form__(element)
             cache.set('lib-{0}'.format(html_id),
                       element.prettify())
     cache_tabs(lib_soup)
     cache_css(lib_soup)
     cache_js(lib_soup)
-    
+
 register = template.Library()
 
 
@@ -137,7 +156,7 @@ def get_css(cache_key='lib-css'):
     """
     Function returns cached version of css from live site
 
-    :param cache_key: Key to retrieve footer from cache, defaults to 
+    :param cache_key: Key to retrieve footer from cache, defaults to
                       lib-css
     """
     lib_css = cache.get(cache_key)
@@ -151,7 +170,7 @@ def get_footer(cache_key='lib-footer'):
     """
     Function returns cached version of footer element from live site
 
-    :param cache_key: Key to retrieve footer from cache, defaults to 
+    :param cache_key: Key to retrieve footer from cache, defaults to
                       lib-footer
     """
     footer = cache.get(cache_key)
@@ -165,7 +184,7 @@ def get_header(cache_key='lib-header'):
     """
     Function returns cached version of header element from live site
 
-    :param cache_key: Key to retrieve header from cache, defaults to 
+    :param cache_key: Key to retrieve header from cache, defaults to
                       lib-header
     """
     header = cache.get(cache_key)
@@ -179,7 +198,7 @@ def get_js(cache_key='lib-js'):
     """
     Function returns cached version of javascript from live site
 
-    :param cache_key: Key to retrieve footer from cache, defaults to 
+    :param cache_key: Key to retrieve footer from cache, defaults to
                       lib-js
 
     """
@@ -191,10 +210,10 @@ def get_js(cache_key='lib-js'):
         return mark_safe(cache.get(cache_key))
 
 def get_tabs(cache_key='lib-cc-tabs'):
-    """Function returns cached version of library-tabs div element from 
+    """Function returns cached version of library-tabs div element from
     live site
 
-    :param cache_key: Key to retrieve tabs from cache, defaults to 
+    :param cache_key: Key to retrieve tabs from cache, defaults to
                       lib-cc-tabs
     """
     tabs = cache.get(cache_key)
@@ -204,10 +223,10 @@ def get_tabs(cache_key='lib-cc-tabs'):
         return mark_safe(tabs)
     else:
         harvest_homepage()
-        return mark_safe(cache.get(cache_key))    
+        return mark_safe(cache.get(cache_key))
 
-register.filter('get_css', get_css)    
-register.filter('get_footer', get_footer)    
+register.filter('get_css', get_css)
+register.filter('get_footer', get_footer)
 register.filter('get_header', get_header)
-register.filter('get_js', get_css)    
+register.filter('get_js', get_css)
 register.filter('get_tabs', get_tabs)

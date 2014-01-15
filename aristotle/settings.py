@@ -95,7 +95,7 @@ TEMPLATE_LOADERS = (
 )
 
 AUTHENTICATION_BACKENDS = [
-    "aristotle.backends.IIIUserBackend",
+##    "aristotle.backends.IIIUserBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -159,7 +159,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        
+
     }
 }
 

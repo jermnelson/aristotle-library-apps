@@ -47,11 +47,21 @@ urlpatterns = patterns('',
 ##    url(r'^apps/reserve_search/', include('reserve_search.urls')),
 ##    url(r'^apps/title_search/', include('title_search.urls')),
 ##    url(r'^apps/','portfolio.views.default', name='portfolio.home'),
-    
-                       
 
-    
+
+
+
 )
+
+# Uncomment the admin/doc line below to enable admin documentation:
+urlpatterns.append(url(r'^admin/doc/',
+                       include('django.contrib.admindocs.urls')))
+
+# Uncomment the next line to enable the admin:
+urlpatterns.append(url(r'^admin/',
+                       include(admin.site.urls)))
+urlpatterns.append(url(r'^captcha/',
+                       include('captcha.urls')))
 
 for app in ACTIVE_APPS:
     if app == 'ccetd':
@@ -64,13 +74,5 @@ for app in ACTIVE_APPS:
         urlpatterns.append(
             url(r'^apps/{0}[$|/]'.format(app),
                 include('{0}.urls'.format(app))))
-    
-# Uncomment the admin/doc line below to enable admin documentation:
-urlpatterns.append(url(r'^admin/doc/',
-                       include('django.contrib.admindocs.urls')))
 
-# Uncomment the next line to enable the admin:
-urlpatterns.append(url(r'^admin/',
-                       include(admin.site.urls)))
-urlpatterns.append(url(r'^captcha/',
-                       include('captcha.urls')))
+
