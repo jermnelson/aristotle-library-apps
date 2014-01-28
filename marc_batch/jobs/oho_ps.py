@@ -11,12 +11,13 @@ class OxfordHandbooksOnlinePoliticalScience(OxfordHandbooksJob):
     """
 
     def __init__(self,
+                 marc_file,
                  **kwargs):
         """
         Initializes an `OxfordHandbooksOnlinePoliticalScience` class
         """
         OxfordHandbooksJob.__init__(self,
-                                    marc_file,
+                                    marc_file=marc_file,
                                     **kwargs)
-        
-        
+
+

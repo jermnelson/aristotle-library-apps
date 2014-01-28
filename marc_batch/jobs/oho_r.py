@@ -11,12 +11,13 @@ class OxfordHandbooksOnlineReligion(OxfordHandbooksJob):
     """
 
     def __init__(self,
+                 marc_file,
                  **kwargs):
         """
         Initializes an `OxfordHandbooksOnlineReligion` class
         """
         OxfordHandbooksJob.__init__(self,
-                                    marc_file,
+                                    marc_file=marc_file,
                                     **kwargs)
-        
-        
+
+

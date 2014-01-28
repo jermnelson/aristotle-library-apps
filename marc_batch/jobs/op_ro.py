@@ -9,10 +9,10 @@ class OxfordReferenceOnlineJob(MARCModifier):
     Class reads Oxford Reference Online MARC file, validates,
     and adds/modifies fields to a new import MARC record for importing
     into TIGER iii ILS.
- 
+
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, marc_file, **kwargs):
         """
         Initializes `OxfordReferenceOnlineJob`
 
@@ -20,7 +20,6 @@ class OxfordReferenceOnlineJob(MARCModifier):
         :keyword proxy_filter: Optional, proxy prefix for 856 field default is REFERENCE_PROXY_FILTER constant.
         :keyword series_title: Optional, default is 'Oxford reference online premium'
         """
-        marc_file = kwargs.get('marc_file')
         OxfordReferenceOnlineJob.__init__(self, marc_file)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
