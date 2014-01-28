@@ -3,6 +3,8 @@
 """
 __author__ = "Jeremy Nelson"
 
+import urllib2
+
 from marc_batch.marc_helpers import MARCModifier
 from pymarc import Field
 
@@ -12,13 +14,13 @@ class OxfordHandbooksJob(MARCModifier):
     """
     Class reads Oxford Handbooks Online MARC records, validates,
     and adds/modifies fields of each MARC record for importing into
-    TIGER iii ILS. 
+    TIGER iii ILS.
     """
 
     def __init__(self,**kwargs):
         """
-        Initializes `OxfordHandbooksJob` 
- 
+        Initializes `OxfordHandbooksJob`
+
         :keyword marc_file: Required input MARC file object from Oxford Handbooks
         :keyword proxy_filter: Optional, proxy prefix for 856 field default is HANDBOOK_PROXY_FILTER
                                constant.
@@ -51,7 +53,7 @@ class OxfordHandbooksJob(MARCModifier):
         """
         Method process record and is called by `MARCImportBot` load method.
 
-        :param marc_record: Required input MARC file from Oxford Reference, 
+        :param marc_record: Required input MARC file from Oxford Reference,
                             should have been set when instance was initialized.
         """
         #marc_record.leader = self.processLeader(marc_record.leader)
@@ -79,19 +81,25 @@ class OxfordHandbooksJob(MARCModifier):
         for field in all856fields:
             marc_record.remove_field(field)
         doi_url = field856.get_subfields('u')[0]
-        # Retrieve DOI link (redirects to Oxford Handbook URL)
-        doi_request = urllib2.urlopen(doi_url)
-        ohb_url = doi_request.geturl()
-        ohb_path = urlparse.urlsplit(ohb_url).path
+        try:
+            # Retrieve DOI link (redirects to Oxford Handbook URL)
+            doi_request = urllib2.urlopen(doi_url)
+            ohb_url = doi_request.geturl()
+            ohb_path = urllib2.urlparse.urlsplit(ohb_url).path
+        except:
+            ohb_url = ''
+            ohb_path = urllib2.urlparse.urlsplit(doi_url).path
+
         # Create new 538 field
         new538 = Field(tag='538',
                        indicators=[" "," "],
-                       subfields=['a','%s, %s' % (self.note_prefix,ohb_url)])
+                       subfields=['a','{}, {}'.format(self.note_prefix,
+                                                      ohb_url)])
         marc_record.add_field(new538)
         # Create new 856 field
         new856 = Field(tag='856',
                        indicators=['4','0'],
-                       subfields=['u','%s%s' % (self.proxy_filter,
+                       subfields=['u','{}{}'.format(self.proxy_filter,
                                                 ohb_path),
                                   'z',self.public_note])
         marc_record.add_field(new856)
@@ -129,7 +137,7 @@ class OxfordHandbooksJob(MARCModifier):
     def validate007(self,marc_record):
         """
         Method validates 007 field, sets position 13 to u
-        
+
         :param marc_record: MARC record, required
         """
         field007 = marc_record.get_fields('007')[0]
@@ -143,7 +151,7 @@ class OxfordHandbooksJob(MARCModifier):
 
     def validate730(self,marc_record):
         """
-        Method creates two 730 fields with specific collection set for subfield 
+        Method creates two 730 fields with specific collection set for subfield
         a.
 
         :param marc_record: MARC record, required
