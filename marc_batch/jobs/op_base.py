@@ -59,6 +59,7 @@ class OxfordHandbooksJob(MARCModifier):
         #marc_record.leader = self.processLeader(marc_record.leader)
         marc_record = self.remove050(marc_record)
         marc_record = self.remove082(marc_record)
+        marc_record = self.validate006(marc_record)
         marc_record = self.validate007(marc_record)
         marc_record = self.validate300(marc_record)
         marc_record = self.remove490(marc_record)
@@ -133,6 +134,19 @@ class OxfordHandbooksJob(MARCModifier):
         return self.__remove_field__(marc_record=marc_record,
                                      tag='830')
 
+    def validate006(self, marc_record):
+        """Method validates 006 field, sets 'o' value for online in position 6
+
+        :param marc_record: MARC record, required
+        """
+        field006 = marc_record.get_fields('006')[0]
+        org_data = field006.data
+        marc_record.remove_field(field006)
+        if org_data[6] != 'o':
+            org_data = org_data[:6] +r'o'
+        field006.data = org_data
+        marc_record.add_field(field006)
+        return marc_record
 
     def validate007(self,marc_record):
         """
@@ -147,6 +161,19 @@ class OxfordHandbooksJob(MARCModifier):
             org_data = org_data[:13] + r'u'
         field007.data = org_data
         marc_record.add_field(field007)
+        return marc_record
+
+    def validate506(self, marc_record):
+        """
+        Method adds a 506 fixed field
+
+        :param marc_record: MARC record, required
+        """
+        field506 = pymarc.Field(
+             tag='506',
+             indicators=[' ', ' '],
+             subfields=['a', 'Access restricted to subscribing institutions.'])
+        marc_record.add_field(field506)
         return marc_record
 
     def validate730(self,marc_record):
@@ -165,6 +192,7 @@ class OxfordHandbooksJob(MARCModifier):
         if self.handbook_type:
             new730 = Field(tag='730',
                            indicators=['0',' '],
-                           subfields=['a',self.handbook_type])
+                           subfields=['a', 'Oxford handbooks in {}'.format(
+                                             self.handbook_type)])
             marc_record.add_field(new730)
         return marc_record
