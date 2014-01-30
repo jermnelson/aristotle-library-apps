@@ -191,6 +191,6 @@ class OxfordHandbooksJob(MARCModifier):
             new730 = Field(tag='730',
                            indicators=['0',' '],
                            subfields=['a', 'Oxford handbooks in {}'.format(
-                                             self.handbook_type)])
+                                             self.handbook_type.lower())])
             marc_record.add_field(new730)
         return marc_record
