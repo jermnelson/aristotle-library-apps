@@ -30,6 +30,7 @@ class OxfordHandbooksJob(MARCModifier):
                           field.
         """
         marc_file = kwargs.get('marc_file')
+        self.handbook_type = kwargs.get('handbook_type', None)
         MARCModifier.__init__(self,marc_file)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
@@ -43,10 +44,6 @@ class OxfordHandbooksJob(MARCModifier):
             self.note_prefix = kwargs.get('note_prefix')
         else:
             self.note_prefix='Available via Internet'
-        if kwargs.has_key('type_of'):
-            self.handbook_type = kwargs.get('type_of')
-        else:
-            self.handbook_type = None
 
 
     def processRecord(self,marc_record):
@@ -63,6 +60,7 @@ class OxfordHandbooksJob(MARCModifier):
         marc_record = self.validate007(marc_record)
         marc_record = self.validate300(marc_record)
         marc_record = self.remove490(marc_record)
+        marc_record = self.validate506(marc_record)
         marc_record = self.remove530(marc_record)
         marc_record = self.validate730(marc_record)
         marc_record = self.remove830(marc_record)
@@ -143,7 +141,7 @@ class OxfordHandbooksJob(MARCModifier):
         org_data = field006.data
         marc_record.remove_field(field006)
         if org_data[6] != 'o':
-            org_data = org_data[:6] +r'o'
+            org_data = org_data[:6] + r'o' + org_data[7:]
         field006.data = org_data
         marc_record.add_field(field006)
         return marc_record
@@ -169,7 +167,7 @@ class OxfordHandbooksJob(MARCModifier):
 
         :param marc_record: MARC record, required
         """
-        field506 = pymarc.Field(
+        field506 = Field(
              tag='506',
              indicators=[' ', ' '],
              subfields=['a', 'Access restricted to subscribing institutions.'])

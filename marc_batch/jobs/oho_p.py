@@ -16,8 +16,8 @@ class OxfordHandbooksOnlinePhilosophy(OxfordHandbooksJob):
         """
         Initializes an `OxfordHandbooksOnlinePhilosophy` class
         """
-        self.handbook_type = "Philosophy"
         OxfordHandbooksJob.__init__(self,
+                                    handbook_type = "Philosophy",
                                     marc_file=marc_file,
                                     **kwargs)
 
