@@ -187,7 +187,7 @@ class OxfordHandbooksJob(MARCModifier):
                          indicators=['0',' '],
                          subfields=['a','Oxford handbooks online.'])
         marc_record.add_field(first730)
-        if self.handbook_labe:
+        if self.handbook_label:
             new730 = Field(tag='730',
                            indicators=['0',' '],
                            subfields=['a', 'Oxford handbooks {}'.format(
