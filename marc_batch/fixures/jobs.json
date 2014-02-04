@@ -177,7 +177,78 @@
     },
     "model":"marc_batch.Job",
     "pk":18
+  },
+  {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Archaeology",
+        "python_module":"oho_arch"
+    },
+    "model":"marc_batch.Job",
+    "pk":19
+  },
+ {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Classical studies",
+        "python_module":"oho_cah"
+    },
+    "model":"marc_batch.Job",
+    "pk": 20
+  },
+ {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Economics and Finance",
+        "python_module":"oho_ef"
+    },
+    "model":"marc_batch.Job",
+    "pk": 21
+  },
+ {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - History",
+        "python_module":"oho_h"
+    },
+    "model":"marc_batch.Job",
+    "pk": 22
+  },
+ {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Literature",
+        "python_module":"oho_lit"
+    },
+    "model":"marc_batch.Job",
+    "pk": 23
+  },
+ {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Music",
+        "python_module":"oho_m"
+    },
+    "model":"marc_batch.Job",
+    "pk": 24
+  },
+ {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Handbooks Online - Psychology",
+        "python_module":"oho_psy"
+    },
+    "model":"marc_batch.Job",
+    "pk": 25
   }
+
 
 
 

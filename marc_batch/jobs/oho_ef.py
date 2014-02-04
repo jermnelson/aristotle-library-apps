@@ -1,12 +1,12 @@
 """
- :mod:`oho_p` Oxford Press Handbooks Online Philosophy Job
+ :mod:`oho_p` Oxford Press Handbooks Online Economics and Finance Job
 """
 __author__ = "Jeremy Nelson"
 from op_base import OxfordHandbooksJob
 
-class OxfordHandbooksOnlinePhilosophy(OxfordHandbooksJob):
+class OxfordHandbooksOnlineEconomicsFinance(OxfordHandbooksJob):
     """
-    Class reads Oxford Handbooks Online Philosophy MARC21 file and
+    Class reads Oxford Handbooks Online Economics and Finance MARC21 file and
     modifies per CC's requirements
     """
 
@@ -14,10 +14,10 @@ class OxfordHandbooksOnlinePhilosophy(OxfordHandbooksJob):
                  marc_file,
                  **kwargs):
         """
-        Initializes an `OxfordHandbooksOnlinePhilosophy` class
+        Initializes an `OxfordHandbooksOnlineEconomicsFinance` class
         """
         OxfordHandbooksJob.__init__(self,
-                                    handbook_label = "in philosophy",
+                                    handbook_label = "in economics and finance",
                                     marc_file=marc_file,
                                     **kwargs)
 

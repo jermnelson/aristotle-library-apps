@@ -1,7 +1,7 @@
 """
  :mod:`ils` Legacy ILS MARC Batch jobs. This module is the latest iteration
  of the work being done in the Tutt Library cataloging department. We are
- trying to simplify and automate the MARC record manipulation we do to 
+ trying to simplify and automate the MARC record manipulation we do to
  MARC records received from our various database vendors.
 """
 __author__ = 'Jeremy Nelson'
@@ -18,9 +18,16 @@ from asp_wsm import AlexanderStreetPressWomenSocialMovements
 from eai_evans import EarlyAmericanImprintsEvansJob
 from eai_shaw import EarlyAmericanImprintsShawJob
 from fod import FilmsOnDemandJob
+from oho_arch import OxfordHandbooksOnlineArchaeology
 from oho_bm import OxfordHandbooksOnlineBusinessAndManagement
+from oho_cah import OxfordHandbooksOnlineClassicalStudies
+from oho_ef import OxfordHandbooksOnlineEconomicsFinance
+from oho_h import OxfordHandbooksOnlineHistory
+from oho_lit import OxfordHandbooksOnlineLiterature
+from oho_m import OxfordHandbooksOnlineMusic
 from oho_p import OxfordHandbooksOnlinePhilosophy
 from oho_ps import OxfordHandbooksOnlinePoliticalScience
+from oho_psy import OxfordHandbooksOnlinePsychology
 from oho_r import OxfordHandbooksOnlineReligion
 from op_ro import OxfordReferenceOnlineJob
 from springer import SpringerEBookJob
@@ -37,9 +44,16 @@ asp_sgs = AlexanderStreetPressSmithsonianGlobalSoundsForLibraries
 eai_evans = EarlyAmericanImprintsEvansJob
 eai_shaw = EarlyAmericanImprintsShawJob
 fod = FilmsOnDemandJob
+oho_arch = OxfordHandbooksOnlineArchaeology
 oho_bm = OxfordHandbooksOnlineBusinessAndManagement
+oho_cah = OxfordHandbooksOnlineClassicalStudies
+oho_ef = OxfordHandbooksOnlineEconomicsFinance
+oho_h = OxfordHandbooksOnlineHistory
+oho_lit = OxfordHandbooksOnlineLiterature
+oho_m = OxfordHandbooksOnlineMusic
 oho_p = OxfordHandbooksOnlinePhilosophy
 oho_ps = OxfordHandbooksOnlinePoliticalScience
+oho_psy = OxfordHandbooksOnlinePsychology
 oho_r = OxfordHandbooksOnlineReligion
 op_ro = OxfordReferenceOnlineJob
 springer = SpringerEBookJob
@@ -65,7 +79,7 @@ class job(object):
         """
         self.original_record = marc_record
         self.marc_record = marc_record
-        
+
 
     def run(self):
         """
@@ -78,6 +92,6 @@ class job(object):
 ##                feature.run()
         except:
             pass
-            
-                 
+
+
 

@@ -17,7 +17,7 @@ class OxfordHandbooksOnlineBusinessAndManagement(OxfordHandbooksJob):
         Initializes an `OxfordHandbooksOnlineBusinessAndManagement` class
         """
         OxfordHandbooksJob.__init__(self,
-                                    handbook_type="Business and Management",
+                                    handbook_label="in business and management",
                                      marc_file=marc_file,
                                     **kwargs)
 

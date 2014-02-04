@@ -17,7 +17,7 @@ class OxfordHandbooksOnlineReligion(OxfordHandbooksJob):
         Initializes an `OxfordHandbooksOnlineReligion` class
         """
         OxfordHandbooksJob.__init__(self,
-                                    handbook_type='Religion',
+                                    handbook_label=' in religion',
                                     marc_file=marc_file,
                                     **kwargs)
 

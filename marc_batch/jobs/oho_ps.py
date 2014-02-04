@@ -17,7 +17,7 @@ class OxfordHandbooksOnlinePoliticalScience(OxfordHandbooksJob):
         Initializes an `OxfordHandbooksOnlinePoliticalScience` class
         """
         OxfordHandbooksJob.__init__(self,
-                                    handbook_type='Political Science',
+                                    handbook_label='of political science',
                                     marc_file=marc_file,
                                     **kwargs)
 

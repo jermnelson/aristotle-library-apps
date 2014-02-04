@@ -30,7 +30,7 @@ class OxfordHandbooksJob(MARCModifier):
                           field.
         """
         marc_file = kwargs.get('marc_file')
-        self.handbook_type = kwargs.get('handbook_type', None)
+        self.handbook_label = kwargs.get('handbook_label', None)
         MARCModifier.__init__(self,marc_file)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
@@ -187,10 +187,10 @@ class OxfordHandbooksJob(MARCModifier):
                          indicators=['0',' '],
                          subfields=['a','Oxford handbooks online.'])
         marc_record.add_field(first730)
-        if self.handbook_type:
+        if self.handbook_labe:
             new730 = Field(tag='730',
                            indicators=['0',' '],
-                           subfields=['a', 'Oxford handbooks in {}'.format(
-                                             self.handbook_type.lower())])
+                           subfields=['a', 'Oxford handbooks {}'.format(
+                                             self.handbook_label.lower())])
             marc_record.add_field(new730)
         return marc_record
