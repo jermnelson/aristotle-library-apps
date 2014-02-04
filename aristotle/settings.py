@@ -1,9 +1,9 @@
 # Django settings for aristotle project.
 import os.path
 
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_HOME = os.path.split(PROJECT_ROOT)[0]
-
 DEFAULT_CHARSET = 'utf-8'
 DEBUG = True
 OFFSET = 25 # Default shard size for discover results is 25
@@ -95,6 +95,7 @@ TEMPLATE_LOADERS = (
 )
 
 AUTHENTICATION_BACKENDS = [
+##    "aristotle.backends.IIIUserBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -126,7 +127,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.markup',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -159,7 +159,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        
+
     }
 }
 

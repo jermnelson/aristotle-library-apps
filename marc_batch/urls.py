@@ -3,7 +3,10 @@
 """
 __author__ = 'Jeremy Nelson'
 import marc_batch.views
-from django.conf.urls.defaults import *
+try:
+    from django.conf.urls.defaults import *
+except ImportError:
+    from django.conf.urls import *
 
 urlpatterns = patterns('marc_batch.views',
     url(r"^$","default",name='marc_batch-app-default'),
@@ -16,6 +19,6 @@ urlpatterns = patterns('marc_batch.views',
     url(r"^redis/","redis",name='marc_batch-app-redis'),
     url(r"^solr/","solr",name='marc_batch_app_solr'),
     url(r"^update$","job_update",name="marc_batch-job-update")
-    
+
 )
-                       
+
