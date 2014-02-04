@@ -8,7 +8,7 @@ import urllib2
 from marc_batch.marc_helpers import MARCModifier
 from pymarc import Field
 
-HANDBOOK_PROXY_FILTER = 'http://0-www.oxfordhandbooks.com.tiger.coloradocollege.edu/'
+HANDBOOK_PROXY_FILTER = 'http://0-www.oxfordhandbooks.com.tiger.coloradocollege.edu'
 
 class OxfordHandbooksJob(MARCModifier):
     """
