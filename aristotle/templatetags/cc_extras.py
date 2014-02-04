@@ -45,8 +45,28 @@ def __filter_imgs__(element):
     :param element: Element
     """
     for img in element.find_all('img'):
-        pass
-        
+        src = img.attrs.get('src')
+        img.attrs['src'] = urllib2.urlparse.urljoin(COLLEGE_URL,
+                                                    src)
+
+def __filter_search_form__(element):
+    """
+    Helper function takes an element, extracts the form elements and
+    makes the form's action an absolute URL
+
+    :param element: Element
+    """
+    search_form_list = element.select("#search")
+    if len(search_form_list) > 0:
+        search_form = search_form_list[0]
+        action = search_form.attrs.get('action')
+        search_form['action'] = urllib2.urlparse.urljoin(COLLEGE_URL,
+                                                         action)
+        search_form['target'] = '__top__'
+        submit_input = search_form.select(".submit")[0]
+        submit_input.attrs['src'] = urllib2.urlparse.urljoin(COLLEGE_URL,
+                                        submit_input.attrs['src'])
+
 def cache_css(library_soup):
     """
     Retrieves and caches a string of all of the stylesheets from the
@@ -124,6 +144,8 @@ def harvest_homepage():
         if len(result) == 1:
             element = result[0]
             __filter_anchors__(element)
+            __filter_imgs__(element)
+            __filter_search_form__(element)
             cache.set('lib-{0}'.format(html_id),
                       element.prettify())
     cache_tabs(lib_soup)
