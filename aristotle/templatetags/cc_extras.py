@@ -63,6 +63,12 @@ def __filter_search_form__(element):
         search_form['action'] = urllib2.urlparse.urljoin(COLLEGE_URL,
                                                          action)
         search_form['target'] = '__top__'
+<<<<<<< HEAD
+=======
+        submit_input = search_form.select(".submit")[0]
+        submit_input.attrs['src'] = urllib2.urlparse.urljoin(COLLEGE_URL,
+                                        submit_input.attrs['src'])
+>>>>>>> 4cae87f593b2bf2cc7704a73c5ec668a7d4a706b
 
 def cache_css(library_soup):
     """

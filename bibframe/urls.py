@@ -3,7 +3,11 @@
 """
 __author__ = "Jeremy Nelson"
 
-from django.conf.urls import *
+try:
+    from django.conf.urls.defaults import *
+except ImportError:
+    from django.conf.urls import *
+
 import bibframe.views
 
 urlpatterns = patterns('bibframe.views',

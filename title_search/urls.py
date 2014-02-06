@@ -3,7 +3,10 @@
 """
 __author__ = "Jeremy Nelson"
 
-from django.conf.urls import *
+try:
+    from django.conf.urls.defaults import *
+except ImportError:
+    from django.conf.urls import *
 
 urlpatterns = patterns('title_search.views',
     url(r"$^","app",name="title-search-default"),
