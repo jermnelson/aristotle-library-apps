@@ -68,11 +68,13 @@ for app in ACTIVE_APPS:
         urlpatterns.append(
             url(r'^apps/etd[$|/]',
                 include('ccetd.urls')))
-    if os.path.exists(os.path.join(PROJECT_HOME,
-                                   app,
+    else:
+        if os.path.exists(os.path.join(PROJECT_HOME,
+                                    app,
                                    'urls.py')):
-        urlpatterns.append(
-            url(r'^apps/{0}[$|/]'.format(app),
+            urlpatterns.append(
+                url(r'^apps/{0}[$|/]'.format(app),
                 include('{0}.urls'.format(app))))
+
 
 

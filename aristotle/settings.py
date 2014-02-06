@@ -168,6 +168,7 @@ try:
 # If no local_settings.py exist, attempts to load rlsp_basic settings
 # for standalone
 except ImportError:
+    print("Failed loading local_settings")
     try:
         from rlsp_basic_settings import *
     except ImportError:
