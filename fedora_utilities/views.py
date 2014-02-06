@@ -17,7 +17,6 @@ from fedora_utilities.models import *
 import os
 import datetime
 
-@login_required
 def default(request):
     """
     Default view for `Fedora Batch App`_
@@ -63,7 +62,6 @@ def __process_form_free_text__(name, request, context):
     elif selected_option is not None and len(selected_option) > 0:
         context[name] = selected_option
         
-@login_required
 def add_stub_from_template(request):
     """Handler for adding Fedora stub object using a template
 
@@ -195,7 +193,6 @@ def add_stub_from_template(request):
                                 
     
                               
-@login_required
 def batch_ingest(request):
     """
     Handler for batch ingest view in app
@@ -235,7 +232,6 @@ def index_solr(request):
 ##                                        SOLR_QUEUE.get())
     return output
 
-@login_required
 def object_mover(request):
     """
     Displays and process form for moving objects by their PID to
