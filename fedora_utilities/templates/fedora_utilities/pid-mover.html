@@ -6,10 +6,11 @@
  <a name="mover" ></a>
  <h2>PID Mover</h2>
  <p>Moves a single object or collection in a Fedora Commons Server</p>
- <form method="POST" action="/apps/fedora_url/mover">
+ <form method="POST" action="/apps/fedora_utilities/mover">
   <p>
   {% csrf_token %}
-   <strong>Move Source PID</strong> {{ object_mover_form.source_pid }} to <strong>Target PID</strong> 
+   <strong>Move Source PID</strong> {{ object_mover_form.source_pid }} to 
+   <strong>Target PID</strong> 
    {{ object_mover_form.collection_pid }}
    <br />
    <input type="submit" class="btn btn-primary" value="Move" />

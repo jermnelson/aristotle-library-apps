@@ -64,6 +64,8 @@ urlpatterns.append(url(r'^captcha/',
                        include('captcha.urls')))
 
 for app in ACTIVE_APPS:
+    if app == 'aristotle':
+        continue
     if app == 'ccetd':
         urlpatterns.append(
             url(r'^apps/etd[$|/]',
