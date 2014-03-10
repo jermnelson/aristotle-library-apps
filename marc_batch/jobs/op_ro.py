@@ -21,7 +21,7 @@ class OxfordReferenceOnlineJob(MARCModifier):
         :keyword series_title: Optional, default is 'Oxford reference online premium'
         """
         MARCModifier.__init__(self,
-                              marc_file=marc_file,
+                              marc_file,
                               **kwargs)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
@@ -31,3 +31,6 @@ class OxfordReferenceOnlineJob(MARCModifier):
             self.series_title = kwargs.get('series_title')
         else:
             self.series_title = 'Oxford reference online premium'
+
+    def processRecord(self, record):
+        return record
