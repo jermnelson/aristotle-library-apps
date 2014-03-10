@@ -2,9 +2,9 @@
  :mod:`op_ro`  Oxford Reference Online Library Job
 """
 __author__ = "Jeremy Nelson"
-from marc_batch.marc_helpers import MARCModifier
+from op_base import OxfordHandbooksJob
 
-class OxfordReferenceOnlineJob(MARCModifier):
+class OxfordReferenceOnlineJob(OxfordHandbooksJob):
     """
     Class reads Oxford Reference Online MARC file, validates,
     and adds/modifies fields to a new import MARC record for importing
@@ -20,9 +20,9 @@ class OxfordReferenceOnlineJob(MARCModifier):
         :keyword proxy_filter: Optional, proxy prefix for 856 field default is REFERENCE_PROXY_FILTER constant.
         :keyword series_title: Optional, default is 'Oxford reference online premium'
         """
-        MARCModifier.__init__(self,
-                              marc_file,
-                              **kwargs)
+        OxfordHandbooksJob.__init__(self,
+                                    marc_file,
+                                    **kwargs)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
         else:
@@ -32,5 +32,3 @@ class OxfordReferenceOnlineJob(MARCModifier):
         else:
             self.series_title = 'Oxford reference online premium'
 
-    def processRecord(self, record):
-        return record
