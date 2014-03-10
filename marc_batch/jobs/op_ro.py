@@ -20,7 +20,9 @@ class OxfordReferenceOnlineJob(MARCModifier):
         :keyword proxy_filter: Optional, proxy prefix for 856 field default is REFERENCE_PROXY_FILTER constant.
         :keyword series_title: Optional, default is 'Oxford reference online premium'
         """
-        OxfordReferenceOnlineJob.__init__(self, marc_file)
+        MARCModifier.__init__(self,
+                              marc_file=marc_file,
+                              **kwargs)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
         else:
