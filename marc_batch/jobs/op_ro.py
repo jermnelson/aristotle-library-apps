@@ -21,7 +21,7 @@ class OxfordReferenceOnlineJob(OxfordHandbooksJob):
         :keyword series_title: Optional, default is 'Oxford reference online premium'
         """
         OxfordHandbooksJob.__init__(self,
-                                    marc_file,
+                                    marc_file=marc_file,
                                     **kwargs)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
