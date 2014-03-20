@@ -25,38 +25,39 @@ urlpatterns = patterns('',
     url(r'^apps/website-footer$', 'aristotle.views.website_footer'),
     url(r'^apps/website-header$', 'aristotle.views.website_header'),
     url(r'^accounts/login[$|/]', login),
+##    url(r'^accounts/login[$|/]', 'aristotle.views.app_login', name='login'),
     url(r'^accounts/logout[$|/]', 'aristotle.views.app_logout', name='logout'),
 ##    url(r'^apps/discovery[$|/]', include('discovery.urls')),
 ##    url(r'^apps/bibframe[$|/]', include('bibframe.urls')),
 ##    url(r'^apps/call_number/', include('call_number.urls')),
 ##    url(r'^apps/dbfinder/', include('dbfinder.urls')),
-##    url(r'^etd/', include('etd.urls')),
-##    url(r'^apps/etd[$|/]', include('ccetd.urls')),
+    url(r'^etd/', include('ccetd.urls')),
+    url(r'^apps/etd[$|/]', include('ccetd.urls')),
 ##    url(r'^apps/fedora_utilities/', include('fedora_utilities.urls')),
 ##    url(r'^apps/hours/', include('hours.urls')),
 ##    url(r'^apps/[m|M][a|A][r|R][c|C][r|R]/', include('marcr.urls')),
 ##    url(r'^apps/marc_batch/', include('marc_batch.urls')),
 ##    url(r'^apps/orders/', include('orders.urls')),
 ##    url(r'^apps/person_authority/', include('person_authority.urls')),
-##    url(r'^apps/portfolio/', include('portfolio.urls')),
+    url(r'^apps/portfolio/', include('portfolio.urls')),
 ##    url(r'^apps/RDA[c|C]ore/', include('RDACore.urls')),
 ##    url(r'^apps/reserve_search/', include('reserve_search.urls')),
 ##    url(r'^apps/title_search/', include('title_search.urls')),
-##    url(r'^apps/','portfolio.views.default', name='portfolio.home'),
+    url(r'^apps/','portfolio.views.default', name='portfolio.home'),
     
                        
 
     
 )
 
-for app in ACTIVE_APPS:
-    if app == 'ccetd':
-        urlpatterns.append(
-            url(r'^apps/etd[$|/]',
-                include('ccetd.urls')))       
-    urlpatterns.append(
-        url(r'^apps/{0}[$|/]'.format(app),
-            include('{0}.urls'.format(app))))
+#for app in ACTIVE_APPS:
+#    if app == 'ccetd':
+#        urlpatterns.append(
+#            url(r'^apps/etd[$|/]',
+#                include('ccetd.urls')))       
+#    urlpatterns.append(
+#        url(r'^apps/{0}[$|/]'.format(app),
+#            include('{0}.urls'.format(app))))
     
 # Uncomment the admin/doc line below to enable admin documentation:
 urlpatterns.append(url(r'^admin/doc/',
