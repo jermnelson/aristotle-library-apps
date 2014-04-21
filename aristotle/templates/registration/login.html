@@ -7,7 +7,9 @@
 
 {% endif %}
 <h3>Please login</h3>
-<form class="form-horizontal" method="post" action="/apps/app_login/">
+<div class="row">
+ <div class="col-md-6">
+ <form class="form-horizontal" method="post" action="/apps/app_login/">
  {% csrf_token %}
   <div>
     <label for="id_username" class="control-label">Your last name:</label>
@@ -30,5 +32,9 @@
   <input type="hidden" name="next" 
    {% if next %}value="{{ next }}"{% else %}value="{{ request.path }}" {% endif %} />
 </form>
-
+ </div>
+ <div class="col-md-6">
+  <img src="http://ccgoldcardplus.ugrydnetwork.com/images/sticker.jpg">
+ </div>
+</div>
 {% endblock %}
