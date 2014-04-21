@@ -10,13 +10,13 @@
 <form class="form-horizontal" method="post" action="/apps/app_login/">
  {% csrf_token %}
   <div>
-    <label for="id_username" class="control-label">{{ form.username.label_tag }}</label>
+    <label for="id_username" class="control-label">Your last name:</label>
     <div>
       {{ form.username }}
     </div>
   </div>
   <div>
-   <label for="id_password" class="control-label">{{ form.password.label_tag }}</label>
+   <label for="id_password" class="control-label">Your TIGER# (at the bottom of your Gold Card)</label>
    <div class="">
      {{ form.password }}
     </div>
