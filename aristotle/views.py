@@ -9,13 +9,18 @@ from urllib2 import HTTPError
 
 from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
 from django.shortcuts import render
+
 from django.contrib.auth import authenticate, login, logout
+from django.forms.forms import NON_FIELD_ERRORS
+
 from django.contrib.auth.forms import AuthenticationForm
 import django.utils.simplejson as json
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from fixures import json_loader,rst_loader
 from aristotle.settings import REDIS_DATASTORE
+
+logger = logging.getLogger(__name__)
 
 def background(request):
     """
@@ -60,6 +65,7 @@ def app_login(request):
     username = request.POST['username']
     password = request.POST['password']
     next_page = request.REQUEST.get('next')
+    errors = []
     try:
         user = authenticate(last_name=username,
 	                    iii_id=password)
@@ -78,11 +84,24 @@ def app_login(request):
             else:
                 return HttpResponseRedirect('/')
 	else:
-            logging.error("User not active")
-            raise Http404
+            error_msg = "User not active"
+            logger.error(error_msg)
+            errors.append(error_msg)
     else:
-        logging.error("User {0} not found".format(username))
-	raise Http404
+        error_msg = "User {0} not found or unable to authenticate".format(username)
+        logger.error(error_msg)
+        errors.append(error_msg)
+    auth_form = AuthenticationForm(request.POST)
+    auth_form.full_clean()
+    auth_form._errors[NON_FIELD_ERRORS] = auth_form.error_class(errors)
+    return direct_to_template(request,
+                              'registration/login.html',
+                              {'app':None,
+                               'institution':json_loader.get('institution'),
+                               'form': auth_form,
+                               'navbar_menus':json_loader.get('navbar-menus'),
+                               'user':user})
+
 
 def app_logout(request):
     """

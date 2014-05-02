@@ -55,7 +55,7 @@ def download(request):
     if request.REQUEST.has_key("original"):
         file_path = record_log.original_marc.path
     else:
-        file_path = record_log.modified_marc.path  
+        file_path = record_log.modified_marc.path
     file_object = open(file_path,'r')
     file_wrapper = FileWrapper(file(file_path))
     filename = os.path.split(file_path)[1]
@@ -94,6 +94,7 @@ def ils_job_manager(request,job):
         params = {}
         ils_job_class = getattr(jobs.ils,
                                 '{0}'.format(job_query.python_module))
+        print("Class {} ".format(ils_job_class))
         ils_job = ils_job_class(original_marc)
         ils_job.load()
         ils_log_entry = ILSJobLog(job=job_query,
@@ -118,10 +119,10 @@ def ils_job_manager(request,job):
                                    'ils_jobs':ils_jobs,
                                    'log_form':ils_log_form,
                                    'log_notes_form':log_notes_form})
-                
+
     else:
         print("Invalid form errors={0}".format(ils_job_form.errors))
-    
+
 def job_display(request,job_pk):
     """
     Displays a Job form for MARC batch operation
@@ -164,7 +165,7 @@ def job_history(request,job_pk):
                                'current_job':job,
                                'institution':INSTITUTION,
                                'logs':job_logs})
-                               
+
 
 def job_finished(request,job_log_pk):
     """
@@ -194,7 +195,7 @@ def job_process(request):
     elif job.job_type == 2: # Solr Job
         pass
     elif job.job_type == 3: # Legacy ILS Job
-        return ils_job_manager(request,job)
+        return ils_job_manager(request, job)
     else:
         raise Http404
     return HttpResponseRedirect('/apps/marc_batch/finished')
@@ -228,8 +229,8 @@ def job_update(request):
                 log.rejected_records = rejected_records
         log.save()
     return HttpResponseRedirect('/apps/marc_batch/finished/{0}/'.format(log.pk))
-        
-            
+
+
 
 def redis(request):
     """
@@ -249,5 +250,5 @@ def solr(request):
     return direct_to_template(request,
                               'marc_batch/solr.html',
                               {'app':APP,
-                               'institution':INSTITUTION})    
-                              
+                               'institution':INSTITUTION})
+

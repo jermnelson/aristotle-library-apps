@@ -3,20 +3,20 @@
 {% block action-view-title %}Login{% endblock %}
 
 {% block body %}
-{% if form.errors %}
-
+{% if form.non_field_errors %}
+  <h2 style="color: rgb(255,0,0)">Error!</h2>
+  <p>Your TIGER number was not found. Please double-check your TIGER number 
+  and either visit or contact Tutt Library Circulation at (719) 389-6184 to 
+  confirm your TIGER number</p> 
 {% endif %}
 <h3>Please login</h3>
-<form class="form-horizontal" method="post" action="/accounts/login/{# /apps/app_login/ #}">
+<div class="row">
+ <div class="col-md-6">
+ <form class="form-horizontal" method="post" action="/apps/app_login/">
  {% csrf_token %}
   <div>
-    <label for="id_username" class="control-label">Last name</label>
-    <div>
-      {{ form.username }}
-    </div>
-  </div>
-  <div>
-   <label for="id_password" class="control-label">TIGER Number</label>
+    <label for="id_username" class="control-label">Your last name:</label>
+   <label for="id_password" class="control-label">Your TIGER# (at the bottom of your Gold Card)</label>
    <div class="">
      {{ form.password }}
     </div>
@@ -30,5 +30,9 @@
   <input type="hidden" name="next" 
    {% if next %}value="{{ next }}"{% else %}value="{{ request.path }}" {% endif %} />
 </form>
-
+ </div>
+ <div class="col-md-6">
+  <img src="http://ccgoldcardplus.ugrydnetwork.com/images/sticker.jpg">
+ </div>
+</div>
 {% endblock %}
