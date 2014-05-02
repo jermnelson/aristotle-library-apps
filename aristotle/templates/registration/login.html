@@ -3,8 +3,11 @@
 {% block action-view-title %}Login{% endblock %}
 
 {% block body %}
-{% if form.errors %}
-
+{% if form.non_field_errors %}
+  <h2 style="color: rgb(255,0,0)">Error!</h2>
+  <p>Your TIGER number was not found. Please double-check your TIGER number 
+  and either visit or contact Tutt Library Circulation at (719) 389-6184 to 
+  confirm your TIGER number</p> 
 {% endif %}
 <h3>Please login</h3>
 <div class="row">
