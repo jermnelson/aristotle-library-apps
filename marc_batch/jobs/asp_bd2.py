@@ -1,9 +1,11 @@
 """
- :mod:`asp_cwm` Alexander Street Press Smithsonian global sounds for libraries Job
+ :mod:`asp_bsd2` Alexander Street Press Alexander Street Press Black Drama for
+ libraries Job
 """
 __author__ = "Jeremy Nelson"
 from asp_base import AlexanderStreetPressBase
-    
+from pymarc import Field
+
 class AlexanderStreetPressBlackDrama(AlexanderStreetPressBase):
     """
     The `AlexanderStreetPressBlackDrama` reads MARC records from the 2nd Edition
@@ -11,7 +13,7 @@ class AlexanderStreetPressBlackDrama(AlexanderStreetPressBase):
     database.
     """
 
-    def __init__(self,**kwargs):
+    def __init__(self, marc_file, **kwargs):
         """
         Creates instance of `BlackDramaBot`
 
@@ -19,7 +21,7 @@ class AlexanderStreetPressBlackDrama(AlexanderStreetPressBase):
         - `marc_file`: MARC file, required
         """
         kwargs['asp_code'] = 'asp_bd2'
-        AlexanderStreetPressMusicJob.__init__(self, marc_file, **kwargs)
+        AlexanderStreetPressBase.__init__(self, marc_file, **kwargs)
 
     def processRecord(self,
                       marc_record):

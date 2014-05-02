@@ -36,7 +36,7 @@ urlpatterns = patterns('',
 ##    url(r'^apps/fedora_utilities/', include('fedora_utilities.urls')),
 ##    url(r'^apps/hours/', include('hours.urls')),
 ##    url(r'^apps/[m|M][a|A][r|R][c|C][r|R]/', include('marcr.urls')),
-##    url(r'^apps/marc_batch/', include('marc_batch.urls')),
+    url(r'^apps/marc_batch/', include('marc_batch.urls')),
 ##    url(r'^apps/orders/', include('orders.urls')),
 ##    url(r'^apps/person_authority/', include('person_authority.urls')),
     url(r'^apps/portfolio/', include('portfolio.urls')),
@@ -44,21 +44,21 @@ urlpatterns = patterns('',
 ##    url(r'^apps/reserve_search/', include('reserve_search.urls')),
 ##    url(r'^apps/title_search/', include('title_search.urls')),
     url(r'^apps/','portfolio.views.default', name='portfolio.home'),
-    
-                       
 
-    
+
+
+
 )
 
 #for app in ACTIVE_APPS:
 #    if app == 'ccetd':
 #        urlpatterns.append(
 #            url(r'^apps/etd[$|/]',
-#                include('ccetd.urls')))       
+#                include('ccetd.urls')))
 #    urlpatterns.append(
 #        url(r'^apps/{0}[$|/]'.format(app),
 #            include('{0}.urls'.format(app))))
-    
+
 # Uncomment the admin/doc line below to enable admin documentation:
 urlpatterns.append(url(r'^admin/doc/',
                        include('django.contrib.admindocs.urls')))

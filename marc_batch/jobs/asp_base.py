@@ -18,21 +18,21 @@ class AlexanderStreetPressBase(MARCModifier):
     MARC record changes used by child classes.
     """
 
-    def __init__(self,marc_file,**kwargs):
+    def __init__(self, marc_file, **kwargs):
         """
         Creates instance of `AlexanderStreetPressBase`
 
-        
+
         :param marc_file: Alexander Street Press MARC records
         :param asp_code: Alexander Street Press Code, default is asp
         """
-        MARCModifier.__init__(self,marc_file)
+        MARCModifier.__init__(self, marc_file, True)
         if not kwargs.has_key('asp_code'):
             self.asp_code = 'asp'
         else:
-            self.asp_code = kwargs.get('asp_code') 
+            self.asp_code = kwargs.get('asp_code')
         self.resolved_baseurl = None
-        
+
     def getResolvedURL(self,
                        marc_record):
         """
@@ -76,7 +76,7 @@ class AlexanderStreetPressBase(MARCModifier):
     def remove830(self,marc_record):
         """
         Method removes MARC 830 field
-        
+
         Parameters:
         - `marc_record`: MARC record, required
         """
@@ -86,7 +86,7 @@ class AlexanderStreetPressBase(MARCModifier):
     def validate506(self,marc_record):
         """
         Method adds 506 field
- 
+
         Parameters:
         - `marc_record`: MARC record, required
         """
@@ -158,7 +158,7 @@ class AlexanderStreetPressBase(MARCModifier):
         for field856 in all856s:
             raw_url = urlparse.urlparse(field856.get_subfields('u')[0])
             record_id = raw_url.query.split(";")[1]
-            new_url = "{0}={1}" % (self.resolved_baseurl,record_id)
+            new_url = "{0}={1}".format(self.resolved_baseurl,record_id)
             field856.delete_subfield('u')
             field856.add_subfield('u',new_url)
         if public_note:
@@ -184,12 +184,12 @@ class AlexanderStreetPressMusicJob(AlexanderStreetPressBase):
                                        'proxy':'0-jazz.alexanderstreet.com.tiger.coloradocollege.edu'},
                  'Smithsonian global sounds for libraries':{'code':'glmu',
                                                             'proxy':'0-glmu.alexanderstreet.com.tiger.coloradocollege.edu'}}
-   
-    def __init__(self,marc_file,**kwargs):
+
+    def __init__(self, marc_file, **kwargs):
         """
         Creates instance of `AlexanderStreetPressMusicBot`
-        
-        
+
+
         :param marc_file: MARC file, required
         :param type_of: ASP music database, required
         :param proxy: Proxy preprend, required
@@ -274,9 +274,9 @@ class AlexanderStreetPressMusicJob(AlexanderStreetPressBase):
         """
         Validates 007 fields, if data is sound resource keep, otherwise
         change value to CC standard.
-        
+
         :param marc_record: MARC record, required
-        :rtype marc_record: 
+        :rtype marc_record:
         """
         all007s = marc_record.get_fields('007') # Could be Sean Connery, Roger Moore
                                                 # Pierce Bronson, or Daniel Craig
@@ -303,7 +303,7 @@ class AlexanderStreetPressMusicJob(AlexanderStreetPressBase):
 
     def validateURLs(self,marc_record):
         """
-        Validates 856 fields specifically for various types of Alexander 
+        Validates 856 fields specifically for various types of Alexander
         Street Press music databases.
 
         Parameters:
@@ -320,15 +320,15 @@ class AlexanderStreetPressMusicJob(AlexanderStreetPressBase):
         return self.processURLs(marc_record=marc_record,
                                 proxy_location=proxy_location,
                                 public_note='Listen online')
-   
 
 
-        
+
+
 
 class GarlandEWMOBot(AlexanderStreetPressBase):
     """
     The `GarlandEWMOBot` process the MARC record
-    for the Alexander Street Press Garland Encyclopedia of Music World 
+    for the Alexander Street Press Garland Encyclopedia of Music World
     Online electronic resource.
     """
 
@@ -361,7 +361,7 @@ class GarlandEWMOBot(AlexanderStreetPressBase):
     def processRecord(self,
                       marc_record):
         """
-        Method processes a single marc_record for Garland Encyclopedia of 
+        Method processes a single marc_record for Garland Encyclopedia of
         Music World Online electronic resource.
 
         Parameters:
@@ -384,7 +384,7 @@ class GarlandEWMOBot(AlexanderStreetPressBase):
 
     def validateURLs(self,marc_record):
         """
-        Validates 856 fields specifically for various types of Alexander 
+        Validates 856 fields specifically for various types of Alexander
         Street Press music databases.
 
         Parameters:
