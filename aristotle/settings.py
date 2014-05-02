@@ -5,8 +5,8 @@ import os.path
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_HOME = os.path.split(PROJECT_ROOT)[0]
 DEFAULT_CHARSET = 'utf-8'
-DEBUG = True
-#DEBUG = False
+#DEBUG = True
+DEBUG = False
 
 OFFSET = 25 # Default shard size for discover results is 25
 TEMPLATE_DEBUG = DEBUG
@@ -153,11 +153,16 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': '/usr/local/aristotle-library-apps/logs/errors.log',
+        },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['file'],
             'level': 'ERROR',
             'propagate': True,
         },
