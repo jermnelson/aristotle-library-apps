@@ -39,8 +39,8 @@ urlpatterns = patterns('',
 ##    url(r'^etd/', include('etd.urls')),
 ##    url(r'^etd[$|/]', include('ccetd.urls')),
 
-    url(r'^etd/', include('ccetd.urls')),
-    url(r'^apps/etd[$|/]', include('ccetd.urls')),
+##    url(r'^etd/', include('ccetd.urls')),
+##    url(r'^apps/etd[$|/]', include('ccetd.urls')),
 
 ##    url(r'^apps/fedora_utilities/', include('fedora_utilities.urls')),
 ##    url(r'^apps/hours/', include('hours.urls')),
