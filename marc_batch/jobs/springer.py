@@ -4,13 +4,15 @@
 """
 __author__ = 'Jeremy Nelson'
 
+import os
 from marc_batch.marc_helpers import MARCModifier
 import urlparse
 from pymarc import Field
+
 import re
+from rda_enhancement.pcc_conversion import PCCMARCtoRDAConversion
 
 PROXY_LOCATION = 'http://0-www.springerlink.com.tiger.coloradocollege.edu/openurl.asp?genre=book&id=doi:'
-
 
 
 class SpringerEBookJob(MARCModifier):
@@ -41,6 +43,7 @@ class SpringerEBookJob(MARCModifier):
             self.note_prefix = kwargs.get('note_prefix')
         else:
             self.note_prefix='Available via Internet'
+
 
     def processLeader(self,marc_leader):
         '''
@@ -104,7 +107,7 @@ class SpringerEBookJob(MARCModifier):
             marc_record.remove_field(field006)
         else:
             field006 = Field(tag='006',indicators=None)
-        field006.data = r'm    o   d        '
+        field006.data = r'm     o  d        '
         marc_record.add_field(field006)
         return marc_record
 
@@ -128,10 +131,8 @@ class SpringerEBookJob(MARCModifier):
         return marc_record
 
     def validate245(self, marc_record):
-        marc_record = super(SpringerEBookJob, self).validate245(marc_record)
-        all245s = marc_record.get_fields('245')
-        for field245 in all245s:
-            field245.delete_subfield('h')
+        rda_enhancement = PCCMARCtoRDAConversion(marc_record)
+        rda_enhancement.convert245()
         return marc_record
 
     def validate300(self, marc_record):
@@ -149,8 +150,8 @@ class SpringerEBookJob(MARCModifier):
         illus_re = re.compile(r"illus")
         all300Fields = marc_record.get_fields('300')
         for field in all300Fields:
-            new_a = "online resource"
-            new300 = Field(tag='300', indicators=['1',' '])
+            new_a = "1 online resource"
+            new300 = Field(tag='300', indicators=[' ',' '])
             subfield_a_lst = field.get_subfields('a')
             if len(subfield_a_lst) < 1:
                 new300.add_subfield('a', new_a)
