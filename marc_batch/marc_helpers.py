@@ -53,7 +53,7 @@ UNICODE_CHAR_REPLACEMENT = {
     u'I`': u'\xcc',
     u'u`': u'\xf9',
     u'a\xb0': u'\xe5'}
-    
+
 
 def clean_unicode(record):
     """Function goes through a MARC record searching for invalid unicode
@@ -71,10 +71,10 @@ def clean_unicode(record):
                         field.subfields[i] = subfield.replace(
                             char,
                             UNICODE_CHAR_REPLACEMENT.get(char))
-                    
+
     return record
-                                     
-        
+
+
 
 class MARCModifier(object):
     """
@@ -103,7 +103,7 @@ class MARCModifier(object):
                 subfield = subfield.decode('utf-8',
                                            errors='ignore')
         return record
-            
+
 
     def load(self):
         ''' Method iterates through MARC reader, loads specific MARC records
@@ -120,8 +120,8 @@ class MARCModifier(object):
             raw_record.fields = sorted(raw_record.fields,key=lambda x: x.tag)
             self.records.append(raw_record)
             self.stats['records'] += 1
-        
-        
+
+
 
     def processRecord(self,marc_record):
         ''' Method should be overriddden by derived classes.'''
@@ -158,7 +158,7 @@ class MARCModifier(object):
                                            raw_url.path,
                                            raw_url.query)
             proxy_url = urlparse.urlparse(proxy_raw_url)
-            # Sets values for new 538 with constructed note in     
+            # Sets values for new 538 with constructed note in
             new538 = Field(tag='538',
                            indicators=[' ',' '],
                            subfields=['a','%s, %s' % (note_prefix,raw_url.geturl())])
@@ -178,8 +178,8 @@ class MARCModifier(object):
             new856.add_subfield('z',new_public_note)
             marc_record.remove_field(field856)
             marc_record.add_field(new856)
-        return marc_record    
-           
+        return marc_record
+
 
     def output(self):
         "Outputs supporting unicode"
@@ -192,7 +192,7 @@ class MARCModifier(object):
                 output_string.write(record_str.encode('utf8',
                                                       'ignore'))
         return output_string.getvalue()
-        
+
 
 
 
@@ -200,8 +200,8 @@ class MARCModifier(object):
         """
         Removes the 009 field, used in some MARC records for local information
         Not used by CC.
-        
-        :param marc_record: MARC record        
+
+        :param marc_record: MARC record
         """
         return self.__remove_field__(marc_record=marc_record,
                                      tag='009')
@@ -209,9 +209,9 @@ class MARCModifier(object):
     def remove050(self,marc_record):
         """
         Removes the 050 field, used in some MARC records for call number.
-        
+
         Parameters:
-        - `marc_record`: MARC record        
+        - `marc_record`: MARC record
         """
         return self.__remove_field__(marc_record=marc_record,
                                      tag='050')
@@ -231,7 +231,7 @@ class MARCModifier(object):
     def remove530(self,marc_record):
         """
         Method removes all 530 fields in MARC record
-       
+
         Parameters:
         `marc_record`: Required, MARC record
         """
@@ -242,7 +242,7 @@ class MARCModifier(object):
         """
         Removes the 648 (Chronological Term) from the MARC record
         Not used by CC.
-        
+
         Parameters:
         - `marc_record`: MARC record
         """
@@ -266,6 +266,7 @@ class MARCModifier(object):
         marc_record.add_field(new007)
         return marc_record
 
+
     def validate006(self,marc_record):
         """
         Default validation of the 006 field with standard
@@ -275,7 +276,7 @@ class MARCModifier(object):
         `marc_record`: Required, MARC record
         """
         marc_record = self.__remove_field__(marc_record=marc_record,
-                                            tag='006')   
+                                            tag='006')
         field006 = Field(tag='006',indicators=None)
         field006.data = r'm        d        '
         marc_record.add_field(field006)
@@ -283,19 +284,18 @@ class MARCModifier(object):
 
     def validate007(self,marc_record):
         """
-        Default validation of the 007 field with the 
+        Default validation of the 007 field with the
         standard CC data of cr|||||||||||u
-        
+
         Parameters:
         `marc_record`: Required, MARC record
         """
         marc_record = self.replace007(marc_record)
         return marc_record
 
-
     def validate245(self,marc_record):
         """
-        Method adds a subfield 'h' with value of electronic resource 
+        Method adds a subfield 'h' with value of electronic resource
         to the 245 field.
 
         Parameters:
@@ -312,7 +312,7 @@ class MARCModifier(object):
             if len(a_subfields) > 0:
                 subfield_a = a_subfields[0]
                 if len(subfield_a) > 0:
-                    if ['.','\\'].count(subfield_a[-1]) > 0: 
+                    if ['.','\\'].count(subfield_a[-1]) > 0:
                         subfield_a = subfield_a[:-1].strip()
             new245 = Field(tag='245',
                            indicators=[indicator1,indicator2],
@@ -329,7 +329,7 @@ class MARCModifier(object):
             if len(p_subfields) > 0:
                  for subfield_p in p_subfields:
                     new245.add_subfield('p', subfield_p)
-            
+
             if len(c_subfields) > 0 and len(b_subfields) < 1:
                 new245.add_subfield('h','{0} / '.format(subfield_h_val))
             elif len(b_subfields) > 0:
@@ -341,7 +341,7 @@ class MARCModifier(object):
                     new245.add_subfield('b',subfield_b)
             if len(c_subfields) > 0:
                 for subfield_c in c_subfields:
-                    new245.add_subfield('c',subfield_c)                
+                    new245.add_subfield('c',subfield_c)
             marc_record.add_field(new245)
         return marc_record
 
@@ -361,7 +361,7 @@ class MARCModifier(object):
                        subfields=['a','1 online resource'])
         marc_record.add_field(new300)
         return marc_record
-    
+
     def validate506(self,marc_record):
         """
         Method removes any existing 506 fields, adds a single
@@ -393,7 +393,7 @@ class MARCModifier(object):
 
         Parameters:
         `marc_record`: Required, MARC record
-        `tag`: Required, tag of field 
+        `tag`: Required, tag of field
         """
         if not kwargs.has_key('marc_record') or not kwargs.has_key('tag'):
             raise ValueError('__remove_field__ requires marc_record and tag')
@@ -405,7 +405,7 @@ class MARCModifier(object):
 
     def __switch_name__(self,**kwargs):
         """
-         Internal method takes a personal name in the format of last_name, 
+         Internal method takes a personal name in the format of last_name,
         first_name middle_names and returns the direct form of the personal
         name.
 
@@ -443,7 +443,7 @@ class MARCModifier(object):
                 final_name += "%s " % name
             final_name += last_name
         return final_name.strip().replace("  "," ")
-    
+
 
 if __name__ == '__main__':
     print("Colorado College Cataloging Utilities Command Line %s" %\
