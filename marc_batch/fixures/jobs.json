@@ -247,12 +247,16 @@
     },
     "model":"marc_batch.Job",
     "pk": 25
+  },
+ {
+    "fields": {
+        "job_type": 3,
+        "help_rst":"op-help",
+        "name": "Oxford Scholarship Online",
+        "python_module":"oso"
+    },
+    "model":"marc_batch.Job",
+    "pk": 26
   }
-
-
-
-
-
- 
 ]
         

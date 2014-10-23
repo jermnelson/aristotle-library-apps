@@ -1,5 +1,6 @@
 # Django settings for aristotle project.
-import os.path
+import os
+
 
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -157,7 +158,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '/usr/local/aristotle-library-apps/logs/errors.log',
+            'filename': os.path.join(PROJECT_HOME, "logs", "errors.log")
         },
     },
     'loggers': {

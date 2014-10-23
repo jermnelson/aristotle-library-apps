@@ -1,0 +1,59 @@
+{% extends 'marc-batch-app.html' %}
+{% load i18n %}
+
+{% block more-css %}{% endblock %}
+
+
+
+
+ {% block app-main-body %}
+   <h1>{{ current_job.name }}</h1>
+   <form method="POST" action="/apps/marc_batch/process" enctype="multipart/form-data">{% csrf_token %}
+	<input type="hidden" value="{{ current_job.pk }}" name="job_id" />
+
+   {{ marc_upload_form.as_p }}
+   <br/>
+   <label>Oxford Scholarship Online Collection</label>
+   <select name="collection">
+    <option>Select</option>
+    <option value="Oxford scholarship online biology">Oxford scholarship online biology</option>
+    <option value="Oxford scholarship online business and management">Oxford scholarship online business and management</option>
+    <option value="Oxford scholarship online classical studies">Oxford scholarship online classical studies</option>
+    <option value="Oxford scholarship online economics and finance">Oxford scholarship online economics and finance</option>
+    <option value="Oxford scholarship online history">Oxford scholarship online history</option>
+    <option value="Oxford scholarship online linguistics">Oxford scholarship online linguistics</option>
+    <option value="Oxford scholarship online literature">Oxford scholarship online literature</option>
+    <option value="Oxford scholarship online mathematics">Oxford scholarship online mathematics</option>
+    <option value="Oxford scholarship online musics">Oxford scholarship online musics</option>
+    <option value="Oxford scholarship online neuroscience">Oxford scholarship online neuroscience</option>
+    <option value="Oxford scholarship online palliative care">Oxford scholarship online palliative care</option>
+    <option value="Oxford scholarship online philosophy">Oxford scholarship online philosophy</option>
+    <option value="Oxford scholarship online physics">Oxford scholarship online physics</option>
+    <option value="Oxford scholarship online political science">Oxford scholarship online political science</option>
+    <option value="Oxford scholarship online psychology">Oxford scholarship online psychology</option>
+    <option value="Oxford scholarship online public health and epidemiology">Oxford scholarship online public health and epidemiology</option>
+    <option value="Oxford scholarship online religion">Oxford scholarship online religion</option>
+    <option value="Oxford scholarship online social work">Oxford scholarship online social work</option>
+    <option value="Oxford scholarship online sociology">Oxford scholarship online sociology</option>
+   </select>
+   <br/>
+   <input class="btn btn-lg btn-warning" type="submit" value="Upload" />
+   </form>
+{% endblock %}
+ 
+{% block more-dialogs %}
+<div class="modal hide fade" id="job_logs_dlg">
+ <div class="modal-header">
+   <a class="close" data-dismiss="modal">×</a>
+   <h2>Logs</h2>
+ </div>
+ <div class="modal-body">
+  <img src="{{ STATIC_URL }}img/{{ app.icon_url }}" style="float:left">
+  <p>{{ app.description }}</p>
+ </div>
+ <div class="modal-footer">
+  <a href="#" onclick="$('#help_app_dlg').modal('hide')" class="btn btn-primary">{% trans 'Close' %}</a>
+ </div>
+
+</div>
+{% endblock %}

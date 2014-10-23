@@ -30,6 +30,7 @@ from oho_ps import OxfordHandbooksOnlinePoliticalScience
 from oho_psy import OxfordHandbooksOnlinePsychology
 from oho_r import OxfordHandbooksOnlineReligion
 from op_ro import OxfordReferenceOnlineJob
+from oso import OxfordScholarshipOnline
 from springer import SpringerEBookJob
 from ybp_ebl import ybp_ebl
 from ybp_ebrary import ybp_ebrary
@@ -56,6 +57,7 @@ oho_ps = OxfordHandbooksOnlinePoliticalScience
 oho_psy = OxfordHandbooksOnlinePsychology
 oho_r = OxfordHandbooksOnlineReligion
 op_ro = OxfordReferenceOnlineJob
+oso = OxfordScholarshipOnline
 springer = SpringerEBookJob
 ybp_ebl = ybp_ebl
 ybp_ebrary = ybp_ebrary

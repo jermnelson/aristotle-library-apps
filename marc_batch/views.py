@@ -10,7 +10,7 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.servers.basehttp import FileWrapper
 from django.http import Http404,HttpResponse,HttpResponseRedirect
-from aristotle.settings import INSTITUTION
+from aristotle.settings import INSTITUTION, PROJECT_HOME
 from aristotle.forms import FeedbackForm
 from app_settings import APP
 from marc_batch.fixures import help_loader
@@ -94,8 +94,12 @@ def ils_job_manager(request,job):
         params = {}
         ils_job_class = getattr(jobs.ils,
                                 '{0}'.format(job_query.python_module))
-        print("Class {} ".format(ils_job_class))
-        ils_job = ils_job_class(original_marc)
+        if 'collection' in request.POST:
+            ils_job = ils_job_class(
+                original_marc,
+                collection=request.POST['collection'])
+        else:
+            ils_job = ils_job_class(original_marc)
         ils_job.load()
         ils_log_entry = ILSJobLog(job=job_query,
                                   description=ils_job_form.cleaned_data['notes'],
@@ -131,14 +135,20 @@ def job_display(request,job_pk):
     :param job_pk: Job's Django primary key
     """
     job_help = None
-    template_filename = 'marc-batch-app.html'
+    template_filename = 'ils.html'
     job = Job.objects.get(pk=job_pk)
     if job.help_rst is not None:
         job_help = {"title":job.name,
                     "contents":help_loader.get(job.help_rst)}
-    for row in job_types:
-        if row[0] == job.job_type:
-            template_filename = '%s.html' % row[1]
+    custom_template = os.path.join(
+        PROJECT_HOME,
+        "marc_batch",
+        "templates",
+        "marc_batch",
+        "custom",
+        "{}.html".format(job_pk))
+    if os.path.exists(custom_template):
+        template_filename = 'custom/{}.html'.format(job_pk)
     ils_jobs = Job.objects.filter(job_type=3).order_by('name')
     marc_form = MARCRecordUploadForm()
     return direct_to_template(request,
