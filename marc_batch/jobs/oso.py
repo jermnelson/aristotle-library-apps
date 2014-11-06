@@ -55,7 +55,8 @@ class OxfordScholarshipOnline(MARCModifier):
         """
         marc_record = self.validate006(marc_record)
         marc_record = self.generate538(marc_record)
-        marc_record = self.generate730(marc_record)
+        marc_record = self.generate730s(marc_record)
+        marc_record = self.replace007(marc_record)
         marc_record = self.validate856(marc_record)
         marc_record.force_utf8 = True
         return marc_record
@@ -78,7 +79,7 @@ class OxfordScholarshipOnline(MARCModifier):
         marc_record.add_field(new538)
         return marc_record
 
-    def generate730(self, marc_record):
+    def generate730s(self, marc_record):
         """Method creates a 730 field based on collection
         Args:
             marc_record(pymarc.Record): MARC21 record
@@ -86,12 +87,33 @@ class OxfordScholarshipOnline(MARCModifier):
         Returns:
             pymarc.Record
         """
-
+        new730 = Field(
+            tag='730',
+            indicators=['0', ' '],
+            subfields=['a', 'Oxford scholarship online'])
+        marc_record.add_field(new730)
         new730 = Field(
             tag='730',
             indicators=['0', ' '],
             subfields=['a', self.collection])
         marc_record.add_field(new730)
+        return marc_record
+
+    def replace007(self,marc_record,data=None):
+        """
+        Removes exisiting 007 fields and replaces with standard data
+        for the 007 electronic records.
+
+        Parameters:
+        - `marc_record`: MARC record
+        - `data`: Optional, default data is set if not present
+        """
+        marc_record = self.__remove_field__(marc_record=marc_record,
+                                            tag='007')
+        if not data:
+            data=r'cr n         u'
+        new007 = Field(tag='007',data=data)
+        marc_record.add_field(new007)
         return marc_record
 
     def validate006(self, marc_record):
