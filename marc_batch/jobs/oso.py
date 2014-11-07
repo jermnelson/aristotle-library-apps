@@ -111,7 +111,7 @@ class OxfordScholarshipOnline(MARCModifier):
         marc_record = self.__remove_field__(marc_record=marc_record,
                                             tag='007')
         if not data:
-            data=r'cr n         u'
+            data=r'cr  n         u'
         new007 = Field(tag='007',data=data)
         marc_record.add_field(new007)
         return marc_record
