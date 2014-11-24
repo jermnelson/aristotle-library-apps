@@ -46,7 +46,7 @@ class FilmsOnDemandJob(MARCModifier):
             if record is None:
                 break
             raw_record = self.processRecord(record)
-            raw_record = self.remove009(raw_record)
+
             raw_record = self.remove648(raw_record)
             list001_499 = []
             for num in range(1,500):
@@ -68,8 +68,26 @@ class FilmsOnDemandJob(MARCModifier):
             list600_999.sort(key=lambda x: x.tag)
             raw_record.fields = list001_499 + raw_record.fields + list600_999
             self.records.append(raw_record)
-   
+
             self.stats['records'] += 1
+
+
+    def move009to008(self, marc_record):
+        """Method first checks if existing 009 with missing 008, takes contents
+        of 009 for a new 008 data and then removes old 009.
+
+        Args:
+            marc_record: pymarc.Record
+
+        Returns:
+            Modified pymarc.Record
+        """
+        if '008' not in marc_record:
+            if '009' in marc_record:
+                new008 = pymarc.Field(tag='008', data=marc_record['009'].data)
+                marc_record.add_field(new008)
+                marc_record = self.remove009(marc_record)
+        return marc_record
 
 
     def processRecord(self,marc_record):
@@ -81,17 +99,18 @@ class FilmsOnDemandJob(MARCModifier):
         """
         marc_record = self.validate001(marc_record)
         marc_record = self.validate006(marc_record)
+        marc_record = self.move009to008(marc_record)
         marc_record = self.remove020(marc_record)
         marc_record = self.validate245(marc_record)
         marc_record = self.validate300(marc_record)
-        marc_record = self.validate538processURLS(marc_record)    
+        marc_record = self.validate538processURLS(marc_record)
         marc_record = self.validateAll5xxs(marc_record)
         marc_record = self.validate730(marc_record)
         marc_record = clean_unicode(marc_record)
         return marc_record
-    
 
-    
+
+
     def validate001(self,marc_record):
         """
         Method constructs 001 by inserting fod infront of unique
@@ -101,7 +120,7 @@ class FilmsOnDemandJob(MARCModifier):
         """
         field001 = marc_record.get_fields('001')[0]
         marc_record.remove_field(field001)
-        raw_data = field001.data 
+        raw_data = field001.data
         new_data = 'fod%s' % raw_data
         field001.data = new_data
         marc_record.add_field(field001)
@@ -115,7 +134,7 @@ class FilmsOnDemandJob(MARCModifier):
         :param marc_record: Required, MARC record
         """
         marc_record = self.__remove_field__(marc_record=marc_record,
-                                            tag='006')   
+                                            tag='006')
         field006 = Field(tag='006',indicators=None)
         field006.data = r'm     o  c        '
         marc_record.add_field(field006)
@@ -180,7 +199,7 @@ class FilmsOnDemandJob(MARCModifier):
     def validate300(self,marc_record):
         """
         Method reorders 300 subfield b, removing the word *file*
-        
+
         :param marc_record: MARC record, required
         """
         all300s = marc_record.get_fields('300')
@@ -200,19 +219,19 @@ class FilmsOnDemandJob(MARCModifier):
                 field300.add_subfield("e", subfield_e)
         return marc_record
 
-              
+
     def remove490(self,marc_record):
         """
         Method removes the 490 field.
 
-        :param marc_record: MARC record, required 
+        :param marc_record: MARC record, required
         """
         return self.__remove_field__(marc_record=marc_record,
                                      tag='490')
 
     def validate538processURLS(self, marc_record):
         """
-        Method retains the System requirements 538 field in the MARC record 
+        Method retains the System requirements 538 field in the MARC record
         while still being able to use parent process URLS method.
 
         :param marc_record: MARC21 record, required
@@ -235,7 +254,7 @@ class FilmsOnDemandJob(MARCModifier):
         """
         Method orders 5xxs to support streaming video order per AACR2
         538,546,588,511,500s,518,521,520,505,506
-        
+
         :param marc_record: MARC record, required
         """
         all500s = marc_record.get_fields('500')
@@ -271,7 +290,7 @@ class FilmsOnDemandJob(MARCModifier):
                                      tag='546')
         self.__remove_field__(marc_record=marc_record,
                                      tag='588')
-        
+
         #starting order of 5xx fields
         for field in all538s:
             marc_record.add_field(field)
@@ -296,14 +315,14 @@ class FilmsOnDemandJob(MARCModifier):
         for field in all506s:
             marc_record.add_field(field)
         return marc_record
-            
+
 
     def validate730(self,marc_record):
         """
         Method removes/replaces existing 730 with uniform title
         for Films on Demand
 
-        :param marc_record: MARC record, required 
+        :param marc_record: MARC record, required
         """
         self.__remove_field__(marc_record=marc_record,
                               tag='730')
@@ -318,7 +337,7 @@ class FilmsOnDemandJob(MARCModifier):
         """
         Method removes the 830 field.
 
-        :param marc_record: MARC record, required 
+        :param marc_record: MARC record, required
         """
         return self.__remove_field__(marc_record=marc_record,
                                      tag='830')
