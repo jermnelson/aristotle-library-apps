@@ -29,8 +29,8 @@ class ybp_ebl(MARCModifier):
                       marc_record):
         """
         Processes a single MARC record
-    
-        :param marc_record: Single MARC record 
+
+        :param marc_record: Single MARC record
         """
         marc_record = self.validateLeader(marc_record)
         marc_record = self.validate001(marc_record)
@@ -77,12 +77,27 @@ class ybp_ebl(MARCModifier):
         marc_record['001'].value = field001[3:].lower()
         return marc_record
 
+    def validate006(self,marc_record):
+        """
+        Default validation of the 006 field with standard
+        field data of m\\\\\o\\d\\\\\\\\ for electronic records.
+
+        Parameters:
+        `marc_record`: Required, MARC record
+        """
+        marc_record = self.__remove_field__(marc_record=marc_record,
+                                            tag='006')
+        field006 = Field(tag='006',indicators=None)
+        field006.data = r'm     o  d        '
+        marc_record.add_field(field006)
+        return marc_record
+
     def validate007s(self,
                      marc_record):
         """
         Validates all 007s in EBL record load
 
-        :param marc_record: Single MARC record 
+        :param marc_record: Single MARC record
         """
         return self.replace007(marc_record,
                                data=r'cr  n        a')
@@ -92,10 +107,10 @@ class ybp_ebl(MARCModifier):
         """
         Validates all 008 in EBL record load
 
-        :param marc_record: Single MARC record 
+        :param marc_record: Single MARC record
         """
         field008_data = marc_record['008'].value()
-        marc_record['008'].value = field008_data.replace("o","|") 
+        marc_record['008'].value = field008_data.replace("o","|")
         return marc_record
 
     def validate040(self,
@@ -112,14 +127,14 @@ class ybp_ebl(MARCModifier):
         for field040 in all040s:
             field040.add_subfield('d',marc_code)
         return marc_record
-        
+
 
     def validate050s(self,
                      marc_record):
         """
         Validates all 050s in EBL record load
 
-        :param marc_record: Single MARC record 
+        :param marc_record: Single MARC record
         """
         all050s = marc_record.get_fields('050')
         for field050 in all050s:
@@ -147,13 +162,13 @@ class ybp_ebl(MARCModifier):
         for field082 in field082s:
             field082.indicators = ['0','4']
         return marc_record
-            
+
     def validate100(self,
                     marc_record):
         """
-        Validates 100 field in EBL record load 
+        Validates 100 field in EBL record load
 
-        :param marc_record: Single MARC record 
+        :param marc_record: Single MARC record
         """
         field100 = marc_record['100']
         if field100 is not None:
@@ -166,7 +181,7 @@ class ybp_ebl(MARCModifier):
         """
         Validates 246 field in EBL record load
 
-        :param marc_record: Single MARC record 
+        :param marc_record: Single MARC record
         """
         field246 = marc_record['246']
         if field246 is None:
@@ -178,7 +193,7 @@ class ybp_ebl(MARCModifier):
         """
         Validates 300 fields in EBL record load
 
-        :param marc_record: Single MARC record 
+        :param marc_record: Single MARC record
         """
         all300s = marc_record.get_fields('300')
         for field300 in all300s:
@@ -193,7 +208,7 @@ class ybp_ebl(MARCModifier):
 
         :param marc_record: Single MARC record
         """
-        # Creates RDA 336 
+        # Creates RDA 336
         self.__remove_field__(marc_record=marc_record,
                               tag='336')
         field336 = Field('336',
@@ -213,14 +228,14 @@ class ybp_ebl(MARCModifier):
         field338 = Field('338',
                          indicators=[' ',' '],
                          subfields=['a','online resource',
-                                    '2','rdamedia'])
+                                    '2','rdacarrier'])
         marc_record.add_field(field338)
         return marc_record
 
     def validateSeries(self,
                        marc_record):
         """
-        Validates Series n 440, 490/830 fields 
+        Validates Series n 440, 490/830 fields
 
         :param marc_record: Single MARC record
         """
@@ -277,7 +292,7 @@ class ybp_ebl(MARCModifier):
 
     def validate710(self,marc_record):
         """Adds a 710 field if missing from marc_record.
-       
+
         :param marc_record: Single MARC record
         """
         if not marc_record['710']:
@@ -287,7 +302,7 @@ class ybp_ebl(MARCModifier):
             marc_record.add_field(field710)
         return marc_record
 
-        
+
 
     def validate776(self,
                     marc_record):
