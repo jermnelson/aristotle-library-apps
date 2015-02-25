@@ -2,7 +2,7 @@
  :mod:`asp_cml` Alexander Street Press American Song Job
 """
 __author__ = "Jeremy Nelson"
-from asp_base import AlexanderStreetPressMusicJob
+from .asp_base import AlexanderStreetPressMusicJob
 
 class AlexanderStreetPressAmericanSong(AlexanderStreetPressMusicJob):
 
@@ -14,7 +14,7 @@ class AlexanderStreetPressAmericanSong(AlexanderStreetPressMusicJob):
         kwargs['proxy'] = '0-amso.alexanderstreet.com.tiger.coloradocollege.edu'
         AlexanderStreetPressMusicJob.__init__(self,
                                               **kwargs)
-        
-        
 
-    
+
+
+

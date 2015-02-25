@@ -5,12 +5,10 @@ __author__ = "Cindy Tappan"
 __author__ = "Jeremy Nelson"
 
 import datetime
-import cStringIO
+import io
 import logging
 import pymarc
 import re
-import urlparse
-import urllib2
 
 from marc_batch.marc_helpers import MARCModifier, clean_unicode
 from  pymarc import Field

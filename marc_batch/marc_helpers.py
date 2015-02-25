@@ -3,9 +3,11 @@
 
 """
 import sys,datetime,logging
-import urlparse,urllib2,re
+import urllib.parse
+import urllib.request
+import re
 import os,codecs
-import cStringIO
+import io
 from pymarc import Field
 import pymarc
 
@@ -148,16 +150,16 @@ class MARCModifier(object):
             # Extracts raw url from 856 subfield u, creates a url object
             # for original and proxy urls and replaces net location with WAM location
             # for proxy
-            raw_url = urlparse.urlparse(field856.get_subfields('u')[0])
+            raw_url = urllib.parse.urlparse(field856.get_subfields('u')[0])
             if re.match(r'http://',proxy_location):
                 protocol = ''
             else:
                 protocol = 'http://'
-            proxy_raw_url = '%s%s%s?%s' % (protocol,
+            proxy_raw_url = '{}{}{}?{}'.format(protocol,
                                            proxy_location,
                                            raw_url.path,
                                            raw_url.query)
-            proxy_url = urlparse.urlparse(proxy_raw_url)
+            proxy_url = urllib.parse.urlparse(proxy_raw_url)
             # Sets values for new 538 with constructed note in
             new538 = Field(tag='538',
                            indicators=[' ',' '],
@@ -185,7 +187,11 @@ class MARCModifier(object):
         "Outputs supporting unicode"
         output_string = cStringIO.StringIO()
         for record in self.records:
-            record_str = record.as_marc()
+            try:
+                record_str = record.as_marc()
+            except UnicodeEncodeError:
+                record.force_utf8 = True
+                record_str = record.as_marc()
             try:
                 output_string.write(record_str)
             except UnicodeEncodeError:
@@ -380,7 +386,7 @@ class MARCModifier(object):
         return marc_record
 
     def to_text(self):
-        output_string = cStringIO.StringIO()
+        output_string = io.StringIO()
         marc_writer = MARCWriter(output_string)
         for record in self.records:
             marc_writer.write(record)

@@ -16,6 +16,8 @@
  {% csrf_token %}
   <div>
     <label for="id_username" class="control-label">Your last name:</label>
+    <div>{{ form.username }}</div>
+
    <label for="id_password" class="control-label">Your TIGER# (at the bottom of your Gold Card)</label>
    <div class="">
      {{ form.password }}

@@ -6,7 +6,7 @@ __author__ = 'Jeremy Nelson'
 
 import os
 from marc_batch.marc_helpers import MARCModifier
-import urlparse
+import urllib.parse
 from pymarc import Field
 
 import re
@@ -185,7 +185,7 @@ class SpringerEBookJob(MARCModifier):
         field856 = all856fields[0]
         for field in all856fields:
             marc_record.remove_field(field)
-        raw_url = urlparse.urlparse(field856.get_subfields('u')[0])
+        raw_url = urllib.parse.urlparse(field856.get_subfields('u')[0])
         doi = raw_url.path[1:]
         all538fields = marc_record.get_fields('538')
         for field in all538fields:

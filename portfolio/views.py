@@ -8,10 +8,10 @@ import os
 from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
 from django.shortcuts import render
 
-import django.utils.simplejson as json
+import json
 from aristotle.settings import PROJECT_HOME,PROJECT_ROOT,INSTITUTION,INSTALLED_APPS
 from aristotle.forms import FeedbackForm
-from app_settings import APP
+from .app_settings import APP
 
 
 
@@ -38,8 +38,8 @@ def get_apps(is_authenticated):
                 else:
                     output.append(app_info)
     return output
-            
-        
+
+
 
 def default(request):
     """
@@ -49,7 +49,7 @@ def default(request):
     :param request: Web request from client
     :rtype: Generated HTML template
     """
-    app_listing = get_apps(request.user.is_authenticated()) 
+    app_listing = get_apps(request.user.is_authenticated())
     return direct_to_template(request,
                               'portfolio/app.html',
                               {'app':APP,

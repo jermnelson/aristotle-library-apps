@@ -2,7 +2,7 @@
  :mod:`oho_arch` Oxford Press Handbooks Online Archaeology Job
 """
 __author__ = "Jeremy Nelson"
-from op_base import OxfordHandbooksJob
+from .op_base import OxfordHandbooksJob
 
 class OxfordHandbooksOnlineArchaeology(OxfordHandbooksJob):
     """

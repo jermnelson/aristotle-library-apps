@@ -21,7 +21,7 @@ def get_file(filename,fixures_dir=CURRENT_DIR):
 
     :param filename: Filename
     """
-    file_obj = open(os.path.join(fixures_dir,filename),'rb')
+    file_obj = open(os.path.join(fixures_dir,filename))
     file_contents = file_obj.read()
     file_obj.close()
     return file_contents
@@ -33,4 +33,4 @@ for filename in fixures_listing:
         json_loader[root] = json.loads(raw_contents)
     elif extension == '.rst':
         rst_loader[root] = get_file(filename)
-        
+

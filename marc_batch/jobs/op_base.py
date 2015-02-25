@@ -3,7 +3,8 @@
 """
 __author__ = "Jeremy Nelson"
 
-import urllib2
+import urllib.request
+import urllib.parse
 
 from marc_batch.marc_helpers import MARCModifier
 from pymarc import Field
@@ -31,7 +32,8 @@ class OxfordHandbooksJob(MARCModifier):
         """
         marc_file = kwargs.get('marc_file')
         self.handbook_label = kwargs.get('handbook_label', None)
-        MARCModifier.__init__(self,marc_file)
+        to_unicode = kwargs.get('to_unicode', False)
+        MARCModifier.__init__(self, marc_file, to_unicode)
         if kwargs.has_key('proxy_filter'):
             self.proxy_filter = kwargs.get('proxy_filter')
         else:
@@ -82,12 +84,12 @@ class OxfordHandbooksJob(MARCModifier):
         doi_url = field856.get_subfields('u')[0]
         try:
             # Retrieve DOI link (redirects to Oxford Handbook URL)
-            doi_request = urllib2.urlopen(doi_url)
+            doi_request = urllib.request.urlopen(doi_url)
             ohb_url = doi_request.geturl()
-            ohb_path = urllib2.urlparse.urlsplit(ohb_url).path
+            ohb_path = urllib.parse.urlparse.urlsplit(ohb_url).path
         except:
             ohb_url = ''
-            ohb_path = urllib2.urlparse.urlsplit(doi_url).path
+            ohb_path = urllib.parse.urlparse.urlsplit(doi_url).path
 
         # Create new 538 field
         new538 = Field(tag='538',

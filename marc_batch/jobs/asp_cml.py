@@ -2,7 +2,7 @@
  :mod:`asp_cml` Alexander Street Press Classical Music Library Job
 """
 __author__ = "Jeremy Nelson"
-from asp_base import AlexanderStreetPressMusicJob
+from .asp_base import AlexanderStreetPressMusicJob
 
 class AlexanderStreetPressClassicalMusicLibrary(AlexanderStreetPressMusicJob):
 
@@ -13,7 +13,7 @@ class AlexanderStreetPressClassicalMusicLibrary(AlexanderStreetPressMusicJob):
         kwargs['asp_code'] = 'clmu'
         kwargs['proxy'] = '0-clmu.alexanderstreet.com.tiger.coloradocollege.edu'
         AlexanderStreetPressMusicJob.__init__(self,marc_file,**kwargs)
-        
-        
 
-    
+
+
+

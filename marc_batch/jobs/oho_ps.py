@@ -2,7 +2,7 @@
  :mod:`oho_ps` Oxford Press Handbooks Online Political Science Job
 """
 __author__ = "Jeremy Nelson"
-from op_base import OxfordHandbooksJob
+from .op_base import OxfordHandbooksJob
 
 class OxfordHandbooksOnlinePoliticalScience(OxfordHandbooksJob):
     """

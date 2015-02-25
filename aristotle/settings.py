@@ -98,8 +98,8 @@ TEMPLATE_LOADERS = (
 )
 
 AUTHENTICATION_BACKENDS = [
-    "aristotle.backends.IIIUserBackend"
-##    "django.contrib.auth.backends.ModelBackend",
+##    "aristotle.backends.IIIUserBackend"
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 MIDDLEWARE_CLASSES = (
@@ -172,7 +172,7 @@ LOGGING = {
 }
 
 try:
-    from local_settings import *
+    from .local_settings import *
 # If no local_settings.py exist, attempts to load rlsp_basic settings
 # for standalone
 except ImportError:

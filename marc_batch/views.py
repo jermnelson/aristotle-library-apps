@@ -12,12 +12,12 @@ from django.core.servers.basehttp import FileWrapper
 from django.http import Http404,HttpResponse,HttpResponseRedirect
 from aristotle.settings import INSTITUTION, PROJECT_HOME
 from aristotle.forms import FeedbackForm
-from app_settings import APP
-from marc_batch.fixures import help_loader
-from models import Job,JobLog,ILSJobLog,job_types
-from forms import *
-import jobs.ils
-import marc_helpers
+from .app_settings import APP
+from .fixures import help_loader
+from .models import Job,JobLog,ILSJobLog,job_types
+from .forms import *
+from .jobs import ils
+from . import marc_helpers
 
 def default(request):
     """

@@ -5,7 +5,7 @@ __author__ = 'Jeremy Nelson, Cindy Tappan'
 
 import logging,re
 from django import forms
-from models import ILSJobLog,JobLogNotes,RedisJobLog,SolrJobLog,marc_rec_types
+from .models import ILSJobLog,JobLogNotes,RedisJobLog,SolrJobLog,marc_rec_types
 
 class MARCRecordUploadForm(forms.Form):
     """This form contains fields that are necessary for MARC record loads"""
@@ -18,7 +18,7 @@ class MARCRecordUploadForm(forms.Form):
                             label="Notes",
                             widget=forms.Textarea(attrs={'rows':3,
                                                          'cols':30}))
-        
+
 
 
 class JobLogNotesForm(forms.ModelForm):
@@ -31,8 +31,8 @@ class JobLogNotesForm(forms.ModelForm):
         widgets = {
             'note_value':forms.Textarea(attrs={'cols':35,'rows':4}),
         }
-        
-            
+
+
 class ILSJobLogForm(forms.ModelForm):
     """`ILSJobLogForm` is a django model form for adding a new
     ILSJobLog after running the job on the original MARC record
@@ -41,8 +41,8 @@ class ILSJobLogForm(forms.ModelForm):
     class Meta:
         model = ILSJobLog
         fields = ('new_records','overlaid_records','rejected_records')
-        
-            
+
+
 
 class RedisJobLogForm(forms.ModelForm):
     """`RedisJobLogForm` is a django model form for adding a new
@@ -61,7 +61,7 @@ class SolrJobLogForm(forms.ModelForm):
         model = SolrJobLog
 
 ##class UpdateRecordLoadLogForm(forms.ModelForm):
-##    """`UpdateRecordLoadLogForm` is a Django model form for updating 
+##    """`UpdateRecordLoadLogForm` is a Django model form for updating
 ##    an `RecordLoadLog`.
 ##    """
 ##

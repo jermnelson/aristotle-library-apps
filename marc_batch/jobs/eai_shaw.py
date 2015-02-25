@@ -2,7 +2,7 @@
  :mod:`eai_evans` Early American Imprints Shaw Job
 """
 __author__ = "Jeremy Nelson"
-from eai import EarlyAmericanImprintsJob
+from .eai import EarlyAmericanImprintsJob
 
 class EarlyAmericanImprintsShawJob(EarlyAmericanImprintsJob):
 
@@ -11,8 +11,8 @@ class EarlyAmericanImprintsShawJob(EarlyAmericanImprintsJob):
         Creates instance of `EarlyAmericanImprintsShawJob`
         """
         kwargs['field500_stmt'] = 'Shaw-Shoemaker digital edition'
-	kwargs['field730_series'] = 'Second series'
+        kwargs['field730_series'] = 'Second series'
         super(EarlyAmericanImprintsShawJob,self).__init__(marc_file,**kwargs)
-        
 
-    
+
+

@@ -2,7 +2,7 @@
  :mod:`oho_r` Oxford Press Handbooks Religion Job
 """
 __author__ = "Jeremy Nelson"
-from op_base import OxfordHandbooksJob
+from .op_base import OxfordHandbooksJob
 
 class OxfordHandbooksOnlineReligion(OxfordHandbooksJob):
     """

@@ -3,7 +3,7 @@
  libraries Job
 """
 __author__ = "Jeremy Nelson"
-from asp_base import AlexanderStreetPressBase
+from .asp_base import AlexanderStreetPressBase
 from pymarc import Field
 
 class AlexanderStreetPressBlackDrama(AlexanderStreetPressBase):

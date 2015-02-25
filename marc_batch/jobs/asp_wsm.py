@@ -2,8 +2,8 @@
  :mod:`asp_wsm` Alexander Street Press Women Social Movements Job
 """
 __author__ = "Jeremy Nelson"
-from asp_base import AlexanderStreetPressBase
-            
+from .asp_base import AlexanderStreetPressBase
+
 class AlexanderStreetPressWomenSocialMovements(AlexanderStreetPressBase):
     """
     The `AlexanderStreetPressWomenSocialMovements` reads MARC records from
@@ -19,7 +19,7 @@ class AlexanderStreetPressWomenSocialMovements(AlexanderStreetPressBase):
         """
         kwargs['asp_code'] = 'aspw'
         AlexanderStreetPressBase.__init__(self, marc_file, **kwargs)
-        
+
     def processRecord(self,
                       marc_record):
         """

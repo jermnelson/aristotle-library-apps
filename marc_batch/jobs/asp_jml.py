@@ -2,7 +2,7 @@
  :mod:`asp_jml` Alexander Street Press Jazz Library Job
 """
 __author__ = "Jeremy Nelson"
-from asp_base import AlexanderStreetPressMusicJob
+from .asp_base import AlexanderStreetPressMusicJob
 
 class AlexanderStreetPressJazzMusicLibrary(AlexanderStreetPressMusicJob):
 
@@ -15,7 +15,7 @@ class AlexanderStreetPressJazzMusicLibrary(AlexanderStreetPressMusicJob):
         super(AlexanderStreetPressJazzMusicLibrary,self).__init__(marc_file,
                                                                   **kwargs)
 
-    
-        
 
-    
+
+
+

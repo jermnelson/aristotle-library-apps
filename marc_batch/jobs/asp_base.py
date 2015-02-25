@@ -3,8 +3,11 @@
  Press MARC21 record loads to CC's standards
 """
 __author__ = "Jeremy Nelson"
-import urlparse
-import urllib2
+
+
+import urllib.parse as urlparse
+import urllib.request
+
 import re
 import datetime
 import logging
@@ -44,8 +47,8 @@ class AlexanderStreetPressBase(MARCModifier):
         """
         field856 = marc_record.get_fields('856')[0]
         raw_url = field856.get_subfields('u')[0]
-        redirect = urllib2.urlopen(raw_url)
-        redirect_url = urlparse.urlparse(redirect.geturl())
+        redirect = urllib.request.urlopen(raw_url)
+        redirect_url = urllib.parse.urlparse(redirect.geturl())
         query_prefix = redirect_url.query.split("=")[0]
         self.resolved_baseurl = "{0}://{1}{2}?{3}".format(redirect_url.scheme,
                                                           redirect_url.netloc,

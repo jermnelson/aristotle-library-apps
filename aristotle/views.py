@@ -5,7 +5,11 @@ __author__ = 'Jeremy Nelson'
 
 import logging,sys, datetime
 from django.http import HttpResponse, Http404
-from urllib2 import HTTPError
+try:
+    from urllib2 import HTTPError
+except ImportError:
+    # Python 3 hack
+    from urllib.error import HTTPError
 
 from django.shortcuts import render as direct_to_template # quick hack to get running under django 1.5
 from django.shortcuts import render
@@ -14,10 +18,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.forms.forms import NON_FIELD_ERRORS
 
 from django.contrib.auth.forms import AuthenticationForm
-import django.utils.simplejson as json
+try:
+    import django.utils.simplejson as json
+except ImportError:
+    import json
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
-from fixures import json_loader,rst_loader
+from .fixures import json_loader,rst_loader
 from aristotle.settings import REDIS_DATASTORE
 
 logger = logging.getLogger(__name__)
@@ -75,7 +82,6 @@ def app_login(request):
     except KeyError:
         user = None
 
-
     if user is not None:
         if user.is_active:
             login(request, user)
@@ -83,7 +89,7 @@ def app_login(request):
                 return HttpResponseRedirect(next_page)
             else:
                 return HttpResponseRedirect('/')
-	else:
+        else:
             error_msg = "User not active"
             logger.error(error_msg)
             errors.append(error_msg)
@@ -201,7 +207,7 @@ def json_view(func):
                 response['result'] = 'ok'
         except KeyboardInterrupt:
             raise
-        except Exception,e:
+        except Exception as e:
             exc_info = sys.exc_info()
             print(exc_info)
             logging.error(exc_info)

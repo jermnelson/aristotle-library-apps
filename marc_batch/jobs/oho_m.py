@@ -2,7 +2,7 @@
  :mod:`oho_p` Oxford Press Handbooks Online Music Job
 """
 __author__ = "Jeremy Nelson"
-from op_base import OxfordHandbooksJob
+from .op_base import OxfordHandbooksJob
 
 class OxfordHandbooksOnlineMusic(OxfordHandbooksJob):
     """
@@ -19,6 +19,7 @@ class OxfordHandbooksOnlineMusic(OxfordHandbooksJob):
         OxfordHandbooksJob.__init__(self,
                                     handbook_label = "in music",
                                     marc_file=marc_file,
+                                    to_unicode=True,
                                     **kwargs)
 
 

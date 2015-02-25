@@ -5,7 +5,7 @@ __author__ = 'Jeremy Nelson'
 import aristotle.settings as settings
 import redis
 from django.template import Context,Library,loader
-from django.utils import simplejson as json
+import json
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.safestring import mark_safe
 
@@ -15,7 +15,7 @@ def get_navbar_menu(menu):
     """
     Calls and generates HTML for a Twitter Bootstrap navbar menu
 
-    :param isbn: Numeric ISBN of Book 
+    :param isbn: Numeric ISBN of Book
     :rtype: Generated HTML or None
     """
     try:
@@ -23,6 +23,6 @@ def get_navbar_menu(menu):
         params = {"menu":menu}
         return mark_safe(navbar_template.render(Context(params)))
     except:
-        return 
+        return
 
 register.filter('get_navbar_menu',get_navbar_menu)

@@ -40,7 +40,7 @@ urlpatterns = patterns('',
 ##    url(r'^etd[$|/]', include('ccetd.urls')),
 
 ##    url(r'^etd/', include('ccetd.urls')),
-##    url(r'^apps/etd[$|/]', include('ccetd.urls')),
+    url(r'^apps/etd[$|/]', include('ccetd.urls')),
 
 ##    url(r'^apps/fedora_utilities/', include('fedora_utilities.urls')),
 ##    url(r'^apps/hours/', include('hours.urls')),
@@ -74,8 +74,8 @@ urlpatterns.append(url(r'^admin/doc/',
 # Uncomment the next line to enable the admin:
 urlpatterns.append(url(r'^admin/',
                        include(admin.site.urls)))
-urlpatterns.append(url(r'^captcha/',
-                       include('captcha.urls')))
+##urlpatterns.append(url(r'^captcha/',
+##                       include('captcha.urls')))
 
 for app in ACTIVE_APPS:
     if app == 'aristotle':
