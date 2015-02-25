@@ -1,8 +1,8 @@
 """
  mod:`views` Fedora Batch App Views
 """
-from app_settings import *
-from app_helpers import *
+from .app_settings import *
+from .app_helpers import *
 
 ##from solr_helpers import SOLR_QUEUE, start_indexing
 from aristotle.settings import INSTITUTION, FEDORA_URI, FEDORA_MODEL, SOLR_URL
@@ -26,7 +26,7 @@ def default(request):
     batch_ingest_form = BatchIngestForm()
     batch_modify_form = BatchModifyMetadataForm()
     object_mover_form = ObjectMovementForm()
-    
+
     context = {'app': APP,
                'feedback_form':FeedbackForm({'subject':'Fedora Utilities App'}),
                'feedback_context':request.get_full_path(),
@@ -61,7 +61,7 @@ def __process_form_free_text__(name, request, context):
         context[name] = free_text
     elif selected_option is not None and len(selected_option) > 0:
         context[name] = selected_option
-        
+
 def add_stub_from_template(request):
     """Handler for adding Fedora stub object using a template
 
@@ -85,14 +85,14 @@ def add_stub_from_template(request):
                             'subject_topics': [],
                             'title': add_obj_template_form.cleaned_data['title']
                             }
-            
+
             __process_form_list__('creators', request, mods_context)
             __process_form_list__('corporate_creators', request, mods_context)
             __process_form_list__('contributors', request, mods_context)
             __process_form_list__('corporate_contributors',
                                   request,
                                   mods_context)
-            
+
             __process_form_list__('subject_people', request, mods_context)
             __process_form_list__('subject_places', request, mods_context)
             __process_form_list__('organizations', request, mods_context)
@@ -102,7 +102,7 @@ def add_stub_from_template(request):
             admin_note = add_obj_template_form.cleaned_data[
                 'admin_note']
             if len(admin_note) > 0:
-                mods_context['admin_note'] = admin_note            
+                mods_context['admin_note'] = admin_note
             description = add_obj_template_form.cleaned_data[
                 'description']
             if len(description) > 0:
@@ -112,10 +112,10 @@ def add_stub_from_template(request):
             if len(alt_title) > 0:
                 mods_context['alt_title'] = alt_title
             rights_holder = add_obj_template_form.cleaned_data[
-                'rights_holder']                
+                'rights_holder']
             if len(rights_holder) > 0:
                 mods_context['rights_statement'] = rights_holder
-            
+
             digital_origin_id = add_obj_template_form.cleaned_data[
                 'digital_origin']
             object_template = int(add_obj_template_form.cleaned_data[
@@ -139,15 +139,15 @@ def add_stub_from_template(request):
             if object_template == 1:
                 mods_context['alt_title'] = add_obj_template_form.cleaned_data[
                     'alt_title']
-                
+
                 mods_context['subject_topics'].extend(['Meeting minutes',
                                                'Universities and colleges'])
                 mods_context['subject_topics'] = list(set(mods_context['subject_topics']))
                 mods_context['subject_places'] = list(set(
                     mods_context['subject_places']))
-                
-                
-                                          
+
+
+
             elif object_template == 2:
                 __process_form_free_text__('frequency',
                                            request,
@@ -190,9 +190,9 @@ def add_stub_from_template(request):
         return render(request,
                       'fedora_utilities/add-object-from-template.html',
                       context)
-                                
-    
-                              
+
+
+
 def batch_ingest(request):
     """
     Handler for batch ingest view in app

@@ -2,14 +2,20 @@
  :mod:`app_helpers` Fedora Batch App Helpers
 """
 __author__ = "Jeremy Nelson"
-from lxml import etree
+
+import xml.etree.ElementTree as etree
 from django.template import Context, Template
 import aristotle.settings as settings
 
-from eulfedora.server import Repository
+#from eulfedora.server import Repository
 import os,mimetypes,shutil
 
 MODS_NS = 'http://www.loc.gov/mods/v3'
+
+class Repository(object):
+
+    def __init__(self, **kwargs):
+        pass
 
 repository = Repository(root=settings.FEDORA_ROOT,
                         username=settings.FEDORA_USER,
@@ -27,11 +33,11 @@ def handle_uploaded_zip(file_request,parent_pid):
     Function takes a compressed file object from the Request
     (should be either a .zip, .tar, .gz, or .tgz), opens
     and extracts contents to a temp upload directory. Iterates
-    through and attempts to ingest each folder into the 
+    through and attempts to ingest each folder into the
     repository. Returns a list of status for each
     attempted ingestion.
 
-    :param file_request: File from request 
+    :param file_request: File from request
     :param parent_pid: PID of parent collection
     :rtype: List of status from ingesting subfolders
     """
@@ -103,10 +109,10 @@ def create_stubs(mods_xml,
                                      content=rels_ext)
         print("New pid is {0}".format(new_pid))
     return
-        
-        
-    
-    
+
+
+
+
 
 def ingest_folder(file_path,
                   parent_pid,
@@ -144,7 +150,7 @@ def ingest_folder(file_path,
                                                   dsID=filename,
                                                   dsLabel=file_root,
                                                   mimeType=mime_type,
-                                                  content=content) 
+                                                  content=content)
     # finally, add RELS-EXT datastream
     rels_ext_template = Template(RELS_EXT)
     rels_ext_context = Context({'object_pid':new_pid,
@@ -158,12 +164,12 @@ def ingest_folder(file_path,
                                  content=rels_ext)
     return new_pid
 
- 
+
 
 def repository_move(source_pid,collection_pid):
     """
-    Helper view function takes a source_pid and collection_pid, 
-    retrives source_pid RELS-EXT and updates 
+    Helper view function takes a source_pid and collection_pid,
+    retrives source_pid RELS-EXT and updates
     fedora:isMemberOfCollection value with new collection_pid
 
     :param source_pid: Source Fedora Object PID
@@ -197,7 +203,7 @@ def repository_update(pid,mods_snippet):
     :param mods_snippet: MODS snippet
     """
     pass
-   
+
 def extract_creators(mods_xml):
     """Extracts all creators from a mods_xml file
 
@@ -241,8 +247,8 @@ def extract_title(mods_xml):
             if len(output) > 0:
                 title_entities.append(output)
     return title_entities
-            
-            
-            
-            
-    
+
+
+
+
+

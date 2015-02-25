@@ -2,8 +2,9 @@ __author__ = "Jeremy Nelson"
 import datetime
 from django import forms
 from fedora_utilities.models import *
-from eulfedora.server import Repository
-from eulfedora.util import RequestFailed
+##from eulfedora.server import Repository
+##from eulfedora.util import RequestFailed
+from .app_helpers import Repository
 
 repository = Repository()
 
