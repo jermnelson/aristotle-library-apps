@@ -10,7 +10,7 @@ class AlexanderStreetPressWomenSocialMovements(AlexanderStreetPressBase):
     Alexander Street Press Women and Social Movements database.
     """
 
-    def __init__(self,**kwargs):
+    def __init__(self, marc_file, **kwargs):
         """
         Creates instance of `WomenSocialMovementsBot`
 

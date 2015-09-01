@@ -92,6 +92,7 @@ def ils_job_manager(request,job):
         original_marc = request.FILES['raw_marc_record']
         job_query = Job.objects.get(pk=job_pk)
         params = {}
+        print(dir(jobs.ils))
         ils_job_class = getattr(jobs.ils,
                                 '{0}'.format(job_query.python_module))
         if 'collection' in request.POST:

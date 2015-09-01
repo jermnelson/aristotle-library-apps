@@ -40,6 +40,7 @@ asp_am = AlexanderStreetPressAmericanSong
 asp_bd2 = AlexanderStreetPressBlackDrama
 asp_cml = AlexanderStreetPressClassicalMusicLibrary
 asp_cwm = AlexanderStreetPressContemporaryWorldMusic
+asp_wsm = AlexanderStreetPressWomenSocialMovements
 asp_jml = AlexanderStreetPressJazzMusicLibrary
 asp_sgs = AlexanderStreetPressSmithsonianGlobalSoundsForLibraries
 eai_evans = EarlyAmericanImprintsEvansJob

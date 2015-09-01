@@ -82,11 +82,13 @@ class FilmsOnDemandJob(MARCModifier):
         Returns:
             Modified pymarc.Record
         """
-        if '008' not in marc_record:
-            if '009' in marc_record:
-                new008 = pymarc.Field(tag='008', data=marc_record['009'].data)
+        all008s = marc_record.get_fields('008')
+        if len(all008s) < 1:
+            field009 = marc_record['009']  
+            if field009: 
+                new008 = pymarc.Field(tag='008', data=field009.data)
                 marc_record.add_field(new008)
-                marc_record = self.remove009(marc_record)
+                self.remove009(marc_record)
         return marc_record
 
 
