@@ -13,6 +13,6 @@ pycrypto==2.6
 pymarc==2.8.8
 pyparsing==1.5.7
 rdflib==4.0
-redis==2.7.5
+redis==4.5.3
 rediscluster==0.5.1
 wsgiref==0.1.2
